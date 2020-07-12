@@ -1,5 +1,3 @@
-[TOC]
-
 # PwnMachine
 
 PwnMachine is a self hosting solution based on docker aiming to provide an easy to use pwning station for bughunters.
