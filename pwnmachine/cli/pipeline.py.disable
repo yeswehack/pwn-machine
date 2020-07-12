@@ -1,0 +1,46 @@
+import click
+
+@click.group()
+def cli():
+    """pipeline commands"""
+
+
+@cli.command()
+@click.argument(
+    "pipeline_names",
+    nargs=-1,
+    metavar="pipeline",
+    type=click.Choice(pm.pipelines.pipelines.keys()),
+)
+def build(pipeline_names):
+    """build pipeline"""
+    pm.pipelines.build(pipeline_names)
+
+
+@cli.command()
+@click.argument(
+    "pipeline_name",
+    nargs=1,
+    metavar="pipeline",
+    type=click.Choice(pm.pipelines.pipelines.keys()),
+)
+@click.argument("args", nargs=-1, metavar="args")
+def start(pipeline_name, args):
+    """start pipeline"""
+    start_args = {}
+    for arg in args:
+        key, _, value = arg.partition("=")
+        start_args[key] = value
+    pm.pipelines.start(pipeline_name, start_args)
+
+
+@cli.command()
+def ls():
+    """list available pipelines"""
+    pm.pipelines.ls()
+
+
+@cli.command()
+def ps():
+    """list running pipelines"""
+    pm.pipelines.ps()

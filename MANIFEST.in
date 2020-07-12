@@ -1,0 +1,4 @@
+graft pwnmachine/skel
+graft pwnmachine/cli
+global-exclude *.pyc
+include README.md

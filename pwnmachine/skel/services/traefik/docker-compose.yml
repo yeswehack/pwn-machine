@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  traefik:
+    image: traefik:v2.2.1
+    command:
+      - "--log.level=info"
+      - "--accesslog=true"
+      - "--global.sendAnonymousUsage=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=true"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.caserver=${LETSENCRYPT_URL:?LETSENCRYPT_URL required}"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=pdns"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.delayBeforeCheck=5"
+      - "--certificatesresolvers.letsencrypt.acme.email=${EMAIL:?EMAIL required}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json"
+    environment:
+      PDNS_API_KEY: ${PDNS_API_KEY:?PDNS_API_KEY is required}
+      PDNS_API_URL: http://powerdns:8081/
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "traefik:/data:rw"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik
+      - dns
+
+networks:
+  traefik:
+    name: traefik
+      
+volumes:
+  traefik:
+    name: traefik
