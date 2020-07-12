@@ -10,7 +10,7 @@ setup(
     name="pwn-machine",
     version=__version__,
     packages=find_packages(),
-    description="Simple self hosting solution based on docker aimed for bug hunters.",
+    description="Simple self hosting solution based on docker for bug hunters.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yeswehack/pwn-machine",

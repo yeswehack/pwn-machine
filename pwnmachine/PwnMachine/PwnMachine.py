@@ -26,7 +26,8 @@ import docker
 from compose.cli import signals
 from compose.service import BuildError
 from compose.cli.command import Environment
-from .Pipeline import Pipelines
+
+# from .Pipeline import Pipelines
 from compose.container import Container
 from compose.config.errors import ConfigurationError
 from contextlib import contextmanager
@@ -124,7 +125,9 @@ class PwnMachine:
 
         domains_env = {"PM_DOMAINS": json.dumps(self.config["domains"])}
 
-        with extra_env(self.config["environment"], domains_env), fixed_relative_context():
+        with extra_env(
+            self.config["environment"], domains_env
+        ), fixed_relative_context():
             project = parse_compose_project(
                 self.config_dir, self.machine_name, self.name, compose_files
             )
