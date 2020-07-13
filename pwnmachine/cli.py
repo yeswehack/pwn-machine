@@ -68,36 +68,32 @@ def main_cli():
     pass
 
 
-@setup_only.command()
-def version():
-    from . import __version__   
-    click.echo(__version__)
-
-
-@setup_only.command()
-def setup():
-    """Setup pwn machine"""
-    try:
-        install_pwn_machine()
-    except click.Abort:
-        click.echo("Aborting", err=True)
-        exit(1)
-
-
-@main_cli.command()
-def setup():
-    """Setup pwn machine"""
-    try:
-        install_pwn_machine()
-    except click.Abort:
-        click.echo("Aborting", err=True)
-        exit(1)
-
-
 @main_cli.command()
 def version():
+    """Show current version"""
     from . import __version__
-    click.echo(__version__)
+    print(__version__)
+
+
+@setup_only.command()
+def setup():
+    """Setup pwn machine"""
+    try:
+        install_pwn_machine()
+    except click.Abort:
+        click.echo("Aborting", err=True)
+        exit(1)
+
+
+@main_cli.command()
+def setup():
+    """Setup pwn machine"""
+    try:
+        install_pwn_machine()
+    except click.Abort:
+        click.echo("Aborting", err=True)
+        exit(1)
+
 
 
 @main_cli.command()
