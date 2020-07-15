@@ -59,14 +59,17 @@ On your first run you need to setup PwnMachine with
 pm setup
 ```
 
+This will start an interactive installer. The installer will create the configuration directory and add the required environment variable and autocompletion to your shell init file.
+
 Then you can build and start all your services.
 ```shell
 pm service build
 pm service start
 ```
+You can check that everything is running with
 
-This will start an interactive installer. The installer will create the configuration directory and add the required environment variable and autocompletion to your shell init file.
-
-
+```shell
+pm ps
+```
 
 Check the [wiki](https://github.com/yeswehack/pwn-machine/wiki) for more informations.
