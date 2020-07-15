@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 import os
 from setuptools import setup, find_packages
-from pwnmachine import __version__
 
 path = os.path.dirname(__file__)
 long_description = open(os.path.join(path, "README.md"), "r", encoding="utf8").read()
 
 setup(
     name="pwn-machine",
-    version=__version__,
+    version="1.0.2",
     packages=find_packages(),
     description="Simple self hosting solution based on docker for bug hunters.",
     long_description=long_description,
