@@ -12,6 +12,7 @@ The basic install include a DNS server, a reverse proxy and a webserver.
 * docker-machine
 * sshfs (optional)
 * python3
+* docker-compose
 
 You need to create a docker-machine for your server.
  
