@@ -72,6 +72,7 @@ def main_cli():
 def version():
     """Show current version"""
     from . import __version__
+
     print(__version__)
 
 
@@ -95,7 +96,6 @@ def setup():
         exit(1)
 
 
-
 @main_cli.command()
 def env():
     """Display the commands to set up the environment for the Docker client"""
@@ -109,7 +109,7 @@ def ssh(command):
     pm.ssh([] if command is None else command)
 
 
-if os.environ["PM_PATH"]:
+if "PM_PATH" in os.environ and os.environ["PM_PATH"]:
     pm = PwnMachine(os.environ["PM_PATH"])
 
     @main_cli.command()
