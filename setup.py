@@ -7,7 +7,7 @@ long_description = open(os.path.join(path, "README.md"), "r", encoding="utf8").r
 
 setup(
     name="pwn-machine",
-    version="1.0.2",
+    version="1.1",
     packages=find_packages(),
     description="Simple self hosting solution based on docker for bug hunters.",
     long_description=long_description,

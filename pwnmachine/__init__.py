@@ -2,4 +2,4 @@ from . import cli
 from . import PwnMachine
 
 __all__ = ["cli", "PwnMachine"]
-__version__ = "1.0.2"
+__version__ = "1.1"
