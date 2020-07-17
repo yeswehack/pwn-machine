@@ -74,7 +74,7 @@ def rebind(zone, name, ips):
         exit("You need at least 2 ips")
     zone_path = f"/api/v1/servers/localhost/zones/{zone}"
     lua_ip_array = ",".join(f"'{ip}'" for ip in ips)
-    lua_code = f'({{{lua_ip_array}}})[math.random({len(ips)})]'
+    lua_code = f'pickrandom({{{lua_ip_array}}})'
     new_record = {
         "rrsets": [
             {
