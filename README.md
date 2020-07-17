@@ -54,6 +54,14 @@ First install the pm client.
 pip install pwn-machine
 ```
 
+or for a cutting edge build:
+```shell
+git clone https://github.com/yeswehack/pwn-machine/
+cd pwn-machine
+pip install .
+```
+
+
 On your first run you need to setup PwnMachine with
 
 ```shell
