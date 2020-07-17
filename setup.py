@@ -4,10 +4,13 @@ from setuptools import setup, find_packages
 
 path = os.path.dirname(__file__)
 long_description = open(os.path.join(path, "README.md"), "r", encoding="utf8").read()
+version_file = os.path.join(path, "pwnmachine", "version.txt")
+with open(version_file, "r") as f:
+    version = f.read().strip()
 
 setup(
     name="pwn-machine",
-    version="1.1",
+    version=version,
     packages=find_packages(),
     description="Simple self hosting solution based on docker for bug hunters.",
     long_description=long_description,

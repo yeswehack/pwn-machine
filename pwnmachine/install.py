@@ -92,14 +92,11 @@ def update_rc_files(pm_path):
         prepare_bash(pm_path)
     elif shell.endswith("zsh"):
         prepare_zshrc(pm_path)
+    # WIP
     # elif shell.endswith("fish")
-    #    update_fishrc(pm_path)
+    #    update_fishrc(pm_path) 
     else:
         update_unknowrc(pm_path)
-
-
-# update_rc_files("/home/bitk/bi.tk/")
-# exit()
 
 
 def get_machine_ip(machine_name):
@@ -172,7 +169,7 @@ def ask_config_info():
     )
     machine_ip = click.prompt("Please enter your server public ip")
     domain = click.prompt("Please enter your domain name")
-    check_ns(domain, machine_ip)
+    # check_ns(domain, machine_ip)
     email = click.prompt("Please enter the email address to use with Let's encrypt")
 
     config = {
