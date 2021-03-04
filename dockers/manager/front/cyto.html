@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.18.1/cytoscape.min.js"
+      integrity="sha512-MgZAJudXekIHKoFtEk1NUwpSSCDt6JlfkUdwgX/1ustAyJltGO82ayHPOyK31xy9q84nGecgtF+D9hdm2OZldg=="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      #cy {
+        width: 800px;
+        height: 600px;
+        border: 1px solid black;
+        display: block;
+      }
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="cy"></div>
+
+    <script>
+      const edge = (f, t) => ({
+        data: { id: `${f}${t}`, source: f, target: t }
+      });
+      var cy = cytoscape({
+        container: document.getElementById("cy"), // container to render in
+
+        elements: [
+          { data: { id: "a" } },
+          { data: { id: "b" } },
+          { data: { id: "c" } },
+          { data: { id: "d" } },
+          { data: { id: "e" } },
+          { data: { id: "f" } },
+          edge("a", "b"),
+          edge("a", "c"),
+          edge("a", "d"),
+          edge("a", "e"),
+          edge("f", "e"),
+          edge("d", "e"),
+          edge("d", "f"),
+          edge("c", "f"),
+        ],
+
+        style: [
+          // the stylesheet for the graph
+          {
+            selector: "node",
+            style: {
+              "background-color": "#666",
+              label: "data(id)"
+            }
+          },
+
+          {
+            selector: "edge",
+            style: {
+              width: 3,
+              "line-color": "#ccc",
+              "target-arrow-color": "#ccc",
+              "target-arrow-shape": "triangle",
+              "curve-style": "bezier"
+            }
+          }
+        ],
+
+        layout: {
+          name: "breadthfirst",
+          rows: 3
+        }
+      });
+    </script>
+  </body>
+</html>

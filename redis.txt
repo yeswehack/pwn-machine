@@ -1,0 +1,26 @@
+#FLUSHALL
+SET traefik/http/services/whoami/loadbalancer/servers/0/url "http://whoami:80"
+SET traefik/http/routers/whoami/rule "Host(`whoami.localhost`)"
+SET traefik/http/routers/whoami/service "whoami@redis"
+SET traefik/http/routers/whoami/entrypoints "web"
+SET traefik/http/services/whoami/loadbalancer/healthcheck/path "/testawdawd"
+
+
+SET traefik/http/services/whoami/loadbalancer/servers/0/url "http://whoami:80"
+SET traefik/http/services/whoami/loadbalancer/servers/1/url "http://whoami-2:80"
+SET traefik/http/routers/whoami2/rule "Host(`whoami2.localhost)"
+SET traefik/http/routers/whoami2/service "whoami@redis"
+SET traefik/http/routers/whoami2/entrypoints "web"
+
+
+SET traefik/tcp/services/tcp-test/loadBalancer/servers/0/address "whoami:80"
+
+
+SET traefik/udp/services/udp-test/loadBalancer/servers/0/address "whoami:80"
+SET traefik/udp/routers/udp-test/service "udp-test@redis"
+SET traefik/udp/routers/udp-test/entrypoints "udp51"
+
+SET traefik/http/middlewares/add-prefix/addPrefix/prefix "/test"
+SET traefik/http/routers/whoami/middlewares/0 "add-prefix"
+
+KEYS *

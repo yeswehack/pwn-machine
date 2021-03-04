@@ -1,0 +1,173 @@
+{
+  "middlewares": {
+    "addPrefix": {
+      "prefix": "STR"
+    },
+    "basicAuth": {
+      "headerField": "STR",
+      "realm": "STR",
+      "removeHeader": "BOOL",
+      "users": "ARRAY",
+      "usersFile": "STR"
+    },
+    "buffering": {
+      "maxRequestBodyBytes": "NUMBER",
+      "maxResponseBodyBytes": "NUMBER",
+      "memRequestBodyBytes": "NUMBER",
+      "memResponseBodyBytes": "NUMBER",
+      "retryExpression": "STR"
+    },
+    "chain": {
+      "middlewares": "ARRAY"
+    },
+    "circuitBreaker": {
+      "expression": "STR"
+    },
+    "compress": {
+      "excludedContentTypes": "ARRAY"
+    },
+    "contentType": {
+      "autoDetect": "BOOL"
+    },
+    "digestAuth": {
+      "headerField": "STR",
+      "realm": "STR",
+      "removeHeader": "BOOL",
+      "users": "ARRAY",
+      "usersFile": "STR"
+    },
+    "errors": {
+      "query": "STR",
+      "service": "STR",
+      "status": "ARRAY"
+    },
+    "forwardAuth": {
+      "address": "STR",
+      "authResponseHeaders": "ARRAY",
+      "tls": "REF",
+      "trustForwardHeader": "BOOL"
+    },
+    "headers": {
+      "accessControlAllowCredentials": "BOOL",
+      "accessControlAllowHeaders": "ARRAY",
+      "accessControlAllowMethods": "ARRAY",
+      "accessControlAllowOrigin": "STR",
+      "accessControlAllowOriginList": "ARRAY",
+      "accessControlExposeHeaders": "ARRAY",
+      "accessControlMaxAge": "NUMBER",
+      "addVaryHeader": "BOOL",
+      "allowedHosts": "ARRAY",
+      "browserXssFilter": "BOOL",
+      "contentSecurityPolicy": "STR",
+      "contentTypeNosniff": "BOOL",
+      "customBrowserXSSValue": "STR",
+      "customFrameOptionsValue": "STR",
+      "customRequestHeaders": "PAIR",
+      "customResponseHeaders": "PAIR",
+      "featurePolicy": "STR",
+      "forceSTSHeader": "BOOL",
+      "frameDeny": "BOOL",
+      "hostsProxyHeaders": "ARRAY",
+      "isDevelopment": "BOOL",
+      "publicKey": "STR",
+      "referrerPolicy": "STR",
+      "sslForceHost": "BOOL",
+      "sslHost": "STR",
+      "sslProxyHeaders": "PAIR",
+      "sslRedirect": "BOOL",
+      "sslTemporaryRedirect": "BOOL",
+      "stsIncludeSubdomains": "BOOL",
+      "stsPreload": "BOOL",
+      "stsSeconds": "NUMBER"
+    },
+    "ipWhiteList": {
+      "ipStrategy": "REF",
+      "sourceRange": "ARRAY"
+    },
+    "inFlightReq": {
+      "amount": "NUMBER",
+      "sourceCriterion": "REF"
+    },
+    "passTLSClientCert": {
+      "info": "REF",
+      "pem": "BOOL"
+    },
+    "rateLimit": {
+      "average": "NUMBER",
+      "burst": "NUMBER",
+      "period": "NUMBER",
+      "sourceCriterion": "REF"
+    },
+    "redirectRegex": {
+      "permanent": "BOOL",
+      "regex": "STR",
+      "replacement": "STR"
+    },
+    "redirectScheme": {
+      "permanent": "BOOL",
+      "port": "STR",
+      "scheme": "STR"
+    },
+    "replacePath": {
+      "path": "STR"
+    },
+    "replacePathRegex": {
+      "regex": "STR",
+      "replacement": "STR"
+    },
+    "retry": {
+      "attempts": "NUMBER"
+    },
+    "stripPrefix": {
+      "forceSlash": "BOOL",
+      "prefixes": "ARRAY"
+    },
+    "stripPrefixRegex": {
+      "regex": "ARRAY"
+    }
+  },
+  "types": {
+    "tls": {
+      "ca": "STR",
+      "caOptional": "BOOL",
+      "cert": "STR",
+      "insecureSkipVerify": "BOOL",
+      "key": "STR"
+    },
+    "ipStrategy": {
+      "depth": "NUMBER",
+      "excludedIPs": "ARRAY"
+    },
+    "sourceCriterion": {
+      "ipStrategy": "REF",
+      "requestHeaderName": "STR",
+      "requestHost": "BOOL"
+    },
+    "info": {
+      "issuer": "REF",
+      "notAfter": "BOOL",
+      "notBefore": "BOOL",
+      "sans": "BOOL",
+      "serialNumber": "BOOL",
+      "subject": "REF"
+    },
+    "issuer": {
+      "commonName": "BOOL",
+      "country": "BOOL",
+      "domainComponent": "BOOL",
+      "locality": "BOOL",
+      "organization": "BOOL",
+      "province": "BOOL",
+      "serialNumber": "BOOL"
+    },
+    "subject": {
+      "commonName": "BOOL",
+      "country": "BOOL",
+      "domainComponent": "BOOL",
+      "locality": "BOOL",
+      "organization": "BOOL",
+      "province": "BOOL",
+      "serialNumber": "BOOL"
+    }
+  }
+}
