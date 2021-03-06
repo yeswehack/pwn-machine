@@ -1,7 +1,6 @@
 <template>
   <div id="overview">
     <div id="graph-container"></div>
-
     <q-inner-loading :showing="loading">
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
@@ -10,37 +9,39 @@
 
 <script>
 import ColorHash from "color-hash";
-import { mapGetters } from "vuex";
-import cytoscape from 'cytoscape';
+import cytoscape from "cytoscape";
+import gql from "graphql-tag";
 
-function isInternetExposed(container) {
-  const exposed = [];
-  if (!container.NetworkSettings) {
-    return false;
-  }
-  console.log("PORTS", container.NetworkSettings.Ports);
-  for (const [name, ports] of Object.entries(container.NetworkSettings.Ports)) {
-    if (!ports) continue;
-    const [dest, proto] = name.split("/");
-    for (const port of ports) {
-      if (port.HostPort) {
-        exposed.push(`${port.HostPort}->${dest}/${proto}`);
-      }
-    }
-  }
-  return exposed.length ? exposed : false;
-}
 
 export default {
-  props: {
-    containers: Array,
-    networks: Array,
-    volumes: Array
+  apollo: {
+    containers: {
+      query: gql`
+        query getContainers {
+          docker {
+            containers {
+              name
+              status
+              exposedPorts {
+                containerPort
+                hostPort
+              }
+              connectedNetworks {
+                name
+              }
+            }
+          }
+        }
+      `,
+      variables() {
+        return { name: this.name };
+      },
+      update: data => data.docker.containers
+    }
   },
-  computed: mapGetters(["loading"]),
-  mounted() {
-    if (!this.loading) {
-      this.init();
+  computed: {
+    loading() {
+      return this.$apollo.queries.containers.loading;
     }
   },
   methods: {
@@ -58,8 +59,10 @@ export default {
           return "#C10015";
       }
       return "#1976D2";
-    },
-    init() {
+    }
+  },
+  watch: {
+    containers() {
       const colorHash = new ColorHash({ saturation: 1 });
 
       const edge = (n, f, t) => ({
@@ -78,8 +81,8 @@ export default {
       });
 
       const containerNode = c => ({
-        data: { id: c.Name },
-        style: { "background-color": this.getStatusColor(c.State.Status) },
+        data: { id: c.name },
+        style: { "background-color": this.getStatusColor(c.status) },
         classes: ["container"]
       });
 
@@ -93,19 +96,22 @@ export default {
 
       for (const container of this.containers) {
         elements.push(containerNode(container));
-        if (!container.NetworkSettings) continue;
-        const exposed = isInternetExposed(container);
-        if (exposed) {
-          elements.push(internetEdge(exposed, container.Name));
+        if (container.exposedPorts.some(p => p.hostPort)) {
+          elements.push(
+            internetEdge(
+              container.exposedPorts.map(ep => `${ep.hostPort}->${ep.containerPort}`),
+              container.name
+            )
+          );
         }
-        for (const networkName in container.NetworkSettings.Networks) {
+        for (const networkName in container.connectedNetworks) {
           if (!(networkName in networks)) {
-            networks[networkName] = [container.Name];
+            networks[networkName] = [container.name];
           } else {
             networks[networkName].forEach(n => {
-              elements.push(edge(networkName, container.Name, n));
+              elements.push(edge(networkName, container.name, n));
             });
-            networks[networkName].push(container.Name);
+            networks[networkName].push(container.name);
           }
         }
       }
@@ -152,14 +158,6 @@ export default {
       cy.on("mouseout", "edge", function(event) {
         event.target.style("font-size", 0);
       });
-    }
-  },
-  watch: {
-    loading(v) {
-      console.log("LOADING", v, this.containers);
-      if (v == false) {
-        this.init();
-      }
     }
   }
 };

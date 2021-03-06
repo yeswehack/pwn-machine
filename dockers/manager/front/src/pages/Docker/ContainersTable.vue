@@ -2,8 +2,8 @@
   <BaseTable
     ref="table"
     name="container"
-    :rkey="row => row.Name"
-    :loading="loading"
+    rkey="name"
+    :loading="$apollo.loading"
     :data="containers"
     :columns="columns"
     v-on:cloneRow="cloneContainer"
@@ -11,18 +11,11 @@
     v-on:delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <ImageLink :name="row.Config.Image" />
-    </template>
-    <template #body-cell-exposedPort="{row}">
-      <PortList :settings="row.NetworkSettings" />
+      <ImageLink :name="row.image.repository" />
     </template>
     <template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
-        <VolumeLink
-          :name="name"
-          :key="name"
-          v-for="name of getVolumeList(row)"
-        />
+        <VolumeLink :name="name" :key="name" v-for="{ name } of row.mounts.filter(n=>n.name)" />
       </div>
     </template>
     <template #body-cell-networks="{row}">
@@ -30,16 +23,19 @@
         <NetworkLink
           :name="name"
           :key="name"
-          v-for="name of getNetworkList(row)"
+          v-for="{ name } of row.connectedNetworks"
         />
       </div>
     </template>
-    <template #body-cell-exitCode="{row}">
-      <ContainerStatus :status="row.State.Status" />
+    <template #body-cell-exposedPort="{row}">
+      <PortList :ports="row.exposedPorts" />
+    </template>
+    <template #body-cell-status="{row}">
+      <ContainerStatus :status="row.status" />
     </template>
 
     <template #details="{ row }" auto-width>
-      <ContainerDetails :name="row.Name" :containers="containers" />
+      <ContainerDetails :name="row.name" />
     </template>
 
     <template #popup>
@@ -61,6 +57,8 @@ import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
 
+import gql from "graphql-tag";
+
 export default {
   components: {
     ContainerDetails,
@@ -73,7 +71,41 @@ export default {
     NetworkLink
   },
   props: {
-    containers: Array
+    //containers: Array
+  },
+  apollo: {
+    containers: {
+      query: gql`
+        query {
+          docker {
+            containers {
+              id
+              name
+              image {
+                repository
+                id
+              }
+              mounts {
+                name
+                source
+                destination
+                rw
+              }
+              connectedNetworks {
+                name
+              }
+              exposedPorts {
+                containerPort
+                hostPort
+                protocol
+              }
+              status
+            }
+          }
+        }
+      `,
+      update: data => data.docker.containers
+    }
   },
   computed: mapGetters(["loading"]),
   data() {
@@ -82,21 +114,21 @@ export default {
         name: "name",
         align: "left",
         label: "name",
-        field: "Name",
+        field: "name",
         sortable: true
       },
       {
         name: "image",
         label: "Image",
         align: "left",
-        field: row => row.Config.Image,
+        field: row => row.image.repository,
         sortable: true
       },
       {
         name: "volumes",
         label: "Volumes",
         align: "left",
-        field: row => getVolumeList(row),
+        field: row => row.volumeMounts.map(m => m.name),
         format: val => shortDate(val),
         sortable: true
       },
@@ -104,22 +136,21 @@ export default {
         name: "networks",
         label: "Networks",
         align: "left",
-        field: row => getNetworkList(row),
-        format: val => shortDate(val),
+        field: row => row.connectedNetworks.map(n => n.name),
         sortable: true
       },
       {
         name: "exposedPort",
         label: "Exposed ports",
         align: "left",
-        field: row => `${Object.keys(row.NetworkSettings.Ports)}`,
+        field: row => row.exposedPorts.map(e => e.protocol + e.containerPort),
         sortable: true
       },
       {
-        name: "exitCode",
+        name: "status",
         label: "Status",
         align: "left",
-        field: row => row.State.Status,
+        field: row => row.status,
         sortable: true
       }
     ];

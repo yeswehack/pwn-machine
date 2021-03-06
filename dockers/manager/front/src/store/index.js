@@ -5,9 +5,42 @@ import docker from './docker'
 import traefik from './traefik'
 import dns from './dns'
 
+import VuexORM from '@vuex-orm/core'
+import VuexORMGraphQL from '@vuex-orm/plugin-graphql';
+
+import Docker from "./models/docker/Docker.js"
+import Image from "./models/docker/Image.js"
+
+import { DefaultAdapter, ConnectionMode } from '@vuex-orm/plugin-graphql';
+
+
 import api from "src/api.js"
 
 Vue.use(Vuex)
+
+
+
+
+class CustomAdapter extends DefaultAdapter {
+  // Your code here
+
+  // Example
+  getConnectionMode() {
+    return ConnectionMode.PLAIN
+  }
+}
+
+const database = new VuexORM.Database()
+database.register(Image)
+database.register(Docker)
+VuexORM.use(VuexORMGraphQL, {
+  database,
+  url: "http://127.0.0.1:4000/graphql",
+  debug: true,
+  adapter: new CustomAdapter(),
+});
+
+
 
 /*
  * If not building with SSR mode, you can
@@ -67,13 +100,18 @@ export default function (/* { ssrContext } */) {
         }
         console.log(data)
         commit("setToken", data)
-      }
+      },
     },
 
+    plugins: [VuexORM.install(database)],
     // enable strict mode (adds overhead!)
     // for dev mode only
     strict: process.env.DEV
   })
   api.bindStore(Store)
+
+  // DELETE ME
+  window.Image = Image
+  window.Docker = Docker
   return Store
 }

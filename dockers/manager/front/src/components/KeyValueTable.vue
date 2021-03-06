@@ -16,10 +16,10 @@ export default {
   mixins: [DeepForm],
   components: { EditTable },
   props: {
-    disable: Boolean,
+    disable: { type: Boolean, default: false },
     title: String,
     labels: { type: Array, default: () => ["Name", "Value"] },
-    readonly: Boolean
+    readonly: { type: Boolean, default: false }
   },
   data() {
     const columns = [
@@ -27,7 +27,7 @@ export default {
         name: "name",
         align: "left",
         label: this.labels[0],
-        field: "name",
+        field: "key",
         headerStyle: "width: 50%"
       },
       {
@@ -39,22 +39,12 @@ export default {
       }
     ];
 
-    const formData = Object.entries(this.value).map(([name, value]) => ({
-      name,
-      value
-    }));
+    const formData = this.value;
     return { columns, formData };
   },
   methods: {
     createPair() {
-      return { name: "", value: "" };
-    },
-    renderFormData(v) {
-      const obj = {};
-      for (const { name, value } of v) {
-        obj[name] = value;
-      }
-      return obj;
+      return { key: "", value: "" };
     }
   }
 };

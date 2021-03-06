@@ -20,40 +20,51 @@ import BaseTable from "src/components/BaseTable.vue";
 import CreateZone from "src/components/DNS/Zone/Create.vue";
 import { mapGetters } from "vuex";
 import { date } from "quasar";
+import gql from "graphql-tag";
 
 export default {
   components: { BaseTable, CreateZone },
-  props: {
-    zones: Array,
-    records: Array
+  apollo: {
+    zones: {
+      query: gql`
+        {
+          dns {
+            zones {
+              id
+              name
+              serial
+              info {
+                id
+                soa {
+                  nameserver
+                  postmaster
+                  refresh
+                  retry
+                  expire
+                  ttl
+                }
+              }
+            }
+          }
+        }
+      `,
+      update: data => data.dns.zones
+    }
   },
   methods: {
     async createZone(z) {
-      const r = await this.$api.dns.createZone(z)
-      console.log(r)
+      const r = await this.$api.dns.createZone(z);
+      console.log(r);
       this.$refs.table.closePopup();
-    },
-    getRecordCount(id) {
-      const record = this.records.find(r => r.id == id);
-      return record ? record.rrsets.length : 0;
-    },
-    getSOA(id) {
-      const record = this.records.find(r => r.id == id);
-      if (!record) return null;
-      const rrset = record.rrsets.find(r => r.type == "SOA");
-      if (!rrset) return null;
-      const soa = rrset.records[0].content;
-      return soa;
-    },
-    getSOAItem(soa, item) {
-      return soaRegex.exec(soa).groups[item];
     },
     cloneZone(zone) {
       this.zoneForm = zone;
-    },
+    }
   },
   computed: {
-    ...mapGetters(["loading"]),
+    loading(){
+      return this.$apollo.queries.zones.loading
+    }
   },
   data() {
     const defaultSerial = date.formatDate(Date.now(), "YYYYMMDD01");
@@ -67,26 +78,57 @@ export default {
       ttl: 172800
     };
 
-    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-    const field = (name, opt = {}) => ({
-      name,
-      align: "left",
-      label: capitalize(name),
-      field: name,
-      sortable: true,
-      ...opt
-    });
     return {
       zoneForm,
       columns: [
-        field("name"),
-        field("nameserver"),
-        field("postmaster"),
-        field("serial"),
-        field("refresh"),
-        field("retry"),
-        field("expire"),
-        field("ttl", {label: "TTL"}),
+        {
+          name: "name",
+          align: "left",
+          label: "Name",
+          field: "name"
+        },
+        {
+          name: "nameserver",
+          align: "left",
+          label: "Nameserver",
+          field: r => r.info.soa.nameserver
+        },
+        {
+          name: "postmaster",
+          align: "left",
+          label: "Postmaster",
+          field: r => r.info.soa.postmaster
+        },
+        {
+          name: "serial",
+          align: "left",
+          label: "Serial",
+          field: "serial"
+        },
+        {
+          name: "refresh",
+          align: "left",
+          label: "Refresh",
+          field: r => r.info.soa.refresh
+        },
+        {
+          name: "retry",
+          align: "left",
+          label: "retry",
+          field: r => r.info.soa.retry
+        },
+        {
+          name: "expire",
+          align: "left",
+          label: "Expire",
+          field: r => r.info.soa.expire
+        },
+        {
+          name: "ttl",
+          align: "left",
+          label: "TTL",
+          field: r => r.info.soa.ttl
+        },
       ]
     };
   }

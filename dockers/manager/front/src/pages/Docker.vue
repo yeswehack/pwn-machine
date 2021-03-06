@@ -12,56 +12,25 @@
         round
         color="primary"
         size="sm"
-        @click="fetchData"
         class="q-mx-md refresh-btn"
-        :class="{ spin: loading }"
+        :class="{ spin: $apollo.loading }"
         icon="refresh"
       />
     </template>
     <template #tabs>
       <q-tab-panel name="overview" class="overview">
-        <Overview
-          v-on:refetch="refetch"
-          :containers="containers"
-          :networks="networks"
-          :volumes="volumes"
-          :images="images"
-        />
+        <Overview/>
       </q-tab-panel>
       <q-tab-panel name="images">
-        <ImagesTable
-          v-on:refetch="refetch"
-          :containers="containers"
-          :networks="networks"
-          :volumes="volumes"
-          :images="images"
-        />
+        <ImagesTable/>
       </q-tab-panel>
       <q-tab-panel name="containers">
-        <ContainersTable
-          v-on:refetch="refetch"
-          :containers="containers"
-          :networks="networks"
-          :volumes="volumes"
-          :images="images"
-        />
+        <ContainersTable/>
       </q-tab-panel>
       <q-tab-panel name="networks">
-        <NetworksTable
-          v-on:refetch="refetch"
-          :containers="containers"
-          :networks="networks"
-          :volumes="volumes"
-          :images="images"
-      /></q-tab-panel>
+        <NetworksTable/></q-tab-panel>
       <q-tab-panel name="volumes">
-        <VolumesTable
-          v-on:refetch="refetch"
-          :containers="containers"
-          :networks="networks"
-          :volumes="volumes"
-          :images="images"
-        />
+        <VolumesTable/>
       </q-tab-panel>
     </template>
   </TabPage>
@@ -91,21 +60,6 @@ export default {
       default: "overview"
     }
   },
-  created() {
-    this.fetchData();
-  },
-  computed: {
-    ...mapGetters("docker", ["images", "containers", "networks", "volumes"]),
-    ...mapGetters(["loading"])
-  },
-  methods: {
-    async fetchData() {
-      await this.$store.dispatch("docker/fetchAll");
-    },
-    refetch() {
-      window.setTimeout(() => this.fetchData(), 1000);
-    }
-  }
 };
 </script>
 

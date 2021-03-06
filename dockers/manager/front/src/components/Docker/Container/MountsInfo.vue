@@ -28,19 +28,19 @@ export default {
         name: "name",
         align: "left",
         label: "Name",
-        field: "Name"
+        field: "name"
       },
       {
         name: "destination",
         align: "left",
         label: "Mountpoint",
-        field: "Destination"
+        field: "destination"
       },
       {
         name: "source",
         align: "left",
         label: "Source",
-        field: "Source"
+        field: "source"
       },
       {
         name: "mode",

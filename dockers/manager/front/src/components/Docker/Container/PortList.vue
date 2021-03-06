@@ -1,12 +1,12 @@
 <template>
   <div class="q-gutter-xs">
     <q-badge
-      :title="exposed ? 'Forwarded' : ''"
-      :color="exposed ? 'negative' : 'primary'"
-      :key="port"
-      v-for="[port, exposed] of Object.entries(ports)"
+      :title="hostPort ? 'Forwarded' : ''"
+      :color="hostPort ? 'negative' : 'primary'"
+      :key="idx"
+      v-for="[idx, { hostPort, containerPort, protocol }] of ports.entries()"
     >
-      {{ port }}
+      {{ containerPort }}/{{protocol}}
     </q-badge>
     <q-badge title="host driver" color="positive" label="all" v-if="host" />
   </div>
@@ -15,16 +15,9 @@
 <script>
 export default {
   props: {
-    settings: Object
+    ports: Array,
+    host: { type: Boolean, default: false }
   },
-  computed: {
-    ports() {
-      return this.settings.Ports;
-    },
-    host() {
-      return "host" in this.settings.Networks;
-    }
-  }
 };
 </script>
 

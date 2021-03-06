@@ -2,7 +2,7 @@
   <BaseTable
     ref="table"
     name="volume"
-    rkey="Name"
+    rkey="name"
     :expendable="true"
     :loading="loading"
     :data="volumes"
@@ -10,7 +10,11 @@
   >
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row">
-        <ContainerLink :name="name" :key="name" v-for="[name] of usedBy(row)" />
+        <ContainerLink
+          :name="name"
+          :key="name"
+          v-for="{ name } of row.usedBy"
+        />
       </div>
     </template>
     <template #popup="{ info }">
@@ -27,15 +31,34 @@ import BaseTable from "src/components/BaseTable.vue";
 import VolumeDetails from "src/components/Docker/Volume/Details.vue";
 import CreateVolume from "src/components/Docker/Volume/Create.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import { mapGetters } from "vuex";
+
+import gql from "graphql-tag";
 export default {
   components: { BaseTable, VolumeDetails, CreateVolume, ContainerLink },
-  props: {
-    containers: Array,
-    images: Array,
-    volumes: Array
+  apollo: {
+    volumes: {
+      query: gql`
+        query getVolumes {
+          docker {
+            volumes {
+              name
+              mountpoint
+              usedBy {
+                id
+                name
+              }
+            }
+          }
+        }
+      `,
+      update: data => data.docker.volumes
+    }
   },
-  computed: mapGetters(["loading"]),
+  computed: {
+    loading() {
+      return this.$apollo.queries.getVolumes.loading;
+    }
+  },
   data() {
     return {
       columns: [
@@ -43,40 +66,27 @@ export default {
           name: "name",
           align: "left",
           label: "Name",
-          field: "Name",
+          field: "name",
           sortable: true
         },
         {
           name: "path",
           label: "Path",
           align: "left",
-          field: "Mountpoint",
+          field: "mountpoint",
           sortable: true
         },
         {
           name: "usedBy",
           label: "Used by",
           align: "left",
-          field: row => this.usedBy(row),
+          field: row => row.usedBy.map(c => c.name),
           sortable: true
         }
       ]
     };
   },
   methods: {
-    usedBy(row) {
-      return this.containers
-        .map(c => {
-          const mounts = [];
-          for (const mount of c.Mounts) {
-            if (mount.Name != row.Name) continue;
-            mounts.push([c.Name, mount.Destination]);
-          }
-          return mounts;
-        })
-        .filter(m => m.length)
-        .flat();
-    },
     volumeCreated() {
       this.$emit("refetch");
       this.$refs.table.closePopup();

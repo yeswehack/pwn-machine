@@ -45,7 +45,7 @@
       :slot="slot"
       slot-scope="props"
     >
-      <slot :name="slot" v-bind="{ ...props, disable, readonly }" />
+        <slot :name="slot" v-bind="{ ...props, disable, readonly }" />
     </template>
 
     <template #bottom v-if="!readonly">
@@ -73,13 +73,18 @@ export default {
       type: Function,
       default: () => () => ({})
     },
-    disable: Boolean,
-    readonly: Boolean,
+    disable: { type: Boolean, default: false },
+    readonly: { type: Boolean, default: false },
     pagination: {
       type: Object,
       default: () => ({
         rowsPerPage: 0
       })
+    }
+  },
+  created(){
+    if (this.value.length == 0){
+      this.addRow()
     }
   },
   computed: {

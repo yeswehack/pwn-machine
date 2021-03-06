@@ -2,28 +2,26 @@
   <BaseTable
     ref="table"
     name="network"
-    rkey="Name"
+    rkey="name"
     :loading="loading"
     :data="networks"
     :columns="columns"
     v-on:delete="deleteContainer"
   >
     <template #body-cell-driver="{row}">
-      <!-- <q-badge :color="getDriverColor(row.Driver)"> -->
-      {{ row.Driver }}
-      <!-- </q-badge> -->
+      <q-badge :color="getDriverColor(row.driver)" :label="row.driver"/>
     </template>
 
     <template #body-cell-internal="{row}">
-      <q-badge color="negative" label="internal" v-if="row.Internal" />
+      <q-badge color="negative" label="internal" v-if="row.internal" />
     </template>
 
     <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row">
         <ContainerLink
-          :name="container.Name"
+          :name="name"
           :key="name"
-          v-for="[name, container] of Object.entries(row.Containers)"
+          v-for="{ name } of row.usedBy"
         />
       </div>
     </template>
@@ -33,7 +31,7 @@
     </template>
 
     <template #details="{ row }">
-      <NetworkDetails :network="row" />
+      <NetworkDetails :name="row.name" />
     </template>
   </BaseTable>
 </template>
@@ -44,14 +42,38 @@ import CreateNetwork from "src/components/Docker/Network/Create.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import { mapGetters } from "vuex";
+
+import gql from "graphql-tag";
+
 export default {
   components: { BaseTable, CreateNetwork, NetworkDetails, ContainerLink },
-  props: {
-    containers: Array,
-    networks: Array,
-    volumes: Array
+  apollo: {
+    networks: {
+      query: gql`
+        query {
+          docker {
+            networks {
+              name
+              driver
+              internal
+              gateway
+              subnet
+              usedBy {
+                id
+                name
+              }
+            }
+          }
+        }
+      `,
+      update: data => data.docker.networks
+    }
   },
-  computed: mapGetters(["loading"]),
+  computed: {
+    loading(){
+      return this.$apollo.queries.networks.loading
+    }
+  },
   data() {
     return {
       columns: [
@@ -59,33 +81,30 @@ export default {
           name: "name",
           align: "left",
           label: "Name",
-          field: "Name",
+          field: "name",
           sortable: true
         },
         {
           name: "driver",
           label: "Driver",
           align: "left",
-          field: "Driver",
+          field: "driver",
           sortable: true
         },
         {
           name: "internal",
-          label: "Internal",
+          label: "internal",
           align: "left",
-          field: row => {
-            return row.Internal ? "internal" : "external";
-          },
+          field: "internal",
+          format: row => (row.Internal ? "internal" : "external"),
           sortable: true
         },
         {
-          name: "fateway",
+          name: "gateway",
           label: "Gateway",
           align: "left",
           style: "font-family: monospace",
-          field: row => {
-            return this.getGateway(row);
-          },
+          field: "gateway",
           sortable: true
         },
         {
@@ -93,34 +112,20 @@ export default {
           label: "Subnet",
           align: "left",
           style: "font-family: monospace",
-          field: row => {
-            return this.getSubnet(row);
-          },
+          field: "subnet",
           sortable: true
         },
         {
           name: "containers",
           label: "Connected containers",
           align: "left",
-          field: row => Object.values(row.Containers).map(r => r.Name),
+          field: row => row.usedBy.map(c => c.name),
           sortable: true
         }
       ]
     };
   },
   methods: {
-    getGateway(network) {
-      if (network.Driver != "bridge") {
-        return "n/a";
-      }
-      return network.IPAM.Config.find(conf => "Gateway" in conf).Gateway;
-    },
-    getSubnet(network) {
-      if (network.Driver != "bridge") {
-        return "n/a";
-      }
-      return network.IPAM.Config.find(conf => "Subnet" in conf).Subnet;
-    },
     getDriverColor(driver) {
       switch (driver) {
         case "host":
