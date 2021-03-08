@@ -6,6 +6,7 @@
     :columns="columns"
     :createDefault="createPair"
     v-model="formData"
+    v-bind="$attrs"
   />
 </template>
 
@@ -17,7 +18,7 @@ export default {
   components: { EditTable },
   props: {
     disable: { type: Boolean, default: false },
-    title: String,
+    title: {type: String, default: ""},
     labels: { type: Array, default: () => ["Name", "Value"] },
     readonly: { type: Boolean, default: false }
   },

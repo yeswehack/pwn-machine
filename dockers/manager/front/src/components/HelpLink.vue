@@ -1,6 +1,6 @@
 <template>
-  <a class="text-white" :href="href" target="_blank">
-    <q-icon size="sm" name="help" />
+  <a class="text-white" :href="href" target="_blank" title="Help">
+    <q-icon size="sm" name="eva-question-mark-circle" />
   </a>
 </template>
 

@@ -57,7 +57,9 @@ import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
 
-import gql from "graphql-tag";
+import graphql from "src/gql/docker"
+
+const {queries: {getDockerContainers}} = graphql;
 
 export default {
   components: {
@@ -70,40 +72,9 @@ export default {
     VolumeLink,
     NetworkLink
   },
-  props: {
-    //containers: Array
-  },
   apollo: {
     containers: {
-      query: gql`
-        query {
-          docker {
-            containers {
-              id
-              name
-              image {
-                repository
-                id
-              }
-              mounts {
-                name
-                source
-                destination
-                rw
-              }
-              connectedNetworks {
-                name
-              }
-              exposedPorts {
-                containerPort
-                hostPort
-                protocol
-              }
-              status
-            }
-          }
-        }
-      `,
+      query: getDockerContainers,
       update: data => data.docker.containers
     }
   },
@@ -158,18 +129,6 @@ export default {
     return { containerForm, columns };
   },
   methods: {
-    getVolumeList(c) {
-      if (!c || !c.Mounts) {
-        return [];
-      }
-      return c.Mounts.filter(m => m.Type == "volume").map(m => m.Name);
-    },
-    getNetworkList(c) {
-      if (!c || !c.NetworkSettings || !c.NetworkSettings.Networks) {
-        return [];
-      }
-      return Array.from(Object.keys(c.NetworkSettings.Networks));
-    },
     createContainer(f) {
       const postData = {};
       const restartPolicy = {};

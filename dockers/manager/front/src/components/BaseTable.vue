@@ -73,14 +73,11 @@
             <slot name="details" v-bind:row="props.row"></slot>
           </q-td>
         </q-tr>
-        
       </template>
     </q-table>
-
     <q-dialog v-model="popupVisible">
       <slot name="popup" v-bind:info="popupInfo"></slot>
     </q-dialog>
-
   </div>
 </template>
 

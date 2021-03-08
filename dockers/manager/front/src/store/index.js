@@ -68,7 +68,7 @@ export default function (/* { ssrContext } */) {
       tokenExpire,
     },
     getters: {
-      loading(state) { return state.loading != 0 },
+      loading(state) { return state.loading != 0  },
       tokenExpired(state) { return state.tokenExpire && state.tokenExpire < Date.now() / 1000 },
       token(state) { return state.token },
       validToken(_, getters) { return Boolean(getters.token && !getters.tokenExpired) }
@@ -76,6 +76,7 @@ export default function (/* { ssrContext } */) {
     mutations: {
       startLoading(state) { state.loading += 1 },
       stopLoading(state) { state.loading -= 1 },
+      modLoading(state, mod) { state.loading += mod },
       setToken(state, { token, expire }) {
         localStorage.setItem("token", token)
         localStorage.setItem("tokenExpire", expire)
@@ -93,6 +94,7 @@ export default function (/* { ssrContext } */) {
 
       startLoading({ commit }) { commit("startLoading") },
       stopLoading({ commit }) { commit("stopLoading") },
+      modLoading({commit}, mod) { commit("modLoading", mod) },
       async authenticate({ commit }, { password, otp, expire }) {
         const data = await api.auth.authenticate(password, otp, expire)
         if (!data) {

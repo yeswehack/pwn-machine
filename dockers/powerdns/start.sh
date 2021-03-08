@@ -13,4 +13,4 @@ echo 'SELECT 1 FROM domains;' | mysql -u "${DB_USER}" -p"${DB_PASSWORD}" -h "${D
 )
 
 # start server
-/usr/sbin/pdns_server --loglevel=9 --daemon=no
+/usr/sbin/pdns_server --loglevel=9 --daemon=no 2>&1 1>/dev/null | poetry run python -u main.py

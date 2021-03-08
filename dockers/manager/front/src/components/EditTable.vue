@@ -1,7 +1,6 @@
 <template>
   <q-table
     dense
-    :title="title"
     ref="table"
     class="edit-table"
     :pagination="pagination"
@@ -9,6 +8,7 @@
     :columns="columnsWithDelete"
     :data="formData"
     hide-pagination
+    v-bind="$attrs"
   >
     <template #body-cell="props">
       <q-td :props="props">
@@ -30,14 +30,14 @@
       </q-td>
     </template>
     <template #body-cell-delete="props">
-      <q-td
-        key="delete"
-        :props="props"
-        auto-width
-        class="cursor-pointer"
-        @click="deleteRow(props.row)"
-      >
-        &times;
+      <q-td key="delete" :props="props" auto-width class="cursor-pointer">
+        <q-btn
+          icon="eva-close"
+          round
+          size="xs"
+          @click="deleteRow(props.row)"
+          color="negative"
+        />
       </q-td>
     </template>
     <template
@@ -45,34 +45,44 @@
       :slot="slot"
       slot-scope="props"
     >
-        <slot :name="slot" v-bind="{ ...props, disable, readonly }" />
+      <slot :name="slot" v-bind="{ ...props, disable, readonly }" />
     </template>
 
+    <template #bottom-row v-if="!readonly">
+      <q-tr @click="addRow" class="cursor-pointer text-center">
+        <q-td colspan="100%">
+          <div class="q-py-sm">
+            <q-btn flat size="xs" class="bg-positive" rounded icon="eva-plus" />
+          </div>
+        </q-td>
+      </q-tr>
+    </template>
     <template #bottom v-if="!readonly">
-      <div class="cursor-pointer text-center col col-grow" @click="addRow">
-        +
-      </div>
+      <ResetAndSave :modified="modified" @save="submit" @reset="reset" />
     </template>
     <template #no-data v-if="!readonly">
-      <div class="cursor-pointer text-center col col-grow" @click="addRow">
-        +
-      </div>
+      <ResetAndSave :modified="modified" @save="submit" @reset="reset" />
     </template>
   </q-table>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
+import ResetAndSave from "src/components/ResetAndSave.vue"
 export default {
+  components: {ResetAndSave},
   mixins: [DeepForm],
+  data() {
+    return {};
+  },
   props: {
-    title: String,
     columns: Array,
     value: Array,
     createDefault: {
       type: Function,
       default: () => () => ({})
     },
+    noButtons: {type:Boolean, default  : false},
     disable: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
     pagination: {
@@ -80,11 +90,6 @@ export default {
       default: () => ({
         rowsPerPage: 0
       })
-    }
-  },
-  created(){
-    if (this.value.length == 0){
-      this.addRow()
     }
   },
   computed: {
@@ -97,17 +102,25 @@ export default {
           {
             name: "delete",
             label: "Remove",
-            align: "center",
-            format: () => "×"
+            align: "center"
           }
         ];
       }
+    },
+    saveColor() {
+      return this.modified ? "positive" : "grey";
+    },
+    resetColor() {
+      return this.modified ? "primary" : "grey";
     }
   },
   methods: {
+    submit() {
+      this.$emit("submit");
+    },
     addRow() {
       if (this.disable) return;
-      this.formData.push(this.createDefault());
+      this.formData = this.formData.concat([this.createDefault()]);
     },
     deleteRow(row) {
       if (this.disable) return;
@@ -117,17 +130,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.edit-table .q-table__bottom {
-  padding: 0;
-  justify-items: stretch;
-}
-.edit-table:not(.disabled) .q-table__bottom div {
-  line-height: 32px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  &:hover {
-    background-color: $grey-8;
-  }
-}
-</style>
+<style lang="scss"></style>

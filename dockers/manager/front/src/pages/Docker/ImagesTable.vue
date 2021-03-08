@@ -60,7 +60,7 @@ export default {
           label: "Image ID",
           align: "left",
           field: "shortId",
-          style: "font-family: monospace",
+          classes: "text-mono",
           sortable: true
         },
         {

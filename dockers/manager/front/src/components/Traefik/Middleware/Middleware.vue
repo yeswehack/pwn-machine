@@ -4,15 +4,11 @@
       <div class="row items-center q-col-gutter-md">
         <div class="text-h6">{{ uncamel(name) }}</div>
         <q-space />
-        <a
-          class="text-white"
+        <HelpLink
           :href="
             `https://doc.traefik.io/traefik/middlewares/${name.toLowerCase()}/`
           "
-          target="_blank"
-        >
-          <q-icon size="sm" name="help" />
-        </a>
+        />
       </div>
     </div>
     <div class="col-12">
@@ -30,9 +26,10 @@
 
 <script>
 import mdinfo from "src/components/Traefik/Middleware/definitions.json";
+import HelpLink from "src/components/HelpLink.vue";
 import Type from "./Type.vue";
 export default {
-  components: { Type },
+  components: { Type, HelpLink },
   name: "Middleware",
   props: {
     name: {

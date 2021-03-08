@@ -2,134 +2,88 @@
   <BaseTable
     ref="table"
     name="zone"
-    rkey="id"
-    :expendable="true"
-    :loading="loading"
+    :loading="$apollo.loading"
     :data="zones"
     :columns="columns"
-    v-on:cloneRow="cloneZone"
+    @deleteRow="deleteZone"
   >
-    <template #popup>
-      <CreateZone v-model="zoneForm" v-on:submit="createZone" />
+    <template v-slot:details="{ row }">
+      <ZoneDetails :zone="row" />
+    </template>
+    <template v-slot:popup="{ row, closePopup }">
+      <CreateZone :value="row" @close="closePopup" />
     </template>
   </BaseTable>
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable.vue";
+import BaseTable from "src/components/BaseTable2.vue";
 import CreateZone from "src/components/DNS/Zone/Create.vue";
-import { mapGetters } from "vuex";
-import { date } from "quasar";
-import gql from "graphql-tag";
+import ZoneDetails from "src/components/DNS/Zone/Details.vue";
+
+import graphql from "src/gql/dns";
+const {
+  mutations: { deleteDnsZone },
+  queries: { getDnsZones }
+} = graphql;
 
 export default {
-  components: { BaseTable, CreateZone },
+  components: { BaseTable, CreateZone, ZoneDetails },
   apollo: {
     zones: {
-      query: gql`
-        {
-          dns {
-            zones {
-              id
-              name
-              serial
-              info {
-                id
-                soa {
-                  nameserver
-                  postmaster
-                  refresh
-                  retry
-                  expire
-                  ttl
-                }
-              }
-            }
-          }
-        }
-      `,
+      query: getDnsZones,
       update: data => data.dns.zones
     }
   },
-  methods: {
-    async createZone(z) {
-      const r = await this.$api.dns.createZone(z);
-      console.log(r);
-      this.$refs.table.closePopup();
-    },
-    cloneZone(zone) {
-      this.zoneForm = zone;
-    }
+  created() {
+    this.$root.$on("refresh", () => this.$apollo.queries.zones.refetch());
   },
-  computed: {
-    loading(){
-      return this.$apollo.queries.zones.loading
+  methods: {
+    deleteZone(zone) {
+      const variables = {
+        zone: zone.name
+      };
+      this.runMutation(
+        deleteDnsZone,
+        variables,
+        `Zone ${zone.name} deleted.`,
+        store => {
+          const data = store.readQuery({ query: getDnsZones });
+          data.dns.zones = data.dns.zones.filter(z => z.id != zone["id"]);
+          store.writeQuery({ query: getDnsZones, data });
+        }
+      );
+    },
+    refresh() {
+      this.$apollo.queries.zones.refetch();
     }
   },
   data() {
-    const defaultSerial = date.formatDate(Date.now(), "YYYYMMDD01");
-    const zoneForm = {
-      name: "",
-      postmaster: "",
-      serial: defaultSerial,
-      refresh: 86400,
-      retry: 7200,
-      expire: 3600000,
-      ttl: 172800
-    };
+
+    const field = (name, opt = {}) => ({
+      name: name,
+      align: "left",
+      label: name,
+      field: name,
+      sortable: true,
+      ...opt
+    });
+
+    const soaField = (name, opt = {}) =>
+      field(name, { field: r => r.soa[name], ...opt });
+    const columns = [
+      field("name"),
+      soaField("nameserver"),
+      soaField("postmaster"),
+      field("serial"),
+      soaField("refresh"),
+      soaField("retry"),
+      soaField("expire"),
+      soaField("ttl", { label: "TTL" })
+    ];
 
     return {
-      zoneForm,
-      columns: [
-        {
-          name: "name",
-          align: "left",
-          label: "Name",
-          field: "name"
-        },
-        {
-          name: "nameserver",
-          align: "left",
-          label: "Nameserver",
-          field: r => r.info.soa.nameserver
-        },
-        {
-          name: "postmaster",
-          align: "left",
-          label: "Postmaster",
-          field: r => r.info.soa.postmaster
-        },
-        {
-          name: "serial",
-          align: "left",
-          label: "Serial",
-          field: "serial"
-        },
-        {
-          name: "refresh",
-          align: "left",
-          label: "Refresh",
-          field: r => r.info.soa.refresh
-        },
-        {
-          name: "retry",
-          align: "left",
-          label: "retry",
-          field: r => r.info.soa.retry
-        },
-        {
-          name: "expire",
-          align: "left",
-          label: "Expire",
-          field: r => r.info.soa.expire
-        },
-        {
-          name: "ttl",
-          align: "left",
-          label: "TTL",
-          field: r => r.info.soa.ttl
-        },
-      ]
+      columns
     };
   }
 };

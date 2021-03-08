@@ -6,7 +6,7 @@
       rounded
       inline-label
       shadow
-      class="text-white bg-dark rounded-borders tabs"
+      class="text-white bg-dark rounded-borders tabs q-pr-sm"
       active-color="primary"
       indicator-color="primary"
       align="left"
@@ -14,6 +14,18 @@
       narrow-indicator
     >
       <slot name="top"></slot>
+      <q-space/>
+      <q-btn
+        dense
+        round
+        color="primary"
+        size="sm"
+        :disable="$store.getters.loading"
+        class="refresh-btn"
+        :loading="$store.getters.loading"
+        icon="eva-refresh"
+        @click="refresh"
+      />
     </q-tabs>
 
     <q-tab-panels v-model="tab_" animated class="panels">
@@ -26,7 +38,7 @@
 export default {
   props: {
     tab: String,
-    pathTemplate: String,
+    pathTemplate: String
   },
 
   data() {
@@ -37,34 +49,20 @@ export default {
       if (newVal !== null)
         this.$router.push(this.pathTemplate.replace(/\{\}/, newVal));
     },
+    refresh(){
+      this.$root.$emit("refresh")
+    }
   },
   watch: {
     $route(to, from) {
       if (to.params.tab != this.tab_) {
         this.tab_ = to.params.tab;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
-/*
-.q-page {
-  display: flex;
-  justify-content: stretch;
-  flex-direction: row;
-  flex-grow: 1;
-  height: 100%;
-}
-
-
-.q-table {
-  max-width: 100%;
-}
-.text-mono {
-  font-family: monospace;
-}
-*/
 .page .tabs {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -77,17 +75,4 @@ export default {
     0 3px 1px -2px rgba(0, 0, 0, 0.12);
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-.refresh-btn {
-  &.spin {
-    animation: spin 1.5s linear 0s infinite;
-  }
-}
 </style>

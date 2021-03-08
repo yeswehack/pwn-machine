@@ -1,17 +1,20 @@
 <template>
   <div class="column q-py-sm">
-    <div class="row q-col-gutter-md items-stretch justify-evenly" v-if="!loading">
-      <div class="col col-grow" v-if="network.driver == 'bridge'">
+    <div
+      class="row q-col-gutter-md items-stretch justify-start"
+      v-if="network"
+    >
+      <div class="col col-6 q-gutter-md" >
         <KeyValueTable title="IPAM Config" readonly :value="IPAMConfig" />
-      </div>
-      <div class="col col-grow">
-        <ConnectedList :connected="network.connectedContainers"  />
-      </div>
-      <div class="col col-grow">
         <KeyValueTable title="Labels" readonly :value="network.labels" />
       </div>
+      <div class="col col-6">
+        <ConnectedList :network="network"  @needRefresh="refresh"/>
+      </div>
+      <div class="col col-6">
+      </div>
     </div>
-    <q-inner-loading :showing="loading">
+    <q-inner-loading :showing="!network">
       <div class="row q-col-gutter-md items-stretch justify-evenly">
         <q-spinner-gears size="50px" color="primary" />
       </div>
@@ -22,7 +25,10 @@
 <script>
 import KeyValueTable from "src/components/KeyValueTable.vue";
 import ConnectedList from "src/components/Docker/Network/ConnectedList.vue";
-import gql from "graphql-tag";
+import graphql from "src/gql/docker";
+const {
+  queries: { getDockerNetwork }
+} = graphql;
 
 export default {
   components: { KeyValueTable, ConnectedList },
@@ -31,36 +37,21 @@ export default {
   },
   apollo: {
     network: {
-      query: gql`
-        query getNetwork($name: String!) {
-          docker {
-            network(name: $name) {
-              name
-              driver
-              gateway
-              subnet
-              connectedContainers {
-                name
-                ipv4
-                ipv6
-              }
-              labels {
-                key
-                value
-              }
-            }
-          }
-        }
-      `,
+      query: getDockerNetwork,
       variables() {
         return { name: this.name };
       },
       update: data => data.docker.network
     }
   },
+  methods: {
+    refresh(){
+      this.$apollo.queries.network.refetch()
+    }
+  },
   computed: {
-    loading(){
-      return this.$apollo.queries.network.loading
+    loading() {
+      return this.$apollo.queries.network.loading;
     },
     IPAMConfig() {
       return [

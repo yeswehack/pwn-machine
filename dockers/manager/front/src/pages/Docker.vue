@@ -1,21 +1,11 @@
 <template>
   <TabPage :tab="tab" pathTemplate="/docker/{}">
     <template #top>
-      <q-tab name="overview" label="Overview" />
-      <q-tab name="images" label="Images" />
-      <q-tab name="containers" label="Containers" />
-      <q-tab name="networks" label="Networks" />
-      <q-tab name="volumes" label="Volumes" />
-      <q-space />
-      <q-btn
-        dense
-        round
-        color="primary"
-        size="sm"
-        class="q-mx-md refresh-btn"
-        :class="{ spin: $apollo.loading }"
-        icon="refresh"
-      />
+      <q-tab name="overview" label="Overview" icon="eva-globe-2" />
+      <q-tab name="images" label="Images" icon="eva-bookmark"/>
+      <q-tab name="containers" label="Containers" icon="eva-grid-outline" />
+      <q-tab name="networks" label="Networks" icon="eva-globe"/>
+      <q-tab name="volumes" label="Volumes" icon="eva-hard-drive"/>
     </template>
     <template #tabs>
       <q-tab-panel name="overview" class="overview">

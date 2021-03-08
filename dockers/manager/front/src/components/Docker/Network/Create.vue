@@ -5,65 +5,63 @@
         <div class="row items-center q-gutter-md">
           <div class="text-h6">Create a new bridge network</div>
           <q-space />
-          <a
-            class="text-white"
+          <HelpLink
             href="https://docs.docker.com/engine/reference/commandline/network_create/"
-            target="_blank"
-          >
-            <q-icon size="sm" name="help" />
-          </a>
-          <q-btn icon="close" flat round dense v-close-popup />
+          />
+          <q-btn icon="eva-close" flat round dense v-close-popup />
         </div>
       </q-card-section>
       <q-separator />
       <q-card-section class="q-col-gutter-md">
-        <q-input v-model="form.name" filled required label="Name" />
-        <q-checkbox label="Internal" v-model="form.internal" />
-        <div>
-          <q-expansion-item
-            expand-separator
-            icon="settings"
-            label="IPAM Settings"
-            :caption="ipamCaption"
-          >
-            <div class="q-py-md q-gutter-sm">
-              <q-input
-                filled
-                dense
-                clearable
-                hint="172.28.0.0/16"
-                v-model="form.subnet"
-                label="Subnet"
-              />
-              <q-input
-                filled
-                dense
-                clearable
-                hint="172.28.5.0/24"
-                v-model="form.range"
-                label="IP range"
-              />
-              <q-input
-                filled
-                dense
-                clearable
-                hint="172.28.5.254"
-                v-model="form.gateway"
-                label="gateway"
-              />
-            </div>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            :caption="`${Object.keys(form.labels).length} label(s)`"
-            icon="label"
-            label="Labels"
-          >
-            <div class="q-py-md">
-              <KeyValueTable v-model="form.labels" />
-            </div>
-          </q-expansion-item>
-        </div>
+        <q-input v-model="formData.name" filled required label="Name" />
+        <q-checkbox label="Internal" v-model="formData.internal" />
+      </q-card-section>
+      <q-card-section class="q-gutter-sm">
+        <q-expansion-item
+          expand-separator
+          header-style="background :#2d2d2d !important"
+          icon="eva-share-outline"
+          label="IPAM Settings"
+          :caption="ipamCaption"
+        >
+          <q-list :padding="true">
+            <q-item>
+              <q-item-section>
+                <q-input
+                  filled
+                  clearable
+                  v-model="formData.subnet"
+                  label="Subnet"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>
+                <q-input
+                  filled
+                  clearable
+                  v-model="formData.gateway"
+                  label="gateway"
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+        <q-expansion-item
+          header-style="background :#2d2d2d !important"
+          expand-separator
+          :caption="`${formData.labels.length} label(s)`"
+          icon="label"
+          label="Labels"
+        >
+          <div class="q-py-md">
+            <KeyValueTable
+              v-model="formData.labels"
+              hide-bottom
+              class="bg-grey-10"
+            />
+          </div>
+        </q-expansion-item>
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
@@ -77,71 +75,60 @@
 
 <script>
 import KeyValueTable from "src/components/KeyValueTable.vue";
+import HelpLink from "src/components/HelpLink.vue";
+import DeepForm from "src/mixins/DeepForm.js";
+
+import graphql from "src/gql/docker";
+
+const {
+  mutations: { createDockerNetwork },
+  queries: { getDockerNetworks }
+} = graphql;
 
 export default {
-  components: { KeyValueTable },
-  props: {
-    info: {
-      type: Object,
-      default: null
-    }
-  },
-  data() {
-    const form = {
-      name: "",
-      internal: false,
-      subnet: null,
-      range: null,
-      gateway: null,
-      labels: {}
-    };
-    if (this.info) {
-      form.name = this.info.Name;
-      Object.assign(form.labels, this.info.Labels);
-    }
-    return { form };
-  },
+  mixins: [DeepForm],
+  components: { KeyValueTable, HelpLink },
   computed: {
     ipamCaption() {
-      return this.form.subnet || this.form.range || this.form.gateway
+      return this.formData.subnet || this.formData.gateway
         ? "custom"
         : "automatic";
     }
   },
   methods: {
-    async submit() {
-      const network = {
-        Name: this.form.name,
-        Internal: this.form.internal,
-        Labels: this.form.labels,
-        IPAM: null
+    createDefaultForm() {
+      return {
+        name: "",
+        internal: false,
+        subnet: null,
+        range: null,
+        gateway: null,
+        labels: []
       };
-      if (this.editIPAM) {
-        network.IPAM = {};
-        if (this.form.subnet) {
-          network.IPAM.Subnet = this.form.subnet;
-        }
-        if (this.form.range) {
-          network.IPAM.IPRange = this.form.range;
-        }
-        if (this.form.gateway) {
-          network.IPAM.Gateway = this.form.gateway;
-        }
-      }
-      const response = await this.$api.docker.createNetwork(network);
+    },
+    async submit() {
+      const f = this.formData;
+      const variables = {
+        name: f.name,
+        internal: f.internal,
+        gateway: f.gateway,
+        subnet: f.subnet,
+        labels: f.labels
+      };
 
-      if ("error" in response) {
-        this.$q.notify({
-          color: "negative",
-          message: response.error
-        });
-      } else {
-        this.$q.notify({
-          color: "positive",
-          message: `Network ${this.form.name} created.`
-        });
-        this.$emit("created", response.name);
-      }
+      this.runMutation(
+        createDockerNetwork,
+        variables,
+        `Network ${f.name} created.`,
+        (store, { network }) => {
+          const data = store.readQuery({ query: getDockerNetworks });
+          data.docker.networks = data.docker.networks
+            .filter(n => n.id != network.id)
+            .concat([network]);
+          store.writeQuery({ query: getDockerNetworks, data });
+          this.$emit("close");
+        }
+      );
     }
   }
 };
