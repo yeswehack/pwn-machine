@@ -32,3 +32,14 @@ mutation detachContainerFromDockerNetwork($network: String!, $container: String!
 }
 ${networkFragment}
 ` 
+
+export const attachContainerToDockerNetwork = gql`
+mutation attachContainerToDockerNetwork($network: String!, $container: String!){
+    attachContainerToDockerNetwork(network: $network, container:$container){
+        network {
+            ...networkFragment
+        }
+    }
+}
+${networkFragment}
+` 

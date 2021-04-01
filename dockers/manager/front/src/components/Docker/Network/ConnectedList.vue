@@ -9,16 +9,6 @@
     row-key="name"
     no-data-label="No container connected"
   >
-    <template #bottom>
-      <div
-        class="col col-12 row justify-center cursor-pointer"
-        @click="attachContainer"
-      >
-        <div class="q-py-sm col col-auto">
-          <q-btn flat size="xs" class="bg-positive" rounded icon="eva-plus" />
-        </div>
-      </div>
-    </template>
     <template #body-cell-name="props">
       <q-td> <ContainerLink :name="props.value" /> </q-td>
     </template>
@@ -34,6 +24,50 @@
         />
       </q-td>
     </template>
+    <template #bottom>
+      <div class="col">
+        <q-select
+          dense
+          v-model="containerToConnect"
+          :options="containersNotAlreadyConnected"
+          label="Connect a container"
+        >
+          <template #after>
+            
+            <q-btn
+              icon="eva-plus"
+              round
+              :disable="!containerToConnect"
+              color="positive"
+              size="sm"
+              @click="attachContainer"
+            />
+          </template>
+        </q-select>
+      </div>
+    </template>
+    <template #no-data>
+      <div class="col">
+        <q-select
+          dense
+          v-model="containerToConnect"
+          :options="containersNotAlreadyConnected"
+          label="Connect a container"
+        >
+          <template #after>
+            
+            <q-btn
+              icon="eva-plus"
+              round
+              :disable="!containerToConnect"
+              color="positive"
+              size="sm"
+              @click="attachContainer"
+            />
+          </template>
+        </q-select>
+      </div>
+    </template>
   </q-table>
 </template>
 
@@ -42,22 +76,49 @@ import ContainerLink from "src/components/Docker/Container/Link.vue";
 import graphql from "src/gql/docker";
 
 const {
-  mutations: { detachContainerFromDockerNetwork },
-  queries: { getDockerNetworks }
+  mutations: {
+    detachContainerFromDockerNetwork,
+    attachContainerToDockerNetwork
+  },
+  queries: { getDockerContainers }
 } = graphql;
 
 export default {
   components: { ContainerLink },
+  apollo: {
+    containers: {
+      query: getDockerContainers,
+      update: data => data.docker.containers
+    }
+  },
   props: {
     network: Object
   },
   computed: {
     connected() {
       return this.network.connectedContainers;
+    },
+    containersNotAlreadyConnected() {
+      return (this.containers || []).map(c => ({
+        label: c.name,
+        value: c.id,
+        disable: !!this.connected.find(x => x.name == c.name)
+      }));
     }
   },
   methods: {
-    attachContainer() {},
+    attachContainer() {
+      this.runMutation(
+        attachContainerToDockerNetwork,
+        {
+          network: this.network.name,
+          container: this.containerToConnect.label
+        },
+        `Container ${this.containerToConnect.label} attached to ${this.network.name}.`,
+        () => this.$emit("needRefresh")
+      );
+    },
+
     detachContainer(n) {
       this.runMutation(
         detachContainerFromDockerNetwork,
@@ -98,7 +159,7 @@ export default {
         sortable: true
       }
     ];
-    return { pagination, columns };
+    return { pagination, columns, containerToConnect: null };
   }
 };
 </script>

@@ -18,9 +18,7 @@
       </q-card>
     </div>
     <div class="col-6">
-      <div class="col col-12">
         <LogList :domain="`*${zone.name}`" type="*" />
-      </div>
     </div>
   </div>
 </template>
