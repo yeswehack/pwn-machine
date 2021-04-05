@@ -1,0 +1,37 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+add	dns.py	/^def add($/;"	f
+backup	volume.py	/^def backup(volume_names):$/;"	f
+build	container.py	/^def build(container_names):$/;"	f
+build	service.py	/^def build(service_names):$/;"	f
+cli	container.py	/^def cli():$/;"	f
+cli	dns.py	/^def cli():$/;"	f
+cli	service.py	/^def cli():$/;"	f
+cli	volume.py	/^def cli():$/;"	f
+default	container.py	/^    default="all",$/;"	v
+exec	container.py	/^def exec(container_names, command, privileged):$/;"	f
+get	dns.py	/^def get(path):$/;"	f
+help	container.py	/^    help='Number of lines to show from the end of the logs (default "all")',$/;"	v
+logs	container.py	/^def logs(container_names, f, tail):$/;"	f
+logs	service.py	/^def logs(service_names, f, tail):$/;"	f
+ls	container.py	/^def ls():$/;"	f
+ls	dns.py	/^def ls():$/;"	f
+ls	service.py	/^def ls():$/;"	f
+ls	volume.py	/^def ls():$/;"	f
+mount	volume.py	/^def mount(volume_name, mountpoint=None):$/;"	f
+nargs	container.py	/^    nargs=1,$/;"	v
+patch	dns.py	/^def patch(path, data):$/;"	f
+rebind	dns.py	/^def rebind(zone, name, ips):$/;"	f
+restart	container.py	/^def restart(container_names, t):$/;"	f
+restart	service.py	/^def restart(service_names, t):$/;"	f
+restore	volume.py	/^def restore():$/;"	f
+rm	dns.py	/^def rm(zone, name, type):$/;"	f
+send_request	dns.py	/^def send_request(method, path, data=None):$/;"	f
+start	container.py	/^def start(container_names):$/;"	f
+start	service.py	/^def start(service_names):$/;"	f
+stop	container.py	/^def stop(container_names, t):$/;"	f
+stop	service.py	/^def stop(service_names, t):$/;"	f

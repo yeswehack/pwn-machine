@@ -1,0 +1,82 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+DockerClient	PwnMachine.py	/^class DockerClient(docker.DockerClient):$/;"	c
+EmptyPwnMachine	PwnMachine.py	/^class EmptyPwnMachine:$/;"	c
+ParserError	Config.py	/^class ParserError(Exception):$/;"	c
+PwnMachine	PwnMachine.py	/^class PwnMachine:$/;"	c
+VERSION	Config.py	/^VERSION = 1.1$/;"	v
+__all__	__init__.py	/^__all__ = ["PwnMachine", "utils"]$/;"	v
+__init__	Config.py	/^    def __init__(self, msg, trail=None):$/;"	m	class:ParserError
+__init__	PwnMachine.py	/^    def __init__(self, api):$/;"	m	class:DockerClient
+__init__	PwnMachine.py	/^    def __init__(self, pm_path):$/;"	m	class:PwnMachine
+__str__	Config.py	/^    def __str__(self):$/;"	m	class:ParserError	file:
+_client	PwnMachine.py	/^    _client = None$/;"	v	class:PwnMachine
+_cmd	PwnMachine.py	/^    _cmd = None$/;"	v	class:PwnMachine
+_project	PwnMachine.py	/^    _project = None$/;"	v	class:PwnMachine
+_re_container_name	Config.py	/^_re_container_name = r"[a-zA-Z0-9][a-zA-Z0-9_.-]*"$/;"	v
+apply_traefik_rule	PwnMachine.py	/^    def apply_traefik_rule(self, service_name, service_config, rule_name):$/;"	m	class:PwnMachine
+apply_traefik_rules	PwnMachine.py	/^    def apply_traefik_rules(self):$/;"	m	class:PwnMachine
+as_list	Config.py	/^def as_list(obj):$/;"	f
+assert_type	Config.py	/^def assert_type(obj, valid_type):$/;"	f
+backup	PwnMachine.py	/^    def backup(self, volume_name):$/;"	m	class:PwnMachine
+build	PwnMachine.py	/^    def build(self, service_names):$/;"	m	class:PwnMachine
+check_call	utils.py	/^def check_call(*args, **kwargs):$/;"	f
+check_output	utils.py	/^def check_output(*args, **kwargs):$/;"	f
+client	PwnMachine.py	/^    def client(self):$/;"	m	class:PwnMachine
+cmd	PwnMachine.py	/^    def cmd(self):$/;"	m	class:PwnMachine
+container_names	PwnMachine.py	/^    def container_names(self):$/;"	m	class:PwnMachine
+do_mount	PwnMachine.py	/^        def do_mount(remote_path, local_path):$/;"	f	function:PwnMachine.mount
+env	PwnMachine.py	/^    def env(self):$/;"	m	class:PwnMachine
+exec	PwnMachine.py	/^    def exec(self, service_name, command, privileged=False):$/;"	m	class:PwnMachine
+extra_env	utils.py	/^def extra_env(*extra_env):$/;"	f
+find_exposed	Config.py	/^def find_exposed(compose):$/;"	f
+fixed_relative_context	utils.py	/^def fixed_relative_context():$/;"	f
+get_container_names_for_services	PwnMachine.py	/^    def get_container_names_for_services(self, service_names):$/;"	m	class:PwnMachine
+get_domains	Config.py	/^def get_domains(domain_list):$/;"	f
+get_exec	PwnMachine.py	/^    def get_exec(self, service_name, command):$/;"	m	class:PwnMachine
+get_info_from_compose	Config.py	/^def get_info_from_compose(compose_file):$/;"	f
+get_ip	Config.py	/^def get_ip(ip):$/;"	f
+get_machine_options	utils.py	/^def get_machine_options(machine_name):$/;"	f
+get_project	PwnMachine.py	/^    def get_project(self, compose_files):$/;"	m	class:PwnMachine
+get_regex	Config.py	/^def get_regex(regex, str):$/;"	f
+get_traefik_rules	traefik.py	/^def get_traefik_rules(service_name, http_config, ssl=False):$/;"	f
+get_trail	Config.py	/^    def get_trail(self):$/;"	m	class:ParserError
+get_typed_value	Config.py	/^def get_typed_value(config, key, expected_type, required=True):$/;"	f
+handler	utils.py	/^    def handler(*args, **kwargs):$/;"	f	function:monkey_patch
+hl	utils.py	/^def hl(color, s):$/;"	f
+inner	Config.py	/^        def inner(trail):$/;"	f	function:ParserError.get_trail
+keep_error_trail	Config.py	/^def keep_error_trail(name):$/;"	f
+logs	PwnMachine.py	/^    def logs(self, service_names, follow, tail):$/;"	m	class:PwnMachine
+machine_name	PwnMachine.py	/^    def machine_name(self):$/;"	m	class:PwnMachine
+monkey_patch	utils.py	/^def monkey_patch(module, method_name, replacement):$/;"	f
+mount	PwnMachine.py	/^    def mount(self, volume_name, mountpoint):$/;"	m	class:PwnMachine
+new_from_env_file	utils.py	/^    def new_from_env_file(original, *args, **kwargs):$/;"	f	function:extra_env
+new_process_config_file	utils.py	/^    def new_process_config_file(original, *args, **kwargs):$/;"	f	function:fixed_relative_context
+parse	Config.py	/^def parse(config_dir, config):$/;"	f
+parse_basic_auth	Config.py	/^def parse_basic_auth(domain):$/;"	f
+parse_compose_project	utils.py	/^def parse_compose_project(project_dir, machine_name, name, compose_files):$/;"	f
+parse_config	Config.py	/^def parse_config(config_dir, filename):$/;"	f
+parse_domain	Config.py	/^def parse_domain(domain_name, domain):$/;"	f
+parse_domains	Config.py	/^def parse_domains(domains):$/;"	f
+parse_ip_list	Config.py	/^def parse_ip_list(domain, type_name):$/;"	f
+parse_service	Config.py	/^def parse_service(config_dir, name, service):$/;"	f
+parse_web	Config.py	/^def parse_web(http, compose_file):$/;"	f
+print_stream	utils.py	/^def print_stream(stream):$/;"	f
+project	PwnMachine.py	/^    def project(self):$/;"	m	class:PwnMachine
+ps	PwnMachine.py	/^    def ps(self, services):$/;"	m	class:PwnMachine
+re_auth	Config.py	/^re_auth = re.compile(r"^(?P<login>[^:]+):(?P<hash>.+)$")$/;"	v
+re_container_name	Config.py	/^re_container_name = re.compile(f"^({_re_container_name})$")$/;"	v
+re_container_name_port	Config.py	/^re_container_name_port = re.compile($/;"	v
+restart	PwnMachine.py	/^    def restart(self, service_names, timeout=10):$/;"	m	class:PwnMachine
+service_names	PwnMachine.py	/^    def service_names(self):$/;"	m	class:PwnMachine
+slugify	utils.py	/^def slugify(name):$/;"	f
+ssh	PwnMachine.py	/^    def ssh(self, args, get_output=False):$/;"	m	class:PwnMachine
+start	PwnMachine.py	/^    def start(self, service_names):$/;"	m	class:PwnMachine
+stop	PwnMachine.py	/^    def stop(self, service_names, timeout=10):$/;"	m	class:PwnMachine
+volume_names	PwnMachine.py	/^    def volume_names(self):$/;"	m	class:PwnMachine
+volumes	PwnMachine.py	/^    def volumes(self):$/;"	m	class:PwnMachine
+yaml_load	Config.py	/^def yaml_load(filename):$/;"	f
