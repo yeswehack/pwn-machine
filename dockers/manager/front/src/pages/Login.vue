@@ -11,11 +11,12 @@
           <q-separator />
           <q-card-section>
             <q-input type="password" label="Password" v-model="password" required />
-            <q-input type="number" min="0" step="1" label="OTP" v-model.number="otp" required />
+            <q-input type="number" min="0" label="OTP" v-model.number="otp" required />
             <q-select
-              :options="expireOptions"
-              v-model="expire"
               label="Remember me"
+              :options="expireOptions"
+              emit-value map-options
+              v-model="expire"
             />
           </q-card-section>
           <q-card-actions vertical>

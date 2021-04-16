@@ -1,5 +1,5 @@
 import redis
-redis_client = redis.StrictRedis('redis')
+redis_client = redis.Redis('redis')
 
 
 import ariadne
