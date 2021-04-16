@@ -10,8 +10,8 @@ RUN yarn build
 FROM python:3.9
 WORKDIR /usr/src/app
 RUN pip install --upgrade pip poetry
-COPY api/pyproject.toml ./
+COPY back/pyproject.toml ./
 RUN poetry install
-COPY api/ ./
+COPY back/ ./
 COPY --from=build-front /app/dist/spa/ static/
-CMD poetry run gunicorn --bind 0.0.0.0:5000 main:app
+CMD poetry run uvicorn --port 5000 main:app

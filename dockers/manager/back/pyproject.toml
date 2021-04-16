@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pwnm-back"
+version = "0.1.0"
+description = "PwnMachine backend "
+authors = ["Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ariadne = "^0.13"
+aiofiles = "^0.6.0"
+redis = "^3.5.3"
+PyJWT = "^2"
+
+[tool.poetry.dev-dependencies]
+uvicorn = "^0.13.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
