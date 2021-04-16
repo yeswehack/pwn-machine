@@ -35,7 +35,7 @@ database.register(Image)
 database.register(Docker)
 VuexORM.use(VuexORMGraphQL, {
   database,
-  url: "http://127.0.0.1:4000/graphql",
+  url: "/api",
   debug: true,
   adapter: new CustomAdapter(),
 });
@@ -95,14 +95,6 @@ export default function (/* { ssrContext } */) {
       startLoading({ commit }) { commit("startLoading") },
       stopLoading({ commit }) { commit("stopLoading") },
       modLoading({commit}, mod) { commit("modLoading", mod) },
-      async authenticate({ commit }, { password, otp, expire }) {
-        const data = await api.auth.authenticate(password, otp, expire)
-        if (!data) {
-          return false
-        }
-        console.log(data)
-        commit("setToken", data)
-      },
     },
 
     plugins: [VuexORM.install(database)],

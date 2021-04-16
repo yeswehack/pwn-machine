@@ -10,8 +10,8 @@
           </q-card-section>
           <q-separator />
           <q-card-section>
-            <q-input type="password" label="Password" v-model="password" />
-            <q-input type="number" label="OTP" v-model="otp" />
+            <q-input type="password" label="Password" v-model="password" required />
+            <q-input type="number" min="0" step="1" label="OTP" v-model.number="otp" required />
             <q-select
               :options="expireOptions"
               v-model="expire"
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { login as loginMutation } from "src/gql/auth/mutations"
+
 export default {
   data() {
     const dayDuration = 60 * 60 * 24;
@@ -54,23 +56,29 @@ export default {
   },
   methods: {
     async submit() {
-      const info = {
-        password: this.password,
-        otp: this.otp,
-        expire: this.expire
-      };
-      const r = await this.$store.dispatch("authenticate", info);
-      if (r === false) {
-        this.$q.notify({
-          color: "negative",
-          message: "Invalid credentials",
-          position: "top",
-          timeout: 3000
+      try {
+        const {data: {login}} =
+          await this.$apollo.mutate({
+            mutation: loginMutation,
+            variables: {
+              password: this.password,
+              otp: this.otp,
+              expire: this.expire,
+            }
+          });
+        this.$store.commit("setToken", login);
+        this.$router.push({name: "index"});
+
+      } catch ({graphQLErrors}) {
+        graphQLErrors.forEach(({message}) => {
+          this.$q.notify({
+            color: "negative",
+            message,
+            position: "top",
+            timeout: 3000
+          });
         });
-      } else {
-        this.$router.push({name: "index"})
       }
-      
     }
   }
 };

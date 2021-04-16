@@ -300,13 +300,6 @@ class ShellApi extends BaseAPI {
   }
 }
 
-
-class Auth extends BaseAPI {
-  authenticate(password, otp, expire, grant = "*") {
-    return this.post("/authenticate", { password, otp, expire, grant })
-  }
-}
-
 class PMApi {
   constructor(fetcher) {
     this.fetcher = fetcher
@@ -314,7 +307,6 @@ class PMApi {
     this.traefik = new TraefikApi(fetcher);
     this.dns = new DNSApi(fetcher);
     this.shell = new ShellApi(fetcher);
-    this.auth = new Auth(fetcher);
   }
 
   bindStore(store) {

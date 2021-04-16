@@ -4,7 +4,7 @@ module.exports = {
         service: {
             name: 'my-app',
             // URL to the GraphQL API
-            url: 'http://localhost:4000/graphql',
+            url: '/api',
         },
         // Files processed by the extension
         includes: [
