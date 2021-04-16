@@ -21,12 +21,11 @@ schema = ariadne.make_executable_schema(type_defs,
     query, mutation, ariadne.snake_case_fallback_resolvers)
 
 
-from starlette.applications import Starlette
-from starlette.routing import Mount
+from starlette.routing import Router, Mount
 from starlette.staticfiles import StaticFiles
 from ariadne.asgi import GraphQL
 
-app = Starlette(routes=[
-    Mount('/', StaticFiles(directory='static', html=True)),
-    Mount('/api', GraphQL(schema)),
-])
+app = Router(
+    routes=[ Mount('/api', GraphQL(schema)) ],
+    default=StaticFiles(directory='static', html=True)
+)

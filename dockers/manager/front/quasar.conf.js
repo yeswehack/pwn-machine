@@ -77,7 +77,10 @@ module.exports = function (/* ctx */) {
       host: "0.0.0.0",
       https: false,
       port: 5001,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
+      proxy: {
+        '/api': 'http://localhost:5000/api'
+      }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework

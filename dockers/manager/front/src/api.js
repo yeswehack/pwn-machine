@@ -314,7 +314,7 @@ class PMApi {
   }
 }
 
-const fetcher = new Fetcher("http://127.0.0.1:5000/api", { mode: "cors" })
+const fetcher = new Fetcher("/api", { mode: "cors" })
 const api = new PMApi(fetcher);
 
 Vue.prototype.$api = api;

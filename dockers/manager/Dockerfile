@@ -14,4 +14,4 @@ COPY back/pyproject.toml ./
 RUN poetry install
 COPY back/ ./
 COPY --from=build-front /app/dist/spa/ static/
-CMD poetry run uvicorn --port 5000 main:app
+CMD poetry run uvicorn --host 0.0.0.0 --port 5000 main:app

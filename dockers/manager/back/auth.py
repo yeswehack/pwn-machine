@@ -26,12 +26,12 @@ def resolve_login(*_, password, otp, expire=None):
 
     import time
     now = int(time.time())
+    issuer = 'pwnmachine'
     payload = { 'iss': issuer, 'iat': now }
     if expire is not None:
         payload['exp'] = now + expire
     
     import jwt
-    issuer = 'pwnmachine'
     secret = os.urandom(32)
     token = jwt.encode(payload, secret)
     redis_client.set(f'admin.tokens.{token}', '*', expire)
