@@ -1,0 +1,201 @@
+ 
+
+type TraefikMiddlewareAddPrefix {
+  prefix: String
+}
+
+type TraefikMiddlewareBasicAuth {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+type TraefikMiddlewareBuffering {
+  maxRequestBodyBytes: Int
+  maxResponseBodyBytes: Int
+  memRequestBodyBytes: Int
+  memResponseBodyBytes: Int
+  retryExpression: String
+}
+
+type TraefikMiddlewareChain {
+  middlewares: [String]
+}
+
+type TraefikMiddlewareCircuitBreaker {
+  expression: String
+}
+
+type TraefikMiddlewareCompress {
+  excludedContentTypes: [String]
+}
+
+type TraefikMiddlewareContentType {
+  autoDetect: Boolean
+}
+
+type TraefikMiddlewareDigestAuth {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+type TraefikMiddlewareErrors {
+  query: String
+  service: String
+  status: [String]
+}
+
+type TraefikMiddlewareTls {
+  ca: String
+  caOptional: Boolean
+  cert: String
+  insecureSkipVerify: Boolean
+  key: String
+}
+
+type TraefikMiddlewareForwardAuth {
+  address: String
+  authRequestHeaders: [String]
+  authResponseHeaders: [String]
+  authResponseHeadersRegex: String
+  tls: TraefikMiddlewareTls
+  trustForwardHeader: Boolean
+}
+
+type TraefikMiddlewareHeaders {
+  accessControlAllowCredentials: Boolean
+  accessControlAllowHeaders: [String]
+  accessControlAllowMethods: [String]
+  accessControlAllowOrigin: String
+  accessControlAllowOriginList: [String]
+  accessControlAllowOriginListRegex: [String]
+  accessControlExposeHeaders: [String]
+  accessControlMaxAge: Int
+  addVaryHeader: Boolean
+  allowedHosts: [String]
+  browserXssFilter: Boolean
+  contentSecurityPolicy: String
+  contentTypeNosniff: Boolean
+  customBrowserXSSValue: String
+  customFrameOptionsValue: String
+  customRequestHeaders: [TraefikHeaderPair]
+  customResponseHeaders: [TraefikHeaderPair]
+  featurePolicy: String
+  forceSTSHeader: Boolean
+  frameDeny: Boolean
+  hostsProxyHeaders: [String]
+  isDevelopment: Boolean
+  publicKey: String
+  referrerPolicy: String
+  sslForceHost: Boolean
+  sslHost: String
+  sslProxyHeaders: [TraefikHeaderPair]
+  sslRedirect: Boolean
+  sslTemporaryRedirect: Boolean
+  stsIncludeSubdomains: Boolean
+  stsPreload: Boolean
+  stsSeconds: Int
+}
+
+type TraefikMiddlewareIpStrategy {
+  depth: Int
+  excludedIPs: [String]
+}
+
+type TraefikMiddlewareIpWhiteList {
+  ipStrategy: TraefikMiddlewareIpStrategy
+  sourceRange: [String]
+}
+
+type TraefikMiddlewareSourceCriterion {
+  ipStrategy: TraefikMiddlewareIpStrategy
+  requestHeaderName: String
+  requestHost: Boolean
+}
+
+type TraefikMiddlewareInFlightReq {
+  amount: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterion
+}
+
+type TraefikMiddlewareIssuer {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+type TraefikMiddlewareSubject {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+type TraefikMiddlewareInfo {
+  issuer: TraefikMiddlewareIssuer
+  notAfter: Boolean
+  notBefore: Boolean
+  sans: Boolean
+  serialNumber: Boolean
+  subject: TraefikMiddlewareSubject
+}
+
+type TraefikMiddlewarePassTLSClientCert {
+  info: TraefikMiddlewareInfo
+  pem: Boolean
+}
+
+type TraefikMiddlewareRateLimit {
+  average: Int
+  burst: Int
+  period: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterion
+}
+
+type TraefikMiddlewareRedirectRegex {
+  permanent: Boolean
+  regex: String
+  replacement: String
+}
+
+type TraefikMiddlewareRedirectScheme {
+  permanent: Boolean
+  port: String
+  scheme: String
+}
+
+type TraefikMiddlewareReplacePath {
+  path: String
+}
+
+type TraefikMiddlewareReplacePathRegex {
+  regex: String
+  replacement: String
+}
+
+type TraefikMiddlewareRetry {
+  attempts: Int
+  initialInterval: Int
+}
+
+type TraefikMiddlewareStripPrefix {
+  forceSlash: Boolean
+  prefixes: [String]
+}
+
+type TraefikMiddlewareStripPrefixRegex {
+  regex: [String]
+}
+

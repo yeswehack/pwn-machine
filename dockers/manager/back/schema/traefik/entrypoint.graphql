@@ -1,0 +1,6 @@
+type TraefikEntrypoint {
+  ip: String
+  port: Int
+  protocol: TraefikProtocol
+  name: String!
+}

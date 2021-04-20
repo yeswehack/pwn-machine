@@ -1,0 +1,22 @@
+type TraefikServiceLoadBalancerHealthCheck {
+    followRedirects: Boolean
+    path: String
+    headers: [TraefikHeaderPair]
+}
+
+type TraefikServiceLoadBalancer {
+    healthCheck: TraefikServiceLoadBalancerHealthCheck
+    passHostHeader: Boolean
+    servers: [String!]
+}
+
+type TraefikService {
+    name: String!
+    protocol: TraefikProtocol!
+    enabled: Boolean!
+    provider: String
+    usedBy: [TraefikRouter!]
+    loadBalancer: TraefikServiceLoadBalancer
+}
+
+

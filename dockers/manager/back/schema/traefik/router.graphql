@@ -1,0 +1,14 @@
+type TraefikRouter {
+    name: String!
+    protocol: String!
+    entryPoints: [String!]!
+    service: TraefikService
+    rule: String!
+    priority: Int!
+    enabled: Boolean!
+    using: [String]
+    provider: String
+    error: [String]
+}
+
+

@@ -8,6 +8,7 @@ hasher = argon2.PasswordHasher()
 issuer = 'pwnmachine'
 
 
+SECRET = os.urandom(32)
 from main import mutation, redis_client
 
 @mutation.field('login')
@@ -27,7 +28,6 @@ def resolve_login(*_, password, otp, expire=None):
     if expire is not None:
         payload['exp'] = now + expire
     
-    secret = os.urandom(32)
     token = jwt.encode(payload, secret)
     redis_client.set(f'admin.tokens.{token}', '*', expire)
     return { 'token': token, 'expire': payload.get('exp') }
