@@ -3,6 +3,7 @@ from ..utils.registration import registerQuery, createType
 
 TraefikRouter = createType("TraefikRouter")
 
+
 @registerQuery("traefikRouters")
 def resolve_TraefikRouters(*_):
     all_routers = []
@@ -13,6 +14,7 @@ def resolve_TraefikRouters(*_):
         all_routers += routers
 
     return all_routers
+
 
 @TraefikRouter.field("enabled")
 def resolve_traefik_enabled(obj, *_):

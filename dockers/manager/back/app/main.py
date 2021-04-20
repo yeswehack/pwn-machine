@@ -10,7 +10,7 @@ from starlette.staticfiles import StaticFiles
 from ariadne.asgi import GraphQL
 
 from . import traefik
-# from . import auth
+from . import auth
 
 
 type_defs = ariadne.load_schema_from_path("./schema")
@@ -23,7 +23,7 @@ for name, resolver in registered_queries.items():
     query.field(name)(resolver)
 
 for name, resolver in registered_mutations.items():
-    query.field(name)(resolver)
+    mutation.field(name)(resolver)
 
 schema = ariadne.make_executable_schema(
     type_defs,

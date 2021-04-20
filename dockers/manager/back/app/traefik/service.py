@@ -1,10 +1,9 @@
-
 from ..utils.registration import registerQuery, createType
-
 
 
 TraefikService = createType("TraefikService")
 TraefikServiceLoadBalancer = createType("TraefikServiceLoadBalancer")
+
 
 @registerQuery("traefikServices")
 def resolve_TraefikServices(*_):
@@ -17,10 +16,10 @@ def resolve_TraefikServices(*_):
 
     return all_routers
 
+
 @TraefikService.field("enabled")
 def resolve_traefik_enabled(obj, *_):
     return obj["status"] == "enabled"
-
 
 
 @TraefikService.field("loadBalancer")
