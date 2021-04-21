@@ -84,16 +84,31 @@ def parse_middleware(types, l, v):
 
 def dict_to_graphql(types, visited=set()):
     for name, attrs in types.items():
-        if (name in visited): continue
+        if name in visited:
+            continue
         visited.add(name)
-        graphql = f"type {graphql_name(name)} {{\n"
+        type_name = graphql_name(name)
+        info_name = graphql_name(name) + "Info"
+
+
+        graphql = f"type {info_name} {{\n"
+
         for attr, value in attrs.items():
             if isinstance(value, dict):
                 dict_to_graphql({attr: value})
                 graphql += f"  {attr}: {graphql_name(attr)}\n"
             else:
                 graphql += f"  {attr}: {value}\n"
-        graphql += "}\n"
+        graphql += "}\n\n"
+
+        graphql += f"type {type_name} implements TraefikMiddleware {{\n"
+        graphql += "  name: String!\n"
+        graphql += "  provider: String!\n"
+        graphql += "  type: String!\n"
+        graphql += "  enabled: Boolean\n"
+        graphql += "  usedBy: [TraefikRouter!]!\n"
+        graphql += f"  {name}: {info_name}!\n"
+        graphql += "}\n\n\n"
         print(graphql)
 
 
@@ -103,6 +118,15 @@ for key, value in get_middlewares():
 
 print(
     f""" 
+
+interface TraefikMiddleware {{
+    name: String!
+    provider: String!
+    type: String!
+    enabled: Boolean
+    usedBy: [TraefikRouter!]!
+}}
+
 type {graphql_name("HeaderPair")} {{
     name: String
     value: String

@@ -1,0 +1,8 @@
+query GetEntrypoints {
+  traefikEntrypoints {
+    name
+    ip
+    port
+    protocol
+  }
+}

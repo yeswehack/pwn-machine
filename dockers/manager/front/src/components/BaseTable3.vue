@@ -21,7 +21,7 @@
         color="positive"
         icon="eva-plus"
         :label="txt.create"
-        @click="createRow"
+        @click="$emit('create')"
       />
       <q-space />
       <q-input borderless dense outlined debounce="200" v-model="filter">
@@ -33,12 +33,12 @@
     <template #body="props">
       <q-tr
         :props="props"
-        :name="props.row.id"
-        @click="toggleRow(0, props.row)"
+        :name="props.row.name"
+        @click="toggleRow(props.row)"
       >
         <q-menu touch-position context-menu>
           <q-list dense class="rounded-borders bg-grey-9">
-            <q-item v-close-popup clickable @click="cloneRow(props.row)">
+            <q-item v-close-popup clickable @click="$emit('clone', props.row)">
               <q-item-section avatar>
                 <q-avatar icon="eva-copy" />
               </q-item-section>
@@ -48,7 +48,7 @@
               v-close-popup
               clickable
               class="bg-negative"
-              @click="deleteRow(props.row)"
+              @click="$emit('delete', props.row)"
             >
               <q-item-section avatar>
                 <q-avatar icon="eva-trash" />
@@ -125,8 +125,9 @@ export default {
     }
   },
   methods: {
-    toggleRow(_, row) {
-      const name = row["id"];
+    toggleRow(row) {
+      console.log(row)
+      const name = row["name"];
       const idx = this.expanded.indexOf(name);
       if (idx == -1) {
         this.expanded.push(name);
@@ -134,20 +135,6 @@ export default {
         this.expanded.splice(idx, 1);
       }
       this.$refs.table.setExpanded(this.expanded);
-    },
-    closePopup() {
-      this.popupVisible = false;
-    },
-    createRow() {
-      this.row = null;
-      this.popupVisible = true;
-    },
-    cloneRow(row) {
-      this.row = row;
-      this.popupVisible = true;
-    },
-    deleteRow(row) {
-      this.$emit("deleteRow", row);
     }
   }
 };

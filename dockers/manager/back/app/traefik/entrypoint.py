@@ -10,9 +10,9 @@ entrypoint_re = re.compile(
 
 
 @registerQuery("traefikEntrypoints")
-def resolve_TraefikEntrypoints(*_):
+async def resolve_TraefikEntrypoints(*_):
     entrypoints = []
-    for entrypoint in get_from_api(f"/entrypoints"):
+    for entrypoint in await get_from_api(f"/entrypoints"):
         address = entrypoint_re.match(entrypoint["address"]).groupdict()
         entrypoints.append(
             {

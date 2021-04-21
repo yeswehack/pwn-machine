@@ -1,0 +1,23 @@
+fragment RouterFragment on TraefikRouter {
+  name
+  entryPoints
+  service {
+    name
+    enabled
+    loadBalancer {
+      healthCheck {
+        followRedirects
+        path
+        headers {
+          name
+          value
+        }
+      }
+    }
+  }
+  priority
+  rule
+  enabled
+  protocol
+  provider
+}

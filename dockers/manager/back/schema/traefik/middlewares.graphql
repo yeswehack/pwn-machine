@@ -1,10 +1,35 @@
  
 
-type TraefikMiddlewareAddPrefix {
+interface TraefikMiddleware {
+    name: String!
+    provider: String!
+    type: String!
+    enabled: Boolean
+    usedBy: [TraefikRouter!]!
+}
+
+type TraefikMiddlewareHeaderPair {
+    name: String
+    value: String
+}
+
+
+type TraefikMiddlewareAddPrefixInfo {
   prefix: String
 }
 
-type TraefikMiddlewareBasicAuth {
+type TraefikMiddlewareAddPrefix implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  addPrefix: TraefikMiddlewareAddPrefixInfo!
+}
+
+
+
+type TraefikMiddlewareBasicAuthInfo {
   headerField: String
   realm: String
   removeHeader: Boolean
@@ -12,7 +37,18 @@ type TraefikMiddlewareBasicAuth {
   usersFile: String
 }
 
-type TraefikMiddlewareBuffering {
+type TraefikMiddlewareBasicAuth implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  basicAuth: TraefikMiddlewareBasicAuthInfo!
+}
+
+
+
+type TraefikMiddlewareBufferingInfo {
   maxRequestBodyBytes: Int
   maxResponseBodyBytes: Int
   memRequestBodyBytes: Int
@@ -20,23 +56,78 @@ type TraefikMiddlewareBuffering {
   retryExpression: String
 }
 
-type TraefikMiddlewareChain {
+type TraefikMiddlewareBuffering implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  buffering: TraefikMiddlewareBufferingInfo!
+}
+
+
+
+type TraefikMiddlewareChainInfo {
   middlewares: [String]
 }
 
-type TraefikMiddlewareCircuitBreaker {
+type TraefikMiddlewareChain implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  chain: TraefikMiddlewareChainInfo!
+}
+
+
+
+type TraefikMiddlewareCircuitBreakerInfo {
   expression: String
 }
 
-type TraefikMiddlewareCompress {
+type TraefikMiddlewareCircuitBreaker implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  circuitBreaker: TraefikMiddlewareCircuitBreakerInfo!
+}
+
+
+
+type TraefikMiddlewareCompressInfo {
   excludedContentTypes: [String]
 }
 
-type TraefikMiddlewareContentType {
+type TraefikMiddlewareCompress implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  compress: TraefikMiddlewareCompressInfo!
+}
+
+
+
+type TraefikMiddlewareContentTypeInfo {
   autoDetect: Boolean
 }
 
-type TraefikMiddlewareDigestAuth {
+type TraefikMiddlewareContentType implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  contentType: TraefikMiddlewareContentTypeInfo!
+}
+
+
+
+type TraefikMiddlewareDigestAuthInfo {
   headerField: String
   realm: String
   removeHeader: Boolean
@@ -44,13 +135,35 @@ type TraefikMiddlewareDigestAuth {
   usersFile: String
 }
 
-type TraefikMiddlewareErrors {
+type TraefikMiddlewareDigestAuth implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  digestAuth: TraefikMiddlewareDigestAuthInfo!
+}
+
+
+
+type TraefikMiddlewareErrorsInfo {
   query: String
   service: String
   status: [String]
 }
 
-type TraefikMiddlewareTls {
+type TraefikMiddlewareErrors implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  errors: TraefikMiddlewareErrorsInfo!
+}
+
+
+
+type TraefikMiddlewareTlsInfo {
   ca: String
   caOptional: Boolean
   cert: String
@@ -58,7 +171,18 @@ type TraefikMiddlewareTls {
   key: String
 }
 
-type TraefikMiddlewareForwardAuth {
+type TraefikMiddlewareTls implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  tls: TraefikMiddlewareTlsInfo!
+}
+
+
+
+type TraefikMiddlewareForwardAuthInfo {
   address: String
   authRequestHeaders: [String]
   authResponseHeaders: [String]
@@ -67,7 +191,18 @@ type TraefikMiddlewareForwardAuth {
   trustForwardHeader: Boolean
 }
 
-type TraefikMiddlewareHeaders {
+type TraefikMiddlewareForwardAuth implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  forwardAuth: TraefikMiddlewareForwardAuthInfo!
+}
+
+
+
+type TraefikMiddlewareHeadersInfo {
   accessControlAllowCredentials: Boolean
   accessControlAllowHeaders: [String]
   accessControlAllowMethods: [String]
@@ -83,8 +218,8 @@ type TraefikMiddlewareHeaders {
   contentTypeNosniff: Boolean
   customBrowserXSSValue: String
   customFrameOptionsValue: String
-  customRequestHeaders: [TraefikHeaderPair]
-  customResponseHeaders: [TraefikHeaderPair]
+  customRequestHeaders: [TraefikMiddlewareHeaderPair]
+  customResponseHeaders: [TraefikMiddlewareHeaderPair]
   featurePolicy: String
   forceSTSHeader: Boolean
   frameDeny: Boolean
@@ -94,7 +229,7 @@ type TraefikMiddlewareHeaders {
   referrerPolicy: String
   sslForceHost: Boolean
   sslHost: String
-  sslProxyHeaders: [TraefikHeaderPair]
+  sslProxyHeaders: [TraefikMiddlewareHeaderPair]
   sslRedirect: Boolean
   sslTemporaryRedirect: Boolean
   stsIncludeSubdomains: Boolean
@@ -102,28 +237,83 @@ type TraefikMiddlewareHeaders {
   stsSeconds: Int
 }
 
-type TraefikMiddlewareIpStrategy {
-  depth: Int
-  excludedIPs: [String]
+type TraefikMiddlewareHeaders implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  headers: TraefikMiddlewareHeadersInfo!
 }
 
-type TraefikMiddlewareIpWhiteList {
+
+
+type TraefikMiddlewareIpStrategyInfo {
+  depth: Int
+  excludedIPs: [TraefikMiddlewareHeaderPair]
+}
+
+type TraefikMiddlewareIpStrategy implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  ipStrategy: TraefikMiddlewareIpStrategyInfo!
+}
+
+
+
+type TraefikMiddlewareIpWhiteListInfo {
   ipStrategy: TraefikMiddlewareIpStrategy
   sourceRange: [String]
 }
 
-type TraefikMiddlewareSourceCriterion {
+type TraefikMiddlewareIpWhiteList implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  ipWhiteList: TraefikMiddlewareIpWhiteListInfo!
+}
+
+
+
+type TraefikMiddlewareSourceCriterionInfo {
   ipStrategy: TraefikMiddlewareIpStrategy
   requestHeaderName: String
   requestHost: Boolean
 }
 
-type TraefikMiddlewareInFlightReq {
+type TraefikMiddlewareSourceCriterion implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfo!
+}
+
+
+
+type TraefikMiddlewareInFlightReqInfo {
   amount: Int
   sourceCriterion: TraefikMiddlewareSourceCriterion
 }
 
-type TraefikMiddlewareIssuer {
+type TraefikMiddlewareInFlightReq implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  inFlightReq: TraefikMiddlewareInFlightReqInfo!
+}
+
+
+
+type TraefikMiddlewareIssuerInfo {
   commonName: Boolean
   country: Boolean
   domainComponent: Boolean
@@ -133,7 +323,18 @@ type TraefikMiddlewareIssuer {
   serialNumber: Boolean
 }
 
-type TraefikMiddlewareSubject {
+type TraefikMiddlewareIssuer implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  issuer: TraefikMiddlewareIssuerInfo!
+}
+
+
+
+type TraefikMiddlewareSubjectInfo {
   commonName: Boolean
   country: Boolean
   domainComponent: Boolean
@@ -143,7 +344,18 @@ type TraefikMiddlewareSubject {
   serialNumber: Boolean
 }
 
-type TraefikMiddlewareInfo {
+type TraefikMiddlewareSubject implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  subject: TraefikMiddlewareSubjectInfo!
+}
+
+
+
+type TraefikMiddlewareInfoInfo {
   issuer: TraefikMiddlewareIssuer
   notAfter: Boolean
   notBefore: Boolean
@@ -152,50 +364,160 @@ type TraefikMiddlewareInfo {
   subject: TraefikMiddlewareSubject
 }
 
-type TraefikMiddlewarePassTLSClientCert {
+type TraefikMiddlewareInfo implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  info: TraefikMiddlewareInfoInfo!
+}
+
+
+
+type TraefikMiddlewarePassTLSClientCertInfo {
   info: TraefikMiddlewareInfo
   pem: Boolean
 }
 
-type TraefikMiddlewareRateLimit {
+type TraefikMiddlewarePassTLSClientCert implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  passTLSClientCert: TraefikMiddlewarePassTLSClientCertInfo!
+}
+
+
+
+type TraefikMiddlewareRateLimitInfo {
   average: Int
   burst: Int
   period: Int
   sourceCriterion: TraefikMiddlewareSourceCriterion
 }
 
-type TraefikMiddlewareRedirectRegex {
+type TraefikMiddlewareRateLimit implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  rateLimit: TraefikMiddlewareRateLimitInfo!
+}
+
+
+
+type TraefikMiddlewareRedirectRegexInfo {
   permanent: Boolean
   regex: String
   replacement: String
 }
 
-type TraefikMiddlewareRedirectScheme {
+type TraefikMiddlewareRedirectRegex implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  redirectRegex: TraefikMiddlewareRedirectRegexInfo!
+}
+
+
+
+type TraefikMiddlewareRedirectSchemeInfo {
   permanent: Boolean
   port: String
   scheme: String
 }
 
-type TraefikMiddlewareReplacePath {
+type TraefikMiddlewareRedirectScheme implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  redirectScheme: TraefikMiddlewareRedirectSchemeInfo!
+}
+
+
+
+type TraefikMiddlewareReplacePathInfo {
   path: String
 }
 
-type TraefikMiddlewareReplacePathRegex {
+type TraefikMiddlewareReplacePath implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  replacePath: TraefikMiddlewareReplacePathInfo!
+}
+
+
+
+type TraefikMiddlewareReplacePathRegexInfo {
   regex: String
   replacement: String
 }
 
-type TraefikMiddlewareRetry {
+type TraefikMiddlewareReplacePathRegex implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  replacePathRegex: TraefikMiddlewareReplacePathRegexInfo!
+}
+
+
+
+type TraefikMiddlewareRetryInfo {
   attempts: Int
   initialInterval: Int
 }
 
-type TraefikMiddlewareStripPrefix {
+type TraefikMiddlewareRetry implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  retry: TraefikMiddlewareRetryInfo!
+}
+
+
+
+type TraefikMiddlewareStripPrefixInfo {
   forceSlash: Boolean
   prefixes: [String]
 }
 
-type TraefikMiddlewareStripPrefixRegex {
+type TraefikMiddlewareStripPrefix implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  stripPrefix: TraefikMiddlewareStripPrefixInfo!
+}
+
+
+
+type TraefikMiddlewareStripPrefixRegexInfo {
   regex: [String]
 }
+
+type TraefikMiddlewareStripPrefixRegex implements TraefikMiddleware {
+  name: String!
+  provider: String!
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  stripPrefixRegex: TraefikMiddlewareStripPrefixRegexInfo!
+}
+
+
 

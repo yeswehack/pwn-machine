@@ -9,16 +9,22 @@
   >
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-xs">
-        <router-link
-          :to="{ path: `/traefik/routers`, hash: router }"
+        <RouterLink
+          :name="name"
           :key="idx"
-          v-for="[idx, router] in (row.usedBy || []).entries()"
-        >
-          <q-badge>{{ router }}</q-badge>
-        </router-link>
+          v-for="(name, idx) of row.usedBy.map(r => r.name)"
+        />
       </div>
     </template>
 
+    <template #body-cell-enabled="{row}">
+      <q-badge
+        :color="row.enabled ? 'positive' : 'negative'"
+        class="q-ml-sm text-mono"
+      >
+        {{ row.enabled ? "OK" : "ERROR" }}
+      </q-badge>
+    </template>
     <template #details="{ row }">
       <MiddlewareDetails
         :middlewares="middlewares"
@@ -40,45 +46,35 @@
 <script>
 import BaseTable from "src/components/BaseTable.vue";
 import MiddlewareDetails from "src/components/Traefik/Middleware/Details.vue";
+import RouterLink from "src/components/Traefik/Router/Link.vue";
 import CreateMiddleware from "src/components/Traefik/Middleware/Create.vue";
 import Middleware from "src/components/Traefik/Middleware/Middleware.vue";
-
+import db from "src/gql";
 export default {
-  components: { CreateMiddleware, MiddlewareDetails, BaseTable },
-  props: {
-    services: Array,
-    routers: Array,
-    entrypoints: Array,
-    middlewares: Array
+  components: { CreateMiddleware, MiddlewareDetails, BaseTable, RouterLink },
+  apollo: {
+    middlewares: {
+      query: db.traefik.GET_MIDDLEWARES,
+      update: data => data.traefikMiddlewares
+    }
   },
   data() {
+    const col = name => ({
+      name,
+      align: "left",
+      field: name,
+      label: name,
+      sortable: true
+    });
+    const columns = [
+      col("name"),
+      col("type"),
+      { ...col("usedBy"), label: "Connected Routers" },
+      { ...col("enabled"), label: "Status" }
+    ];
+
     return {
-      columns: [
-        {
-          name: "name",
-          align: "left",
-          label: "Name",
-          field: "name",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "type",
-          align: "left",
-          label: "Type",
-          field: "type",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "usedBy",
-          align: "left",
-          label: "Connected routers",
-          field: "usedBy",
-          format: val => `${val}`,
-          sortable: true
-        }
-      ]
+      columns
     };
   },
   methods: {

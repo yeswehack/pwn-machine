@@ -1,6 +1,4 @@
-
-
-from ariadne import ObjectType
+from ariadne import ObjectType, InterfaceType
 
 
 registered_types = []
@@ -10,6 +8,13 @@ def createType(name):
     t = ObjectType(name)
     registered_types.append(t)
     return t
+
+
+def createInterface(name):
+    t = InterfaceType(name)
+    registered_types.append(t)
+    return t
+
 
 registered_queries = {}
 
@@ -31,5 +36,3 @@ def registerMutation(name):
         return f
 
     return decorator
-
-

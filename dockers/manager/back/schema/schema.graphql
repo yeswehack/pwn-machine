@@ -1,8 +1,9 @@
 type Query {
   me: User!
-  traefikRouters: [TraefikRouter]
-  traefikEntrypoints: [TraefikEntrypoint]
-  traefikServices: [TraefikService]
+  traefikRouters: [TraefikRouter!]!
+  traefikEntrypoints: [TraefikEntrypoint!]!
+  traefikServices: [TraefikService!]!
+  traefikMiddlewares: [TraefikMiddleware!]!
 }
 
 type User {
@@ -12,4 +13,6 @@ type User {
 type Mutation {
   login(password: String!, otp: Int!, expire: Int): User!
   register(password: String!, otp: Int!): User!
+  traefikCreateRouter(input: TraefikRouterInput): TraefikRouter!
+  traefikDeleteRouter(input: TraefikDeleteRouterInput): TraefikDeleteRouterResponse!
 }

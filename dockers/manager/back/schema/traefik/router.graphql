@@ -1,9 +1,9 @@
 type TraefikRouter {
     name: String!
-    protocol: String!
+    protocol: TraefikProtocol!
     entryPoints: [String!]!
     service: TraefikService
-    rule: String!
+    rule: String
     priority: Int!
     enabled: Boolean!
     using: [String]
@@ -12,3 +12,19 @@ type TraefikRouter {
 }
 
 
+input TraefikRouterInput {
+    name: String!
+    protocol: TraefikProtocol!
+    entryPoints: [String!]!
+    service: String!
+    rule: String
+}
+
+input TraefikDeleteRouterInput{
+    protocol: TraefikProtocol!
+    name: String!
+}
+
+type TraefikDeleteRouterResponse {
+    ok: Boolean!
+}

@@ -12,7 +12,7 @@ pyotp = "^2.6"
 redis = "^3.5.3"
 PyJWT = "^2"
 aiofiles = "^0.6"
-requests = "^2.25.1"
+aiohttp = "^3.7.4"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"

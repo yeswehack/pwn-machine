@@ -1,50 +1,26 @@
 <template>
-  <TabPage :tab="tab" path-template="/traefik/{}">
-    <template #top>
-      <q-tab name="overview" label="Overview" icon="eva-eye-outline"/>
-      <q-tab name="routers" label="Routers" icon="eva-globe-outline"/>
-      <q-tab name="middlewares" label="Middlewares" icon="eva-layers" />
-      <q-tab name="services" label="Services" icon="eva-flash" />
-    </template>
-    <template #tabs>
-      <q-tab-panel name="overview" class="overview">
-        <Overview
-          v-on:refetch="refetch"
-          :routers="routers"
-          :services="services"
-          :middlewares="middlewares"
-          :entrypoints="entrypoints"
-        />
-      </q-tab-panel>
-      <q-tab-panel name="routers">
-        <RoutersTable
-          v-on:refetch="refetch"
-          :routers="routers"
-          :services="services"
-          :middlewares="middlewares"
-          :entrypoints="entrypoints"
-        />
-      </q-tab-panel>
-      <q-tab-panel name="middlewares">
-        <MiddlewareTable
-          v-on:refetch="refetch"
-          :routers="routers"
-          :services="services"
-          :middlewares="middlewares"
-          :entrypoints="entrypoints"
-        />
-      </q-tab-panel>
-      <q-tab-panel name="services">
-        <ServiceTable
-          v-on:refetch="refetch"
-          :routers="routers"
-          :services="services"
-          :middlewares="middlewares"
-          :entrypoints="entrypoints"
-        />
-      </q-tab-panel>
-    </template>
-  </TabPage>
+    <TabPage :tab="tab" path-template="/traefik/{}">
+      <template #top>
+        <q-tab name="overview" label="Overview" icon="eva-eye-outline" />
+        <q-tab name="routers" label="Routers" icon="eva-globe-outline" />
+        <q-tab name="middlewares" label="Middlewares" icon="eva-layers" />
+        <q-tab name="services" label="Services" icon="eva-flash" />
+      </template>
+      <template #tabs>
+        <q-tab-panel name="overview" class="overview">
+          <Overview/>
+        </q-tab-panel>
+        <q-tab-panel name="routers">
+          <RoutersTable/>
+        </q-tab-panel>
+        <q-tab-panel name="middlewares">
+          <MiddlewareTable/>
+        </q-tab-panel>
+        <q-tab-panel name="services">
+          <ServiceTable/>
+        </q-tab-panel>
+      </template>
+    </TabPage>
 </template>
 
 <script>
@@ -54,6 +30,7 @@ import RoutersTable from "./Traefik/RoutersTable.vue";
 import ServiceTable from "./Traefik/ServiceTable.vue";
 import MiddlewareTable from "./Traefik/MiddlewareTable.vue";
 import Overview from "./Traefik/Overview.vue";
+import db from "src/gql";
 export default {
   // name: 'PageName',
   components: {
@@ -70,7 +47,7 @@ export default {
     }
   },
   created() {
-    this.fetchData();
+    //this.fetchData();
   },
   data() {
     return {
@@ -80,7 +57,6 @@ export default {
   computed: {
     ...mapGetters("traefik", [
       "entrypoints",
-      "routers",
       "services",
       "middlewares"
     ]),

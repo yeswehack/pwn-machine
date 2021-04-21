@@ -2,160 +2,143 @@
   <BaseTable
     ref="table"
     name="router"
-    rkey="name"
-    :loading="loading"
+    row-key="name"
+    @create="createRouter"
+    @delete="deleteRouter"
+    @clone="cloneRouter"
+    :loading="$apollo.queries.routers.loading"
     :data="routers"
     :columns="columns"
-    v-on:delete="deleteRouter"
   >
     <template #body-cell-type="{row}">
-      <TypeBadge :type="row.type" />
+      <ProtocolBadge :protocol="row.protocol" />
     </template>
-    <template #body-cell-entrypoints="{row}">
+    <template #body-cell-entryPoints="{row}">
       <div class="q-gutter-xs">
-        <q-badge
-          :key="idx"
-          v-for="[idx, entrypoint] of (row.entryPoints || []).entries()"
-        >
+        <q-badge :key="idx" v-for="(entrypoint, idx) of row.entryPoints">
           {{ entrypoint }}
         </q-badge>
       </div>
     </template>
     <template #body-cell-service="{row}">
-      <ServiceLink :name="row.service" />
+      <ServiceLink :service="row.service" />
     </template>
     <template #body-cell-middlewares="{row}">
       <MiddlewareLink
         :name="name"
         :key="idx"
-        v-for="[idx, name] of (row.middlewares || []).entries()"
+        v-for="(name, idx) of row.middlewares"
       />
     </template>
-    <template #body-cell-status="{row}">
-      <q-badge :color="statusColor(row.status)" class="q-ml-sm text-mono">
-        {{ row.status == "enabled" ? "OK" : "ERROR" }}
+    <template #body-cell-enabled="{row}">
+      <q-badge
+        :color="row.enabled ? 'positive' : 'negative'"
+        class="q-ml-sm text-mono"
+      >
+        {{ row.enabled ? "OK" : "ERROR" }}
       </q-badge>
     </template>
 
     <template #details="{ row }">
-      <RouterDetails
-        :name="row.name"
-        :services="services"
-        :routers="routers"
-        :entrypoints="entrypoints"
-        :middlewares="middlewares"
-        v-on:modified="routerCreated"
-        v-on:refetch="$emit('refetch')"
-      />
-    </template>
-    <template #popup="{ info }">
-      <CreateRouter
-        :info="info"
-        :services="services"
-        :routers="routers"
-        :entrypoints="entrypoints"
-        popup
-        v-on:created="routerCreated"
-      />
+      <RouterDetails :router="row" />
     </template>
   </BaseTable>
 </template>
 
 <script>
 import RouterDetails from "src/components/Traefik/Router/Details.vue";
-import CreateRouter from "src/components/Traefik/Router/Create.vue";
-import BaseTable from "src/components/BaseTable.vue";
+import RouterDialog from "src/components/Traefik/Router/Dialog.vue";
+import BaseTable from "src/components/BaseTable3.vue";
 import ServiceLink from "src/components/Traefik/Service/Link.vue";
 import MiddlewareLink from "src/components/Traefik/Middleware/Link.vue";
-import TypeBadge from "src/components/Traefik/TypeBadge.vue";
+import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
+import db from "src/gql";
 
 export default {
-  // name: 'PageName',
   components: {
-    CreateRouter,
     RouterDetails,
     BaseTable,
     ServiceLink,
     MiddlewareLink,
-    TypeBadge
+    ProtocolBadge
   },
-  props: {
-    loading: Boolean,
-    services: Array,
-    routers: Array,
-    entrypoints: Array,
-    middlewares: Array
+  apollo: {
+    routers: {
+      query: db.traefik.GET_ROUTERS,
+      update: data => data.traefikRouters
+    }
   },
   data() {
+    const col = name => ({
+      name,
+      align: "left",
+      field: name,
+      label: name,
+      sortable: true
+    });
+    const columns = [
+      col("name"),
+      col("type"),
+      col("rule"),
+      col("entryPoints"),
+      col("service"),
+      col("middlewares"),
+      col("enabled")
+    ];
+
     return {
-      columns: [
-        {
-          name: "name",
-          align: "left",
-          label: "name",
-          field: "name",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "type",
-          align: "left",
-          label: "type",
-          field: "type",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "rule",
-          label: "Rule",
-          align: "left",
-          field: "rule",
-          sortable: true
-        },
-        {
-          name: "entrypoints",
-          label: "Entrypoints",
-          align: "left",
-          field: "entryPoints",
-          format: val => val.join(""),
-          sortable: true
-        },
-        {
-          name: "service",
-          label: "Service",
-          align: "left",
-          field: "service",
-          sortable: true
-        },
-        {
-          name: "middlewares",
-          label: "Middlewares",
-          align: "left",
-          field: "middlewares",
-          format: val => val.join(""),
-          sortable: true
-        },
-        {
-          name: "status",
-          label: "Status",
-          align: "left",
-          field: "status",
-          sortable: true
-        }
-      ]
+      columns
     };
   },
   methods: {
-    statusColor(status) {
-      return status == "enabled" ? "positive" : "negative";
+    createRouter() {
+      this.$q.dialog({
+        component: RouterDialog,
+        parent: this
+      });
+    },
+    cloneRouter(router) {
+      this.$q.dialog({
+        component: RouterDialog,
+        parent: this,
+        router
+      });
     },
     routerCreated() {
       this.$emit("refetch");
       this.$refs.table.closePopup();
     },
-    deleteRouter(name) {
-      this.$api.docker.deleteRouter(name.split("@")[0]);
-      this.$emit("refetch");
+    deleteRouter(router) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${router.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          const input = { protocol: router.protocol, name: router.name };
+          this.$apollo
+            .mutate({
+              mutation: db.traefik.DELETE_ROUTER,
+              variables: { input },
+              refetchQueries: [{ query: db.traefik.GET_ROUTERS }]
+            })
+            .then(response => {
+              const deleted = response.data.traefikDeleteRouter.ok;
+              if (deleted) {
+                this.$q.notify({
+                  message: `${router.name} deleted.`,
+                  type: "positive"
+                });
+              } else {
+                this.$q.notify({
+                  message: `Unable to delete ${router.name}.`,
+                  type: "negative"
+                });
+              }
+            });
+        });
     }
   }
 };

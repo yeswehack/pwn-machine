@@ -1,4 +1,4 @@
-#FLUSHALL
+FLUSHALL
 SET traefik/http/services/whoami/loadbalancer/servers/0/url "http://whoami:80"
 SET traefik/http/routers/whoami/rule "Host(`whoami.localhost`)"
 SET traefik/http/routers/whoami/service "whoami@redis"

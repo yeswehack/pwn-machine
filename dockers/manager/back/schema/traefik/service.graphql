@@ -1,22 +1,35 @@
 type TraefikServiceLoadBalancerHealthCheck {
-    followRedirects: Boolean
-    path: String
-    headers: [TraefikHeaderPair]
+  followRedirects: Boolean
+  path: String
+  headers: [TraefikHeaderPair]
+}
+
+type TraefikServiceLoadBalancerServer {
+  url: String!
+}
+
+enum TraefikServerStatus {
+  UP
+  DOWN
+}
+
+type TraefikServerStatusPair {
+  url: String!
+  status: TraefikServerStatus!
 }
 
 type TraefikServiceLoadBalancer {
-    healthCheck: TraefikServiceLoadBalancerHealthCheck
-    passHostHeader: Boolean
-    servers: [String!]
+  healthCheck: TraefikServiceLoadBalancerHealthCheck
+  passHostHeader: Boolean
+  servers: [TraefikServiceLoadBalancerServer!]
 }
 
 type TraefikService {
-    name: String!
-    protocol: TraefikProtocol!
-    enabled: Boolean!
-    provider: String
-    usedBy: [TraefikRouter!]
-    loadBalancer: TraefikServiceLoadBalancer
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  provider: String
+  usedBy: [TraefikRouter!]
+  serverStatus: [TraefikServerStatusPair!]!
+  loadBalancer: TraefikServiceLoadBalancer
 }
-
-

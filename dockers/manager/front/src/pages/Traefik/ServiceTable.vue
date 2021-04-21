@@ -2,7 +2,7 @@
   <BaseTable
     ref="table"
     name="service"
-    rkey="name"
+    row-key="name"
     :loading="loading"
     :data="services"
     :columns="columns"
@@ -13,12 +13,12 @@
         <RouterLink
           :name="name"
           :key="idx"
-          v-for="[idx, name] in (row.usedBy || []).entries()"
+          v-for="(name, idx) of row.usedBy.map(r => r.name)"
         />
       </div>
     </template>
-    <template #body-cell-type="{row}">
-      <TypeBadge :type="row.type" />
+    <template #body-cell-protocol="{row}">
+      <ProtocolBadge :protocol="row.protocol" />
     </template>
 
     <template #body-cell-servers="{row}">
@@ -26,7 +26,7 @@
         <q-badge
           :key="idx"
           :color="getServerStatusColor(row, server)"
-          v-for="[idx, server] in getServers(row).entries()"
+          v-for="(server, idx) of getServers(row)"
           :label="server"
         />
       </div>
@@ -41,89 +41,66 @@
         v-on:modified="serviceCreated"
       />
     </template>
-    <template #popup="{ info }">
-      <CreateService
-        popup
-        :info="info"
-        :services="services"
-        :routers="routers"
-        :entrypoints="entrypoints"
-        v-on:created="serviceCreated"
-      />
-    </template>
   </BaseTable>
 </template>
 
 <script>
 import ServiceDetails from "src/components/Traefik/Service/Details.vue";
 import CreateService from "src/components/Traefik/Service/Create.vue";
-import BaseTable from "src/components/BaseTable.vue";
+import BaseTable from "src/components/BaseTable3.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
-import TypeBadge from "src/components/Traefik/TypeBadge.vue";
+import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
+import db from "src/gql";
 
 export default {
   components: {
-    CreateService,
     ServiceDetails,
     BaseTable,
     RouterLink,
-    TypeBadge
+    ProtocolBadge
   },
   props: {
     loading: Boolean,
-    services: Array,
     routers: Array,
     entrypoints: Array,
     middlewares: Array
   },
+  apollo: {
+    services: {
+      query: db.traefik.GET_SERVICES,
+      update: data => data.traefikServices
+    }
+  },
   data() {
+    const col = name => ({
+      name,
+      align: "left",
+      field: name,
+      label: name,
+      sortable: true
+    });
+    const columns = [
+      col("name"),
+      col("protocol"),
+      { ...col("usedBy"), label: "Connected Routers" },
+      col("servers")
+    ];
+
     return {
-      columns: [
-        {
-          name: "name",
-          align: "left",
-          label: "Name",
-          field: "name",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "type",
-          align: "left",
-          label: "Type",
-          field: "type",
-          sortable: true
-        },
-        {
-          name: "usedBy",
-          align: "left",
-          label: "Connected routers",
-          field: "usedBy",
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "servers",
-          align: "left",
-          label: "Servers",
-          field: row => this.getServers(row),
-          format: val => `${val.join()}`,
-          sortable: true
-        }
-      ]
+      columns
     };
   },
   methods: {
     getServerStatusColor(row, server) {
-      if ("serverStatus" in row && server in row.serverStatus) {
-        return row.serverStatus[server] == "UP" ? "positive" : "negative";
+      const serverStatus = row.serverStatus.find(({ url }) => url === server);
+      if (serverStatus === undefined) {
+        return "primary";
       }
-      return "primary";
+
+      return serverStatus.status == "UP" ? "positive" : "negative";
     },
     getServers(row) {
-      if (!("loadBalancer" in row)) return [];
-      const key = row.type == "http" ? "url" : "address";
-      return row.loadBalancer.servers.map(s => s[key]);
+      return row.loadBalancer?.servers.map(s => s.url) || [];
     },
     serviceCreated() {
       this.$emit("refetch");

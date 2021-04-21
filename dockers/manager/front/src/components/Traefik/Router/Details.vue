@@ -15,7 +15,7 @@
         />
       </div>
       <div class="col col-grow" v-if="showMiddlewares">
-        {{form.middlewares}}
+        {{ form.middlewares }}
         <MiddlewareList :middlewares.sync="form.middlewares" />
       </div>
 
@@ -42,32 +42,19 @@ export default {
     BaseDetails
   },
   props: {
-    name: {
-      type: String
-    },
-    services: {
-      type: Array
-    },
-    routers: {
-      type: Array
-    },
-    entrypoints: {
-      type: Array
-    },
-    middlewares: {
-      type: Array
+    router: {
+      type: Object,
+      required: true
     }
   },
   data() {
-    const router = this.routers.find(r => r.name == this.name);
     return {
       form: {
         middlewares: router.middlewares ? [...router.middlewares] : [null]
       },
       createMiddlewareVisible: false,
       useChain: false,
-      showMiddlewares: router.type == "http",
-      router
+      showMiddlewares: router.type == "http"
     };
   },
   methods: {

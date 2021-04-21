@@ -1,0 +1,11 @@
+
+query GetMiddlewares {
+  traefikMiddlewares {
+    name
+    type
+    enabled
+    usedBy {
+      name
+    }
+  }
+}

@@ -52,6 +52,7 @@ services:
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"
       - "--entryPoints.web.address=:80"
+      - "--entryPoints.udp.address=:1337/udp"
     ports:
       - "80:80"
       - "8080:8080"

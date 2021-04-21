@@ -1,13 +1,15 @@
 <template>
-  <q-badge :color="color">{{ type }} </q-badge>
+  <q-badge :color="color">{{ protocol }} </q-badge>
 </template>
 
 <script>
 export default {
-  props: { type: String },
+  props: {
+    protocol: { type: String, required: true }
+  },
   computed: {
     color() {
-      switch (this.type) {
+      switch (this.protocol) {
         case "http":
           return "primary";
         case "tcp":
