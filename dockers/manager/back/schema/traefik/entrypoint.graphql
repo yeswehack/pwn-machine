@@ -3,4 +3,5 @@ type TraefikEntrypoint {
   port: Int
   protocol: TraefikProtocol
   name: String!
+  usedBy: [TraefikRouter!]!
 }

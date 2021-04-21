@@ -5,12 +5,27 @@ from .utils.registration import (
     registered_queries,
     registered_types,
 )
+from starlette.applications import Starlette
 from starlette.routing import Router, Mount
 from starlette.staticfiles import StaticFiles
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from ariadne.asgi import GraphQL
 
+from .redis import client as redis_client
 from . import traefik
 from . import auth
+from .api.traefik import new_traefik_http_client, TraefikRedisApi
+
+
+class TraefikAPIMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        
+        async with new_traefik_http_client("http://127.0.0.1:8080/api") as client:
+            request.state.traefik_http = client
+            request.state.traefik_redis = TraefikRedisApi(redis_client, "traefik")
+            response = await call_next(request)
+        return response
 
 
 type_defs = ariadne.load_schema_from_path("./schema")
@@ -34,7 +49,7 @@ schema = ariadne.make_executable_schema(
 )
 
 
-app = Router(
+app = Starlette(
     routes=[Mount("/api", GraphQL(schema))],
-    default=StaticFiles(directory="static", html=True),
+    middleware=[Middleware(TraefikAPIMiddleware)]
 )

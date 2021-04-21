@@ -1,20 +1,24 @@
-from .api import get_from_api, wait_from_api, wait_delete_from_api
+
 from ..utils.registration import registerQuery, registerMutation, createType
-from . import client as redis_client
+from . import with_traefik_http, with_traefik_redis
 
 TraefikRouter = createType("TraefikRouter")
 
-
-@registerQuery("traefikRouters")
-async def resolve_TraefikRouters(*_):
+async def get_routers(client, *protocols):
     all_routers = []
-    for proto in ["http", "tcp", "udp"]:
-        routers = await get_from_api(f"/{proto}/routers")
+    for proto in protocols:
+        routers = await client.get(f"/{proto}/routers")
         for router in routers:
             router["protocol"] = proto
         all_routers += routers
 
     return all_routers
+
+
+@registerQuery("traefikRouters")
+@with_traefik_http
+async def resolve_TraefikRouters(*_, traefik_http):
+    return await get_routers(traefik_http, "http", "tcp", "udp")
 
 
 @TraefikRouter.field("enabled")
@@ -39,37 +43,42 @@ def resolve_traefikrouter_name(router, *_):
 
 
 @TraefikRouter.field("service")
-async def resolve_traefikrouter_name(router, *_):
-    return await get_from_api(f"/{router['protocol']}/services/{router['service']}")
+@with_traefik_http
+async def resolve_traefikrouter_name(router, *_, traefik_http):
+    return await traefik_http.get(f"/{router['protocol']}/services/{router['service']}")
 
 
 @registerMutation("traefikCreateRouter")
-async def mutation_create_router(*_, input):
+@with_traefik_http
+@with_traefik_redis
+async def mutation_create_router(*_, traefik_redis, traefik_http, input):
     protocol = input["protocol"]
     name = input["name"]
     print(input)
     if "rule" in input:
-        redis_client.set(f"{protocol}/routers/{name}/rule", input["rule"])
-    redis_client.set(f"{protocol}/routers/{name}/service", input["service"])
+        traefik_redis.set(f"{protocol}/routers/{name}/rule", input["rule"])
+    traefik_redis.set(f"{protocol}/routers/{name}/service", input["service"])
 
 
     for idx, entrypoint in enumerate(input["entryPoints"]):
-        redis_client.set(f"{protocol}/routers/{name}/entrypoints/{idx}", entrypoint)
+        traefik_redis.set(f"{protocol}/routers/{name}/entrypoints/{idx}", entrypoint)
 
     if "middlewares" in input:
         for idx, entrypoint in enumerate(input["middlewares"]):
-            redis_client.set(f"{protocol}/routers/{name}/middlewares/{idx}", entrypoint)
+            traefik_redis.set(f"{protocol}/routers/{name}/middlewares/{idx}", entrypoint)
 
-    router = await wait_from_api(f"/{protocol}/routers/{name}@redis")
+    router = await traefik_http.wait(f"/{protocol}/routers/{name}@redis")
     router["protocol"] = protocol
     return router
 
 
 @registerMutation("traefikDeleteRouter")
-async def mutation_delete_router(*_, input):
+@with_traefik_http
+@with_traefik_redis
+async def mutation_delete_router(*_, traefik_redis, traefik_http, input):
     protocol = input["protocol"]
     name = input["name"]
     redis_name = name.split("@")[0] if "@" in name else name
-    redis_client.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
-    ok = await wait_delete_from_api(f"/{protocol}/routers/{name}")
+    traefik_redis.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
+    ok = await traefik_http.wait_delete(f"/{protocol}/routers/{name}")
     return {"ok": ok}

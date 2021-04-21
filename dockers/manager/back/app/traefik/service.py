@@ -1,16 +1,17 @@
 from ..utils.registration import registerQuery, createType
-from .api import get_from_api
-
+from . import with_traefik_http
 TraefikService = createType("TraefikService")
 TraefikServiceLoadBalancer = createType("TraefikServiceLoadBalancer")
 TraefikServiceLoadBalancerServer = createType("TraefikServiceLoadBalancerServer")
 
 
+
 @registerQuery("traefikServices")
-async def resolve_TraefikServices(*_):
+@with_traefik_http
+async def resolve_TraefikServices(*_, traefik_http):
     all_routers = []
     for proto in ["http", "tcp", "udp"]:
-        routers = await get_from_api(f"/{proto}/services")
+        routers = await traefik_http.get(f"/{proto}/services")
         for router in routers:
             router["protocol"] = proto
         all_routers += routers
@@ -31,12 +32,13 @@ def resolve_loadBalancer(service, *_):
 
 
 @TraefikService.field("usedBy")
-async def resolve_usedBy(service, *_):
+@with_traefik_http
+async def resolve_usedBy(service, *_, traefik_http):
     if "usedBy" not in service:
         return []
     routers = []
     for router_name in service["usedBy"]:
-        router = await get_from_api(f"/{service['protocol']}/routers/{router_name}")
+        router = await traefik_http.get(f"/{service['protocol']}/routers/{router_name}")
         routers.append(router)
     return routers
 

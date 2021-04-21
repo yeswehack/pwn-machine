@@ -1,6 +1,5 @@
 from ..utils.registration import registerQuery, createType, createInterface
-from .api import get_from_api
-
+from . import with_traefik_http
 MAPPING = {
     "addprefix": "TraefikMiddlewareAddPrefix",
     "basicauth": "TraefikMiddlewareBasicAuth",
@@ -46,17 +45,18 @@ for object_type in MAPPING.values():
     ObjectType.field(key)(create_basic_resolver(key))
 
     @ObjectType.field("usedBy")
-    async def resolve_usedBy(middleware, *_):
+    @with_traefik_http
+    async def resolve_usedBy(middleware, *_, traefik_http):
         if "usedBy" not in middleware:
             return []
         routers = []
         for router_name in middleware["usedBy"]:
-            router = await get_from_api(f"/http/routers/{router_name}")
+            router = await traefik_http.get(f"/http/routers/{router_name}")
             routers.append(router)
         return routers
     
     @ObjectType.field("enabled")
-    def resolve_enabled(middleware, *_):
+    def resolve_enabled(middleware, info):
         return middleware["status"] == "enabled"
 
 @TraefikMiddleware.type_resolver
@@ -64,6 +64,7 @@ def resolve_middleware_type(obj, *_):
     return MAPPING[obj["type"]]
 
 @registerQuery("traefikMiddlewares")
-async def resolve_middlewares(*_):
-    return await get_from_api("/http/middlewares")
+@with_traefik_http
+async def resolve_middlewares(*_, traefik_http):
+    return await traefik_http.get("/http/middlewares")
 
