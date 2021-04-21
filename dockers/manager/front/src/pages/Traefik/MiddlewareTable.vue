@@ -18,12 +18,7 @@
     </template>
 
     <template #body-cell-enabled="{row}">
-      <q-badge
-        :color="row.enabled ? 'positive' : 'negative'"
-        class="q-ml-sm text-mono"
-      >
-        {{ row.enabled ? "OK" : "ERROR" }}
-      </q-badge>
+      <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
       <MiddlewareDetails
@@ -50,8 +45,15 @@ import RouterLink from "src/components/Traefik/Router/Link.vue";
 import CreateMiddleware from "src/components/Traefik/Middleware/Create.vue";
 import Middleware from "src/components/Traefik/Middleware/Middleware.vue";
 import db from "src/gql";
+import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 export default {
-  components: { CreateMiddleware, MiddlewareDetails, BaseTable, RouterLink },
+  components: {
+    CreateMiddleware,
+    MiddlewareDetails,
+    BaseTable,
+    RouterLink,
+    StatusBadge
+  },
   apollo: {
     middlewares: {
       query: db.traefik.GET_MIDDLEWARES,

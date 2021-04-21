@@ -31,12 +31,7 @@
       />
     </template>
     <template #body-cell-enabled="{row}">
-      <q-badge
-        :color="row.enabled ? 'positive' : 'negative'"
-        class="q-ml-sm text-mono"
-      >
-        {{ row.enabled ? "OK" : "ERROR" }}
-      </q-badge>
+      <status-badge :status="row.enabled"/>
     </template>
 
     <template #details="{ row }">
@@ -53,6 +48,7 @@ import ServiceLink from "src/components/Traefik/Service/Link.vue";
 import MiddlewareLink from "src/components/Traefik/Middleware/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import db from "src/gql";
+import StatusBadge from 'src/components/Traefik/StatusBadge.vue';
 
 export default {
   components: {
@@ -60,7 +56,8 @@ export default {
     BaseTable,
     ServiceLink,
     MiddlewareLink,
-    ProtocolBadge
+    ProtocolBadge,
+    StatusBadge
   },
   apollo: {
     routers: {
