@@ -27,7 +27,7 @@ class TraefikRedisApi:
         full_pattern = self._with_root_key(pattern)
         log(f"REDIS delete pattern: {full_pattern}")
         for key in self.client.keys(full_pattern):
-            log(f"REDIS delete key: {key}")
+            log(f"REDIS delete key: {key.decode()}")
             self.client.delete(key)
 
 
