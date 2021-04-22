@@ -1,8 +1,7 @@
 query overview {
   traefikEntrypoints {
     name
-    port
-    protocol
+    address
     usedBy {
       name
       protocol

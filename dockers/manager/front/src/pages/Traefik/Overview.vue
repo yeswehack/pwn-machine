@@ -64,7 +64,7 @@ export default {
           edge(
             "Internet",
             `ep-${entrypoint.name}`,
-            `${entrypoint.port}/${entrypoint.protocol}`
+            `${entrypoint.address}`
           )
         );
 
@@ -167,7 +167,7 @@ export default {
     }
   },
   watch: {
-    entrypoints(v) {
+    entrypoints() {
       this.init();
     }
   }
