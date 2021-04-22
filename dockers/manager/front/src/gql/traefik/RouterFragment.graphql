@@ -1,6 +1,7 @@
 fragment RouterFragment on TraefikRouter {
   name
   entryPoints
+  error
   service {
     name
     enabled

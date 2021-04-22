@@ -1,4 +1,5 @@
 type TraefikRouter {
+    nodeId: ID!
     name: String!
     protocol: TraefikProtocol!
     entryPoints: [String!]!
@@ -8,7 +9,7 @@ type TraefikRouter {
     enabled: Boolean!
     using: [String]
     provider: String
-    error: [String]
+    error: [String!]
     middlewares: [TraefikMiddleware!]!
 }
 

@@ -1,34 +1,26 @@
 <template>
   <div id="overview">
     <div id="graph-container"></div>
-    <q-inner-loading :showing="loading">
+    <q-inner-loading :showing="$apollo.queries.entrypoints.loading">
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
 import db from "src/gql";
 
 export default {
-  props: {
-    services: Array,
-    routers: Array,
-    middlewares: Array
-  },
   apollo: {
     entrypoints: {
       query: db.traefik.OVERVIEW,
       update: data => data.traefikEntrypoints
     }
   },
-  computed: mapGetters(["loading"]),
-  mounted() {},
   methods: {
-    init() {
+    renderOveriew(entrypoints) {
       cytoscape.use(dagre);
 
       const internet = {
@@ -58,7 +50,7 @@ export default {
       const middlewareNode = name => node(`m-${name}`, name, ["middleware"]);
       const routerMap = {};
 
-      for (const entrypoint of this.entrypoints) {
+      for (const entrypoint of entrypoints) {
         elements.push(entrypointNode(entrypoint.name));
         elements.push(
           edge(
@@ -102,6 +94,7 @@ export default {
               height: 10,
               "text-margin-y": "-2",
               shape: "ellipse",
+              "background-fit": "cover",
               "border-width": 1
             }
           },
@@ -114,16 +107,13 @@ export default {
             style: {
               shape: "round-rectangle",
               "background-image": "/icons/log-in-outline.png",
-              "background-fit": "cover"
             }
           },
           {
             selector: ".router",
             style: {
               shape: "round-rectangle",
-              "border-color": "#1e54d5",
               "background-image": "/icons/globe-outline.png",
-              "background-fit": "cover"
             }
           },
           {
@@ -131,7 +121,6 @@ export default {
             style: {
               shape: "round-rectangle",
               "background-image": "/icons/layers.png",
-              "background-fit": "cover"
             }
           },
           {
@@ -139,7 +128,6 @@ export default {
             style: {
               shape: "round-rectangle",
               "background-image": "/icons/flash.png",
-              "background-fit": "cover"
             }
           },
           {
@@ -167,8 +155,8 @@ export default {
     }
   },
   watch: {
-    entrypoints() {
-      this.init();
+    entrypoints(entrypoints) {
+      this.renderOveriew(entrypoints);
     }
   }
 };

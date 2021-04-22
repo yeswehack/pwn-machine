@@ -1,238 +1,170 @@
 <template>
-  <q-card :bordered="popup" class="create-router bg-dark" :class="{ popup }">
-    <q-form @submit="submit" @reset="reset">
-      <q-card-section>
-        <div class="row items-center">
-          <div class="text-h6" v-if="!edit">Create a new router</div>
-          <div class="text-h6" v-else>Configuration</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup v-if="!edit" />
-        </div>
-      </q-card-section>
-      <q-separator v-if="!edit" />
-      <q-card-section class="q-col-gutter-md">
-        <q-input
-          v-model="form.name"
-          :rules="[validateName]"
-          required
-          label="Name"
-        />
-        <q-select
-          v-model="form.type"
-          :options="types"
-          label="Type"
-          v-on:input="typeChange(form.type)"
-        />
-        <q-input
-          v-if="form.type != 'udp'"
-          v-model="form.rule"
-          :rules="[validateRule]"
-          lazy-rules
-          required
-          :hint="
-            form.type == 'http' ? 'ex: Host(`example.com`)' : 'ex: HostSNI(`*`)'
-          "
-          label="Rule"
-        />
-        <q-select
-          v-model="form.entrypoints"
-          multiple
-          :options="getEntrypointsForType(form.type)"
-          label="Entrypoints"
-        >
-        </q-select>
-        <q-select
-          v-model="form.service"
-          :options="servicesNameForType(form.type)"
-          label="Service"
-        >
-          <template #after>
-            <q-btn
-              title="Create a new service"
-              round
-              required
-              size="sm"
-              color="positive"
-              icon="add"
-              @click="createServiceVisible = true"
-            />
-          </template>
-        </q-select>
-      </q-card-section>
+  <q-form @submit="createRouter">
+    <q-card-section class="q-gutter-sm">
+      <q-input v-model="form.name" autofocus required label="Name" v-if="!hideName"/>
+      <q-select
+        v-model="form.protocol"
+        :options="protocols"
+        required
+        :rules="[nonEmpty]"
+        label="Protocol"
+        @input="protocolUpdated"
+      />
+      <q-input
+        v-if="form.protocol != 'udp'"
+        v-model="form.rule"
+        :disable="!form.protocol"
+        debounce="100"
+        :rules="[validateRule]"
+        :hint="
+          form.protocol == 'http'
+            ? 'ex: Host(`example.com`)'
+            : 'ex: HostSNI(`*`)'
+        "
+        label="Rule"
+      />
+      <q-select
+        v-model="form.entrypoints"
+        :disable="!form.protocol"
+        multiple
+        use-chips
+        :rules="[nonEmptyArray]"
+        :options="relevantentrypoints"
+        label="entrypoints"
+      />
 
-      <q-dialog v-model="createServiceVisible">
-        <CreateService
-          popup
-          :services="services_"
-          :routers="routers_"
-          :entrypoints="entrypoints_"
-          v-on:created="serviceCreated"
-        />
-      </q-dialog>
-      <q-card-actions align="right" class="q-pa-md">
-        <q-btn
-          v-if="edit"
-          label="Reset"
-          type="reset"
-          color="warning"
-          flat
-          class="q-py-xs q-px-md"
-        />
-        <q-btn color="positive" type="submit" class="q-py-xs q-px-md">
-          {{ this.saveText }}
-        </q-btn>
-      </q-card-actions>
-    </q-form>
-  </q-card>
+      <q-select
+        :disable="!form.protocol"
+        v-model="form.service"
+        :options="relevantServices"
+        :rules="[nonEmpty]"
+        label="Service"
+      >
+        <template #after>
+          <q-btn
+            title="Create a new service"
+            round
+            dense
+            class="bg-green"
+            color="positive"
+            icon="add"
+            @click="createService"
+          />
+        </template>
+      </q-select>
+    </q-card-section>
+    <q-card-actions align="right">
+      <q-btn color="warning" label="Cancel" @click="$emit('cancel')" />
+      <q-btn color="positive" type="submit"  label="Create" />
+    </q-card-actions>
+  </q-form>
 </template>
 
 <script>
-import CreateService from "src/components/Traefik/Service/Create.vue";
-
-function filterLowercase(array, val) {
-  const needle = val.toLocaleLowerCase();
-  return array.filter(v => v.toLocaleLowerCase().indexOf(needle) > -1);
-}
-
+import ServiceDialog from "../Service/Dialog.vue";
+import { extend } from "quasar";
+import db from "src/gql";
 export default {
-  components: { CreateService },
   props: {
-    services: {
-      type: Array,
-      default: () => []
-    },
-    routers: {
-      type: Array,
-      default: () => []
-    },
+    hideName: {type: Boolean, default: false},
+    router: { type: Object, default: null }
+  },
+  apollo: {
     entrypoints: {
-      type: Array,
-      default: () => []
+      query: db.traefik.GET_ENTRYPOINTS,
+      update: data => data.traefikEntrypoints
     },
-    popup: {
-      type: Boolean,
-      default: false
-    },
-    edit: {
-      type: Boolean,
-      default: false
-    },
-    info: {
-      type: Object,
-      default: null
+    services: {
+      query: db.traefik.GET_SERVICES,
+      update: data => data.traefikServices
     }
   },
   data() {
-    const data = {
-      form: {
-        name: "",
-        rule: "",
-        entrypoints: [],
-        type: "http",
-        service: ""
-      },
-      types: ["http", "tcp", "udp"],
-      saveText: this.edit ? "Modify" : "Create",
-      originalName: null,
-      createServiceVisible: false,
-      connect: true,
-      services_: this.services,
-      routers_: this.routers,
-      entrypoints_: this.entrypoints
+    const originalForm = {
+      name: this.router?.name,
+      protocol: this.router?.protocol || "http",
+      rule: this.router?.rule,
+      entrypoints: this.router?.entryPoints || [],
+      service: this.router?.service?.name
     };
-    if (this.info != null) {
-      this.doReset(data.form);
-    }
-    return data;
+    const form = extend(true, {}, originalForm);
+    const protocols = ["http", "tcp", "udp"];
+    return { form, protocols, originalForm };
   },
   computed: {
-    servicesName() {
-      return this.services_.map(e => e.name);
+    relevantentrypoints() {
+      const protocol = this.form.protocol == "udp" ? "udp" : "tcp";
+      const entrypoints = (this.entrypoints || []).filter(
+        ep => ep.protocol == protocol
+      );
+      return entrypoints.map(ep => ({
+        label: ep.name,
+        protocol: ep.protocol
+      }));
+    },
+    relevantServices() {
+      const services = (this.services || []).filter(
+        s => s.protocol == this.form.protocol
+      );
+      return services.map(s => ({
+        label: s.name,
+        protocol: s.protocol
+      }));
     }
   },
-
   methods: {
-    getEntrypointsForType(type) {
-      type = type == "http" ? "tcp" : type;
-      return this.entrypoints_.filter(e => e.type == type).map(e => e.name);
+    reset() {
+      this.form = extend(true, {}, originalForm);
     },
-    serviceCreated(name) {
-      this.services_.push({ name });
-      this.service = name;
-      this.createServiceVisible = false;
+    createRouter() {
+      const input = {
+        name: this.form.name,
+        protocol: this.form.protocol,
+        rule: this.form.rule,
+        entryPoints: this.form.entrypoints.map(e => e.label),
+        service: this.form.service.label
+      };
+      this.$apollo
+        .mutate({
+          mutation: db.traefik.CREATE_ROUTER,
+          variables: { input },
+          refetchQueries: [{ query: db.traefik.GET_ROUTERS }]
+        })
+        .then(r => {
+          this.$emit("ok");
+        });
     },
-    servicesNameForType(type) {
-      return this.services_.filter(s => s.type == type).map(s => s.name);
+    createService() {
+      this.$q.dialog({
+        component: ServiceDialog,
+        parent: this
+      });
     },
-    validateName(name) {
-      if (!name) {
-        return "Router name is required";
+    nonEmpty(val) {
+      if (val === null || val === undefined) {
+        return "You must make a selection.";
       }
-      if (!this.$api.traefik.isValidRouterName(name)) {
-        return "Router name can only contains a-z 0-9 - _ .";
+    },
+    nonEmptyArray(val) {
+      if (val === null || val === undefined || val.length == 0) {
+        return "You must make a selection.";
       }
-      if (!this.edit || this.form.originalName != name) {
-        if (this.routers_.map(s => s.name.split("@")[0]).indexOf(name) > -1) {
-          return `A Router with this name already exists`;
+    },
+    protocolUpdated(newProtocol) {
+      this.form.entrypoints = this.form.entrypoints.filter(({ protocol }) => {
+        if (protocol == "tcp" && newProtocol == "http") {
+          return true;
         }
-      }
-      return true;
+        return protocol == newProtocol;
+      });
+
+      this.form.service = null;
     },
     validateRule(rule) {
       if (!this.$api.traefik.isValidRule(rule)) {
         return `Syntax error`;
       }
-    },
-    typeChange(type) {
-      this.$emit("type-change", type);
-      this.form.service = null;
-    },
-    doReset(target) {
-      target.originalName = this.info.name.split("@")[0];
-      target.name = target.originalName;
-      target.rule = this.info.rule;
-      target.type = this.info.type;
-      target.entrypoints = this.info.entryPoints;
-      target.service = this.info.service;
-    },
-    reset() {
-      this.doReset(this.form);
-    },
-
-    submit() {
-      const router = {
-        name: this.form.name,
-        rule: this.form.rule,
-        type: this.form.type,
-        entrypoints: this.form.entrypoints,
-        service: this.form.service
-      };
-      const response = this.edit
-        ? this.$api.traefik.updateRouter(this.form.originalName, router)
-        : this.$api.traefik.createRouter(router);
-
-      if ("error" in response) {
-        this.$q.notify({
-          color: "negative",
-          message: response.error
-        });
-      } else {
-        this.$q.notify({
-          color: "positive",
-          message: this.edit
-            ? `Router ${this.form.originalName} modified.`
-            : `Router ${this.form.name} created.`
-        });
-        this.$emit("created", response.name);
-      }
     }
   }
 };
 </script>
-
-<style>
-.popup {
-  width: 700px;
-  max-width: 80vw;
-}
-</style>
