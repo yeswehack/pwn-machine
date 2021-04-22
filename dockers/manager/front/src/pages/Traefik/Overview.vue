@@ -11,20 +11,22 @@
 import { mapGetters } from "vuex";
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
+import db from "src/gql";
 
 export default {
   props: {
     services: Array,
     routers: Array,
-    entrypoints: Array,
     middlewares: Array
   },
-  computed: mapGetters(["loading"]),
-  mounted() {
-    if (!this.loading) {
-      this.init();
+  apollo: {
+    entrypoints: {
+      query: db.traefik.OVERVIEW,
+      update: data => data.traefikEntrypoints
     }
   },
+  computed: mapGetters(["loading"]),
+  mounted() {},
   methods: {
     init() {
       cytoscape.use(dagre);
@@ -35,7 +37,7 @@ export default {
       };
       const elements = [internet];
       const node = (id, label = "", classes = []) => {
-        label = label.endsWith("@redis") ? label.slice(0, -6) : label
+        label = label.endsWith("@redis") ? label.slice(0, -6) : label;
         return {
           data: { id, label },
           classes
@@ -54,40 +56,33 @@ export default {
       const routerNode = name => node(`r-${name}`, name, ["router"]);
       const serviceNode = name => node(`s-${name}`, name, ["service"]);
       const middlewareNode = name => node(`m-${name}`, name, ["middleware"]);
+      const routerMap = {};
+
       for (const entrypoint of this.entrypoints) {
         elements.push(entrypointNode(entrypoint.name));
         elements.push(
           edge(
             "Internet",
             `ep-${entrypoint.name}`,
-            `${entrypoint.address}/${entrypoint.type}`
+            `${entrypoint.port}/${entrypoint.protocol}`
           )
         );
-      }
 
-      const routerMap = {};
-
-      for (const router of this.routers) {
-        elements.push(routerNode(router.name));
-        routerMap[router.name] = `r-${router.name}`;
-
-        for (const middleware of router.middlewares || []) {
-          elements.push(middlewareNode(middleware));
-          elements.push(edge(routerMap[router.name], `m-${middleware}`));
-          routerMap[router.name] = `m-${middleware}`;
-        }
-        for (const entrypoint of router.entryPoints) {
-          elements.push(entrypointNode(entrypoint));
+        for (const router of entrypoint.usedBy) {
+          elements.push(routerNode(router.name));
           elements.push(
-            edge(`ep-${entrypoint}`, `r-${router.name}`, router.rule)
+            edge(`ep-${entrypoint.name}`, `r-${router.name}`, router.rule)
           );
-        }
-      }
 
-      for (const service of this.services) {
-        elements.push(serviceNode(service.name));
-        for (const router of service.usedBy || []) {
-          elements.push(edge(routerMap[router], `s-${service.name}`));
+          let lastMiddleware = `r-${router.name}`;
+          for (const { name: middleware } of router.middlewares || []) {
+            elements.push(middlewareNode(middleware));
+            elements.push(edge(lastMiddleware, `m-${middleware}`));
+            lastMiddleware = `m-${middleware}`;
+          }
+
+          elements.push(serviceNode(router.service.name));
+          elements.push(edge(lastMiddleware, `s-${router.service.name}`));
         }
       }
 
@@ -107,7 +102,7 @@ export default {
               height: 10,
               "text-margin-y": "-2",
               shape: "ellipse",
-              'border-width': 1,
+              "border-width": 1
             }
           },
           {
@@ -116,19 +111,36 @@ export default {
           },
           {
             selector: ".entrypoint",
-            style: { shape: "round-rectangle", "background-image": "/icons/log-in-outline.png", "background-fit": "cover" }
+            style: {
+              shape: "round-rectangle",
+              "background-image": "/icons/log-in-outline.png",
+              "background-fit": "cover"
+            }
           },
           {
             selector: ".router",
-            style: { shape: "round-rectangle", "border-color": "#1e54d5", "background-image": "/icons/globe-outline.png", "background-fit": "cover" }
+            style: {
+              shape: "round-rectangle",
+              "border-color": "#1e54d5",
+              "background-image": "/icons/globe-outline.png",
+              "background-fit": "cover"
+            }
           },
           {
             selector: ".middleware",
-            style: { shape: "round-rectangle", "background-image": "/icons/layers.png", "background-fit": "cover" }
+            style: {
+              shape: "round-rectangle",
+              "background-image": "/icons/layers.png",
+              "background-fit": "cover"
+            }
           },
           {
             selector: ".service",
-            style: { shape: "round-rectangle", "background-image": "/icons/flash.png", "background-fit": "cover" }
+            style: {
+              shape: "round-rectangle",
+              "background-image": "/icons/flash.png",
+              "background-fit": "cover"
+            }
           },
           {
             selector: "edge",
@@ -155,10 +167,8 @@ export default {
     }
   },
   watch: {
-    loading(v) {
-      if (v == false) {
-        this.init();
-      }
+    entrypoints(v) {
+      this.init();
     }
   }
 };

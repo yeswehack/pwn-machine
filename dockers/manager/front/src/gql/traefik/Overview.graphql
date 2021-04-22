@@ -1,0 +1,20 @@
+query overview {
+  traefikEntrypoints {
+    name
+    port
+    protocol
+    usedBy {
+      name
+      protocol
+      rule
+
+      middlewares {
+        name
+      }
+
+      service {
+        name
+      }
+    }
+  }
+}

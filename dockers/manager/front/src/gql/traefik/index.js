@@ -4,6 +4,7 @@ import GET_SERVICES from "./GetServices.graphql";
 import GET_MIDDLEWARES from "./GetMiddlewares.graphql";
 import CREATE_ROUTER from "./CreateRouter.graphql";
 import DELETE_ROUTER from "./DeleteRouter.graphql";
+import OVERVIEW from "./Overview.graphql";
 
 export default {
   GET_ROUTERS,
@@ -11,5 +12,6 @@ export default {
   GET_ENTRYPOINTS,
   CREATE_ROUTER,
   GET_SERVICES,
+  OVERVIEW,
   DELETE_ROUTER
 };
