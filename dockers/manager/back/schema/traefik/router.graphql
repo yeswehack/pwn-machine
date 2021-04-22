@@ -9,6 +9,7 @@ type TraefikRouter {
     using: [String]
     provider: String
     error: [String]
+    middlewares: [TraefikMiddleware!]!
 }
 
 
