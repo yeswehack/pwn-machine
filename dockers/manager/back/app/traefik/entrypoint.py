@@ -16,12 +16,17 @@ entrypoint_re = re.compile(
 async def resolve_TraefikEntrypoints(*_, traefik_http):
     entrypoints = []
     for entrypoint in await traefik_http.get(f"/entrypoints"):
-        address = entrypoint_re.match(entrypoint["address"]).groupdict()
+        groups = entrypoint_re.match(entrypoint["address"]).groupdict()
+        ip = groups["ip"] or "0.0.0.0"
+        port = groups["port"] or 0
+        protocol = groups["protocol"] or "tcp"
+        address = f"{ip}:{port}/{protocol}"
         entrypoints.append(
             {
-                "ip": address["ip"] or "0.0.0.0",
-                "port": address["port"] or 0,
-                "protocol": address["protocol"] or "tcp",
+                "ip": ip,
+                "port": port,
+                "protocol": protocol,
+                "address": address,
                 "name": entrypoint["name"],
             }
         )
