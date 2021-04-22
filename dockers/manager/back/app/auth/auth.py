@@ -3,44 +3,67 @@ import time
 import argon2
 import pyotp
 import jwt
-from warnings import warn
-from ..utils.registration import registerMutation, registerQuery, createType
+
+from starlette.responses import Response
 from ..redis import client as redis_client
 
 hasher = argon2.PasswordHasher()
-issuer = 'pwnmachine'
-
-
+ISSUER = "pwnmachine"
 SECRET = os.urandom(32)
+COOKIE = "__Host-token"
 
-@registerMutation('login')
-def resolve_login(*_, password, otp, expire=None):
-    admin_hash = redis_client.get('admin.hash')
-    admin_totp = redis_client.get('admin.totp')
+
+async def login(request):
+    form = await request.form()
+
+    admin_hash = redis_client.get("admin.hash")
+    admin_totp = redis_client.get("admin.totp")
 
     try:
-        hasher.verify(admin_hash, password)
+        hasher.verify(admin_hash, form["password"])
     except:
-        raise Exception('Invalid password')
-    if not pyotp.TOTP(admin_totp).verify(otp):
-        raise Exception('Invalid OTP')
+        return Response("Invalid password", 401)
+    if not pyotp.TOTP(admin_totp).verify(form["otp"]):
+        return Response("Invalid OTP", 401)
 
     now = int(time.time())
-    payload = { 'iss': issuer, 'iat': now }
-    if expire is not None:
-        payload['exp'] = now + expire
-    
-    token = jwt.encode(payload, secret)
-    redis_client.set(f'admin.tokens.{token}', '*', expire)
-    return { 'token': token, 'expire': payload.get('exp') }
+    exp = int(form["expire"])
+    payload = {"iss": ISSUER, "iat": now, "exp": now + exp}
+    token = jwt.encode(payload, SECRET)
 
-@registerMutation('register')
-def resolve_register(*_, password, otp):
-    admin_totp = redis_client.get('admin.totp')
-    if not pyotp.TOTP(admin_totp).verify(otp):
-        raise Exception('Invalid OTP')
-    redis_client.set('admin.hash', hasher.hash(password))
+    response = Response()
+    response.set_cookie(
+        key=COOKIE,
+        value=token,
+        max_age=exp,
+        secure=True,
+        httponly=True,
+        samesite="Strict",
+    )
+    return response
 
-#warn('REMOVE DEFAULT PASSWORD AND TOTP')
-#redis_client.set('admin.totp', 'W7RPT7JWR6YNSVOB')
-#redis_client.set('admin.hash', hasher.hash('admin'))
+
+async def register(request):
+    pass
+
+
+def auth_middleware(resolver, obj, info, **args):
+    # Skip auth checking for non-root fields
+    if info.path.prev is not None:
+        return resolver(obj, info, **args)
+    # Skip auth checking for introspection queries
+    if info.field_name.startswith("__"):
+        return resolver(obj, info, **args)
+
+    try:
+        token = info.context["request"].cookies[COOKIE]
+        jwt.decode(token, SECRET, ["HS256"], issuer=ISSUER)
+    except:
+        raise Exception("Unauthorized")
+
+    return resolver(obj, info, **args)
+
+
+# warn('REMOVE DEFAULT PASSWORD AND TOTP')
+# redis_client.set('admin.totp', 'W7RPT7JWR6YNSVOB')
+# redis_client.set('admin.hash', hasher.hash('admin'))

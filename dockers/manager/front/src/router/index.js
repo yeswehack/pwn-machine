@@ -14,20 +14,6 @@ Vue.use(VueRouter)
  * with the Router instance.
  */
 
-function AuthMiddleware(store) {
-  return function (to, from, next) {
-    if (to.matched.some(r => r.meta.noauth)) {
-      return next()
-    }
-    console.log("Valid token", store.getters.validToken)
-    if (store.getters.validToken) {
-      next()
-    } else {
-      next({ name: "login" })
-    }
-  }
-}
-
 export default function ({ store }) {
   const Router = new VueRouter({
     scrollBehavior: (to, from) => {
@@ -46,6 +32,5 @@ export default function ({ store }) {
     base: process.env.VUE_ROUTER_BASE
   })
 
-  Router.beforeEach(AuthMiddleware(store))
   return Router
 }

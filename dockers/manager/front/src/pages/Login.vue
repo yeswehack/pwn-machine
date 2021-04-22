@@ -10,12 +10,24 @@
           </q-card-section>
           <q-separator />
           <q-card-section>
-            <q-input type="password" label="Password" v-model="password" required />
-            <q-input type="number" min="0" label="OTP" v-model.number="otp" required />
+            <q-input
+              type="password"
+              label="Password"
+              v-model="password"
+              required
+            />
+            <q-input
+              type="number"
+              min="0"
+              label="OTP"
+              v-model="otp"
+              required
+            />
             <q-select
               label="Remember me"
               :options="expireOptions"
-              emit-value map-options
+              emit-value
+              map-options
               v-model="expire"
             />
           </q-card-section>
@@ -30,54 +42,51 @@
 </template>
 
 <script>
-import { login as loginMutation } from "src/gql/auth/mutations"
+const dayDuration = 60 * 60 * 24;
+const expireOptions = [
+  {
+    label: "One day",
+    value: dayDuration
+  },
+  {
+    label: "One week",
+    value: dayDuration * 7
+  },
+  {
+    label: "One month",
+    value: dayDuration * 30
+  },
+];
 
 export default {
-  data() {
-    const dayDuration = 60 * 60 * 24;
-    const expireOptions = [
-      {
-        label: "One day",
-        value: dayDuration
-      },
-      {
-        label: "One week",
-        value: dayDuration * 7
-      },
-      {
-        label: "One month",
-        value: dayDuration * 30
-      },
-      {
-        label: "Forever",
-        value: null
-      }
-    ];
-    return { password: null, otp: null, expire: null, expireOptions };
+  created() {
+    this.expireOptions = expireOptions;
   },
+  data: () => ({
+    password: null,
+    otp: null,
+    expire: expireOptions[0].value,
+  }),
   methods: {
     async submit() {
-      try {
-        const {data: {login}} =
-          await this.$apollo.mutate({
-            mutation: loginMutation,
-            variables: {
-              password: this.password,
-              otp: this.otp,
-              expire: this.expire,
-            }
-          });
-        this.$store.commit("setToken", login);
-        this.$router.push({name: "index"});
+      const r =
+        await fetch("/api/login", {
+          method: "POST",
+          body: new URLSearchParams({
+            password: this.password,
+            otp: this.otp,
+            expire: this.expire,
+          })
+        });
 
-      } catch ({graphQLErrors}) {
-        graphQLErrors.forEach(({message}) => {
-          this.$q.notify({
-            color: "negative",
-            message,
-            position: "top",
-            timeout: 3000
-          });
+      if (r.ok) {
+        this.$router.push({name: "index"});
+      } else {
+        this.$q.notify({
+          color: "negative",
+          message: await r.text(),
+          position: "top",
+          timeout: 3000
         });
       }
     }
