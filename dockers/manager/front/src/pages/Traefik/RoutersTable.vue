@@ -24,14 +24,16 @@
       <ServiceLink :service="row.service" />
     </template>
     <template #body-cell-middlewares="{row}">
-      <MiddlewareLink
-        :name="name"
-        :key="idx"
-        v-for="(name, idx) of row.middlewares"
-      />
+      <div class="q-gutter-xs">
+        <MiddlewareLink
+          :name="middleware.name"
+          :key="idx"
+          v-for="(middleware, idx) of row.middlewares"
+        />
+      </div>
     </template>
     <template #body-cell-enabled="{row}">
-      <status-badge :status="row.enabled"/>
+      <status-badge :status="row.enabled" />
     </template>
 
     <template #details="{ row }">
@@ -48,7 +50,7 @@ import ServiceLink from "src/components/Traefik/Service/Link.vue";
 import MiddlewareLink from "src/components/Traefik/Middleware/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import db from "src/gql";
-import StatusBadge from 'src/components/Traefik/StatusBadge.vue';
+import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 
 export default {
   components: {
@@ -78,8 +80,8 @@ export default {
       col("type"),
       col("rule"),
       col("entryPoints"),
-      col("service"),
       col("middlewares"),
+      col("service"),
       col("enabled")
     ];
 

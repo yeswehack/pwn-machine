@@ -4,5 +4,9 @@ query GetEntrypoints {
     ip
     port
     protocol
+    usedBy{
+      name
+      protocol
+    }
   }
 }

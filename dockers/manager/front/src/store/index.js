@@ -9,7 +9,7 @@ import VuexORM from '@vuex-orm/core'
 import VuexORMGraphQL from '@vuex-orm/plugin-graphql';
 
 import Docker from "./models/docker/Docker.js"
-import Image from "./models/docker/Image.js"
+import Imagea from "./models/docker/Image.js"
 
 import { DefaultAdapter, ConnectionMode } from '@vuex-orm/plugin-graphql';
 
@@ -31,7 +31,7 @@ class CustomAdapter extends DefaultAdapter {
 }
 
 const database = new VuexORM.Database()
-database.register(Image)
+database.register(Imagea)
 database.register(Docker)
 VuexORM.use(VuexORMGraphQL, {
   database,

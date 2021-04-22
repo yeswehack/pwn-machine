@@ -15,6 +15,9 @@ fragment RouterFragment on TraefikRouter {
       }
     }
   }
+  middlewares {
+    name
+  }
   priority
   rule
   enabled

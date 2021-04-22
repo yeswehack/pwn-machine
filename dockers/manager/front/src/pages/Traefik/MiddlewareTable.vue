@@ -17,6 +17,9 @@
       </div>
     </template>
 
+    <template #body-cell-middlewares="{row}">
+      <MiddlewareLink :name="middleware.name" v-for="middleware, idx of row.middlewares" :key="idx" /> 
+    </template>
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
