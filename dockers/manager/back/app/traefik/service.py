@@ -1,4 +1,4 @@
-from ..utils.registration import registerQuery, createType
+from ..utils import registerQuery, createType, base64_encode
 from . import with_traefik_http
 TraefikService = createType("TraefikService")
 TraefikServiceLoadBalancer = createType("TraefikServiceLoadBalancer")
@@ -9,19 +9,17 @@ TraefikServiceLoadBalancerServer = createType("TraefikServiceLoadBalancerServer"
 @registerQuery("traefikServices")
 @with_traefik_http
 async def resolve_TraefikServices(*_, traefik_http):
-    all_routers = []
-    for proto in ["http", "tcp", "udp"]:
-        routers = await traefik_http.get(f"/{proto}/services")
-        for router in routers:
-            router["protocol"] = proto
-        all_routers += routers
-
-    return all_routers
+    return await traefik_http.get_services()
 
 
 @TraefikService.field("enabled")
 def resolve_traefik_enabled(service, *_):
     return service["status"] == "enabled"
+
+
+@TraefikService.field("nodeId")
+async def resolve_nodeid(service, *_):
+    return base64_encode(["service", service["protocol"], service["name"]], json=True)
 
 
 @TraefikService.field("loadBalancer")
@@ -38,8 +36,7 @@ async def resolve_usedBy(service, *_, traefik_http):
         return []
     routers = []
     for router_name in service["usedBy"]:
-        router = await traefik_http.get(f"/{service['protocol']}/routers/{router_name}")
-        routers.append(router)
+        routers.append(await traefik_http.get_router(service['protocol'], router_name))
     return routers
 
 

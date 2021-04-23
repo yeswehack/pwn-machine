@@ -52,13 +52,14 @@ schema = ariadne.make_executable_schema(
 api_routes = [
     Route("/login", login, methods=["POST"]),
     Route("/register", register, methods=["POST"]),
-    Mount("/", GraphQL(schema, middleware=[auth_middleware])),
+    Mount("/", GraphQL(schema, middleware=[])),
 ]
 
 app = Starlette(
     routes=[
         Mount("/api", routes=api_routes),
-        Mount("/", StaticFiles(directory="static", html=True)),
+        #Mount("/a", StaticFiles(directory="static", html=True)),
     ],
     middleware=[Middleware(TraefikAPIMiddleware)],
 )
+

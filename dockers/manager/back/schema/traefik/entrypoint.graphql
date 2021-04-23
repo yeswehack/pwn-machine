@@ -1,4 +1,5 @@
 type TraefikEntrypoint {
+  nodeId: ID!
   ip: String
   port: Int
   protocol: TraefikProtocol

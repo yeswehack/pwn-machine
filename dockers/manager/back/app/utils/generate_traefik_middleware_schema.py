@@ -102,6 +102,7 @@ def dict_to_graphql(types, visited=set()):
         graphql += "}\n\n"
 
         graphql += f"type {type_name} implements TraefikMiddleware {{\n"
+        graphql += "  nodeId: ID!\n"
         graphql += "  name: String!\n"
         graphql += "  provider: String!\n"
         graphql += "  type: String!\n"
@@ -120,6 +121,7 @@ print(
     f""" 
 
 interface TraefikMiddleware {{
+    nodeId: ID!
     name: String!
     provider: String!
     type: String!

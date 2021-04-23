@@ -2,7 +2,7 @@ type TraefikRouter {
     nodeId: ID!
     name: String!
     protocol: TraefikProtocol!
-    entryPoints: [String!]!
+    entryPoints: [TraefikEntrypoint!]!
     service: TraefikService
     rule: String
     priority: Int!

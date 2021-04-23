@@ -1,7 +1,12 @@
 import aiohttp
 import asyncio
 import logging
+import re
 from contextlib import asynccontextmanager, contextmanager
+
+entrypoint_re = re.compile(
+    r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
+)
 
 logger = logging.getLogger("uvicorn")
 
@@ -92,6 +97,72 @@ class TraefikHTTPApi:
             return False
         except Exception as e:
             return True
+
+    # Entrypoints
+    def parse_entrypoint(self, entrypoint):
+        groups = entrypoint_re.match(entrypoint["address"]).groupdict()
+        ip = groups["ip"] or "0.0.0.0"
+        port = groups["port"] or 0
+        protocol = groups["protocol"] or "tcp"
+        address = f"{ip}:{port}/{protocol}"
+        return {
+            "ip": ip,
+            "port": port,
+            "protocol": protocol,
+            "address": address,
+            "name": entrypoint["name"],
+        }
+
+    async def get_entrypoint(self, name):
+        entrypoint = await self.get(f"/entrypoints/{name}")
+        return self.parse_entrypoint(entrypoint)
+
+    async def get_entrypoints(self):
+        entrypoints = []
+        for entrypoint in await self.get(f"/entrypoints"):
+            entrypoints.append(self.parse_entrypoint(entrypoint))
+        return entrypoints
+
+    # Routers
+
+    async def get_router(self, protocol, name):
+        router = await self.get(f"/{protocol}/routers/{name}")
+        router["protocol"] = protocol
+        return router
+
+    async def get_routers(self, protocols=("http", "tcp", "udp")):
+        all_routers = []
+        for proto in protocols:
+            routers = await self.get(f"/{proto}/routers")
+            for router in routers:
+                router["protocol"] = proto
+
+            all_routers += routers
+
+        return all_routers
+
+    # Middlewares
+    async def get_middleware(self, name):
+        return await self.get(f"/http/middlewares/{name}")
+
+    async def get_middlewares(self):
+        return await self.get(f"/http/middlewares")
+
+    # Services
+    async def get_service(self, protocol, name):
+        service = await self.get(f"/{protocol}/services/{name}")
+        service["protocol"] = protocol
+        return service
+
+    async def get_services(self, protocols=("http", "tcp", "udp")):
+        all_services = []
+        for proto in ["http", "tcp", "udp"]:
+            services = await self.get(f"/{proto}/services")
+            for service in services:
+                service["protocol"] = proto
+            all_services += services
+
+        return all_services
 
 
 @asynccontextmanager

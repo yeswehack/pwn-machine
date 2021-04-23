@@ -1,4 +1,4 @@
-from ..utils.registration import registerQuery, createType, createInterface
+from ..utils import registerQuery, createType, createInterface, base64_encode
 from . import with_traefik_http
 MAPPING = {
     "addprefix": "TraefikMiddlewareAddPrefix",
@@ -51,13 +51,19 @@ for object_type in MAPPING.values():
             return []
         routers = []
         for router_name in middleware["usedBy"]:
-            router = await traefik_http.get(f"/http/routers/{router_name}")
+            router = await traefik_http.get_router("http", router_name)
             routers.append(router)
         return routers
     
     @ObjectType.field("enabled")
     def resolve_enabled(middleware, info):
         return middleware["status"] == "enabled"
+
+
+@TraefikMiddleware.field("nodeId")
+async def resolve_nodeid(middleware, *_):
+    return base64_encode(["middleware", middleware["name"]], json=True)
+
 
 @TraefikMiddleware.type_resolver
 def resolve_middleware_type(obj, *_):
@@ -66,5 +72,5 @@ def resolve_middleware_type(obj, *_):
 @registerQuery("traefikMiddlewares")
 @with_traefik_http
 async def resolve_middlewares(*_, traefik_http):
-    return await traefik_http.get("/http/middlewares")
+    return await traefik_http.get_middlewares()
 

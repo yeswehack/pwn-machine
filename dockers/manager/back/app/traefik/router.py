@@ -1,25 +1,19 @@
-from ..utils.registration import registerQuery, registerMutation, createType
+from ..utils import (
+    registerQuery,
+    registerMutation,
+    createType,
+    base64_encode,
+    base64_decode,
+)
 from . import with_traefik_http, with_traefik_redis
 
 TraefikRouter = createType("TraefikRouter")
 
 
-async def get_routers(client, *protocols):
-    all_routers = []
-    for proto in protocols:
-        routers = await client.get(f"/{proto}/routers")
-        for router in routers:
-            router["protocol"] = proto
-
-        all_routers += routers
-
-    return all_routers
-
-
 @registerQuery("traefikRouters")
 @with_traefik_http
 async def resolve_TraefikRouters(*_, traefik_http):
-    return await get_routers(traefik_http, "http", "tcp", "udp")
+    return await traefik_http.get_routers()
 
 
 @TraefikRouter.field("enabled")
@@ -28,10 +22,15 @@ def resolve_traefik_enabled(obj, *_):
 
 
 @TraefikRouter.field("entryPoints")
-def resolve_traefik_enabled(obj, *_):
-    if "entryPoints" in obj:
-        return obj["entryPoints"]
-    return []
+@with_traefik_http
+async def resolve_traefik_enabled(router, *_, traefik_http):
+    if "entryPoints" not in router:
+        return []
+    return [
+        entrypoint
+        for entrypoint in await traefik_http.get_entrypoints()
+        if entrypoint["name"] in router["entryPoints"]
+    ]
 
 
 @TraefikRouter.field("priority")
@@ -45,19 +44,25 @@ def resolve_traefikrouter_name(router, *_):
 
 @TraefikRouter.field("middlewares")
 @with_traefik_http
-async def resolve_traefikrouter_name(router, *_, traefik_http):
+async def middlewares(router, *_, traefik_http):
     if "middlewares" not in router:
         return []
-    middlewares = []
-    for name in router["middlewares"]:
-        middlewares.append(await traefik_http.get(f"/http/middlewares/{name}"))
-    return middlewares
+    return [
+        middleware
+        for middleware in await traefik_http.get_middlewares()
+        if middleware["name"] in router["middlewares"]
+    ]
+
+
+@TraefikRouter.field("nodeId")
+async def resolve_nodeid(router, *_):
+    return base64_encode(["router", router["protocol"], router["name"]], json=True)
 
 
 @TraefikRouter.field("service")
 @with_traefik_http
 async def resolve_traefikrouter_name(router, *_, traefik_http):
-    return await traefik_http.get(f"/{router['protocol']}/services/{router['service']}")
+    return await traefik_http.get_service(router["protocol"], router["service"])
 
 
 @registerMutation("traefikCreateRouter")
