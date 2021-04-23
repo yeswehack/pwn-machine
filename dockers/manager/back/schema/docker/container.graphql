@@ -1,0 +1,7 @@
+type DockerContainer {
+    id: ID!
+    name: String!
+    labels: [DockerObjectLabel!]!
+    image: DockerImage!
+    #status:
+}

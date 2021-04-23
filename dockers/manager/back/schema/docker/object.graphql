@@ -1,0 +1,4 @@
+type DockerObjectLabel {
+    key: String!
+    value: String!
+}

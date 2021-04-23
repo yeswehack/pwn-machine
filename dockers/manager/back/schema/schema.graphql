@@ -1,4 +1,9 @@
 type Query {
+  dockerContainers: [DockerContainer!]!
+  dockerImages: [DockerImage!]!
+  dockerVolumes: [DockerVolume!]!
+  dockerNetworks: [DockerNetwork!]!
+
   traefikRouters: [TraefikRouter!]!
   traefikEntrypoints: [TraefikEntrypoint!]!
   traefikServices: [TraefikService!]!
@@ -8,6 +13,7 @@ type Query {
 type Mutation {
   login(password: String!, otp: Int!, expire: Int): User!
   register(password: String!, otp: Int!): User!
+
   traefikCreateRouter(input: TraefikRouterInput): TraefikRouter!
   traefikDeleteRouter(input: TraefikDeleteRouterInput): TraefikDeleteRouterResponse!
 }

@@ -1,0 +1,5 @@
+type DockerNetwork {
+    id: ID!
+    name: String!
+    containers: [DockerContainer!]!
+}

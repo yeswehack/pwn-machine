@@ -1,0 +1,5 @@
+type DockerImage {
+    id: ID!
+    labels: [DockerObjectLabel!]!
+    tags: [String!]!
+}
