@@ -34,10 +34,11 @@ def resolve_loadBalancer(service, *_):
 async def resolve_usedBy(service, *_, traefik_http):
     if "usedBy" not in service:
         return []
-    routers = []
-    for router_name in service["usedBy"]:
-        routers.append(await traefik_http.get_router(service['protocol'], router_name))
-    return routers
+    return [
+        router
+        for router in await traefik_http.get_routers()
+        if router["name"] in service["usedBy"]
+    ]
 
 
 @TraefikService.field("serverStatus")
