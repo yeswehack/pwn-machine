@@ -11,3 +11,7 @@ type Mutation {
   traefikCreateRouter(input: TraefikRouterInput): TraefikRouter!
   traefikDeleteRouter(input: TraefikDeleteRouterInput): TraefikDeleteRouterResponse!
 }
+
+type User {
+  token: String!
+}
