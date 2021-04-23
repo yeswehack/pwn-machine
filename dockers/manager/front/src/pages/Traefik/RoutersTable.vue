@@ -15,9 +15,7 @@
     </template>
     <template #body-cell-entryPoints="{row}">
       <div class="q-gutter-xs">
-        <q-badge :key="idx" v-for="(entrypoint, idx) of row.entryPoints">
-          {{ entrypoint }}
-        </q-badge>
+        <EntrypointLink :name="entrypoint.name" :key="idx" v-for="(entrypoint, idx) of row.entryPoints"/>
       </div>
     </template>
     <template #body-cell-service="{row}">
@@ -47,6 +45,7 @@ import RouterDetails from "src/components/Traefik/Router/Details.vue";
 import RouterDialog from "src/components/Traefik/Router/Dialog.vue";
 import BaseTable from "src/components/BaseTable3.vue";
 import ServiceLink from "src/components/Traefik/Service/Link.vue";
+import EntrypointLink from "src/components/Traefik/Entrypoint/Link.vue";
 import MiddlewareLink from "src/components/Traefik/Middleware/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import db from "src/gql";
@@ -55,6 +54,7 @@ import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 export default {
   components: {
     RouterDetails,
+    EntrypointLink,
     BaseTable,
     ServiceLink,
     MiddlewareLink,

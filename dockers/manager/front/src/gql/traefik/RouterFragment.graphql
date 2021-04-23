@@ -1,6 +1,8 @@
 fragment RouterFragment on TraefikRouter {
   name
-  entryPoints
+  entryPoints {
+    name
+  }
   error
   service {
     name
