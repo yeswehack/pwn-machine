@@ -14,7 +14,7 @@ from ariadne.asgi import GraphQL
 
 from .redis import client as redis_client
 from . import traefik
-from .auth import login, register, auth_middleware
+from .auth import auth_middleware
 from .api.traefik import new_traefik_http_client, TraefikRedisApi
 
 
@@ -49,17 +49,18 @@ schema = ariadne.make_executable_schema(
 )
 
 
-api_routes = [
-    Route("/login", login, methods=["POST"]),
-    Route("/register", register, methods=["POST"]),
-    Mount("/", GraphQL(schema, middleware=[])),
-]
+class StaticFilesFallback(StaticFiles):
+    async def __call__(self, scope, receive, send):
+        response = await self.get_response(self.get_path(scope), scope)
+        if response.status_code == 404:
+            response = await self.get_response("index.html", scope)
+        await response(scope, receive, send)
+
 
 app = Starlette(
     routes=[
-        Mount("/api", routes=api_routes),
-        #Mount("/a", StaticFiles(directory="static", html=True)),
+        Route("/api", GraphQL(schema, middleware=[auth_middleware])),
+        Mount("/", StaticFilesFallback(directory="static", html=True)),
     ],
     middleware=[Middleware(TraefikAPIMiddleware)],
 )
-

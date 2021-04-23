@@ -6,6 +6,8 @@ type Query {
 }
 
 type Mutation {
+  login(password: String!, otp: Int!, expire: Int): User!
+  register(password: String!, otp: Int!): User!
   traefikCreateRouter(input: TraefikRouterInput): TraefikRouter!
   traefikDeleteRouter(input: TraefikDeleteRouterInput): TraefikDeleteRouterResponse!
 }

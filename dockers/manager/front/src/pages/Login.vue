@@ -20,7 +20,7 @@
               type="number"
               min="0"
               label="OTP"
-              v-model="otp"
+              v-model.number="otp"
               required
             />
             <q-select
@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { login as loginMutation } from "src/gql/auth/mutations";
+
 const dayDuration = 60 * 60 * 24;
 const expireOptions = [
   {
@@ -56,6 +58,10 @@ const expireOptions = [
     label: "One month",
     value: dayDuration * 30
   },
+  {
+    label: "Forever",
+    value: null
+  }
 ];
 
 export default {
@@ -65,28 +71,31 @@ export default {
   data: () => ({
     password: null,
     otp: null,
-    expire: expireOptions[0].value,
+    expire: null
   }),
   methods: {
     async submit() {
-      const r =
-        await fetch("/api/login", {
-          method: "POST",
-          body: new URLSearchParams({
+      try {
+        const {
+          data: { login }
+        } = await this.$apollo.mutate({
+          mutation: loginMutation,
+          variables: {
             password: this.password,
             otp: this.otp,
-            expire: this.expire,
-          })
+            expire: this.expire
+          }
         });
-
-      if (r.ok) {
-        this.$router.push({name: "index"});
-      } else {
-        this.$q.notify({
-          color: "negative",
-          message: await r.text(),
-          position: "top",
-          timeout: 3000
+        this.$store.commit("setToken", login);
+        this.$router.push({ name: "index" });
+      } catch ({ graphQLErrors }) {
+        graphQLErrors.forEach(({ message }) => {
+          this.$q.notify({
+            color: "negative",
+            message,
+            position: "top",
+            timeout: 3000
+          });
         });
       }
     }
