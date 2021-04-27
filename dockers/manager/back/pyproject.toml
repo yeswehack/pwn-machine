@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pwnm-back"
 version = "0.1.0"
-description = "PwnMachine backend "
-authors = ["Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
+description = "PwnMachine backend"
+authors = ["BitK <bitk@yeswehack.com>", "Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -13,6 +13,7 @@ redis = "^3.5.3"
 PyJWT = "^2"
 aiofiles = "^0.6"
 aiohttp = "^3.7.4"
+docker = "^5"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"

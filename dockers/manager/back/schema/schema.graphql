@@ -1,6 +1,6 @@
 type Query {
   dockerContainers: [DockerContainer!]!
-  dockerImages: [DockerImage!]!
+  dockerImages(all: Boolean! = False, filters: DockerImageFilters): [DockerImage!]!
   dockerVolumes: [DockerVolume!]!
   dockerNetworks: [DockerNetwork!]!
 

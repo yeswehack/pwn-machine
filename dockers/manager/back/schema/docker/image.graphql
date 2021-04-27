@@ -1,5 +1,24 @@
 type DockerImage {
     id: ID!
+    references: [DockerImageRef!]!
     labels: [DockerObjectLabel!]!
-    tags: [String!]!
+}
+
+type DockerImageRef {
+    repository: String!
+    tag: String!
+}
+
+
+input DockerImageFilters {
+    references: [DockerImageRefInput!]! = []
+    labels: [DockerObjectLabelInput!]! = []
+    before: [ID!]! = []
+    since: [ID!]! = []
+    dangling: Boolean
+}
+
+input DockerImageRefInput {
+    repository: String!
+    tag: String
 }
