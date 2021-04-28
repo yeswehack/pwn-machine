@@ -1,9 +1,11 @@
-type DockerObjectLabel {
+type KeyValue {
     key: String!
     value: String!
 }
 
-input DockerObjectLabelInput {
+input KeyValueInput {
     key: String!
     value: String
 }
+
+scalar DateTime
