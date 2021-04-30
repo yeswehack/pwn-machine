@@ -18,35 +18,30 @@
         :color="value ? 'positive' : 'negative'"
         keep-color
         @input="v => toggleRule(row, v)"
-      />
-    </template>
+      /> </template
+    ><!-- 
     <template v-slot:details="{ row }">
       <RuleDetails :rule="row" />
     </template>
     <template v-slot:popup="{ row, closePopup }">
       <CreateRule :value="row" @close="closePopup" :edit="false" />
-    </template>
+    </template> -->
   </BaseTable>
 </template>
 
 <script>
+import db from "src/gql";
 import BaseTable from "../../components/BaseTable2.vue";
-import RuleDetails from "src/components/DNS/Rule/Details.vue";
+//import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
-import CreateRule from "src/components/DNS/Rule/Create.vue";
-
-import graphql from "src/gql/dns";
-const {
-  mutations: { disableDnsRule, enableDnsRule, deleteDnsRule },
-  queries: { getRules }
-} = graphql;
+//import CreateRule from "src/components/DNS/Rule/Create.vue";
 
 export default {
-  components: { BaseTable, ZoneLink, CreateRule, RuleDetails },
+  components: { BaseTable, ZoneLink },
   apollo: {
     rules: {
-      query: getRules,
-      update: data => data.dns.rules
+      query: db.dns.GET_RULES,
+      update: data => data.dnsRules
     }
   },
   created() {
@@ -75,7 +70,6 @@ export default {
     return { columns };
   },
   methods: {
-
     deleteRule(rule) {
       const variables = {
         zone: rule.zone,

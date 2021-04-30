@@ -1,0 +1,12 @@
+query getDNSRules {
+  dnsRules {
+    zone
+    name
+    type
+    ttl
+    records {
+      content
+      enabled
+    }
+  }
+}

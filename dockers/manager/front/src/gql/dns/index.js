@@ -1,12 +1,7 @@
-
-import * as mutations from "./mutations.js"
-import * as fragments from "./fragments.js"
-import * as queries from "./queries.js"
+import GET_ZONES from "./GetZones.graphql";
+import GET_RULES from "./GetRules.graphql";
 
 export default {
-  mutations,
-  queries,
-  fragments,
-}
-
-
+  GET_ZONES,
+  GET_RULES
+};

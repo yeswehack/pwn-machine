@@ -40,11 +40,11 @@ import HelpLink from "src/components/HelpLink.vue";
 import SoaForm from "src/components/DNS/Zone/SoaForm.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 
-import graphql from "src/gql/dns";
-const {
+//import graphql from "src/gql/dns";
+/* const {
   mutations: { createDnsZone },
   queries: { getDnsZones }
-} = graphql;
+} = graphql; */
 
 export default {
   mixins: [DeepForm],

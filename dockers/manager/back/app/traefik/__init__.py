@@ -22,8 +22,6 @@ def with_traefik_redis(f):
 TRAEFIK_REDIS_ROOK_KEY = "traefik"
 
 
-
-
 from . import router
 from . import entrypoint
 from . import service

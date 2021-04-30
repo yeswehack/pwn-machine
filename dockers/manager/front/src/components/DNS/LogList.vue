@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import graphql from "src/gql/dns";
+//import graphql from "src/gql/dns";
 const {
   queries: { getDnsLogs }
-} = graphql;
+} = {};
 
 export default {
   props: {

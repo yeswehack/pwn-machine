@@ -1,0 +1,25 @@
+query getDNSZones{
+  dnsZones{
+    name
+    serial
+    nodeId
+    rules {
+      records {
+        content
+        enabled
+      }
+      name
+      zone
+      ttl
+      type
+    }
+    soa {
+      nameserver
+      postmaster
+      refresh
+      retry
+      expire
+    	ttl
+    }
+  }
+}

@@ -7,36 +7,24 @@
     :columns="columns"
     @deleteRow="deleteZone"
   >
-    <template v-slot:details="{ row }">
-      <ZoneDetails :zone="row" />
-    </template>
-    <template v-slot:popup="{ row, closePopup }">
-      <CreateZone :value="row" @close="closePopup" />
-    </template>
   </BaseTable>
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable2.vue";
-import CreateZone from "src/components/DNS/Zone/Create.vue";
-import ZoneDetails from "src/components/DNS/Zone/Details.vue";
+import BaseTable from "src/components/BaseTable3.vue";
+//import CreateZone from "src/components/DNS/Zone/Create.vue";
+//import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
-import graphql from "src/gql/dns";
-const {
-  mutations: { deleteDnsZone },
-  queries: { getDnsZones }
-} = graphql;
+import db from "src/gql/"
+
 
 export default {
-  components: { BaseTable, CreateZone, ZoneDetails },
+  components: { BaseTable },
   apollo: {
     zones: {
-      query: getDnsZones,
-      update: data => data.dns.zones
+      query: db.dns.GET_ZONES,
+      update: data => data.dnsZones
     }
-  },
-  created() {
-    this.$root.$on("refresh", () => this.$apollo.queries.zones.refetch());
   },
   methods: {
     deleteZone(zone) {

@@ -1,5 +1,7 @@
-import traefik from "./traefik"
+import traefik from "./traefik";
+import dns from "./dns";
 
 export default {
-  traefik
-}
+  traefik,
+  dns
+};

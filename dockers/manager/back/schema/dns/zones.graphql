@@ -1,0 +1,35 @@
+type DnsStartOfAuthority {
+  nameserver: String
+  postmaster: String
+  refresh: Int
+  retry: Int
+  expire: Int
+  ttl: Int
+}
+
+type DnsRecord {
+  content: String
+  enabled: Boolean
+}
+
+type DnsRule {
+  nodeId: ID
+  zone: String
+  name: String
+  type: String
+  ttl: Int
+  records: [DnsRecord!]
+}
+
+type DnsZone {
+  nodeId: ID!
+  name: String!
+  serial: String!
+  soa: DnsStartOfAuthority
+  rules: [DnsRule!]
+}
+
+extend type Query {
+  dnsZones: [DnsZone!]!
+  dnsRules: [DnsRule!]!
+}
