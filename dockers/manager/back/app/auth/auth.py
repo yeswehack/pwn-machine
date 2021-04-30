@@ -1,11 +1,18 @@
 import os
 import time
+from warnings import warn
 import argon2
 import pyotp
 import jwt
 
 from ..utils.registration import registerMutation
 from ..redis import client as redis_client
+
+disable_auth_envvar = "PM_DISABLE_AUTH"
+disable_auth = os.environ.get(disable_auth_envvar) is not None
+
+if disable_auth:
+    warn(f"Never set {disable_auth_envvar} in production")
 
 hasher = argon2.PasswordHasher()
 ISSUER = "pwnmachine"
@@ -43,6 +50,8 @@ def resolve_register(*_, password, otp):
 
 
 def auth_middleware(resolver, obj, info, **args):
+    if disable_auth is True:
+        return resolver(obj, info, **args)
     # Skip auth checking for non-root fields
     if info.path.prev is not None:
         return resolver(obj, info, **args)
