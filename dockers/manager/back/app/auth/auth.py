@@ -4,47 +4,42 @@ import argon2
 import pyotp
 import jwt
 
-from starlette.responses import Response
+from ..utils.registration import registerMutation
 from ..redis import client as redis_client
 
 hasher = argon2.PasswordHasher()
 ISSUER = "pwnmachine"
 SECRET = os.urandom(32)
-COOKIE = "__Host-token"
 
 
-async def login(request):
-    form = await request.form()
-
+@registerMutation("login")
+def resolve_login(*_, password, otp, expire=None):
     admin_hash = redis_client.get("admin.hash")
     admin_totp = redis_client.get("admin.totp")
 
     try:
-        hasher.verify(admin_hash, form["password"])
+        hasher.verify(admin_hash, password)
     except:
-        return Response("Invalid password", 401)
-    if not pyotp.TOTP(admin_totp).verify(form["otp"]):
-        return Response("Invalid OTP", 401)
+        raise Exception("Invalid password")
+    if not pyotp.TOTP(admin_totp).verify(otp):
+        raise Exception("Invalid OTP")
 
     now = int(time.time())
-    exp = int(form["expire"])
-    payload = {"iss": ISSUER, "iat": now, "exp": now + exp}
+    payload = {"iss": ISSUER, "iat": now}
+    if expire is not None:
+        payload["exp"] = now + expire
+
     token = jwt.encode(payload, SECRET)
-
-    response = Response()
-    response.set_cookie(
-        key=COOKIE,
-        value=token,
-        max_age=exp,
-        secure=True,
-        httponly=True,
-        samesite="Strict",
-    )
-    return response
+    redis_client.set(f"admin.tokens.{token}", "*", expire)
+    return {"token": token, "expire": payload.get("exp")}
 
 
-async def register(request):
-    pass
+@registerMutation("register")
+def resolve_register(*_, password, otp):
+    admin_totp = redis_client.get("admin.totp")
+    if not pyotp.TOTP(admin_totp).verify(otp):
+        raise Exception("Invalid OTP")
+    redis_client.set("admin.hash", hasher.hash(password))
 
 
 def auth_middleware(resolver, obj, info, **args):
@@ -54,9 +49,12 @@ def auth_middleware(resolver, obj, info, **args):
     # Skip auth checking for introspection queries
     if info.field_name.startswith("__"):
         return resolver(obj, info, **args)
+    if info.field_name in ["login", "register"]:
+        return resolver(obj, info, **args)
 
     try:
-        token = info.context["request"].cookies[COOKIE]
+        headers = info.context["request"].headers
+        token = headers["Authorization"].split()[-1]
         jwt.decode(token, SECRET, ["HS256"], issuer=ISSUER)
     except:
         raise Exception("Unauthorized")

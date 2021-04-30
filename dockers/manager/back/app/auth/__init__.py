@@ -1,1 +1,1 @@
-from .auth import login, register, auth_middleware
+from .auth import auth_middleware
