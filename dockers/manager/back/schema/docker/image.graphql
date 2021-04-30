@@ -1,12 +1,12 @@
 type DockerImage {
     id: ID!
-    digest: ID
     tags: [DockerImageTag!]!
     labels: [KeyValue!]!
     parent: ID!
     created: DateTime!
-    env: [KeyValue!]!
     size: Int!
+    command: [String!]!
+    environment: [KeyValue!]!
 }
 
 
