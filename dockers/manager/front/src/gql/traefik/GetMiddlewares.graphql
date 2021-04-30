@@ -1,11 +1,6 @@
-
+#import "./MiddlewareFragment.graphql"
 query GetMiddlewares {
   traefikMiddlewares {
-    name
-    type
-    enabled
-    usedBy {
-      name
-    }
+    ...TraefikMiddlewareFragment
   }
 }

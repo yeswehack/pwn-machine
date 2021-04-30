@@ -20,10 +20,9 @@ from .api.traefik import new_traefik_http_client, TraefikRedisApi
 
 class TraefikAPIMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-
         async with new_traefik_http_client("http://127.0.0.1:8080/api") as client:
             request.state.traefik_http = client
-            request.state.traefik_redis = TraefikRedisApi(redis_client, "traefik")
+            request.state.traefik_redis = TraefikRedisApi(redis_client, "traefik", client)
             response = await call_next(request)
         return response
 
@@ -45,7 +44,7 @@ schema = ariadne.make_executable_schema(
     query,
     mutation,
     *registered_types,
-    ariadne.snake_case_fallback_resolvers,
+    ariadne.fallback_resolvers,
 )
 
 
@@ -58,8 +57,7 @@ api_routes = [
 app = Starlette(
     routes=[
         Mount("/api", routes=api_routes),
-        #Mount("/a", StaticFiles(directory="static", html=True)),
+        # Mount("/a", StaticFiles(directory="static", html=True)),
     ],
     middleware=[Middleware(TraefikAPIMiddleware)],
 )
-

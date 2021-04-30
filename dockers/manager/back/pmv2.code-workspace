@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../front"
+		},
+		{
+			"path": "../utils"
+		}
+	]
+}

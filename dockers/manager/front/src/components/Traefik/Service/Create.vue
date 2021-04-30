@@ -1,175 +1,189 @@
 <template>
-  <q-card :bordered="popup" class="create-router bg-dark" :class="{ popup }">
-    <q-form @submit="submit">
-      <q-card-section v-if="!edit">
-        <div class="row items-center">
-          <div class="text-h6">Create a new service</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </div>
-      </q-card-section>
-      <q-separator v-if="!edit" />
-      <q-card-section class="q-col-gutter-md">
-        <q-input
-          v-model="form.name"
-          required
-          :rules="[validateName]"
-          label="Name"
-        />
-
-        <q-select v-model="form.type" :options="types" label="Type" />
-
+  <q-form @submit="submit">
+    <q-tab-panels v-model="panel" animated>
+      <q-tab-panel name="chooseType">
+        <q-input v-model="form.name" required label="Name" :rule="[nonEmpty]" />
         <q-select
-          :value="form.servers"
-          class="servers-select"
-          @new-value="(val, done) => createValue(form.type, val, done)"
-          v-model="form.servers"
-          placeholder="10.0.0.1:1234"
-          label="Servers"
-          :hint="
-            form.type == 'http'
-              ? 'ex: http://10.10.10.10:1234'
-              : 'ex: 10.10.10.10:1234'
-          "
-          use-input
-          use-chips
-          multiple
-          hide-dropdown-icon
-          input-debounce="0"
-          new-value-mode="add"
-          :rules="[validateServers]"
+          v-model="form.protocol"
+          required
+          label="Protocol"
+          :options="Object.keys(availableTypes)"
         />
-      </q-card-section>
-      <q-card-actions align="right" class="q-pa-md">
-        <q-btn color="positive" type="submit" class="q-py-xs q-px-md">
-          {{ saveText }}
-        </q-btn>
-      </q-card-actions>
-    </q-form>
-  </q-card>
+        <q-select
+          :disable="!form.protocol"
+          v-model="form.type"
+          required
+          label="Type"
+          :options="availableTypes[form.protocol]"
+        />
+        <q-card-actions class="q-mt-md" align="right">
+          <q-btn color="warning" label="Cancel" @click="$emit('cancel')" />
+          <q-btn
+            color="positive"
+            label="Next"
+            @click="panel = 'enterSettings'"
+          />
+        </q-card-actions>
+      </q-tab-panel>
+      <q-tab-panel name="enterSettings">
+        <create-http-load-balancer
+          v-model="form.extra"
+          v-if="form.protocol == 'http' && form.type == 'loadBalancer'"
+        />
+        <create-http-mirroring 
+          v-model="form.extra"
+          v-if="form.protocol == 'http' && form.type == 'mirroring'" />
+        <create-http-weighted
+          v-model="form.extra"
+          v-if="form.protocol == 'http' && form.type == 'weighted'" />
+        <q-card-actions class="q-mt-md" align="right">
+          <q-btn
+            color="warning"
+            :label="cancelBtnLabel"
+            @click="cancelBtnClick"
+          />
+          <q-btn
+            color="positive"
+            :loading="loading"
+            label="Create"
+            @click="createService"
+          />
+        </q-card-actions>
+      </q-tab-panel>
+    </q-tab-panels>
+    <q-card-section>
+      {{ form }}
+    </q-card-section>
+  </q-form>
 </template>
 
 <script>
-function filterLowercase(array, val) {
-  const needle = val.toLocaleLowerCase();
-  return array.filter(v => v.toLocaleLowerCase().indexOf(needle) > -1);
-}
-
+import db from "src/gql";
+import CreateHttpLoadBalancer from "./CreateHttpLoadBalancer.vue";
+import CreateHttpMirroring from "./CreateHttpMirroring.vue";
+import CreateHttpWeighted from './CreateHttpWeighted.vue';
+import DeepForm from "src/mixins/DeepForm.js";
 export default {
+  components: { CreateHttpLoadBalancer, CreateHttpMirroring, CreateHttpWeighted },
+  mixins: [DeepForm],
   props: {
-    popup: {
-      type: Boolean,
-      default: false
-    },
-    edit: {
-      type: Boolean,
-      default: false
-    },
-    services: {
-      type: Array,
-      default: () => []
-    },
-    info: {
-      type: Object,
-      default: null
-    }
+    edit: { type: Boolean, default: false },
+    service: { type: Object, default: null }
   },
   data() {
-    const data = {
-      form: {
-        originalName: null,
-        name: "",
-        servers: [],
-        type: "http"
-      },
-      saveText: this.edit ? "Modify" : "Create",
-      connect: true,
-      types: ["http", "tcp", "udp"]
+    const availableTypes = {
+      http: ["loadBalancer", "mirroring", "weighted"],
+      tcp: ["loadBalancer", "weighted"],
+      udp: ["loadBalancer", "weighted"]
     };
-
-    if (this.info != null) {
-      this.doReset(data.form);
-    }
-    return data;
+    const cache = {
+      http: {},
+      tcp: {},
+      udp: {}
+    };
+    return { loading: false, availableTypes, cache, panel: "chooseType" };
   },
-  computed: {},
-
+  computed: {
+    okBtnLabel() {
+      return this.panel == "chooseType" ? "Next" : "Create";
+    },
+    cancelBtnLabel() {
+      return this.panel == "chooseType" ? "Cancel" : "Back";
+    }
+  },
   methods: {
-    createValue(type, val, done) {
-      if (type == "http") {
-        val = val.match(/^http?:\/\//) ? val : `http://${val}`;
-      }
-      done(val);
-    },
-    validateName(name) {
-      if (!name) {
-        return "Service name is required";
-      }
-      if (!this.$api.traefik.isValidServiceName(name)) {
-        return "Service name can only contains a-z 0-9 - _ .";
-      }
-      if (!this.edit || this.form.originalName != name) {
-        if (this.services.map(s => s.name.split("@")[0]).indexOf(name) > -1) {
-          return `A Service with this name already exists`;
-        }
-      }
-      return true;
-    },
-    validateServers(servers) {
-      if (servers.length) {
-        return true;
-      }
-      return "You need at least one server.";
-    },
-    doReset(target) {
-      target.originalName = this.info.name.split("@")[0];
-      target.name = target.originalName;
-      target.type = this.info.type;
-      if (this.info.loadBalancer) {
-        target.servers = this.info.loadBalancer.servers.map(s =>
-          this.info.type == "http" ? s.url : s.address
-        );
+    okBtnClick() {
+      if (this.panel == "chooseType") {
+        this.panel = "enterSettings";
       }
     },
-    reset() {
-      this.doReset(this.form);
+    cancelBtnClick() {
+      if (this.panel == "enterSettings") {
+        this.panel = "chooseType";
+      } else {
+        this.$emit("cancel");
+      }
+    },
+    createDefaultForm(service) {
+      const form = {
+        protocol: "http",
+        type: "loadBalancer",
+        extra: {}
+      };
+      if (service) {
+        form.name = service.name.split("@")[0];
+        form.protocol = service.protocol;
+        form.type = service.type;
+        extra = service[service.type];
+      }
+
+      console.log("CREATE DEFAULT FORM", service, form);
+      return form;
+    },
+    nonEmpty(val) {
+      if (val === null || val === undefined) {
+        return "You must make a selection.";
+      }
+    },
+    nonEmptyArray(val) {
+      if (val === null || val === undefined || val.length == 0) {
+        return "You must make a selection.";
+      }
+    },
+    async createService() {
+      this.loading = true;
+      const protocol = this.form.protocol;
+      const type = this.form.type;
+      const mutation = db.traefik.CREATE_SERVICE[protocol][type];
+      const input = {
+        name: this.form.name,
+        [type]: { ...this.form.extra, __typename: undefined }
+      };
+      await this.$apollo
+        .mutate({
+          mutation,
+          variables: { input },
+          refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+        })
+        .then(r => {
+          this.$emit("ok");
+        });
+    },
+    async updateService() {
+      const type = this.form.type;
+      const mutation = db.traefik.UPDATE_SERVICE[type];
+      const variables = {
+        nodeId: this.service.nodeId,
+        patch: { ...this.form.extra, __typename: undefined }
+      };
+      await this.$apollo
+        .mutate({
+          mutation,
+          variables,
+          refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+        })
+        .then(r => {
+          this.$emit("ok");
+        })
+        .catch(r => {
+          this.$q.notify({
+            message: `Unable to update ${this.service.name}.`,
+            type: "negative"
+          });
+        });
     },
     async submit() {
-      const service = {
-        name: this.form.name,
-        type: this.form.type,
-        servers: this.form.servers
-      };
-      const response = this.edit
-        ? this.$api.traefik.updateService(this.form.originalName, service)
-        : this.$api.traefik.createService(service);
-
-      if ("error" in response) {
-        this.$q.notify({
-          color: "negative",
-          message: response.error
-        });
-      } else {
-        this.$q.notify({
-          color: "positive",
-          message: this.edit
-            ? `Service ${this.form.originalName} modified.`
-            : `Service ${this.form.name} created.`
-        });
-        this.$emit("created", response.name);
+      this.loading = true;
+      try {
+        if (this.edit) {
+          await this.updateService();
+        } else {
+          await this.createService();
+        }
+      } finally {
+        this.loading = false;
       }
     }
   }
 };
 </script>
-
-<style lang="scss">
-.popup {
-  width: 500px;
-  max-width: 80vw;
-}
-.servers-select .q-chip {
-  padding: 0.5em 0.8em;
-  background-color: $primary;
-}
-</style>

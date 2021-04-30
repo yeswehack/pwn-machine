@@ -1,4 +1,11 @@
-export default async function (/* { app, router, store, ssrContext, urlPath, redirect } */) {
+import { IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import introspectionQueryResultData from "../../refs/fragmentTypes.json";
+
+export default async function(/* { app, router, store, ssrContext, urlPath, redirect } */) {
+  const fragmentMatcher = new IntrospectionFragmentMatcher({
+    introspectionQueryResultData
+  });
+  console.log(fragmentMatcher)
   return {
     default: {
       // 'apollo-link-http' config
@@ -8,12 +15,14 @@ export default async function (/* { app, router, store, ssrContext, urlPath, red
         // running quasar commands, for example:
         // `GRAPHQL_URI=https://prod.example.com/graphql quasar build`
         // `GRAPHQL_URI=https://dev.example.com/graphql quasar dev`
-        uri: process.env.GRAPHQL_URI || '/api'
+        uri: process.env.GRAPHQL_URI || "/api"
       },
 
       // 'apollo-cache-inmemory' config
       // https://www.apollographql.com/docs/react/caching/cache-configuration/#configuring-the-cache
-      cacheConfig: {},
+      cacheConfig: {
+        fragmentMatcher
+      },
 
       // additional config for apollo client
       // https://github.com/apollographql/apollo-client/blob/version-2.6/docs/source/api/apollo-client.mdx#optional-fields
@@ -52,5 +61,5 @@ export default async function (/* { app, router, store, ssrContext, urlPath, red
         ssrForceFetchDelay: 100
       }
     }
-  }
+  };
 }

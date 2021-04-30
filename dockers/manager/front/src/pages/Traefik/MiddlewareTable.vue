@@ -2,14 +2,16 @@
   <BaseTable
     ref="table"
     name="middleware"
-    rkey="name"
+    row-key="name"
     :data="middlewares"
     :columns="columns"
-    v-on:delete="deleteMiddleware"
+    @create="createMiddleware"
+    @clone="cloneMiddleware"
+    @delete="deleteMiddleware"
   >
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-xs">
-        <RouterLink
+        <router-link
           :name="name"
           :key="idx"
           v-for="(name, idx) of row.usedBy.map(r => r.name)"
@@ -18,40 +20,30 @@
     </template>
 
     <template #body-cell-middlewares="{row}">
-      <MiddlewareLink :name="middleware.name" v-for="middleware, idx of row.middlewares" :key="idx" /> 
+      <middleware-link
+        :name="middleware.name"
+        v-for="(middleware, idx) of row.middlewares"
+        :key="idx"
+      />
     </template>
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <MiddlewareDetails
-        :middlewares="middlewares"
-        :name="row.name"
-        v-on:modified="middlewareCreated"
-      />
-    </template>
-    <template #popup="{ info }">
-      <CreateMiddleware
-        :info="info"
-        popup
-        :middlewares="middlewares"
-        v-on:created="middlewareCreated"
-      />
+      <MiddlewareDetails :middleware="row"  />
     </template>
   </BaseTable>
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable.vue";
+import BaseTable from "src/components/BaseTable3.vue";
 import MiddlewareDetails from "src/components/Traefik/Middleware/Details.vue";
+import MiddlewareDialog from "src/components/Traefik/Middleware/Dialog.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
-import CreateMiddleware from "src/components/Traefik/Middleware/Create.vue";
-import Middleware from "src/components/Traefik/Middleware/Middleware.vue";
 import db from "src/gql";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 export default {
   components: {
-    CreateMiddleware,
     MiddlewareDetails,
     BaseTable,
     RouterLink,
@@ -83,13 +75,49 @@ export default {
     };
   },
   methods: {
-    middlewareCreated() {
-      this.$emit("refetch");
-      this.$refs.table.closePopup();
+    createMiddleware() {
+      this.$q.dialog({
+        component: MiddlewareDialog,
+        parent: this
+      });
     },
-    deleteMiddleware(name) {
-      this.$api.docker.deleteMiddleware(name.split("@")[0]);
-      this.$emit("refetch");
+    cloneMiddleware(middleware) {
+      this.$q.dialog({
+        component: MiddlewareDialog,
+        parent: this,
+        middleware
+      });
+    },
+    deleteMiddleware(middleware) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${middleware.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: db.traefik.DELETE_MIDDLEWARE,
+              variables: { nodeId: middleware.nodeId },
+              refetchQueries: [{ query: db.traefik.GET_MIDDLEWARES }]
+            })
+            .then(response => {
+              const deleted = response.data.traefikDeleteMiddleware.ok;
+              if (deleted) {
+                this.$q.notify({
+                  message: `${middleware.name} deleted.`,
+                  type: "positive"
+                });
+              } else {
+                this.$q.notify({
+                  message: `Unable to delete ${middleware.name}.`,
+                  type: "negative"
+                });
+              }
+            });
+        });
     }
   }
 };

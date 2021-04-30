@@ -1,8 +1,10 @@
 import aiohttp
 import asyncio
 import logging
+import json
 import re
 from contextlib import asynccontextmanager, contextmanager
+from ..utils import base64_decode
 
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
@@ -17,15 +19,41 @@ def log(msg):
     logger.info(f"[{__name__}] {msg}")
 
 
+def validate_node_id(nodeId, target_type):
+    try:
+        type, *args = base64_decode(nodeId, json=True)
+        if type != target_type:
+            raise ValueError()
+        return args
+    except Exception as e:
+        raise ValueError(f"Invalid nodeId.")
+
+
+def settings_to_kv(settings, prefix=""):
+    for k, v in settings.items():
+        if v == None:
+            continue
+        if isinstance(v, dict):
+            yield from settings_to_kv(v, f"{prefix}/{k}")
+        elif isinstance(v, list):
+            yield from settings_to_kv(dict(enumerate(v)), f"{prefix}/{k}")
+        elif isinstance(v, bool):
+            yield f"{prefix}/{k}", str(v).lower()
+        else:
+            yield f"{prefix}/{k}", v
+
+
 class TraefikRedisApi:
-    def __init__(self, client, root):
+    def __init__(self, client, root, http_api):
         self.client = client
         self.root = root
+        self.http_api = http_api
 
     def _with_root_key(self, key):
         return f"{self.root}/{key.lstrip('/')}"
 
     def set(self, key, value):
+        print("SET", key, value)
         return self.client.set(self._with_root_key(key), value)
 
     def delete_pattern(self, pattern):
@@ -34,6 +62,44 @@ class TraefikRedisApi:
         for key in self.client.keys(full_pattern):
             log(f"REDIS delete key: {key.decode()}")
             self.client.delete(key)
+
+    # Service
+    async def create_service(self, name, protocol, type, settings):
+        redis_name = name.split("@")[0] if "@" in name else name
+        prefix = f"/{protocol}/services/{redis_name}/{type}"
+        for k, v in settings_to_kv(settings, prefix):
+            self.set(k, v)
+        service = await self.http_api.wait(f"/{protocol}/services/{redis_name}@redis")
+        service["protocol"] = protocol
+        return service
+
+    async def delete_service(self, nodeId):
+        protocol, name = validate_node_id(nodeId, "service")
+        redis_name = name.split("@")[0] if "@" in name else name
+        self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
+        return await self.http_api.wait_delete(f"/{protocol}/services/{name}")
+
+    # Middleware
+    async def delete_middleware(self, nodeId):
+        name = validate_node_id(nodeId, "middleware")[0]
+        redis_name = name.split("@")[0] if "@" in name else name
+        self.delete_pattern(f"/http/middlewares/{redis_name}/*")
+        return await self.http_api.wait_delete(f"/http/middlewares/{name}")
+
+    async def create_middleware(self, name, type, settings):
+        redis_name = name.split("@")[0] if "@" in name else name
+        prefix = f"/http/middlewares/{redis_name}/{type}"
+        for k, v in settings_to_kv(settings, prefix):
+            self.set(k, v)
+        return await self.http_api.wait(f"/http/middlewares/{redis_name}@redis")
+
+    async def update_middleware(self, nodeId, type, settings):
+        name = validate_node_id(nodeId, "middleware")[0]
+        if not await self.delete_middleware(name):
+            raise RuntimeError(f"Unable to update {name}")
+        return await self.create_middleware(name, type, settings)
+
+    #
 
 
 class TraefikHTTPApi:
@@ -140,6 +206,10 @@ class TraefikHTTPApi:
             all_routers += routers
 
         return all_routers
+
+    async def get_routers_used_by(self, usedBy, protocols=("http", "tcp", "udp")):
+        routers = await self.get_routers(protocols)
+        return [router for router in routers if router["name"] in usedBy]
 
     # Middlewares
     async def get_middleware(self, name):

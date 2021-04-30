@@ -1,0 +1,3 @@
+mutation deleteService($nodeId: ID!) {
+  deleteTraefikService(nodeId: $nodeId)
+}

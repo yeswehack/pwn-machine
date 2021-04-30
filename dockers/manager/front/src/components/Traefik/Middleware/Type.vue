@@ -81,12 +81,9 @@ import Vue from "vue";
 import mdinfo from "src/components/Traefik/Middleware/definitions.json";
 export default {
   components: { Type: () => import("./Type.vue") },
-  name: "Middleware",
   props: {
-    name: {
-      type: String
-    },
-    type: {}
+    name: {type: String, required: true},
+    type: {type: [Object, String], required: true},
   },
   data() {
     const form = {};

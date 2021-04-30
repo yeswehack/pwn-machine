@@ -1,9 +1,38 @@
-from ..utils import registerQuery, createType, base64_encode
-from . import with_traefik_http
-TraefikService = createType("TraefikService")
-TraefikServiceLoadBalancer = createType("TraefikServiceLoadBalancer")
-TraefikServiceLoadBalancerServer = createType("TraefikServiceLoadBalancerServer")
+from ..utils import (
+    registerQuery,
+    registerMutation,
+    create_kv_resolver,
+    createType,
+    base64_encode,
+    createInterface,
+)
+from . import with_traefik_http, with_traefik_redis
 
+
+TraefikService = createInterface("TraefikService")
+
+
+@TraefikService.type_resolver
+def resolve_service_type(service, *_):
+    mapping = {
+        "http": {
+            "loadbalancer": "TraefikHTTPServiceLoadBalancer",
+            "mirroring": "TraefikHTTPServiceMirroring",
+            "weighted": "TraefikHTTPServiceWeighted",
+        },
+        "tcp": {
+            "loadbalancer": "TraefikTCPServiceLoadBalancer",
+            "weighted": "TraefikTCPServiceWeighted",
+        },
+        "udp": {
+            "loadbalancer": "TraefikUDPServiceLoadBalancer",
+            "weighted": "TraefikUDPServiceWeighted",
+        },
+    }
+    try:
+        return mapping[service["protocol"]][service["type"]]
+    except:
+        return "TraefikHTTPServiceInternal"
 
 
 @registerQuery("traefikServices")
@@ -22,52 +51,57 @@ async def resolve_nodeid(service, *_):
     return base64_encode(["service", service["protocol"], service["name"]], json=True)
 
 
-@TraefikService.field("loadBalancer")
-def resolve_loadBalancer(service, *_):
-    if "loadBalancer" in service:
-        return service["loadBalancer"]
-    return None
-
-
 @TraefikService.field("usedBy")
 @with_traefik_http
 async def resolve_usedBy(service, *_, traefik_http):
     if "usedBy" not in service:
         return []
-    return [
-        router
-        for router in await traefik_http.get_routers()
-        if router["name"] in service["usedBy"]
-    ]
+    return await traefik_http.get_routers_used_by(service["usedBy"])
 
 
-@TraefikService.field("serverStatus")
-def resolve_server_status(service, *_):
-    if "serverStatus" not in service:
-        return []
-    status = []
-    for name, value in service["serverStatus"].items():
-        status.append({"url": name, "status": value})
-    return status
+@TraefikService.field("type")
+async def resolve_type(service, *_):
+    type = service.get("type", "internal")
+    if type == "loadbalancer":
+        return "loadBalancer"
+    return type
 
 
-@TraefikServiceLoadBalancer.field("healthCheck")
-def healthCheck(loadBalancer, *_):
-    if "healthCheck" in loadBalancer:
-        return loadBalancer["healthCheck"]
-    return None
+TraefikServiceLoadBalancerHealthCheck = createType(
+    "TraefikServiceLoadBalancerHealthCheck"
+)
 
 
-@TraefikServiceLoadBalancer.field("servers")
-def healthCheck(loadBalancer, *_):
-    if "servers" in loadBalancer:
-        return loadBalancer["servers"]
-    return []
+TraefikServiceLoadBalancerHealthCheck.field("headers")(create_kv_resolver("headers"))
 
 
-@TraefikServiceLoadBalancerServer.field("url")
-def resolve_server_url(server, *_):
-    if "url" in server:
-        return server["url"]
-    if "address" in server:
-        return server["address"]
+TraefikUDPWeighted = createType("TraefikUDPWeighted")
+TraefikWeighted = createType("TraefikWeighted")
+
+
+@TraefikWeighted.field("services")
+@TraefikUDPWeighted.field("services")
+def resolve_weighted_services(weighted, *_):
+    services = weighted.get("services", [])
+    return services
+
+
+TraefikHTTPLoadBalancer = createType("TraefikHTTPLoadBalancer")
+
+
+@TraefikHTTPLoadBalancer.field("servers")
+def resolve_loadbalancer_servers(loadbalancer, *_):
+    servers = loadbalancer.get("servers", [])
+    return servers
+
+@registerMutation("createTraefikHTTPServiceLoadBalancer")
+@with_traefik_redis
+async def create_http_loadbalancer(*_, traefik_redis, input):
+    name = input["name"]
+    return await traefik_redis.create_service(name, "http", "loadBalancer", input["loadBalancer"])
+
+
+@registerMutation("deleteTraefikService")
+@with_traefik_redis
+async def delete_service(*_, traefik_redis, nodeId):
+    return await traefik_redis.delete_service(nodeId)

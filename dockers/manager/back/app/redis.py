@@ -1,3 +1,3 @@
 import redis
 
-client = redis.Redis("redis")
+client = redis.Redis("localhost")

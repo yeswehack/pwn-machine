@@ -1,0 +1,386 @@
+fragment TraefikMiddlewareFragment on TraefikMiddleware {
+  name
+  nodeId
+  ... on TraefikMiddlewareAddPrefix {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    addPrefix {
+      prefix
+    }
+  }
+  ... on TraefikMiddlewareBasicAuth {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    basicAuth {
+      headerField
+      realm
+      removeHeader
+      users
+      usersFile
+    }
+  }
+  ... on TraefikMiddlewareBuffering {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    buffering {
+      maxRequestBodyBytes
+      maxResponseBodyBytes
+      memRequestBodyBytes
+      memResponseBodyBytes
+      retryExpression
+    }
+  }
+  ... on TraefikMiddlewareChain {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    chain {
+      middlewares
+    }
+  }
+  ... on TraefikMiddlewareCircuitBreaker {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    circuitBreaker {
+      expression
+    }
+  }
+  ... on TraefikMiddlewareCompress {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    compress {
+      excludedContentTypes
+    }
+  }
+  ... on TraefikMiddlewareContentType {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    contentType {
+      autoDetect
+    }
+  }
+  ... on TraefikMiddlewareDigestAuth {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    digestAuth {
+      headerField
+      realm
+      removeHeader
+      users
+      usersFile
+    }
+  }
+  ... on TraefikMiddlewareErrors {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    errors {
+      query
+      service
+      status
+    }
+  }
+  ... on TraefikMiddlewareForwardAuth {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    forwardAuth {
+      address
+      authRequestHeaders
+      authResponseHeaders
+      authResponseHeadersRegex
+      tls {
+        ca
+        caOptional
+        cert
+        insecureSkipVerify
+        key
+      }
+      trustForwardHeader
+    }
+  }
+  ... on TraefikMiddlewareHeaders {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    headers {
+      accessControlAllowCredentials
+      accessControlAllowHeaders
+      accessControlAllowMethods
+      accessControlAllowOrigin
+      accessControlAllowOriginList
+      accessControlAllowOriginListRegex
+      accessControlExposeHeaders
+      accessControlMaxAge
+      addVaryHeader
+      allowedHosts
+      browserXssFilter
+      contentSecurityPolicy
+      contentTypeNosniff
+      customBrowserXSSValue
+      customFrameOptionsValue
+      customRequestHeaders {
+        key
+        value
+      }
+      customResponseHeaders {
+        key
+        value
+      }
+      featurePolicy
+      forceSTSHeader
+      frameDeny
+      hostsProxyHeaders
+      isDevelopment
+      publicKey
+      referrerPolicy
+      sslForceHost
+      sslHost
+      sslProxyHeaders {
+        key
+        value
+      }
+      sslRedirect
+      sslTemporaryRedirect
+      stsIncludeSubdomains
+      stsPreload
+      stsSeconds
+    }
+  }
+  ... on TraefikMiddlewareIpWhiteList {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    ipWhiteList {
+      ipStrategy {
+        depth
+        excludedIPs
+      }
+      sourceRange
+    }
+  }
+  ... on TraefikMiddlewareInFlightReq {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    inFlightReq {
+      amount
+      sourceCriterion {
+        ipStrategy {
+          depth
+          excludedIPs
+        }
+        requestHeaderName
+        requestHost
+      }
+    }
+  }
+  ... on TraefikMiddlewarePassTLSClientCert {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    passTLSClientCert {
+      info {
+        issuer {
+          commonName
+          country
+          domainComponent
+          locality
+          organization
+          province
+          serialNumber
+        }
+        notAfter
+        notBefore
+        sans
+        serialNumber
+        subject {
+          commonName
+          country
+          domainComponent
+          locality
+          organization
+          province
+          serialNumber
+        }
+      }
+      pem
+    }
+  }
+  ... on TraefikMiddlewareRateLimit {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    rateLimit {
+      average
+      burst
+      period
+      sourceCriterion {
+        ipStrategy {
+          depth
+          excludedIPs
+        }
+        requestHeaderName
+        requestHost
+      }
+    }
+  }
+  ... on TraefikMiddlewareRedirectRegex {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    redirectRegex {
+      permanent
+      regex
+      replacement
+    }
+  }
+  ... on TraefikMiddlewareRedirectScheme {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    redirectScheme {
+      permanent
+      port
+      scheme
+    }
+  }
+  ... on TraefikMiddlewareReplacePath {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    replacePath {
+      path
+    }
+  }
+  ... on TraefikMiddlewareReplacePathRegex {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    replacePathRegex {
+      regex
+      replacement
+    }
+  }
+  ... on TraefikMiddlewareRetry {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    retry {
+      attempts
+      initialInterval
+    }
+  }
+  ... on TraefikMiddlewareStripPrefix {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    stripPrefix {
+      forceSlash
+      prefixes
+    }
+  }
+  ... on TraefikMiddlewareStripPrefixRegex {
+    nodeId
+    name
+    type
+    enabled
+    usedBy {
+      name 
+    }
+    stripPrefixRegex {
+      regex
+    }
+  }
+}

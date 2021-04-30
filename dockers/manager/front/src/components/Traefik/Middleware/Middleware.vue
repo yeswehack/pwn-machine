@@ -2,24 +2,18 @@
   <div class="row q-col-gutter-md">
     <div class="col-12">
       <div class="row items-center q-col-gutter-md">
-        <div class="text-h6">{{ uncamel(name) }}</div>
+        <div class="text-h6">{{ title }}</div>
         <q-space />
-        <HelpLink
-          :href="
-            `https://doc.traefik.io/traefik/middlewares/${name.toLowerCase()}/`
-          "
-        />
+        <HelpLink :href="helpUrl" />
       </div>
     </div>
-    <div class="col-12">
-      <q-separator />
-    </div>
-    <div
-      :class="colSize"
-      :key="name"
-      v-for="[name, type] of Object.entries(middleware)"
-    >
-      <Type ref="formTypes" :key="name" :name="name" :type="type" />
+    <div class="col-12" :key="name" v-for="[name, type] of fields">
+      <generic-field
+        ref="formTypes"
+        v-model="model[name]"
+        :name="name"
+        :type="type"
+      />
     </div>
   </div>
 </template>
@@ -27,36 +21,54 @@
 <script>
 import mdinfo from "src/components/Traefik/Middleware/definitions.json";
 import HelpLink from "src/components/HelpLink.vue";
-import Type from "./Type.vue";
+import GenericField from "./GenericField.vue";
 export default {
-  components: { Type, HelpLink },
-  name: "Middleware",
+  components: { GenericField, HelpLink },
   props: {
-    name: {
-      type: String,
-      default: "addPrefix"
-    },
-    large: {
-      type: Boolean,
-      default: true
-    }
+    value: { type: Object, required: true },
+    type: { type: String, required: true }
   },
   data() {
-    return {
-      colSize: this.large ? "col-6" : "col-12"
-    };
-  },
-  created() {
-    this.init();
+    return { model: {} };
   },
   watch: {
-    name() {
-      this.init();
+    type: {
+      immediate: true,
+      handler() {
+        this.model = this.value;
+      }
+    },
+    model: {
+      deep: true,
+      handler(v) {
+        this.$emit("input", v);
+      }
+    }
+  },
+  computed: {
+    title() {
+      return this.uncamel(this.type);
+    },
+    definition() {
+      return mdinfo[this.type];
+    },
+    fields() {
+      // definition fields sorted alphabetically
+      console.log(this.type, mdinfo)
+      const keys = Object.keys(this.definition).sort();
+      return keys.map(k => [k, this.definition[k]]);
+    },
+    helpUrl() {
+      let path = this.type.toLowerCase();
+      if (path == "errors") {
+        path = "errorpages";
+      }
+      return `https://doc.traefik.io/traefik/middlewares/${path}/`;
     }
   },
   methods: {
     getMiddleware(name) {
-      for (const [tname, middleware] of Object.entries(mdinfo.middlewares)) {
+      for (const [tname, middleware] of Object.entries(mdinfo)) {
         if (tname.toLowerCase() == name.toLowerCase()) {
           return middleware;
         }
@@ -78,29 +90,6 @@ export default {
         .toLowerCase();
 
       return s.charAt(0).toUpperCase() + s.slice(1);
-    },
-    getSetting(settings, name) {
-      for (const [sname, setting] of Object.entries(settings)) {
-        if (name.toLowerCase() == sname.toLowerCase()) {
-          return setting;
-        }
-      }
-    },
-    setValue(settings) {
-      for (const type of this.$refs.formTypes) {
-        const setting = this.getSetting(settings, type.name);
-        if (setting) {
-          type.setValue(setting);
-        }
-      }
-    },
-    getValue() {
-      const value = {};
-      for (const type of this.$refs.formTypes) {
-        const [name, val] = type.getValue();
-        value[name] = val;
-      }
-      return value;
     }
   }
 };

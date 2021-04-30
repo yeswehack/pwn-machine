@@ -17,3 +17,10 @@ def base64_decode(s, json=False):
         return JSON.loads(r)
     except:
         return None
+
+
+def create_kv_resolver(key):
+    def resolve_kv(target, *_):
+        kv = target.get(key, {})
+        return [{"key": k, "value": v} for k, v in kv.items()]
+    return resolve_kv

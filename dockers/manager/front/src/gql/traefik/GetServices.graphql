@@ -1,28 +1,6 @@
+#import "./ServiceFragment.graphql"
 query GetServices {
   traefikServices {
-    protocol
-    name
-    enabled
-    usedBy {
-      name
-    }
-    serverStatus {
-      url
-      status
-    }
-    loadBalancer {
-      servers {
-        url
-      }
-
-      healthCheck {
-        followRedirects
-        path
-        headers {
-          name
-          value
-        }
-      }
-    }
+    ... TraefikServiceFragment
   }
 }

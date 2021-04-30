@@ -7,5 +7,17 @@ type Query {
 
 type Mutation {
   traefikCreateRouter(input: TraefikRouterInput): TraefikRouter!
-  traefikDeleteRouter(input: TraefikDeleteRouterInput): TraefikDeleteRouterResponse!
+  traefikDeleteRouter(
+    input: TraefikDeleteRouterInput
+  ): TraefikDeleteRouterResponse!
+}
+
+type KeyValue {
+  key: String!
+  value: String!
+}
+
+input KeyValueInput {
+  key: String!
+  value: String!
 }

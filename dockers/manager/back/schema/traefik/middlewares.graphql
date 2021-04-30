@@ -1,4 +1,3 @@
- 
 
 interface TraefikMiddleware {
     nodeId: ID!
@@ -8,14 +7,11 @@ interface TraefikMiddleware {
     enabled: Boolean
     usedBy: [TraefikRouter!]!
 }
-
-type TraefikMiddlewareHeaderPair {
-    name: String
-    value: String
+type TraefikMiddlewareAddPrefixInfo {
+  prefix: String
 }
 
-
-type TraefikMiddlewareAddPrefixInfo {
+input TraefikMiddlewareAddPrefixInfoInput {
   prefix: String
 }
 
@@ -29,9 +25,26 @@ type TraefikMiddlewareAddPrefix implements TraefikMiddleware {
   addPrefix: TraefikMiddlewareAddPrefixInfo!
 }
 
+input TraefikMiddlewareAddPrefixInput {
+  name: String!
+  addPrefix: TraefikMiddlewareAddPrefixInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareAddPrefix(input: TraefikMiddlewareAddPrefixInput!): TraefikMiddlewareAddPrefix!
+  updateTraefikMiddlewareAddPrefix(nodeId: ID!, patch: TraefikMiddlewareAddPrefixInfoInput!): TraefikMiddlewareAddPrefix!
+}
 
 
 type TraefikMiddlewareBasicAuthInfo {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+input TraefikMiddlewareBasicAuthInfoInput {
   headerField: String
   realm: String
   removeHeader: Boolean
@@ -49,9 +62,26 @@ type TraefikMiddlewareBasicAuth implements TraefikMiddleware {
   basicAuth: TraefikMiddlewareBasicAuthInfo!
 }
 
+input TraefikMiddlewareBasicAuthInput {
+  name: String!
+  basicAuth: TraefikMiddlewareBasicAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareBasicAuth(input: TraefikMiddlewareBasicAuthInput!): TraefikMiddlewareBasicAuth!
+  updateTraefikMiddlewareBasicAuth(nodeId: ID!, patch: TraefikMiddlewareBasicAuthInfoInput!): TraefikMiddlewareBasicAuth!
+}
 
 
 type TraefikMiddlewareBufferingInfo {
+  maxRequestBodyBytes: Int
+  maxResponseBodyBytes: Int
+  memRequestBodyBytes: Int
+  memResponseBodyBytes: Int
+  retryExpression: String
+}
+
+input TraefikMiddlewareBufferingInfoInput {
   maxRequestBodyBytes: Int
   maxResponseBodyBytes: Int
   memRequestBodyBytes: Int
@@ -69,9 +99,22 @@ type TraefikMiddlewareBuffering implements TraefikMiddleware {
   buffering: TraefikMiddlewareBufferingInfo!
 }
 
+input TraefikMiddlewareBufferingInput {
+  name: String!
+  buffering: TraefikMiddlewareBufferingInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareBuffering(input: TraefikMiddlewareBufferingInput!): TraefikMiddlewareBuffering!
+  updateTraefikMiddlewareBuffering(nodeId: ID!, patch: TraefikMiddlewareBufferingInfoInput!): TraefikMiddlewareBuffering!
+}
 
 
 type TraefikMiddlewareChainInfo {
+  middlewares: [String]
+}
+
+input TraefikMiddlewareChainInfoInput {
   middlewares: [String]
 }
 
@@ -85,9 +128,22 @@ type TraefikMiddlewareChain implements TraefikMiddleware {
   chain: TraefikMiddlewareChainInfo!
 }
 
+input TraefikMiddlewareChainInput {
+  name: String!
+  chain: TraefikMiddlewareChainInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareChain(input: TraefikMiddlewareChainInput!): TraefikMiddlewareChain!
+  updateTraefikMiddlewareChain(nodeId: ID!, patch: TraefikMiddlewareChainInfoInput!): TraefikMiddlewareChain!
+}
 
 
 type TraefikMiddlewareCircuitBreakerInfo {
+  expression: String
+}
+
+input TraefikMiddlewareCircuitBreakerInfoInput {
   expression: String
 }
 
@@ -101,9 +157,22 @@ type TraefikMiddlewareCircuitBreaker implements TraefikMiddleware {
   circuitBreaker: TraefikMiddlewareCircuitBreakerInfo!
 }
 
+input TraefikMiddlewareCircuitBreakerInput {
+  name: String!
+  circuitBreaker: TraefikMiddlewareCircuitBreakerInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareCircuitBreaker(input: TraefikMiddlewareCircuitBreakerInput!): TraefikMiddlewareCircuitBreaker!
+  updateTraefikMiddlewareCircuitBreaker(nodeId: ID!, patch: TraefikMiddlewareCircuitBreakerInfoInput!): TraefikMiddlewareCircuitBreaker!
+}
 
 
 type TraefikMiddlewareCompressInfo {
+  excludedContentTypes: [String]
+}
+
+input TraefikMiddlewareCompressInfoInput {
   excludedContentTypes: [String]
 }
 
@@ -117,9 +186,22 @@ type TraefikMiddlewareCompress implements TraefikMiddleware {
   compress: TraefikMiddlewareCompressInfo!
 }
 
+input TraefikMiddlewareCompressInput {
+  name: String!
+  compress: TraefikMiddlewareCompressInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareCompress(input: TraefikMiddlewareCompressInput!): TraefikMiddlewareCompress!
+  updateTraefikMiddlewareCompress(nodeId: ID!, patch: TraefikMiddlewareCompressInfoInput!): TraefikMiddlewareCompress!
+}
 
 
 type TraefikMiddlewareContentTypeInfo {
+  autoDetect: Boolean
+}
+
+input TraefikMiddlewareContentTypeInfoInput {
   autoDetect: Boolean
 }
 
@@ -133,9 +215,26 @@ type TraefikMiddlewareContentType implements TraefikMiddleware {
   contentType: TraefikMiddlewareContentTypeInfo!
 }
 
+input TraefikMiddlewareContentTypeInput {
+  name: String!
+  contentType: TraefikMiddlewareContentTypeInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareContentType(input: TraefikMiddlewareContentTypeInput!): TraefikMiddlewareContentType!
+  updateTraefikMiddlewareContentType(nodeId: ID!, patch: TraefikMiddlewareContentTypeInfoInput!): TraefikMiddlewareContentType!
+}
 
 
 type TraefikMiddlewareDigestAuthInfo {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+input TraefikMiddlewareDigestAuthInfoInput {
   headerField: String
   realm: String
   removeHeader: Boolean
@@ -153,9 +252,24 @@ type TraefikMiddlewareDigestAuth implements TraefikMiddleware {
   digestAuth: TraefikMiddlewareDigestAuthInfo!
 }
 
+input TraefikMiddlewareDigestAuthInput {
+  name: String!
+  digestAuth: TraefikMiddlewareDigestAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareDigestAuth(input: TraefikMiddlewareDigestAuthInput!): TraefikMiddlewareDigestAuth!
+  updateTraefikMiddlewareDigestAuth(nodeId: ID!, patch: TraefikMiddlewareDigestAuthInfoInput!): TraefikMiddlewareDigestAuth!
+}
 
 
 type TraefikMiddlewareErrorsInfo {
+  query: String
+  service: String
+  status: [String]
+}
+
+input TraefikMiddlewareErrorsInfoInput {
   query: String
   service: String
   status: [String]
@@ -171,6 +285,15 @@ type TraefikMiddlewareErrors implements TraefikMiddleware {
   errors: TraefikMiddlewareErrorsInfo!
 }
 
+input TraefikMiddlewareErrorsInput {
+  name: String!
+  errors: TraefikMiddlewareErrorsInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareErrors(input: TraefikMiddlewareErrorsInput!): TraefikMiddlewareErrors!
+  updateTraefikMiddlewareErrors(nodeId: ID!, patch: TraefikMiddlewareErrorsInfoInput!): TraefikMiddlewareErrors!
+}
 
 
 type TraefikMiddlewareTlsInfo {
@@ -181,24 +304,29 @@ type TraefikMiddlewareTlsInfo {
   key: String
 }
 
-type TraefikMiddlewareTls implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  tls: TraefikMiddlewareTlsInfo!
-}
-
-
-
 type TraefikMiddlewareForwardAuthInfo {
   address: String
   authRequestHeaders: [String]
   authResponseHeaders: [String]
   authResponseHeadersRegex: String
-  tls: TraefikMiddlewareTls
+  tls: TraefikMiddlewareTlsInfo
+  trustForwardHeader: Boolean
+}
+
+input TraefikMiddlewareTlsInfoInput {
+  ca: String
+  caOptional: Boolean
+  cert: String
+  insecureSkipVerify: Boolean
+  key: String
+}
+
+input TraefikMiddlewareForwardAuthInfoInput {
+  address: String
+  authRequestHeaders: [String]
+  authResponseHeaders: [String]
+  authResponseHeadersRegex: String
+  tls: TraefikMiddlewareTlsInfoInput
   trustForwardHeader: Boolean
 }
 
@@ -212,6 +340,15 @@ type TraefikMiddlewareForwardAuth implements TraefikMiddleware {
   forwardAuth: TraefikMiddlewareForwardAuthInfo!
 }
 
+input TraefikMiddlewareForwardAuthInput {
+  name: String!
+  forwardAuth: TraefikMiddlewareForwardAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareForwardAuth(input: TraefikMiddlewareForwardAuthInput!): TraefikMiddlewareForwardAuth!
+  updateTraefikMiddlewareForwardAuth(nodeId: ID!, patch: TraefikMiddlewareForwardAuthInfoInput!): TraefikMiddlewareForwardAuth!
+}
 
 
 type TraefikMiddlewareHeadersInfo {
@@ -230,8 +367,8 @@ type TraefikMiddlewareHeadersInfo {
   contentTypeNosniff: Boolean
   customBrowserXSSValue: String
   customFrameOptionsValue: String
-  customRequestHeaders: [TraefikMiddlewareHeaderPair]
-  customResponseHeaders: [TraefikMiddlewareHeaderPair]
+  customRequestHeaders: [KeyValue!]!
+  customResponseHeaders: [KeyValue!]!
   featurePolicy: String
   forceSTSHeader: Boolean
   frameDeny: Boolean
@@ -241,7 +378,42 @@ type TraefikMiddlewareHeadersInfo {
   referrerPolicy: String
   sslForceHost: Boolean
   sslHost: String
-  sslProxyHeaders: [TraefikMiddlewareHeaderPair]
+  sslProxyHeaders: [KeyValue!]!
+  sslRedirect: Boolean
+  sslTemporaryRedirect: Boolean
+  stsIncludeSubdomains: Boolean
+  stsPreload: Boolean
+  stsSeconds: Int
+}
+
+input TraefikMiddlewareHeadersInfoInput {
+  accessControlAllowCredentials: Boolean
+  accessControlAllowHeaders: [String]
+  accessControlAllowMethods: [String]
+  accessControlAllowOrigin: String
+  accessControlAllowOriginList: [String]
+  accessControlAllowOriginListRegex: [String]
+  accessControlExposeHeaders: [String]
+  accessControlMaxAge: Int
+  addVaryHeader: Boolean
+  allowedHosts: [String]
+  browserXssFilter: Boolean
+  contentSecurityPolicy: String
+  contentTypeNosniff: Boolean
+  customBrowserXSSValue: String
+  customFrameOptionsValue: String
+  customRequestHeaders: [KeyValueInput!]!
+  customResponseHeaders: [KeyValueInput!]!
+  featurePolicy: String
+  forceSTSHeader: Boolean
+  frameDeny: Boolean
+  hostsProxyHeaders: [String]
+  isDevelopment: Boolean
+  publicKey: String
+  referrerPolicy: String
+  sslForceHost: Boolean
+  sslHost: String
+  sslProxyHeaders: [KeyValueInput!]!
   sslRedirect: Boolean
   sslTemporaryRedirect: Boolean
   stsIncludeSubdomains: Boolean
@@ -259,27 +431,34 @@ type TraefikMiddlewareHeaders implements TraefikMiddleware {
   headers: TraefikMiddlewareHeadersInfo!
 }
 
+input TraefikMiddlewareHeadersInput {
+  name: String!
+  headers: TraefikMiddlewareHeadersInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareHeaders(input: TraefikMiddlewareHeadersInput!): TraefikMiddlewareHeaders!
+  updateTraefikMiddlewareHeaders(nodeId: ID!, patch: TraefikMiddlewareHeadersInfoInput!): TraefikMiddlewareHeaders!
+}
 
 
 type TraefikMiddlewareIpStrategyInfo {
   depth: Int
-  excludedIPs: [TraefikMiddlewareHeaderPair]
+  excludedIPs: [String]
 }
-
-type TraefikMiddlewareIpStrategy implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  ipStrategy: TraefikMiddlewareIpStrategyInfo!
-}
-
-
 
 type TraefikMiddlewareIpWhiteListInfo {
-  ipStrategy: TraefikMiddlewareIpStrategy
+  ipStrategy: TraefikMiddlewareIpStrategyInfo
+  sourceRange: [String]
+}
+
+input TraefikMiddlewareIpStrategyInfoInput {
+  depth: Int
+  excludedIPs: [String]
+}
+
+input TraefikMiddlewareIpWhiteListInfoInput {
+  ipStrategy: TraefikMiddlewareIpStrategyInfoInput
   sourceRange: [String]
 }
 
@@ -293,29 +472,37 @@ type TraefikMiddlewareIpWhiteList implements TraefikMiddleware {
   ipWhiteList: TraefikMiddlewareIpWhiteListInfo!
 }
 
+input TraefikMiddlewareIpWhiteListInput {
+  name: String!
+  ipWhiteList: TraefikMiddlewareIpWhiteListInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareIpWhiteList(input: TraefikMiddlewareIpWhiteListInput!): TraefikMiddlewareIpWhiteList!
+  updateTraefikMiddlewareIpWhiteList(nodeId: ID!, patch: TraefikMiddlewareIpWhiteListInfoInput!): TraefikMiddlewareIpWhiteList!
+}
 
 
 type TraefikMiddlewareSourceCriterionInfo {
-  ipStrategy: TraefikMiddlewareIpStrategy
+  ipStrategy: TraefikMiddlewareIpStrategyInfo
   requestHeaderName: String
   requestHost: Boolean
 }
 
-type TraefikMiddlewareSourceCriterion implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  sourceCriterion: TraefikMiddlewareSourceCriterionInfo!
-}
-
-
-
 type TraefikMiddlewareInFlightReqInfo {
   amount: Int
-  sourceCriterion: TraefikMiddlewareSourceCriterion
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfo
+}
+
+input TraefikMiddlewareSourceCriterionInfoInput {
+  ipStrategy: TraefikMiddlewareIpStrategyInfoInput
+  requestHeaderName: String
+  requestHost: Boolean
+}
+
+input TraefikMiddlewareInFlightReqInfoInput {
+  amount: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfoInput
 }
 
 type TraefikMiddlewareInFlightReq implements TraefikMiddleware {
@@ -328,6 +515,15 @@ type TraefikMiddlewareInFlightReq implements TraefikMiddleware {
   inFlightReq: TraefikMiddlewareInFlightReqInfo!
 }
 
+input TraefikMiddlewareInFlightReqInput {
+  name: String!
+  inFlightReq: TraefikMiddlewareInFlightReqInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareInFlightReq(input: TraefikMiddlewareInFlightReqInput!): TraefikMiddlewareInFlightReq!
+  updateTraefikMiddlewareInFlightReq(nodeId: ID!, patch: TraefikMiddlewareInFlightReqInfoInput!): TraefikMiddlewareInFlightReq!
+}
 
 
 type TraefikMiddlewareIssuerInfo {
@@ -340,18 +536,6 @@ type TraefikMiddlewareIssuerInfo {
   serialNumber: Boolean
 }
 
-type TraefikMiddlewareIssuer implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  issuer: TraefikMiddlewareIssuerInfo!
-}
-
-
-
 type TraefikMiddlewareSubjectInfo {
   commonName: Boolean
   country: Boolean
@@ -362,41 +546,51 @@ type TraefikMiddlewareSubjectInfo {
   serialNumber: Boolean
 }
 
-type TraefikMiddlewareSubject implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  subject: TraefikMiddlewareSubjectInfo!
-}
-
-
-
 type TraefikMiddlewareInfoInfo {
-  issuer: TraefikMiddlewareIssuer
+  issuer: TraefikMiddlewareIssuerInfo
   notAfter: Boolean
   notBefore: Boolean
   sans: Boolean
   serialNumber: Boolean
-  subject: TraefikMiddlewareSubject
+  subject: TraefikMiddlewareSubjectInfo
 }
-
-type TraefikMiddlewareInfo implements TraefikMiddleware {
-  nodeId: ID!
-  name: String!
-  provider: String!
-  type: String!
-  enabled: Boolean
-  usedBy: [TraefikRouter!]!
-  info: TraefikMiddlewareInfoInfo!
-}
-
-
 
 type TraefikMiddlewarePassTLSClientCertInfo {
-  info: TraefikMiddlewareInfo
+  info: TraefikMiddlewareInfoInfo
+  pem: Boolean
+}
+
+input TraefikMiddlewareIssuerInfoInput {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+input TraefikMiddlewareSubjectInfoInput {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+input TraefikMiddlewareInfoInfoInput {
+  issuer: TraefikMiddlewareIssuerInfoInput
+  notAfter: Boolean
+  notBefore: Boolean
+  sans: Boolean
+  serialNumber: Boolean
+  subject: TraefikMiddlewareSubjectInfoInput
+}
+
+input TraefikMiddlewarePassTLSClientCertInfoInput {
+  info: TraefikMiddlewareInfoInfoInput
   pem: Boolean
 }
 
@@ -410,13 +604,29 @@ type TraefikMiddlewarePassTLSClientCert implements TraefikMiddleware {
   passTLSClientCert: TraefikMiddlewarePassTLSClientCertInfo!
 }
 
+input TraefikMiddlewarePassTLSClientCertInput {
+  name: String!
+  passTLSClientCert: TraefikMiddlewarePassTLSClientCertInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewarePassTLSClientCert(input: TraefikMiddlewarePassTLSClientCertInput!): TraefikMiddlewarePassTLSClientCert!
+  updateTraefikMiddlewarePassTLSClientCert(nodeId: ID!, patch: TraefikMiddlewarePassTLSClientCertInfoInput!): TraefikMiddlewarePassTLSClientCert!
+}
 
 
 type TraefikMiddlewareRateLimitInfo {
   average: Int
   burst: Int
   period: Int
-  sourceCriterion: TraefikMiddlewareSourceCriterion
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfo
+}
+
+input TraefikMiddlewareRateLimitInfoInput {
+  average: Int
+  burst: Int
+  period: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfoInput
 }
 
 type TraefikMiddlewareRateLimit implements TraefikMiddleware {
@@ -429,9 +639,24 @@ type TraefikMiddlewareRateLimit implements TraefikMiddleware {
   rateLimit: TraefikMiddlewareRateLimitInfo!
 }
 
+input TraefikMiddlewareRateLimitInput {
+  name: String!
+  rateLimit: TraefikMiddlewareRateLimitInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRateLimit(input: TraefikMiddlewareRateLimitInput!): TraefikMiddlewareRateLimit!
+  updateTraefikMiddlewareRateLimit(nodeId: ID!, patch: TraefikMiddlewareRateLimitInfoInput!): TraefikMiddlewareRateLimit!
+}
 
 
 type TraefikMiddlewareRedirectRegexInfo {
+  permanent: Boolean
+  regex: String
+  replacement: String
+}
+
+input TraefikMiddlewareRedirectRegexInfoInput {
   permanent: Boolean
   regex: String
   replacement: String
@@ -447,9 +672,24 @@ type TraefikMiddlewareRedirectRegex implements TraefikMiddleware {
   redirectRegex: TraefikMiddlewareRedirectRegexInfo!
 }
 
+input TraefikMiddlewareRedirectRegexInput {
+  name: String!
+  redirectRegex: TraefikMiddlewareRedirectRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRedirectRegex(input: TraefikMiddlewareRedirectRegexInput!): TraefikMiddlewareRedirectRegex!
+  updateTraefikMiddlewareRedirectRegex(nodeId: ID!, patch: TraefikMiddlewareRedirectRegexInfoInput!): TraefikMiddlewareRedirectRegex!
+}
 
 
 type TraefikMiddlewareRedirectSchemeInfo {
+  permanent: Boolean
+  port: String
+  scheme: String
+}
+
+input TraefikMiddlewareRedirectSchemeInfoInput {
   permanent: Boolean
   port: String
   scheme: String
@@ -465,9 +705,22 @@ type TraefikMiddlewareRedirectScheme implements TraefikMiddleware {
   redirectScheme: TraefikMiddlewareRedirectSchemeInfo!
 }
 
+input TraefikMiddlewareRedirectSchemeInput {
+  name: String!
+  redirectScheme: TraefikMiddlewareRedirectSchemeInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRedirectScheme(input: TraefikMiddlewareRedirectSchemeInput!): TraefikMiddlewareRedirectScheme!
+  updateTraefikMiddlewareRedirectScheme(nodeId: ID!, patch: TraefikMiddlewareRedirectSchemeInfoInput!): TraefikMiddlewareRedirectScheme!
+}
 
 
 type TraefikMiddlewareReplacePathInfo {
+  path: String
+}
+
+input TraefikMiddlewareReplacePathInfoInput {
   path: String
 }
 
@@ -481,9 +734,23 @@ type TraefikMiddlewareReplacePath implements TraefikMiddleware {
   replacePath: TraefikMiddlewareReplacePathInfo!
 }
 
+input TraefikMiddlewareReplacePathInput {
+  name: String!
+  replacePath: TraefikMiddlewareReplacePathInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareReplacePath(input: TraefikMiddlewareReplacePathInput!): TraefikMiddlewareReplacePath!
+  updateTraefikMiddlewareReplacePath(nodeId: ID!, patch: TraefikMiddlewareReplacePathInfoInput!): TraefikMiddlewareReplacePath!
+}
 
 
 type TraefikMiddlewareReplacePathRegexInfo {
+  regex: String
+  replacement: String
+}
+
+input TraefikMiddlewareReplacePathRegexInfoInput {
   regex: String
   replacement: String
 }
@@ -498,9 +765,23 @@ type TraefikMiddlewareReplacePathRegex implements TraefikMiddleware {
   replacePathRegex: TraefikMiddlewareReplacePathRegexInfo!
 }
 
+input TraefikMiddlewareReplacePathRegexInput {
+  name: String!
+  replacePathRegex: TraefikMiddlewareReplacePathRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareReplacePathRegex(input: TraefikMiddlewareReplacePathRegexInput!): TraefikMiddlewareReplacePathRegex!
+  updateTraefikMiddlewareReplacePathRegex(nodeId: ID!, patch: TraefikMiddlewareReplacePathRegexInfoInput!): TraefikMiddlewareReplacePathRegex!
+}
 
 
 type TraefikMiddlewareRetryInfo {
+  attempts: Int
+  initialInterval: Int
+}
+
+input TraefikMiddlewareRetryInfoInput {
   attempts: Int
   initialInterval: Int
 }
@@ -515,9 +796,23 @@ type TraefikMiddlewareRetry implements TraefikMiddleware {
   retry: TraefikMiddlewareRetryInfo!
 }
 
+input TraefikMiddlewareRetryInput {
+  name: String!
+  retry: TraefikMiddlewareRetryInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRetry(input: TraefikMiddlewareRetryInput!): TraefikMiddlewareRetry!
+  updateTraefikMiddlewareRetry(nodeId: ID!, patch: TraefikMiddlewareRetryInfoInput!): TraefikMiddlewareRetry!
+}
 
 
 type TraefikMiddlewareStripPrefixInfo {
+  forceSlash: Boolean
+  prefixes: [String]
+}
+
+input TraefikMiddlewareStripPrefixInfoInput {
   forceSlash: Boolean
   prefixes: [String]
 }
@@ -532,9 +827,22 @@ type TraefikMiddlewareStripPrefix implements TraefikMiddleware {
   stripPrefix: TraefikMiddlewareStripPrefixInfo!
 }
 
+input TraefikMiddlewareStripPrefixInput {
+  name: String!
+  stripPrefix: TraefikMiddlewareStripPrefixInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareStripPrefix(input: TraefikMiddlewareStripPrefixInput!): TraefikMiddlewareStripPrefix!
+  updateTraefikMiddlewareStripPrefix(nodeId: ID!, patch: TraefikMiddlewareStripPrefixInfoInput!): TraefikMiddlewareStripPrefix!
+}
 
 
 type TraefikMiddlewareStripPrefixRegexInfo {
+  regex: [String]
+}
+
+input TraefikMiddlewareStripPrefixRegexInfoInput {
   regex: [String]
 }
 
@@ -546,6 +854,16 @@ type TraefikMiddlewareStripPrefixRegex implements TraefikMiddleware {
   enabled: Boolean
   usedBy: [TraefikRouter!]!
   stripPrefixRegex: TraefikMiddlewareStripPrefixRegexInfo!
+}
+
+input TraefikMiddlewareStripPrefixRegexInput {
+  name: String!
+  stripPrefixRegex: TraefikMiddlewareStripPrefixRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareStripPrefixRegex(input: TraefikMiddlewareStripPrefixRegexInput!): TraefikMiddlewareStripPrefixRegex!
+  updateTraefikMiddlewareStripPrefixRegex(nodeId: ID!, patch: TraefikMiddlewareStripPrefixRegexInfoInput!): TraefikMiddlewareStripPrefixRegex!
 }
 
 

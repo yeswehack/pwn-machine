@@ -1,52 +1,53 @@
-import deepEqual from "deep-equal"
-import deepcopy from "deepcopy"
+import deepEqual from "deep-equal";
+import deepcopy from "deepcopy";
 
 export default {
-    props: {
-        value: { default: null },
+  props: {
+    value: { default: null }
+  },
+  data() {
+    const originalForm = this.createDefaultForm(this.value);
+    const form = deepcopy(originalForm);
+    return { form, originalForm, internalEdit: false };
+  },
+  methods: {
+    createDefaultForm(value) {
+      return value ? deepcopy(value) : {};
     },
-    data() {
-        const formData = this.value === null ? this.createDefaultForm() : deepcopy(this.value)
-        return { formData, originalData: null, internalEdit: false }
+    renderForm(f){
+      return f
     },
-    methods: {
-        createDefaultForm() {
-            return {}
-        },
-        renderFormData(v) {
-            return v
-        },
-        clear() {
-            this.formData = null
-        },
-        reset() {
-            this.formData = deepcopy(this.originalData)
-        },
-        submit() {
-            this.$emit("submit", this.formData)
-        }
+    clear() {
+      this.form = this.createDefaultForm();
     },
-    computed: {
-        modified() {
-            return !deepEqual(this.formData, this.originalData)
-        }
+    reset() {
+      this.form = deepcopy(this.originalForm);
     },
-    watch: {
-        value: {
-            immediate: true,
-            handler(value) {
-                if (!this.internalEdit) {
-                    this.originalData = value === null ? this.createDefaultForm() : deepcopy(value)
-                }
-            }
-        },
-        formData: {
-            deep: true,
-            async handler() {
-                this.internalEdit = true
-                await this.$emit("input", this.renderFormData(this.formData))
-                this.internalEdit = false
-            }
-        }
+    submit() {
+      this.$emit("submit", this.form);
     }
-}
+  },
+  computed: {
+    modified() {
+      return !deepEqual(this.form, this.originalForm);
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(value) {
+        if (!this.internalEdit) {
+          this.originalForm = this.createDefaultForm(value);
+        }
+      }
+    },
+    form: {
+      deep: true,
+      async handler() {
+        this.internalEdit = true;
+        await this.$emit("input", this.renderForm(this.form));
+        this.internalEdit = false;
+      }
+    }
+  }
+};

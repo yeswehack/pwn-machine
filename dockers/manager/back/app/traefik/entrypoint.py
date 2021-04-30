@@ -5,7 +5,6 @@ from . import with_traefik_http
 TraefikEntrypoint = createType("TraefikEntrypoint")
 
 
-
 @registerQuery("traefikEntrypoints")
 @with_traefik_http
 async def resolve_TraefikEntrypoints(*_, traefik_http):
@@ -21,7 +20,7 @@ async def resolve_nodeid(entrypoint, *_):
 @with_traefik_http
 async def resolved_usedby(entrypoint, *_, traefik_http):
     if entrypoint["protocol"] == "udp":
-        protocols= ["udp"]
+        protocols = ["udp"]
     else:
         protocols = ["http", "tcp"]
 

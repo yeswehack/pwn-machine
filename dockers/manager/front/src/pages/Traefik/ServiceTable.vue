@@ -3,10 +3,11 @@
     ref="table"
     name="service"
     row-key="name"
-    :loading="loading"
+    :loading="$apollo.queries.services.loading"
     :data="services"
     :columns="columns"
-    v-on:delete="deleteService"
+    @create="createService"
+    @delete="deleteService"
   >
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-xs">
@@ -23,47 +24,35 @@
 
     <template #body-cell-servers="{row}">
       <div class="q-gutter-xs">
-        <q-badge
-          :key="idx"
-          :color="getServerStatusColor(row, server)"
-          v-for="(server, idx) of getServers(row)"
-          :label="server"
-        />
+        {{ row }}
       </div>
     </template>
 
+    <template #body-cell-enabled="{row}">
+      <status-badge :status="row.enabled" />
+    </template>
     <template #details="{ row }">
-      <ServiceDetails
-        :name="row.name"
-        :services="services"
-        :routers="routers"
-        :entrypoints="entrypoints"
-        v-on:modified="serviceCreated"
-      />
+      <ServiceDetails :service="row" />
     </template>
   </BaseTable>
 </template>
 
 <script>
 import ServiceDetails from "src/components/Traefik/Service/Details.vue";
-import CreateService from "src/components/Traefik/Service/Create.vue";
+import ServiceDialog from "src/components/Traefik/Service/Dialog.vue";
 import BaseTable from "src/components/BaseTable3.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import db from "src/gql";
+import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 
 export default {
   components: {
     ServiceDetails,
     BaseTable,
     RouterLink,
-    ProtocolBadge
-  },
-  props: {
-    loading: Boolean,
-    routers: Array,
-    entrypoints: Array,
-    middlewares: Array
+    ProtocolBadge,
+    StatusBadge
   },
   apollo: {
     services: {
@@ -82,8 +71,9 @@ export default {
     const columns = [
       col("name"),
       col("protocol"),
+      col("type"),
       { ...col("usedBy"), label: "Connected Routers" },
-      col("servers")
+      { ...col("enabled"), label: "Status" }
     ];
 
     return {
@@ -91,24 +81,49 @@ export default {
     };
   },
   methods: {
-    getServerStatusColor(row, server) {
-      const serverStatus = row.serverStatus.find(({ url }) => url === server);
-      if (serverStatus === undefined) {
-        return "primary";
-      }
-
-      return serverStatus.status == "UP" ? "positive" : "negative";
+    createService() {
+      this.$q.dialog({
+        component: ServiceDialog,
+        parent: this
+      });
     },
-    getServers(row) {
-      return row.loadBalancer?.servers.map(s => s.url) || [];
+    cloneService(service) {
+      this.$q.dialog({
+        component: ServiceDialog,
+        parent: this,
+        service
+      });
     },
-    serviceCreated() {
-      this.$emit("refetch");
-      this.$refs.table.closePopup();
-    },
-    deleteService(name) {
-      this.$api.docker.deleteService(name.split("@")[0]);
-      this.$emit("refetch");
+    deleteService(service) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${service.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: db.traefik.DELETE_SERVICE,
+              variables: { nodeId: service.nodeId },
+              refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+            })
+            .then(response => {
+              const deleted = response.data.traefikDeleteService.ok;
+              if (deleted) {
+                this.$q.notify({
+                  message: `${service.name} deleted.`,
+                  type: "positive"
+                });
+              } else {
+                this.$q.notify({
+                  message: `Unable to delete ${service.name}.`,
+                  type: "negative"
+                });
+              }
+            });
+        });
     }
   }
 };
