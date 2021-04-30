@@ -15,16 +15,11 @@ type DockerContainer {
 }
 
 enum DockerContainerStatus {
-    created
-    restarting
-    running
-    removing
-    paused
-    exited
-    dead
-}
-
-
-input DockerContainerFilters {
-    id: ID
+    CREATED
+    RESTARTING
+    RUNNING
+    REMOVING
+    PAUSED
+    EXITED
+    DEAD
 }
