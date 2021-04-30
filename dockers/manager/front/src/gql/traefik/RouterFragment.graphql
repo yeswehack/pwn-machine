@@ -6,17 +6,6 @@ fragment RouterFragment on TraefikRouter {
   error
   service {
     name
-    enabled
-    loadBalancer {
-      healthCheck {
-        followRedirects
-        path
-        headers {
-          name
-          value
-        }
-      }
-    }
   }
   middlewares {
     name
