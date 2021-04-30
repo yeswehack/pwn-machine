@@ -1,25 +1,22 @@
 <template>
   <div class="q-gutter-md">
-    <weighted-input v-model="form.services" protocol="http"/>
-    <sticky-input v-model="form.sticky" class="q-pt-md" />
+    <weighted-input v-model="form.services"  protocol="tcp"/>
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import WeightedInput from './WeightedInput.vue';
-import StickyInput from './StickyInput.vue';
+import WeightedInput from "./WeightedInput.vue";
 export default {
-  components: {  WeightedInput, StickyInput },
+  components: { WeightedInput },
   mixins: [DeepForm],
   methods: {
     createDefaultForm(weighted) {
       const form = {
         services: weighted?.services,
-        sticky: weighted?.sticky
       };
       return form;
-    },
+    }
   }
 };
 </script>

@@ -1,7 +1,7 @@
 type Query {
   traefikRouters: [TraefikRouter!]!
   traefikEntrypoints: [TraefikEntrypoint!]!
-  traefikServices: [TraefikService!]!
+  traefikServices(protocols: [TraefikProtocol!]): [TraefikService!]!
   traefikMiddlewares: [TraefikMiddleware!]!
 }
 

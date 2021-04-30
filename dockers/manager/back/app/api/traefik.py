@@ -226,7 +226,7 @@ class TraefikHTTPApi:
 
     async def get_services(self, protocols=("http", "tcp", "udp")):
         all_services = []
-        for proto in ["http", "tcp", "udp"]:
+        for proto in protocols:
             services = await self.get(f"/{proto}/services")
             for service in services:
                 service["protocol"] = proto

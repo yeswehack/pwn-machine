@@ -37,7 +37,10 @@ def resolve_service_type(service, *_):
 
 @registerQuery("traefikServices")
 @with_traefik_http
-async def resolve_TraefikServices(*_, traefik_http):
+async def resolve_TraefikServices(*_, traefik_http, protocols=None):
+    print(protocols)
+    if (protocols):
+        return await traefik_http.get_services(protocols)
     return await traefik_http.get_services()
 
 

@@ -30,12 +30,33 @@
           v-model="form.extra"
           v-if="form.protocol == 'http' && form.type == 'loadBalancer'"
         />
-        <create-http-mirroring 
+        <create-http-mirroring
           v-model="form.extra"
-          v-if="form.protocol == 'http' && form.type == 'mirroring'" />
+          v-if="form.protocol == 'http' && form.type == 'mirroring'"
+        />
         <create-http-weighted
           v-model="form.extra"
-          v-if="form.protocol == 'http' && form.type == 'weighted'" />
+          v-if="form.protocol == 'http' && form.type == 'weighted'"
+        />
+
+        <create-tcp-load-balancer
+          v-model="form.extra"
+          v-if="form.protocol == 'tcp' && form.type == 'loadBalancer'"
+        />
+        <create-tcp-weighted
+          v-model="form.extra"
+          v-if="form.protocol == 'tcp' && form.type == 'weighted'"
+        />
+
+        <create-udp-load-balancer
+          v-model="form.extra"
+          v-if="form.protocol == 'udp' && form.type == 'loadBalancer'"
+        />
+        <create-udp-weighted
+          v-model="form.extra"
+          v-if="form.protocol == 'udp' && form.type == 'weighted'"
+        />
+
         <q-card-actions class="q-mt-md" align="right">
           <q-btn
             color="warning"
@@ -59,12 +80,24 @@
 
 <script>
 import db from "src/gql";
+import DeepForm from "src/mixins/DeepForm.js";
 import CreateHttpLoadBalancer from "./CreateHttpLoadBalancer.vue";
 import CreateHttpMirroring from "./CreateHttpMirroring.vue";
-import CreateHttpWeighted from './CreateHttpWeighted.vue';
-import DeepForm from "src/mixins/DeepForm.js";
+import CreateHttpWeighted from "./CreateHttpWeighted.vue";
+import CreateTcpLoadBalancer from "./CreateTcpLoadBalancer.vue";
+import CreateTcpWeighted from "./CreateTcpWeighted.vue";
+import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
+import CreateUdpWeighted from "./CreateUdpWeighted.vue";
 export default {
-  components: { CreateHttpLoadBalancer, CreateHttpMirroring, CreateHttpWeighted },
+  components: {
+    CreateHttpLoadBalancer,
+    CreateHttpMirroring,
+    CreateHttpWeighted,
+    CreateTcpLoadBalancer,
+    CreateTcpWeighted,
+    CreateUdpLoadBalancer,
+    CreateUdpWeighted
+  },
   mixins: [DeepForm],
   props: {
     edit: { type: Boolean, default: false },

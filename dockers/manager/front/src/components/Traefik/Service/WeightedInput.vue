@@ -76,24 +76,34 @@
 </template>
 
 <script>
-import db from "src/gql";
+import gql from "graphql-tag"
 import DeepForm from "src/mixins/DeepForm";
 import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],
   props: {
+    protocol: { type: String, required: true },
     label: { type: String, default: null }
   },
   apollo: {
     services: {
-      query: db.traefik.GET_SERVICES,
+      query: gql`
+        query getServices($protocols: [TraefikProtocol!]) {
+          traefikServices(protocols: $protocols) {
+            name
+          }
+        }
+      `,
+      variables() {
+        return { protocols: [this.protocol] };
+      },
       update: data => data.traefikServices
     }
   },
   computed: {
     serviceOptions() {
-      return this.services.map(s => s.name);
+      return (this.services ?? []).map(s => s.name);
     }
   },
   data() {
