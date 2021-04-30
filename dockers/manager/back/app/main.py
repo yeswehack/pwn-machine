@@ -13,6 +13,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from ariadne.asgi import GraphQL
 
 from .redis import client as redis_client
+from . import docker
 from . import traefik
 from .auth import auth_middleware
 from .api.traefik import new_traefik_http_client, TraefikRedisApi
