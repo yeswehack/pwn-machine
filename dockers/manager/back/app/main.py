@@ -14,15 +14,26 @@ from ariadne.asgi import GraphQL
 
 from .redis import client as redis_client
 from . import traefik
+from . import dns
 from .auth import auth_middleware
 from .api.traefik import new_traefik_http_client, TraefikRedisApi
+from .api.powerdns import new_powerdns_http_client
 
 
-class TraefikAPIMiddleware(BaseHTTPMiddleware):
+class TraefikApiMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         async with new_traefik_http_client("http://127.0.0.1:8080/api") as client:
             request.state.traefik_http = client
             request.state.traefik_redis = TraefikRedisApi(redis_client, "traefik", client)
+            response = await call_next(request)
+        return response
+
+
+class PowerDNSApiMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        
+        async with new_powerdns_http_client("http://127.0.0.1:8081", 'test') as client:
+            request.state.dns_http = client
             response = await call_next(request)
         return response
 
@@ -61,5 +72,5 @@ app = Starlette(
         Route("/api", GraphQL(schema, middleware=[auth_middleware])),
         Mount("/", StaticFilesFallback(directory="static", html=True)),
     ],
-    middleware=[Middleware(TraefikAPIMiddleware)],
+    middleware=[Middleware(TraefikApiMiddleware), Middleware(PowerDNSApiMiddleware)],
 )
