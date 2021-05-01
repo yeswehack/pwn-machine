@@ -4,7 +4,6 @@ type DockerContainer {
     labels: [KeyValue!]!
     image: DockerImage!
     created: DateTime!
-    size: Int!
     command: [String!]!
     environment: [KeyValue!]!
     #mounts

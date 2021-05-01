@@ -11,12 +11,12 @@ async def resolve_images(*_, onlyFinal=True, filters=None):
 
 
 @DockerImage.field("tags")
-async def resolve_image_tag(image, _):
+async def resolve_image_tags(image, _):
     return [KeyValue(ref.split(":"), "repository", "tag") for ref in image.tags]
 
 
 @DockerImage.field("labels")
-async def resolve_image_label(image, _):
+async def resolve_image_labels(image, _):
     return [KeyValue(label) for label in image.labels.items()]
 
 
@@ -35,9 +35,14 @@ async def resolve_image_size(image, _):
     return image.attrs["Size"]
 
 
+@DockerImage.field("entrypoint")
+async def resolve_image_entrypoint(image, _):
+    return image.attrs["Config"].get("Entrypoint")
+
+
 @DockerImage.field("command")
 async def resolve_image_command(image, _):
-    return image.attrs["Config"]["Cmd"]
+    return image.attrs["Config"].get("Cmd")
 
 
 @DockerImage.field("environment")
