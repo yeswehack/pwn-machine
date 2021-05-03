@@ -65,6 +65,9 @@ export default {
   formDefinition: [],
   methods: {
     addEntry() {
+      if (!this.model){
+        return
+      }
       if (this.objectKey) {
         this.form.unshift({ [this.objectKey]: this.model });
       } else {
