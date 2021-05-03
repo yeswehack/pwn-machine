@@ -1,6 +1,13 @@
 from functools import wraps
 import time
-from ..utils import registerQuery, registerMutation, createType, dnsname, create_node_id
+from ..utils import (
+    registerQuery,
+    registerMutation,
+    createType,
+    dnsname,
+    create_node_id,
+    undnsname,
+)
 
 
 def with_dns_http(f):
@@ -19,6 +26,11 @@ DnsRule = createType("DnsRule")
 @with_dns_http
 async def get_dns_rules(*_, dns_http):
     return await dns_http.get_rules()
+
+
+@DnsRule.field("name")
+def resolve_name(rule, *_):
+    return undnsname(rule["name"])
 
 
 @DnsRule.field("nodeId")

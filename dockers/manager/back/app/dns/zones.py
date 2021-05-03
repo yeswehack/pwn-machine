@@ -1,6 +1,6 @@
 from functools import wraps
 import time
-from ..utils import registerQuery, registerMutation, createType, dnsname, create_node_id
+from ..utils import registerQuery, registerMutation, createType, dnsname, create_node_id, undnsname
 
 
 def with_dns_http(f):
@@ -25,6 +25,9 @@ DnsZone = createType("DnsZone")
 def resolve_nodeid(zone, *_):
     return create_node_id("DNS_ZONE", zone['id'])
 
+@DnsZone.field("name")
+def resolve_name(zone, *_):
+    return undnsname(zone['name'])
 
 @DnsZone.field("soa")
 @with_dns_http

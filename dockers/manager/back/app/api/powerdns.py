@@ -149,7 +149,7 @@ class PowerDNSApi:
 
     async def get_rules_for_zone(self, zone_id, allow_cache=True):
         info = await self.get_zone(zone_id, allow_cache)
-        return [{**z, "zone": info["name"]} for z in info["rrsets"]]
+        return [{**z, "zone": undnsname(info["name"])} for z in info["rrsets"]]
 
     async def get_rules(self, allow_cache=True):
         rules = []
