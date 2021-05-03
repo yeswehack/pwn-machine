@@ -6,7 +6,7 @@
       :options="serviceOptions"
     />
     <q-input type="number" label="Max body size" v-model.number="form.maxBodySize" />
-    <mirrors-input v-model="form.mirrors" :services="serviceOptions" />
+    <component :is="formChildren.mirrors" :services="serviceOptions" v-model="form.mirrors"/>
   </div>
 </template>
 
@@ -15,7 +15,6 @@ import db from "src/gql";
 import DeepForm from "src/mixins/DeepForm.js";
 import MirrorsInput from "./MirrorsInput.vue"
 export default {
-  components: { MirrorsInput },
   mixins: [DeepForm],
   apollo: {
     services: {
@@ -23,21 +22,16 @@ export default {
       update: data => data.traefikServices
     }
   },
+  formDefinition: {
+    maxBodySize: null,
+    service: null,
+    mirrors: MirrorsInput
+  },
   computed: {
     serviceOptions() {
-      return this.services.map(s => s.name);
+      return (this.services ?? []).map(s => s.name);
     }
   },
-  methods: {
-    createDefaultForm(mirroring) {
-      const form = {
-        maxBodySize: mirroring?.maxBodySize,
-        service: mirroring?.service,
-        mirrors: mirroring?.mirrors
-      };
-      return form;
-    },
-  }
 };
 </script>
 

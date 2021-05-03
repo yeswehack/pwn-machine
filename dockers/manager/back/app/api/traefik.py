@@ -4,7 +4,7 @@ import logging
 import json
 import re
 from contextlib import asynccontextmanager, contextmanager
-from ..utils import base64_decode
+from ..utils import base64_decode, validate_node_id
 
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
@@ -19,14 +19,6 @@ def log(msg):
     logger.info(f"[{__name__}] {msg}")
 
 
-def validate_node_id(nodeId, target_type):
-    try:
-        type, *args = base64_decode(nodeId, json=True)
-        if type != target_type:
-            raise ValueError()
-        return args
-    except Exception as e:
-        raise ValueError(f"Invalid nodeId.")
 
 
 def settings_to_kv(settings, prefix=""):
@@ -74,14 +66,14 @@ class TraefikRedisApi:
         return service
 
     async def delete_service(self, nodeId):
-        protocol, name = validate_node_id(nodeId, "service")
+        protocol, name = validate_node_id(nodeId, "TRAEFIK_SERVICE")
         redis_name = name.split("@")[0] if "@" in name else name
         self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
         return await self.http_api.wait_delete(f"/{protocol}/services/{name}")
 
     # Middleware
     async def delete_middleware(self, nodeId):
-        name = validate_node_id(nodeId, "middleware")[0]
+        name = validate_node_id(nodeId, "TRAEFIK_MW")[0]
         redis_name = name.split("@")[0] if "@" in name else name
         self.delete_pattern(f"/http/middlewares/{redis_name}/*")
         return await self.http_api.wait_delete(f"/http/middlewares/{name}")
@@ -94,7 +86,7 @@ class TraefikRedisApi:
         return await self.http_api.wait(f"/http/middlewares/{redis_name}@redis")
 
     async def update_middleware(self, nodeId, type, settings):
-        name = validate_node_id(nodeId, "middleware")[0]
+        name = validate_node_id(nodeId, "TRAEFIK_MW")[0]
         if not await self.delete_middleware(name):
             raise RuntimeError(f"Unable to update {name}")
         return await self.create_middleware(name, type, settings)

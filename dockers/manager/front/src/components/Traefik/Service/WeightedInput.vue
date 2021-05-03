@@ -78,14 +78,14 @@
 <script>
 import gql from "graphql-tag"
 import DeepForm from "src/mixins/DeepForm";
-import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],
   props: {
-    protocol: { type: String, required: true },
+    protocol: { type: String, default: null },
     label: { type: String, default: null }
   },
+  formDefinition: [],
   apollo: {
     services: {
       query: gql`
@@ -110,10 +110,6 @@ export default {
     return { model: { name: "", weight: "" } };
   },
   methods: {
-    createDefaultForm(v) {
-      const form = v ? deepcopy(v) : [];
-      return form;
-    },
     addEntry() {
       this.form.unshift(this.model);
       this.model = { name: null, weight: null };

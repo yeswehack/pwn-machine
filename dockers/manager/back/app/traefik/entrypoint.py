@@ -1,4 +1,4 @@
-from ..utils import createType, registerQuery, base64_encode
+from ..utils import createType, registerQuery, create_node_id
 from . import with_traefik_http
 
 
@@ -13,7 +13,7 @@ async def resolve_TraefikEntrypoints(*_, traefik_http):
 
 @TraefikEntrypoint.field("nodeId")
 async def resolve_nodeid(entrypoint, *_):
-    return base64_encode(["entrypoint", entrypoint["name"]], json=True)
+    return create_node_id("TRAEFIK_EP", entrypoint["name"])
 
 
 @TraefikEntrypoint.field("usedBy")

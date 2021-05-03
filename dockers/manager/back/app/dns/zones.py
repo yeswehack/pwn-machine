@@ -1,5 +1,6 @@
 from functools import wraps
-from ..utils import registerQuery, createType
+import time
+from ..utils import registerQuery, registerMutation, createType, dnsname, create_node_id
 
 
 def with_dns_http(f):
@@ -22,7 +23,7 @@ DnsZone = createType("DnsZone")
 
 @DnsZone.field("nodeId")
 def resolve_nodeid(zone, *_):
-    return zone["id"]
+    return create_node_id("DNS_ZONE", zone['id'])
 
 
 @DnsZone.field("soa")
@@ -37,15 +38,21 @@ def resolve_rules(zone, *_, dns_http):
     return dns_http.get_rules_for_zone(zone["id"])
 
 
-DnsRecord = createType("DnsRecord")
 
 
-@DnsRecord.field("enabled")
-def resolve_enabled(record, *_):
-    return not record["disabled"]
-
-
-@registerQuery("dnsRules")
+@registerMutation("createDnsZone")
 @with_dns_http
-async def get_dns_rules(*_, dns_http):
-    return await dns_http.get_rules()
+async def create_dns_zone_mutation(*_, dns_http, input):
+    return await dns_http.create_zone(input['name'], input['soa'])
+    
+
+@registerMutation("updateDnsZone")
+@with_dns_http
+async def update_dns_zone_mutation(*_, dns_http, nodeId, patch):
+    return await dns_http.update_zone(nodeId, patch['soa'])
+    
+
+@registerMutation("deleteDnsZone")
+@with_dns_http
+async def delete_dns_zone_mutation(*_, dns_http, nodeId):
+    return await dns_http.delete_zone(nodeId)

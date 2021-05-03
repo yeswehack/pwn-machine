@@ -3,7 +3,7 @@ from ..utils import (
     registerMutation,
     create_kv_resolver,
     createType,
-    base64_encode,
+    create_node_id,
     createInterface,
 )
 from . import with_traefik_http, with_traefik_redis
@@ -51,7 +51,7 @@ def resolve_traefik_enabled(service, *_):
 
 @TraefikService.field("nodeId")
 async def resolve_nodeid(service, *_):
-    return base64_encode(["service", service["protocol"], service["name"]], json=True)
+    return create_node_id("TRAEFIK_SERVICE", service["protocol"], service["name"])
 
 
 @TraefikService.field("usedBy")

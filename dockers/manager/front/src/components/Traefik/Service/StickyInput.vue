@@ -25,18 +25,13 @@ export default {
     const sameSiteOptions = ["none", "lax", "strict"];
     return { sameSiteOptions };
   },
-  methods: {
-    createDefaultForm(sticky) {
-      const form = {
-        cookie: {
-          name: sticky?.cookie?.name,
-          sameSite: sticky?.cookie?.sameSite,
-          httpOnly: sticky?.cookie?.httpOnly,
-          secure: sticky?.cookie?.secure
-        }
-      };
-      return form;
+  formDefinition: {
+    cookie: {
+      name:null,
+      sameSite: null,
+      httpOnly: null,
+      secure: null
     }
-  }
+  },
 };
 </script>

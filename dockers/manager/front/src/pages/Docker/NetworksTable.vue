@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable2.vue";
+import BaseTable from "src/components/BaseTable.vue";
 import CreateNetwork from "src/components/Docker/Network/Create.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";

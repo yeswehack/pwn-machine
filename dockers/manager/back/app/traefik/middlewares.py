@@ -6,17 +6,9 @@ from ..utils import (
     createType,
     create_kv_resolver,
     createInterface,
-    base64_encode,
-    base64_decode,
+    create_node_id,
 )
 from . import with_traefik_http, with_traefik_redis
-
-
-
-def create_middleware(traefik_redis, name, type, settings):
-    prefix = f"/http/middlewares/{name}/{type}"
-    for k, v in settings_to_kv(input[key], prefix):
-        traefik_redis.set(k, v)
 
 
 def create_mutation_resolver(object_type, type_name):
@@ -109,7 +101,7 @@ TraefikMiddleware = createInterface("TraefikMiddleware")
 
 @TraefikMiddleware.field("nodeId")
 async def resolve_nodeid(middleware, *_):
-    return base64_encode(["middleware", middleware["name"]], json=True)
+    return create_node_id("TRAEFIK_MW", middleware["name"])
 
 
 @TraefikMiddleware.field("enabled")

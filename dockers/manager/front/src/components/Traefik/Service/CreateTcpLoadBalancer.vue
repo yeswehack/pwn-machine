@@ -1,6 +1,6 @@
 <template>
   <div class="q-gutter-md">
-    <list-input v-model="form.servers" object-key="address" label="Servers" />
+    <component :is="formChildren.servers" v-model="form.servers" object-key="address" label="Servers address" />
     <q-select
       :options="[1, 2]"
       v-model="form.proxyProtocol.version"
@@ -18,18 +18,14 @@
 import DeepForm from "src/mixins/DeepForm.js";
 import ListInput from "src/components/ListInput.vue";
 export default {
-  components: { ListInput },
   mixins: [DeepForm],
-  methods: {
-    createDefaultForm(loadbalancer) {
-      const form = {
-        servers: loadbalancer?.servers ?? [],
-        proxyProtocol: loadbalancer?.proxyProtocol?.version ?? 2,
-        terminationDelay: loadbalancer?.terminationDelay ?? 100
-      };
-      return form;
-    }
-  }
+  formDefinition: {
+    servers: ListInput,
+    proxyProtocol: {
+      version: 2
+    },
+    terminationDelay: 100,
+  },
 };
 </script>
 

@@ -23,4 +23,12 @@ SET traefik/udp/routers/udp-test/entrypoints "udp51"
 SET traefik/http/middlewares/add-prefix/addPrefix/prefix "/test"
 SET traefik/http/routers/whoami/middlewares/0 "add-prefix"
 
+
+SET traefik/http/middlewares/Middleware01/basicAuth/headerField "foobar"
+SET traefik/http/middlewares/Middleware01/basicAuth/realm "foobar"
+SET traefik/http/middlewares/Middleware01/basicAuth/removeHeader "true"
+SET traefik/http/middlewares/Middleware01/basicAuth/users/0 "foobar"
+SET traefik/http/middlewares/Middleware01/basicAuth/users/1 "foobar"
+SET traefik/http/middlewares/Middleware01/basicAuth/usersFile "foobar"
+
 KEYS *

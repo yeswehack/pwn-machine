@@ -1,0 +1,3 @@
+mutation deleteDnsZone($nodeId: ID!) {
+  deleteDnsZone(nodeId: $nodeId)
+}

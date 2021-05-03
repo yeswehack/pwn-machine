@@ -1,22 +1,23 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="zone"
     :loading="$apollo.loading"
     :data="zones"
     :columns="columns"
-    @deleteRow="deleteZone"
+    @create="createZone"
+    @clone="cloneZone"
+    @delete="deleteZone"
   >
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
 import BaseTable from "src/components/BaseTable3.vue";
-//import CreateZone from "src/components/DNS/Zone/Create.vue";
+import ZoneDialog from "src/components/DNS/Zone/Dialog.vue";
 //import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
-import db from "src/gql/"
-
+import db from "src/gql/";
 
 export default {
   components: { BaseTable },
@@ -27,27 +28,37 @@ export default {
     }
   },
   methods: {
-    deleteZone(zone) {
-      const variables = {
-        zone: zone.name
-      };
-      this.runMutation(
-        deleteDnsZone,
-        variables,
-        `Zone ${zone.name} deleted.`,
-        store => {
-          const data = store.readQuery({ query: getDnsZones });
-          data.dns.zones = data.dns.zones.filter(z => z.id != zone["id"]);
-          store.writeQuery({ query: getDnsZones, data });
-        }
-      );
+    createZone() {
+      this.$q.dialog({
+        component: ZoneDialog,
+        parent: this
+      });
     },
-    refresh() {
-      this.$apollo.queries.zones.refetch();
+    cloneZone(zone) {
+      this.$q.dialog({
+        component: ZoneDialog,
+        parent: this,
+        zone
+      });
+    },
+    deleteZone(zone) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${zone.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo.mutate({
+            mutation: db.dns.DELETE_ZONE,
+            variables: { nodeId: zone.nodeId },
+            refetchQueries: [{ query: db.dns.GET_ZONES }, { query: db.dns.GET_RULES }]
+          });
+        });
     }
   },
   data() {
-
     const field = (name, opt = {}) => ({
       name: name,
       align: "left",

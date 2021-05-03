@@ -1,5 +1,6 @@
 query getDNSRules {
   dnsRules {
+    nodeId
     zone
     name
     type

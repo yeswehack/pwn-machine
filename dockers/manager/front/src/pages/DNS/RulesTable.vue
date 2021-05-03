@@ -1,40 +1,42 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="rule"
-    :loading="$apollo.loading"
+    :loading="$apollo.queries.rules.loading"
     :data="rules"
     :columns="columns"
-    @deleteRow="deleteRule"
+    @create="createRule"
+    @clone="cloneRule"
+    @delete="deleteRule"
   >
     <template #body-cell-zone="{value}">
       <div class="q-gutter-sm row">
-        <ZoneLink :name="value" />
+        <zone-link :name="value" />
       </div>
     </template>
-    <template #body-cell-enabled="{value, row}">
+    <template #body-cell-enabled="{value}">
       <q-toggle
         :value="value"
         :color="value ? 'positive' : 'negative'"
         keep-color
-        @input="v => toggleRule(row, v)"
-      /> </template
-    ><!-- 
+      />
+    </template>
+    <!-- 
     <template v-slot:details="{ row }">
       <RuleDetails :rule="row" />
     </template>
     <template v-slot:popup="{ row, closePopup }">
       <CreateRule :value="row" @close="closePopup" :edit="false" />
     </template> -->
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
 import db from "src/gql";
-import BaseTable from "../../components/BaseTable2.vue";
+import BaseTable from "../../components/BaseTable3.vue";
 //import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
-//import CreateRule from "src/components/DNS/Rule/Create.vue";
+import ZoneDialog from "src/components/DNS/Rule/Dialog.vue";
 
 export default {
   components: { BaseTable, ZoneLink },
@@ -70,36 +72,34 @@ export default {
     return { columns };
   },
   methods: {
-    deleteRule(rule) {
-      const variables = {
-        zone: rule.zone,
-        name: rule.name,
-        type: rule.type
-      };
-      this.runMutation(
-        deleteDnsRule,
-        variables,
-        `Rule ${rule.type} ${rule.name} deleted.`,
-        store => {
-          const data = store.readQuery({ query: getRules });
-          data.dns.rules = data.dns.rules.filter(r => r.id != rule["id"]);
-          store.writeQuery({ query: getRules, data });
-        }
-      );
+    createRule() {
+      this.$q.dialog({
+        component: ZoneDialog,
+        parent: this
+      });
     },
-
-    toggleRule(r, enable) {
-      const mutation = enable ? enableDnsRule : disableDnsRule;
-      const variables = {
-        zone: r.zone,
-        name: r.name,
-        type: r.type
-      };
-      this.runMutation(
-        mutation,
-        variables,
-        `Rule ${r.type} ${r.name} ${enable ? "enabled" : "disabled"}.`
-      );
+    cloneRule(rule) {
+      this.$q.dialog({
+        component: ZoneDialog,
+        parent: this,
+        rule
+      });
+    },
+    deleteRule(rule) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete (${rule.type}) ${rule.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo.mutate({
+            mutation: db.dns.DELETE_RULE,
+            variables: { nodeId: rule.nodeId },
+            refetchQueries: [{ query: db.dns.GET_RULES }]
+          });
+        });
     },
     isEnabled(r) {
       const enabled = r["records"].reduce((p, c) => ~~c["enabled"] + p, 0);

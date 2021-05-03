@@ -7,6 +7,7 @@
     :data="services"
     :columns="columns"
     @create="createService"
+    @clone="cloneService"
     @delete="deleteService"
   >
     <template #body-cell-usedBy="{row}">
@@ -91,7 +92,7 @@ export default {
       this.$q.dialog({
         component: ServiceDialog,
         parent: this,
-        service
+        service: service
       });
     },
     deleteService(service) {

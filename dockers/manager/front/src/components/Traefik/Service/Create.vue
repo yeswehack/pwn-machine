@@ -16,64 +16,24 @@
           label="Type"
           :options="availableTypes[form.protocol]"
         />
-        <q-card-actions class="q-mt-md" align="right">
-          <q-btn color="warning" label="Cancel" @click="$emit('cancel')" />
-          <q-btn
-            color="positive"
-            label="Next"
-            @click="panel = 'enterSettings'"
-          />
-        </q-card-actions>
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
-        <create-http-load-balancer
-          v-model="form.extra"
-          v-if="form.protocol == 'http' && form.type == 'loadBalancer'"
-        />
-        <create-http-mirroring
-          v-model="form.extra"
-          v-if="form.protocol == 'http' && form.type == 'mirroring'"
-        />
-        <create-http-weighted
-          v-model="form.extra"
-          v-if="form.protocol == 'http' && form.type == 'weighted'"
-        />
-
-        <create-tcp-load-balancer
-          v-model="form.extra"
-          v-if="form.protocol == 'tcp' && form.type == 'loadBalancer'"
-        />
-        <create-tcp-weighted
-          v-model="form.extra"
-          v-if="form.protocol == 'tcp' && form.type == 'weighted'"
-        />
-
-        <create-udp-load-balancer
-          v-model="form.extra"
-          v-if="form.protocol == 'udp' && form.type == 'loadBalancer'"
-        />
-        <create-udp-weighted
-          v-model="form.extra"
-          v-if="form.protocol == 'udp' && form.type == 'weighted'"
-        />
-
-        <q-card-actions class="q-mt-md" align="right">
-          <q-btn
-            color="warning"
-            :label="cancelBtnLabel"
-            @click="cancelBtnClick"
-          />
-          <q-btn
-            color="positive"
-            :loading="loading"
-            label="Create"
-            @click="createService"
-          />
-        </q-card-actions>
+        <component :is="createComponent" v-model="form.extra" />
       </q-tab-panel>
     </q-tab-panels>
     <q-card-section>
+      <reset-and-save
+        :steps="['chooseType', 'enterSettings']"
+        :step.sync="panel"
+        :modified="modified"
+        @reset="reset"
+        @save="submit"
+      />
+    </q-card-section>
+    <q-card-section v-if="0">
+      <pre>
       {{ form }}
+      </pre>
     </q-card-section>
   </q-form>
 </template>
@@ -88,35 +48,77 @@ import CreateTcpLoadBalancer from "./CreateTcpLoadBalancer.vue";
 import CreateTcpWeighted from "./CreateTcpWeighted.vue";
 import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
 import CreateUdpWeighted from "./CreateUdpWeighted.vue";
+import ResetAndSave from "src/components/ResetAndSave.vue";
+
+function getCreateComponent(value) {
+  const mapping = {
+    http: {
+      loadBalancer: CreateHttpLoadBalancer,
+      weighted: CreateHttpWeighted,
+      mirroring: CreateHttpMirroring
+    },
+    tcp: {
+      loadBalancer: CreateTcpLoadBalancer,
+      weighted: CreateTcpWeighted
+    },
+    udp: {
+      loadBalancer: CreateUdpLoadBalancer,
+      weighted: CreateUdpWeighted
+    }
+  };
+  return mapping[value?.protocol]?.[value?.type] ?? CreateHttpLoadBalancer;
+}
+
 export default {
-  components: {
-    CreateHttpLoadBalancer,
-    CreateHttpMirroring,
-    CreateHttpWeighted,
-    CreateTcpLoadBalancer,
-    CreateTcpWeighted,
-    CreateUdpLoadBalancer,
-    CreateUdpWeighted
-  },
+  components: { ResetAndSave },
   mixins: [DeepForm],
   props: {
     edit: { type: Boolean, default: false },
     service: { type: Object, default: null }
   },
+  formDefinition: {
+    name: null,
+    protocol: "http",
+    type: "loadBalancer",
+    extra(value) {
+      return getCreateComponent(value);
+    }
+  },
   data() {
     const availableTypes = {
-      http: ["loadBalancer", "mirroring", "weighted"],
+      http: ["loadBalancer", "weighted", "mirroring"],
       tcp: ["loadBalancer", "weighted"],
       udp: ["loadBalancer", "weighted"]
     };
-    const cache = {
-      http: {},
-      tcp: {},
-      udp: {}
-    };
-    return { loading: false, availableTypes, cache, panel: "chooseType" };
+    return { loading: false, availableTypes, panel: "chooseType" };
+  },
+  watch: {
+    currentProtocol(proto, oldProto) {
+      const idx = oldProto
+        ? this.availableTypes[oldProto].indexOf(this.form.type)
+        : 0;
+      const availableTypes = this.availableTypes[proto];
+      this.form.type =
+        availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
+    },
+    currentType() {
+      const instance = this.instanciateSubForm(
+        getCreateComponent(this.form),
+        this.form
+      );
+      this.form.extra = instance.originalForm;
+    }
   },
   computed: {
+    currentProtocol() {
+      return this.form.protocol;
+    },
+    currentType() {
+      return this.form.type;
+    },
+    createComponent() {
+      return getCreateComponent(this.form);
+    },
     okBtnLabel() {
       return this.panel == "chooseType" ? "Next" : "Create";
     },
@@ -136,22 +138,6 @@ export default {
       } else {
         this.$emit("cancel");
       }
-    },
-    createDefaultForm(service) {
-      const form = {
-        protocol: "http",
-        type: "loadBalancer",
-        extra: {}
-      };
-      if (service) {
-        form.name = service.name.split("@")[0];
-        form.protocol = service.protocol;
-        form.type = service.type;
-        extra = service[service.type];
-      }
-
-      console.log("CREATE DEFAULT FORM", service, form);
-      return form;
     },
     nonEmpty(val) {
       if (val === null || val === undefined) {

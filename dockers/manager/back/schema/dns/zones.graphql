@@ -7,19 +7,17 @@ type DnsStartOfAuthority {
   ttl: Int
 }
 
-type DnsRecord {
-  content: String
-  enabled: Boolean
+
+input DnsStartOfAuthorityInput {
+  nameserver: String
+  postmaster: String
+  refresh: Int
+  retry: Int
+  expire: Int
+  ttl: Int
 }
 
-type DnsRule {
-  nodeId: ID
-  zone: String
-  name: String
-  type: String
-  ttl: Int
-  records: [DnsRecord!]
-}
+
 
 type DnsZone {
   nodeId: ID!
@@ -29,7 +27,24 @@ type DnsZone {
   rules: [DnsRule!]
 }
 
+
+input CreateDnsZoneInput {
+  name: String!
+  soa: DnsStartOfAuthorityInput!
+}
+
+input UpdateDnsZoneInput {
+  soa: DnsStartOfAuthorityInput!
+}
+
 extend type Query {
   dnsZones: [DnsZone!]!
-  dnsRules: [DnsRule!]!
+}
+
+
+
+extend type Mutation {
+  createDnsZone(input: CreateDnsZoneInput!): DnsZone
+  updateDnsZone(nodeId: ID!, patch: UpdateDnsZoneInput!): DnsZone
+  deleteDnsZone(nodeId: ID!): Boolean
 }

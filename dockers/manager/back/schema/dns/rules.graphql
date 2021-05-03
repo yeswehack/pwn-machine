@@ -1,0 +1,79 @@
+enum DnsRuleType {
+  A
+  AAAA
+  AFSDB
+  ALIAS
+  APL
+  CAA
+  CERT
+  CDNSKEY
+  CDS
+  CNAME
+  DNSKEY
+  KEY
+  LOC
+  MX
+  NAPTR
+  NS
+  NSEC
+  NSEC3
+  NSEC3PARAM
+  OPENPGPKEY
+  PTR
+  RP
+  RRSIG
+  SOA
+  SPF
+  SSHFP
+  SRV
+  TKEY
+  TSIG
+  TLSA
+  SMIMEA
+  TXT
+  URI
+}
+
+type DnsRecord {
+  content: String
+  enabled: Boolean
+}
+
+input DnsRecordInput {
+  content: String!
+}
+
+type DnsRule {
+  nodeId: ID
+  zone: String
+  name: String
+  type: DnsRuleType
+  ttl: Int
+  records: [DnsRecord!]
+}
+
+input CreateDnsRuleInput {
+  zone: String!
+  name: String!
+  type: DnsRuleType!
+  ttl: Int!
+  records: [DnsRecordInput!]
+}
+
+input UpdateDnsRuleInput {
+  zone: String!
+  name: String!
+  type: DnsRuleType!
+  ttl: Int!
+  records: [DnsRecordInput!]
+}
+
+extend type Query {
+  dnsRules: [DnsRule!]!
+}
+
+extend type Mutation {
+  createDnsRule(input: CreateDnsRuleInput!): DnsRule
+  updateDnsRule(nodeId: ID!, input: UpdateDnsRuleInput!): DnsRule
+  deleteDnsRule(nodeId: ID!): Boolean
+}

@@ -15,6 +15,9 @@
             </div>
           </q-card-section>
           <q-card-section>
+            
+            <create-service :value="service"/>
+            <!-- 
             <create-http-load-balancer
               v-model="service.loadBalancer"
               v-if="
@@ -46,7 +49,7 @@
             <create-udp-weighted
               v-model="service.weighted"
               v-if="service.protocol == 'udp' && service.type == 'weighted'"
-            />
+            /> -->
           </q-card-section>
         </q-card>
       </div>
@@ -55,6 +58,7 @@
 </template>
 
 <script>
+import CreateService from "./Create.vue"
 import CreateHttpLoadBalancer from "./CreateHttpLoadBalancer.vue";
 import CreateHttpMirroring from "./CreateHttpMirroring.vue";
 import CreateHttpWeighted from "./CreateHttpWeighted.vue";
@@ -66,13 +70,15 @@ import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import ProtocolBadge from "../ProtocolBadge.vue";
 export default {
   components: {
+    CreateService,
+    /* 
     CreateHttpLoadBalancer,
     CreateHttpMirroring,
     CreateHttpWeighted,
     CreateTcpLoadBalancer,
     CreateTcpWeighted,
     CreateUdpLoadBalancer,
-    CreateUdpWeighted,
+    CreateUdpWeighted, */
     BaseDetails,
     ProtocolBadge
   },

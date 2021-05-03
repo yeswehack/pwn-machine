@@ -1,4 +1,5 @@
-import { exportFile } from "quasar";
+
+import _ from "lodash";
 
 export function showErrors(vm, errors) {
   if (errors) {
@@ -32,4 +33,30 @@ export function shortDate(s) {
   });
 
   return dtFormat.format(new Date(s));
+}
+
+function _mergeKeepShapeObject(dest, source) {
+  const ret = {};
+  Object.entries(dest).forEach(([key, destValue]) => {
+      let sourceValue = source[key];
+      if (typeof sourceValue !== "undefined") {
+          ret[key] = mergeKeepShape(destValue, sourceValue);
+      } else {
+          ret[key] = destValue;
+      }
+  });
+  return ret;
+}
+
+export function mergeKeepShape(dest, source) {
+  if (_.isArray(dest)) {
+    return source;
+  } else if (_.isObject(dest)) {
+      if (!_.isObject(source)) {
+          return dest;
+      }
+      return _mergeKeepShapeObject(dest, source);
+  } else {
+      return source;
+  }
 }

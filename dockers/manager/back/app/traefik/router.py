@@ -1,10 +1,4 @@
-from ..utils import (
-    registerQuery,
-    registerMutation,
-    createType,
-    base64_encode,
-    base64_decode,
-)
+from ..utils import registerQuery, registerMutation, createType, create_node_id
 from . import with_traefik_http, with_traefik_redis
 
 TraefikRouter = createType("TraefikRouter")
@@ -56,7 +50,7 @@ async def middlewares(router, *_, traefik_http):
 
 @TraefikRouter.field("nodeId")
 async def resolve_nodeid(router, *_):
-    return base64_encode(["router", router["protocol"], router["name"]], json=True)
+    return create_node_id("TRAEFIK_ROUTER", router["protocol"], router["name"])
 
 
 @TraefikRouter.field("service")

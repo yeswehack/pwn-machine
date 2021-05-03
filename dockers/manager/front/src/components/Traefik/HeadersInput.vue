@@ -79,11 +79,8 @@ export default {
   data() {
     return { model: { key: "", value: "" } };
   },
+  formDefinition: [],
   methods: {
-    createDefaultForm(v) {
-      const form = v ? deepcopy(v) : [];
-      return form;
-    },
     addEntry() {
       this.form.unshift(this.model);
       this.model = { key: "", value: "" };

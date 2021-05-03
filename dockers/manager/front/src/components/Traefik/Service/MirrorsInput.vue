@@ -5,7 +5,7 @@
       <q-select
         class="col"
         flat
-        v-model="model.name"
+        v-model="name"
         @keypress.enter.prevent="addEntry"
         :options="services"
         label="Service"
@@ -14,7 +14,7 @@
         class="col"
         type="number"
         flat
-        v-model.number="model.percent"
+        v-model.number="percent"
         @keypress.enter.prevent="addEntry"
         label="Percent"
       >
@@ -76,25 +76,22 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],
   props: {
-    services: { type: Array, required: true },
+    services: { type: Array, default: () => [] },
     label: { type: String, default: null }
   },
   data() {
-    return { model: { name: "", percent: "" } };
+    return { name: null, percent: null };
   },
+  formDefinition: [],
   methods: {
-    createDefaultForm(v) {
-      const form = v ? deepcopy(v) : [];
-      return form;
-    },
     addEntry() {
-      this.form.unshift(this.model);
-      this.model = { name: null, percent: null };
+      this.form.unshift({name: this.name, percent: this.percent});
+      this.name = null
+      this.percent = null
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);

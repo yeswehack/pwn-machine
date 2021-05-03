@@ -1,0 +1,5 @@
+mutation createDnsZone($input: CreateDnsZoneInput!) {
+  createDnsZone(input: $input) {
+    name
+  }
+}

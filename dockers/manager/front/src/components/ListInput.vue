@@ -1,6 +1,7 @@
 <template>
   <div class="list-inputq-mb-md">
     <q-input
+      v-bind='$attrs'
       flat
       v-model="model"
       @keypress.enter.prevent="addEntry"
@@ -51,7 +52,6 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],
@@ -60,15 +60,10 @@ export default {
     label: { type: String, default: null }
   },
   data() {
-    return { model: "" };
+    return { model: ""};
   },
+  formDefinition: [],
   methods: {
-    createDefaultForm(v) {
-      return v ? deepcopy(v) : [];
-    },
-    entryValue(e) {
-      return this.objectKey ? e[this.objectKey] : e;
-    },
     addEntry() {
       if (this.objectKey) {
         this.form.unshift({ [this.objectKey]: this.model });
