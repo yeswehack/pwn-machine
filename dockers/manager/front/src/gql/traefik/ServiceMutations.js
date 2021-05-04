@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import TraefikServiceFragment from "./ServiceFragment.graphql";
 
 const create_http_loadbalancer = gql`
-  mutation createService($input: TraefikHTTPServiceLoadBalancerInput!) {
+  mutation createTraefikHTTPServiceLoadBalancer($input: TraefikHTTPServiceLoadBalancerInput!) {
     createTraefikHTTPServiceLoadBalancer(input: $input) {
       ...TraefikServiceFragment
     }
