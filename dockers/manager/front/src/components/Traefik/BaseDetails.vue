@@ -1,7 +1,7 @@
 <template>
-  <div class="row q-col-gutter-md q-py-md items-stretch justify-evenly">
+  <div class="row q-gutter-md q-py-md">
     <div class="col-12" v-if="errors">
-      <TraefikError :errors="errors" />
+      <traefik-error :errors="errors" />
     </div>
     <slot name="body" />
   </div>

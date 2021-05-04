@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="service"
     row-key="name"
@@ -12,7 +12,7 @@
   >
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-xs">
-        <RouterLink
+        <router-link
           :name="name"
           :key="idx"
           v-for="(name, idx) of row.usedBy.map(r => r.name)"
@@ -20,7 +20,7 @@
       </div>
     </template>
     <template #body-cell-protocol="{row}">
-      <ProtocolBadge :protocol="row.protocol" />
+      <protocol-badge :protocol="row.protocol" />
     </template>
 
     <template #body-cell-servers="{row}">
@@ -33,9 +33,9 @@
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <ServiceDetails :service="row" />
+      <service-details :service="row" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>

@@ -45,7 +45,6 @@
   </div>
 </template>
 <script>
-import EditTable from "src/components/EditTable.vue";
 import HelpLink from "src/components/HelpLink.vue";
 import LogList from "src/components/DNS/LogList.vue";
 import RuleInput from "./RuleInput.vue";
@@ -56,7 +55,7 @@ import db from "src/gql";
 
 export default {
   mixins: [DeepForm],
-  components: { EditTable, ResetAndSave, HelpLink, LogList },
+  components: { ResetAndSave, HelpLink, LogList },
   formDefinition: {
     records: RuleInput,
     ttl: 3600

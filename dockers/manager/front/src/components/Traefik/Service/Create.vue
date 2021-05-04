@@ -50,7 +50,7 @@ import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
 import CreateUdpWeighted from "./CreateUdpWeighted.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
-function getCreateComponent(value) {
+export function getCreateComponent(value) {
   const mapping = {
     http: {
       loadBalancer: CreateHttpLoadBalancer,

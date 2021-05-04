@@ -1,5 +1,5 @@
 <template>
-  <BaseDetails :errors="service.error">
+  <base-details :errors="service.error">
     <template #body>
       <div class="col col-6">
         <q-card>
@@ -15,82 +15,53 @@
             </div>
           </q-card-section>
           <q-card-section>
-            
-            <create-service :value="service"/>
-            <!-- 
-            <create-http-load-balancer
-              v-model="service.loadBalancer"
-              v-if="
-                service.protocol == 'http' && service.type == 'loadBalancer'
-              "
+            <component :is="createComponent" v-model="form.extra" />
+          </q-card-section>
+          <q-card-section>
+            <reset-and-save
+              :modified="modified"
+              @save="submit"
+              @reset="reset"
             />
-            <create-http-mirroring
-              v-model="service.mirroring"
-              v-if="service.protocol == 'http' && service.type == 'mirroring'"
-            />
-            <create-http-weighted
-              v-model="service.weighted"
-              v-if="service.protocol == 'http' && service.type == 'weighted'"
-            />
-
-            <create-tcp-load-balancer
-              v-model="service.loadBalancer"
-              v-if="service.protocol == 'tcp' && service.type == 'loadBalancer'"
-            />
-            <create-tcp-weighted
-              v-model="service.weighted"
-              v-if="service.protocol == 'tcp' && service.type == 'weighted'"
-            />
-
-            <create-udp-load-balancer
-              v-model="service.loadBalancer"
-              v-if="service.protocol == 'udp' && service.type == 'loadBalancer'"
-            />
-            <create-udp-weighted
-              v-model="service.weighted"
-              v-if="service.protocol == 'udp' && service.type == 'weighted'"
-            /> -->
           </q-card-section>
         </q-card>
       </div>
     </template>
-  </BaseDetails>
+  </base-details>
 </template>
 
 <script>
-import CreateService from "./Create.vue"
-import CreateHttpLoadBalancer from "./CreateHttpLoadBalancer.vue";
-import CreateHttpMirroring from "./CreateHttpMirroring.vue";
-import CreateHttpWeighted from "./CreateHttpWeighted.vue";
-import CreateTcpLoadBalancer from "./CreateTcpLoadBalancer.vue";
-import CreateTcpWeighted from "./CreateTcpWeighted.vue";
-import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
-import CreateUdpWeighted from "./CreateUdpWeighted.vue";
+import { getCreateComponent } from "./Create.vue";
 import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import ProtocolBadge from "../ProtocolBadge.vue";
+import DeepForm from "src/mixins/DeepForm";
+import ResetAndSave from "src/components/ResetAndSave.vue";
+
 export default {
+  mixins: [DeepForm],
   components: {
-    CreateService,
-    /* 
-    CreateHttpLoadBalancer,
-    CreateHttpMirroring,
-    CreateHttpWeighted,
-    CreateTcpLoadBalancer,
-    CreateTcpWeighted,
-    CreateUdpLoadBalancer,
-    CreateUdpWeighted, */
     BaseDetails,
-    ProtocolBadge
+    ProtocolBadge,
+    ResetAndSave
+  },
+  formDefinition: {
+    extra(value) {
+      return getCreateComponent(value);
+    }
   },
   props: {
     service: { type: Object, required: true }
   },
-  data() {
-    return {};
+  computed: {
+    createComponent() {
+      return getCreateComponent(this.service);
+    }
   },
   methods: {
-    serviceModified() {
-      this.$emit("modified");
+    submit() {
+      this.$apollo.mutate({
+
+      })
     }
   }
 };
