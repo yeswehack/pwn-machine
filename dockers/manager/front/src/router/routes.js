@@ -41,7 +41,7 @@ const routes = [
       {
         path: 'dns',
         name: "dnsIndex",
-        redirect: '/dns/zones'
+        redirect: '/dns/overview'
       },
       {
         path: 'dns/:tab',

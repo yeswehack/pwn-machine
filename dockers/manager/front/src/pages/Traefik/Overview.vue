@@ -48,7 +48,6 @@ export default {
       const routerNode = name => node(`r-${name}`, name, ["router"]);
       const serviceNode = name => node(`s-${name}`, name, ["service"]);
       const middlewareNode = name => node(`m-${name}`, name, ["middleware"]);
-      const routerMap = {};
 
       for (const entrypoint of entrypoints) {
         elements.push(entrypointNode(entrypoint.name));

@@ -1,0 +1,13 @@
+query dnsOverview {
+  dnsZones {
+    name
+    rules {
+      name
+      type
+      records {
+        content
+        enabled
+      }
+    }
+  }
+}

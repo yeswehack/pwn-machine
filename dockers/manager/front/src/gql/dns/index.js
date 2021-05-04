@@ -6,6 +6,7 @@ import ENABLE_RULE from "./EnableRule.graphql";
 import GET_LOGS from "./GetLogs.graphql";
 import GET_RULES from "./GetRules.graphql";
 import GET_ZONES from "./GetZones.graphql";
+import OVERVIEW from "./Overview.graphql";
 import UPDATE_RULE from "./UpdateRule.graphql";
 import UPDATE_ZONE from "./UpdateZone.graphql";
 
@@ -18,6 +19,7 @@ export default {
   GET_LOGS,
   GET_RULES,
   GET_ZONES,
+  OVERVIEW,
   UPDATE_RULE,
   UPDATE_ZONE
 };
