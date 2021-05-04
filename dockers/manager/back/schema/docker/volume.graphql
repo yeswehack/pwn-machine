@@ -1,0 +1,4 @@
+type DockerVolume {
+    id: ID!
+    name: String!
+}

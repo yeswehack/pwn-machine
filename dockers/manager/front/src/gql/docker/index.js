@@ -1,12 +1,7 @@
-
-import * as mutations from "./mutations.js"
-import * as fragments from "./fragments.js"
-import * as queries from "./queries.js"
+import GET_CONTAINERS from "./GetContainers.graphql";
+import GET_IMAGES from "./GetImages.graphql";
 
 export default {
-  mutations,
-  queries,
-  fragments,
-}
-
-
+  GET_CONTAINERS,
+  GET_IMAGES
+};

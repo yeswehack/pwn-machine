@@ -1,23 +1,24 @@
 [tool.poetry]
 name = "pwnm-back"
 version = "0.1.0"
-description = "PwnMachine backend "
-authors = ["Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
+description = "PwnMachine backend"
+authors = ["BitK <bitk@yeswehack.com>", "Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 ariadne = "^0.13"
 argon2-cffi = "^20.1"
 pyotp = "^2.6"
-PyJWT = "^2"
+PyJWT = "^2.1"
 aiofiles = "^0.6"
 aiohttp = "^3.7.4"
-websockets = "^9.0.1"
-aioredis = {git = "https://github.com/aio-libs/aioredis-py"}
+websockets = "^9"
+aioredis = "^2a"
+docker = "^5"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"
-black = {version = "^20.8b1", allow-prereleases = true}
+black = "^21.4b"
 requests = "^2.25.1"
 
 [build-system]

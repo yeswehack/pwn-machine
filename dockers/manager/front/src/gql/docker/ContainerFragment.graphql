@@ -1,0 +1,19 @@
+#import "./ImageFragment.graphql"
+fragment ContainerFragment on DockerContainer {
+  id
+  name
+  labels {
+    key
+    value
+  }
+  image {
+    ...ImageFragment
+  }
+  created
+  command
+  environment {
+    key
+    value
+  }
+  status
+}

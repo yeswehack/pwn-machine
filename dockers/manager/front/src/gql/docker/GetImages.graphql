@@ -1,0 +1,6 @@
+#import "./ImageFragment.graphql"
+query GetImages($onlyFinal: Boolean = true, $filters: DockerImageFilters) {
+  dockerImages(onlyFinal: $onlyFinal, filters: $filters) {
+    ...ImageFragment
+  }
+}
