@@ -14,6 +14,10 @@ type Mutation {
   ): TraefikDeleteRouterResponse!
 }
 
+type Subscription {
+  _unused: Boolean
+}
+
 type KeyValue {
   key: String!
   value: String!

@@ -10,7 +10,7 @@ from uuid import uuid4
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 EXPIRE_DURATION = int(os.getenv("EXPIRE_DURATION", 60 * 60 * 24))
-
+MAX_LOG_ENTRY = 10000
 query_reg = re.compile(
     r"^\w+ \d{2} \d{2}:\d{2}:\d{2} Remote (\d+\.\d+.\d+.\d+) wants ([^ ]+) .*"
 )
@@ -24,11 +24,14 @@ def escape_decode(s):
 
 
 def log_query(redis_client, query):
-    log_key = f"dns/logs/{query['domain']}/{query['type']}/{uuid4()}"
+    log_key = f"dns/logs"
+    data_key = f"dns/data/{uuid4()}"
     r = (
         redis_client.pipeline()
-        .hset(log_key, mapping=query)
-        .expire(log_key, EXPIRE_DURATION)
+        .lpush(log_key, data_key)
+        .ltrim(log_key, 0, MAX_LOG_ENTRY)
+        .hset(data_key, mapping=query)
+        .expire(data_key, EXPIRE_DURATION)
         .execute()
     )
 

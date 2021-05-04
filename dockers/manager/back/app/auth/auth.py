@@ -72,5 +72,5 @@ def auth_middleware(resolver, obj, info, **args):
 
 
 # warn("REMOVE DEFAULT PASSWORD AND TOTP")
-redis_client.set("admin.totp", "W7RPT7JWR6YNSVOB")
-redis_client.set("admin.hash", hasher.hash("admin"))
+#redis_client.set("admin.totp", "W7RPT7JWR6YNSVOB")
+#redis_client.set("admin.hash", hasher.hash("admin"))

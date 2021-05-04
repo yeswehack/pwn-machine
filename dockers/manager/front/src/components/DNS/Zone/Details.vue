@@ -1,24 +1,34 @@
 <template>
-  <div class=" row q-col-gutter-md q-py-md">
-    <div class="col-6">
+  <div class="row q-gutter-md q-py-md">
+    <div class="col">
       <q-card>
         <q-card-section>
           <div class="row items-center q-gutter-md">
-            <div class="text-h6">Zone: {{ zone.name }}</div>
+            <div class="text-h6">{{ value.name }}</div>
             <q-space />
-            <div title="Serial" class="text-mono">{{ zone.serial }}</div>
-            <HelpLink
+            <div title="Serial" class="text-mono">{{ value.serial }}</div>
+            <help-link
               href="https://doc.powerdns.com/authoritative/http-api/zone.html"
             />
           </div>
         </q-card-section>
         <q-card-section class="q-col-gutter-md">
-          <SoaForm  :value="zone.soa" @submit="updateSOA" />
+          <component :is="formChildren.soa" v-model="form.soa" />
+        </q-card-section>
+        <q-card-section>
+          <reset-and-save :modified="modified" @reset="reset" @save="submit" />
         </q-card-section>
       </q-card>
     </div>
-    <div class="col-6">
-        <LogList :domain="`*${zone.name}`" type="*" />
+    <div class="col">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Logs</div>
+        </q-card-section>
+        <q-card-section>
+          <log-list flat :domain="`*${value.name}`" type="*" />
+        </q-card-section>
+      </q-card>
     </div>
   </div>
 </template>
@@ -26,56 +36,27 @@
 import HelpLink from "src/components/HelpLink.vue";
 import SoaForm from "./SoaForm.vue";
 import LogList from "src/components/DNS/LogList.vue";
-import graphql from "src/gql/dns";
-const {
-  mutations: { modifySoaForDnsZone }
-} = graphql;
+import db from "src/gql";
+import DeepForm from "src/mixins/DeepForm";
+import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export default {
-  components: { HelpLink, SoaForm, LogList },
+  mixins: [DeepForm],
+  components: { HelpLink, SoaForm, LogList, ResetAndSave },
   props: {
-    zone: Object
+    zone: { type: Object, default: null }
   },
-  data() {
-    const recordColumns = [
-      {
-        name: "content",
-        align: "left",
-        label: "content",
-        field: "content",
-        headerStyle: "width: 90%"
-      },
-      {
-        name: "enabled",
-        align: "left",
-        label: "enabled",
-        field: "enabled",
-        headerStyle: "width: 10%"
-      }
-    ];
-    return { ttl: 0, recordColumns, records: [] };
+  formDefinition: {
+    soa: SoaForm
   },
   methods: {
-    updateSOA(f) {
-      const variables = {
-        soa: {
-          nameserver: f.nameserver,
-          postmaster: f.postmaster,
-          refresh: f.refresh,
-          retry: f.retry,
-          expire: f.expire,
-          ttl: f.ttl
-        },
-        zone: this.zone.name
-      };
-      this.runMutation(
-        modifySoaForDnsZone,
-        variables,
-        `SOA rule modified for ${this.zone.name}`
-      );
+    submit() {
+      this.$apollo.mutate({
+        mutation: db.dns.UPDATE_ZONE,
+        variables: { nodeId: this.value.nodeId, patch: { soa: this.form.soa } },
+        refetchQueries: [{ query: db.dns.GET_ZONES }]
+      });
     }
   }
 };
 </script>
-
-<style></style>

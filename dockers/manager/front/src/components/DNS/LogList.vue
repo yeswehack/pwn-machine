@@ -1,50 +1,75 @@
 <template>
-  <q-table
-    v-bind="$attrs"
-    :columns="columns"
-    dense
-    :loading="$apollo.loading"
-    :data="logs"
-    :pagination="pagination"
-    no-data-label="No logs available."
-    table-header-style="text-transform: capitalize"
-  >
-    <template #top>
-      <div class="text-h6 q-py-md" v-if="!hideTitle">
-        {{ title }}
-      </div>
-    </template>
-    <template #body-cell-origin="{value}">
-      <q-td>
-        <a :href="`https://ip-api.com/${value}`" target="_blank">{{ value }}</a>
-      </q-td>
-    </template>
-    <template #body-cell-remove>
-      <q-td auto-width>
-        <div class="row justify-center">
-          <q-btn icon="eva-trash" round size="sm" color="negative" />
-        </div>
-      </q-td>
-    </template>
-    <template #no-data="props">
-      <q-btn
-        round
-        flat
-        size="xs"
-        icon="eva-loader-outline"
-        :loading="$apollo.loading"
-        class=" q-mr-md no-pointer-events"
+  <div class="column q-col-gutter-sm">
+    <q-table
+      v-bind="$attrs"
+      :columns="columns"
+      dense
+      :loading="$apollo.queries.logs.loading"
+      :data="logs"
+      hide-pagination
+      :pagination.sync="pagination"
+      no-data-label="No logs available."
+      table-header-style="text-transform: capitalize"
+    >
+      <template #body-cell-id="{pageIndex}">
+        <q-td auto-width>
+          {{ pageIndex + (page - 1) * count + 1 }}
+        </q-td>
+      </template>
+      <template #body-cell-origin="{value}">
+        <q-td>
+          <a :href="`https://ip-api.com/${value}`" target="_blank">{{
+            value
+          }}</a>
+        </q-td>
+      </template>
+      <template #no-data="props">
+        <q-btn
+          round
+          flat
+          size="xs"
+          icon="eva-loader-outline"
+          :loading="$apollo.queries.logs.loading"
+          class=" q-mr-md no-pointer-events"
+        />
+        {{ props.message }}
+      </template>
+    </q-table>
+    <div class="row q-gutter-md q-px-sm justify-end">
+      <q-input
+        v-model.number="pagination.rowsPerPage"
+        dense
+        type="number"
+        class="col col-auto"
+        label="Row per page"
+        style="max-width: 7em"
       />
-      {{ props.message }}
-    </template>
-  </q-table>
+      <q-input
+        v-model.number="page"
+        dense
+        max="1000"
+        min="1"
+        type="number"
+        class="col col-auto"
+        label="Page"
+        style="max-width: 7em"
+      />
+      <q-pagination
+        class="col col-auto"
+        v-model="page"
+        :max="page + 5"
+        :max-pages="4"
+        :boundary-numbers="false"
+        direction-links
+      />
+    </div>
+  </div>
 </template>
 
 <script>
-//import graphql from "src/gql/dns";
-const {
-  queries: { getDnsLogs }
-} = {};
+import db from "src/gql";
+import gql from "graphql-tag";
+import { date } from "quasar";
 
 export default {
   props: {
@@ -53,8 +78,53 @@ export default {
     hideTitle: { type: Boolean, default: false },
     rowsPerPage: { type: Number, default: 10 }
   },
-  created() {
-    this.$root.$on("refresh", () => this.$apollo.queries.logs.refetch());
+  apollo: {
+    logs: {
+      query: db.dns.GET_LOGS,
+      variables() {
+        return {
+          filter: { domain: this.domain, type: this.type },
+          cursor: {
+            offset: this.offset,
+            count: this.count
+          }
+        };
+      },
+      fetchPolicy:"network-only",
+      pollInterval: 5000,
+      update: data => data.dnsLogs,
+      subscribeToMore: {
+        document: gql`
+          subscription getLog($filter: DnsLogFilter) {
+            dnsLogs(filter: $filter) {
+              origin
+              time
+              domain
+              type
+            }
+          }
+        `,
+        skip() {
+          return this.page > 1;
+        },
+        variables() {
+          return {
+            filter: { domain: this.domain, type: this.type }
+          };
+        },
+        updateQuery(previousResult, { subscriptionData })  {
+          if (this.page > 1) return
+          if (subscriptionData.data.dnsLogs) {
+            return {
+              dnsLogs: [
+                subscriptionData.data.dnsLogs,
+                ...previousResult.dnsLogs
+              ]
+            };
+          }
+        }
+      }
+    }
   },
   data() {
     const pagination = {
@@ -65,42 +135,47 @@ export default {
       label: name,
       field: name,
       align: "left",
-      sortable: true,
       ...opt
     });
     const columns = [
+      field("id"),
       field("origin"),
-      field("domain"),
+      field("domain", { label: "Query" }),
       field("type"),
-      field("time"),
-      field("remove", { align: "center", sortable: false })
+      field("time", {
+        label: "Date",
+        format: v => date.formatDate(v * 1000, "YYYY-MM-DD HH:mm:ss.SSS")
+      })
     ];
     return {
       pagination,
-      columns
+      columns,
+      page: 1
     };
   },
+  watch: {
+    page(v) {
+      this.page = Math.min(Math.max(v, 1), 500);
+      if (this.page > 1) {
+        this.$apollo.subscriptions.logs.stop();
+      } else {
+        this.$apollo.subscriptions.logs.start();
+      }
+    }
+  },
   computed: {
+    offset() {
+      return Math.max(this.page - 1, 0) * this.count;
+    },
+    count() {
+      return this.pagination.rowsPerPage;
+    },
     title() {
       if (this.hideTitle) return false;
       if (this.type == "*") {
         return `DNS logs for ${this.domain}`;
       }
       return `DNS logs for ${this.domain} of type ${this.type}`;
-    }
-  },
-  apollo: {
-    logs: {
-      query: getDnsLogs,
-      variables() {
-        return {
-          domain: this.domain,
-          type: this.type
-        };
-      },
-      throttle: 200,
-      debounce: 200,
-      update: data => data.dns.logs
     }
   }
 };

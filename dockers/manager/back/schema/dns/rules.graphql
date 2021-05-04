@@ -41,6 +41,7 @@ type DnsRecord {
 
 input DnsRecordInput {
   content: String!
+  enabled: Boolean
 }
 
 type DnsRule {
@@ -61,11 +62,8 @@ input CreateDnsRuleInput {
 }
 
 input UpdateDnsRuleInput {
-  zone: String!
-  name: String!
-  type: DnsRuleType!
   ttl: Int!
-  records: [DnsRecordInput!]
+  records: [DnsRecordInput!]!
 }
 
 extend type Query {
@@ -74,6 +72,7 @@ extend type Query {
 
 extend type Mutation {
   createDnsRule(input: CreateDnsRuleInput!): DnsRule
-  updateDnsRule(nodeId: ID!, input: UpdateDnsRuleInput!): DnsRule
+  enableDnsRule(nodeId: ID!, enabled: Boolean!): DnsRule
+  updateDnsRule(nodeId: ID!, patch: UpdateDnsRuleInput!): DnsRule
   deleteDnsRule(nodeId: ID!): Boolean
 }

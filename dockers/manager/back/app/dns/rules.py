@@ -56,8 +56,19 @@ async def create_dns_rule_mutation(*_, dns_http, input):
     records = input["records"]
     return await dns_http.create_rule(zone, name, type, ttl, records)
 
+@registerMutation("updateDnsRule")
+@with_dns_http
+async def update_dns_zone_mutation(*_, dns_http, nodeId, patch):
+    ttl = patch["ttl"]
+    records = patch["records"]
+    return await dns_http.update_rule(nodeId, ttl, records)
 
 @registerMutation("deleteDnsRule")
 @with_dns_http
 async def delete_dns_rule_mutation(*_, dns_http, nodeId):
     return await dns_http.delete_rule(nodeId)
+
+@registerMutation("enableDnsRule")
+@with_dns_http
+async def delete_dns_rule_mutation(*_, dns_http, nodeId, enabled):
+    return await dns_http.enable_rule(nodeId, enabled)

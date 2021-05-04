@@ -14,18 +14,6 @@
       narrow-indicator
     >
       <slot name="top"></slot>
-      <q-space/>
-      <q-btn
-        dense
-        round
-        color="primary"
-        size="sm"
-        :disable="$store.getters.loading"
-        class="refresh-btn"
-        :loading="$store.getters.loading"
-        icon="eva-refresh"
-        @click="refresh"
-      />
     </q-tabs>
 
     <q-tab-panels v-model="tab_" animated class="panels">
@@ -49,9 +37,6 @@ export default {
       if (newVal !== null)
         this.$router.push(this.pathTemplate.replace(/\{\}/, newVal));
     },
-    refresh(){
-      this.$root.$emit("refresh")
-    }
   },
   watch: {
     $route(to, from) {

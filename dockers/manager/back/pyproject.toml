@@ -9,10 +9,11 @@ python = "^3.9"
 ariadne = "^0.13"
 argon2-cffi = "^20.1"
 pyotp = "^2.6"
-redis = "^3.5.3"
 PyJWT = "^2"
 aiofiles = "^0.6"
 aiohttp = "^3.7.4"
+websockets = "^9.0.1"
+aioredis = {git = "https://github.com/aio-libs/aioredis-py"}
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"

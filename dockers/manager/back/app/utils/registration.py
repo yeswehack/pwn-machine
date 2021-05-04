@@ -36,3 +36,14 @@ def registerMutation(name):
         return f
 
     return decorator
+
+
+registered_subscriptions = {}
+
+
+def registerSubscription(name):
+    def decorator(f):
+        registered_subscriptions[name] = f
+        return f
+
+    return decorator

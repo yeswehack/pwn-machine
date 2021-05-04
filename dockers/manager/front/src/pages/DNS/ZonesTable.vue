@@ -2,25 +2,29 @@
   <base-table
     ref="table"
     name="zone"
-    :loading="$apollo.loading"
+    row-key="nodeId"
+    :loading="$apollo.queries.zones.loading"
     :data="zones"
     :columns="columns"
     @create="createZone"
     @clone="cloneZone"
     @delete="deleteZone"
   >
+    <template #details="{row}">
+      <zone-details :value="row" />
+    </template>
   </base-table>
 </template>
 
 <script>
 import BaseTable from "src/components/BaseTable3.vue";
 import ZoneDialog from "src/components/DNS/Zone/Dialog.vue";
-//import ZoneDetails from "src/components/DNS/Zone/Details.vue";
+import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
 import db from "src/gql/";
 
 export default {
-  components: { BaseTable },
+  components: { BaseTable, ZoneDetails },
   apollo: {
     zones: {
       query: db.dns.GET_ZONES,
@@ -53,7 +57,10 @@ export default {
           this.$apollo.mutate({
             mutation: db.dns.DELETE_ZONE,
             variables: { nodeId: zone.nodeId },
-            refetchQueries: [{ query: db.dns.GET_ZONES }, { query: db.dns.GET_RULES }]
+            refetchQueries: [
+              { query: db.dns.GET_ZONES },
+              { query: db.dns.GET_RULES }
+            ]
           });
         });
     }

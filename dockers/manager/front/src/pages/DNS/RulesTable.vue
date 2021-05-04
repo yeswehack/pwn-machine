@@ -14,32 +14,29 @@
         <zone-link :name="value" />
       </div>
     </template>
-    <template #body-cell-enabled="{value}">
+    <template #body-cell-enabled="{row, value}">
       <q-toggle
         :value="value"
         :color="value ? 'positive' : 'negative'"
         keep-color
+        @input="v => toggleRule(row, v)"
       />
     </template>
-    <!-- 
     <template v-slot:details="{ row }">
-      <RuleDetails :rule="row" />
+      <rule-details :value="row" />
     </template>
-    <template v-slot:popup="{ row, closePopup }">
-      <CreateRule :value="row" @close="closePopup" :edit="false" />
-    </template> -->
   </base-table>
 </template>
 
 <script>
 import db from "src/gql";
 import BaseTable from "../../components/BaseTable3.vue";
-//import RuleDetails from "src/components/DNS/Rule/Details.vue";
+import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
 import ZoneDialog from "src/components/DNS/Rule/Dialog.vue";
 
 export default {
-  components: { BaseTable, ZoneLink },
+  components: { BaseTable, ZoneLink, RuleDetails },
   apollo: {
     rules: {
       query: db.dns.GET_RULES,
@@ -76,6 +73,13 @@ export default {
       this.$q.dialog({
         component: ZoneDialog,
         parent: this
+      });
+    },
+    toggleRule(rule, value) {
+      this.$apollo.mutate({
+        mutation: db.dns.ENABLE_RULE,
+        variables: { nodeId: rule.nodeId, enabled: value },
+        refetchQueries: [{ query: db.dns.GET_RULES }]
       });
     },
     cloneRule(rule) {

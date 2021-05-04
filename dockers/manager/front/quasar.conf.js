@@ -78,9 +78,11 @@ module.exports = function(/* ctx */) {
       host: "0.0.0.0",
       https: false,
       port: 5001,
-      open: true, // opens browser window automatically
       proxy: {
-        "/api": "http://localhost:8000"
+        "/api": {
+          target: "http://localhost:8000",
+          ws: true
+        }
       }
     },
 

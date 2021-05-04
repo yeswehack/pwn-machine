@@ -16,13 +16,13 @@
     </div>
     <div class="row">
       <div class="col col-12">
-        <LogList
+        <log-list
           bordered
           flat
           :rows-per-page="20"
           hide-title
-          :domain="domain || '*'"
-          :type="type || '*'"
+          :domain="domain"
+          :type="type"
         />
       </div>
     </div>

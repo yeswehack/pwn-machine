@@ -1,0 +1,5 @@
+mutation enableDnsRule($nodeId: ID!, $enabled: Boolean!) {
+  enableDnsRule(nodeId: $nodeId, enabled: $enabled) {
+    nodeId
+  }
+}

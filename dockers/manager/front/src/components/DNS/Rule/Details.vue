@@ -1,82 +1,46 @@
 <template>
-  <div class=" row q-col-gutter-md q-py-md">
-    <div class="col col-6">
+  <div class=" row q-gutter-md q-py-md">
+    <div class="col">
       <q-card>
         <q-card-section>
           <div class="row items-center q-gutter-md">
-            <div class="text-h6">Informations</div>
+            <div class="text-h6">{{ value.name }}</div>
             <q-space />
-            <HelpLink
+            <div title="Rule type" class="text-mono">{{ value.type }}</div>
+            <help-link
               href="https://doc.powerdns.com/authoritative/http-api/zone.html"
             />
           </div>
         </q-card-section>
-        <q-card-section class="q-col-gutter-md">
-          <div>
-            <q-list dark separator>
-              <q-item>
-                <q-item-section>
-                  <q-item-label overline>Zone</q-item-label>
-                  <q-item-label>{{ rule.zone }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <q-item-label overline>Name</q-item-label>
-                  <q-item-label>{{ rule.name }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <q-item-label overline>Type</q-item-label>
-                  <q-item-label>{{ rule.type }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <q-item-label overline>TTL</q-item-label>
-                  <q-item-label>
-                    <div>
-                      <q-input type="number" dense v-model="ttl">
-                        <template v-slot:after>
-                          <ResetAndSave
-                            size="sm"
-                            padding="sm"
-                            :modified="ttl != rule.ttl"
-                            @save="updateTTL"
-                            @reset="ttl = rule.ttl"
-                          />
-                        </template>
-                      </q-input>
-                    </div>
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
+        <q-card-section>
+          <q-input v-model.number="form.ttl" type="number" label="TTL" />
+          <component
+            :is="formChildren.records"
+            v-model="form.records"
+            object-key="content"
+            label="Records"
+          />
+        </q-card-section>
+        <q-card-section>
+          <reset-and-save
+            size="sm"
+            padding="sm"
+            :modified="modified"
+            @reset="reset"
+            @save="submit"
+          />
         </q-card-section>
       </q-card>
     </div>
-    <div class="col col-6">
-      <EditTable
-        title="Records"
-        :columns="recordColumns"
-        :createDefault="createRecord"
-        v-model="records"
-        @submit="updateRecords"
-      >
-        <template v-slot:body-cell-enabled="props">
-          <q-td>
-            <div class="row">
-              <q-space />
-              <q-toggle slot="" v-model="props.row['enabled']" />
-            </div>
-          </q-td>
-        </template>
-      </EditTable>
-    </div>
-    <div class="col col-12">
-      <LogList :domain="rule.name" :type="rule.type"/>
+    <div class="col">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Logs</div>
+        </q-card-section>
+        <q-card-section>
+          <log-list flat :domain="value.name" :type="value.type" />
+        </q-card-section>
+      </q-card>
     </div>
   </div>
 </template>
@@ -84,17 +48,18 @@
 import EditTable from "src/components/EditTable.vue";
 import HelpLink from "src/components/HelpLink.vue";
 import LogList from "src/components/DNS/LogList.vue";
-
-import graphql from "src/gql/dns";
-const {
-  mutations: { updateTLLForDnsRule, updateRecordsForDnsRule }
-} = graphql;
+import RuleInput from "./RuleInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import DeepForm from "src/mixins/DeepForm";
+import db from "src/gql";
+
 export default {
+  mixins: [DeepForm],
   components: { EditTable, ResetAndSave, HelpLink, LogList },
-  props: {
-    rule: Object
+  formDefinition: {
+    records: RuleInput,
+    ttl: 3600
   },
   data() {
     const recordColumns = [
@@ -116,59 +81,16 @@ export default {
     return { ttl: 0, recordColumns, records: [] };
   },
   methods: {
-    updateRecords() {
-      const variables = {
-        zone: this.rule.zone,
-        name: this.rule.name,
-        type: this.rule.type,
-        records: this.records
+    submit() {
+      const patch = {
+        ...this.form,
+        records: this.form.records.map(r => ({ content: r.content, enabled: r.enabled }))
       };
-      this.runMutation(
-        updateRecordsForDnsRule,
-        variables,
-        `Records updated for ${this.rule.type} ${this.rule.name}`
-      );
-    },
-    createRecord() {
-      return { content: "", enabled: true };
-    },
-    updateTTL() {
-      const variables = {
-        zone: this.rule.zone,
-        name: this.rule.name,
-        type: this.rule.type,
-        ttl: this.ttl
-      };
-      this.runMutation(
-        updateTLLForDnsRule,
-        variables,
-        `TTL updated for ${this.rule.type} ${this.rule.name}`
-      );
-    }
-  },
-  computed: {
-    ruleTTL() {
-      return this.rule.ttl;
-    },
-    ruleRecords() {
-      return this.rule.records;
-    }
-  },
-  watch: {
-    ruleRecords: {
-      immediate: true,
-      handler(records) {
-        this.records = records.map(({ content, enabled }) => ({
-          content,
-          enabled
-        }));
-      }
-    },
-    ruleTTL: {
-      handler(ttl) {
-        this.ttl = ttl;
-      },
-      immediate: true
+      this.$apollo.mutate({
+        mutation: db.dns.UPDATE_RULE,
+        variables: { nodeId: this.value.nodeId, patch },
+        refetchQueries: [{ query: db.dns.GET_RULES }]
+      });
     }
   }
 };

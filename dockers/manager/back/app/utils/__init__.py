@@ -1,7 +1,12 @@
 from base64 import b64decode, b64encode
 import json as JSON
-from .registration import registerMutation, registerQuery, createType, createInterface
-
+from .registration import (
+    registerMutation,
+    registerSubscription,
+    registerQuery,
+    createType,
+    createInterface,
+)
 
 
 def dnsname(s):
@@ -11,10 +16,12 @@ def dnsname(s):
 def undnsname(s):
     return s[:-1] if s.endswith(".") else s
 
+
 def base64_encode(s, json=False):
     if json:
         s = JSON.dumps(s)
     return b64encode(s.encode()).decode()
+
 
 def base64_decode(s, json=False):
     r = b64decode(s.encode()).decode()
@@ -30,6 +37,7 @@ def create_kv_resolver(key):
     def resolve_kv(target, *_):
         kv = target.get(key, {})
         return [{"key": k, "value": v} for k, v in kv.items()]
+
     return resolve_kv
 
 
@@ -39,6 +47,7 @@ def create_node_id(target_type, *args):
     if not all(isinstance(a, (str, int)) for a in args):
         raise ValueError("Invalid nodeId.")
     return base64_encode([target_type, *args], json=True)
+
 
 def validate_node_id(nodeId, target_type):
     try:

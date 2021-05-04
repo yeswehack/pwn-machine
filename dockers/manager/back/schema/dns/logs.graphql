@@ -1,0 +1,24 @@
+type DnsLog {
+    origin: String!
+    time: String!
+    domain: String!
+    type: DnsRuleType
+}
+
+input DnsLogFilter {
+    domain: String
+    type: String
+}
+
+input CursorInput{
+    offset: Int
+    count: Int
+}
+
+extend type Query{
+    dnsLogs(filter: DnsLogFilter, cursor: CursorInput): [DnsLog!]!
+}
+
+extend type Subscription{
+    dnsLogs(filter: DnsLogFilter): DnsLog
+}

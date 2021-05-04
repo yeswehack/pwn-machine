@@ -1,0 +1,15 @@
+mutation updateDnsRule($nodeId: ID!, $patch: UpdateDnsZoneInput!) {
+  updateDnsZone(nodeId: $nodeId, patch: $patch) {
+    name
+    serial
+    nodeId
+    soa {
+      nameserver
+      postmaster
+      refresh
+      retry
+      expire
+      ttl
+    }
+  }
+}

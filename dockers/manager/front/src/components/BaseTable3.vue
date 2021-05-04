@@ -3,6 +3,7 @@
     ref="table"
     class="pm-table"
     flat
+    :row-key="rowKey"
     hide-pagination
     :loading="loading"
     :columns="columns"
@@ -31,11 +32,7 @@
       </q-input>
     </template>
     <template #body="props">
-      <q-tr
-        :props="props"
-        :name="props.row.name"
-        @click="toggleRow(props.row)"
-      >
+      <q-tr :props="props" :name="props.row[rowKey]" @click="toggleRow(props.row)">
         <q-menu touch-position context-menu>
           <q-list dense class="rounded-borders bg-grey-9">
             <q-item v-close-popup clickable @click="$emit('clone', props.row)">
@@ -98,6 +95,7 @@
 export default {
   props: {
     "no-details": { type: Boolean, default: false },
+    rowKey: { type: String, default: "nodeId" },
     loading: { type: Boolean, default: false },
     name: { type: String },
     columns: Array
@@ -126,8 +124,7 @@ export default {
   },
   methods: {
     toggleRow(row) {
-      console.log(row)
-      const name = row["name"];
+      const name = row[this.rowKey];
       const idx = this.expanded.indexOf(name);
       if (idx == -1) {
         this.expanded.push(name);

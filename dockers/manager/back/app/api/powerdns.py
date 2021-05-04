@@ -4,6 +4,7 @@ import re
 import asyncio
 import logging
 import time
+from fnmatch import fnmatch
 from ..utils import dnsname, undnsname, validate_node_id
 
 ZONE_MARKER = "DNS_ZONE"
@@ -158,6 +159,10 @@ class PowerDNSApi:
 
         return rules
 
+    async def get_rule(self, zone, name, type, allow_cache=False):
+        rules = await self.get_rules_for_zone(zone, allow_cache)
+        return find_record(rules, name, type)
+
     async def update_soa(self, zone_name, soa):
         zone_info = await self.get_zone(zone_name)
         rule = find_record(zone_info["rrsets"], dnsname(zone_name), "SOA")
@@ -203,6 +208,30 @@ class PowerDNSApi:
 
     # Rules
 
+    async def rule_replace(self, zone, name, type, ttl, records):
+        for record in records:
+            record["disabled"] = not record["enabled"]
+        rrset = {
+            "name": name,
+            "type": type,
+            "changetype": "REPLACE",
+            "ttl": ttl,
+            "records": records,
+        }
+
+        await self.patch(f"/api/v1/servers/localhost/zones/{zone}", {"rrsets": [rrset]})
+        return await self.get_rule(zone, name, type, allow_cache=False)
+
+    async def enable_rule(self, nodeId, enabled):
+        zone, name, type = validate_node_id(nodeId, "DNS_RULE")
+        rule = await self.get_rule(zone, name, type, allow_cache=False)
+        if rule is None:
+            raise Exception("Rule not found")
+
+        for record in rule["records"]:
+            record["enabled"] = enabled
+        return await self.rule_replace(zone, name, type, rule["ttl"], rule["records"])
+
     async def create_rule(self, zone_name, name, type, ttl, records):
         zone = await self.get_zone(zone_name)
         name = dnsname(name)
@@ -212,19 +241,11 @@ class PowerDNSApi:
             raise Exception(
                 f"A rule with name={name} and type={type} already exist on {zone_name}"
             )
-        rrset = {
-            "name": name,
-            "type": type,
-            "changetype": "REPLACE",
-            "ttl": ttl,
-            "records": records,
-        }
+        return await self.rule_replace(zone["id"], name, type, ttl, records)
 
-        r = await self.patch(
-            f"/api/v1/servers/localhost/zones/{zone['id']}", {"rrsets": [rrset]}
-        )
-        rules = await self.get_rules_for_zone(zone["id"], allow_cache=False)
-        return find_record(rules, name, type)
+    async def update_rule(self, nodeId, ttl, records):
+        zone, name, type = validate_node_id(nodeId, "DNS_RULE")
+        return await self.rule_replace(zone, name, type, ttl, records)
 
     async def delete_rule(self, nodeId):
         zone, name, type = validate_node_id(nodeId, "DNS_RULE")
@@ -233,6 +254,38 @@ class PowerDNSApi:
             f"/api/v1/servers/localhost/zones/{zone}", {"rrsets": [rrset]}
         )
         return 200 <= r.status < 300
+
+
+class PowerdnsRedisApi:
+    def __init__(self, client, root):
+        self.client = client
+        self.root = root
+
+    async def get_logs(self, domain="*", type="*", offset=0, count=20):
+        c = self.client
+        logs = []
+
+        skipped = 0
+        pos = 0
+        while len(logs) < count:
+            keys = await c.lrange("dns/logs", pos, pos + 10)
+            if not keys:
+                break
+            for key in keys:
+                log = await c.hgetall(key)
+                # If log is empty that mean we reached expired logs
+                if not log:
+                    return logs
+
+                if fnmatch(log["domain"], domain) and fnmatch(log["type"], type):
+                    if skipped < offset:
+                        skipped += 1
+                    else:
+                        logs.append(log)
+                        if len(logs) == count:
+                            return logs
+            pos += len(keys)
+        return logs
 
 
 @asynccontextmanager
