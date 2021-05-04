@@ -1,6 +1,9 @@
 type Query {
-  dockerContainers(onlyRunning: Boolean = True): [DockerContainer!]!
-  dockerImages(onlyFinal: Boolean = True, filters: DockerImageFilters): [DockerImage!]!
+  dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+  dockerImages(
+    onlyFinal: Boolean = true
+    filters: DockerImageFilters
+  ): [DockerImage!]!
   dockerVolumes: [DockerVolume!]!
   dockerNetworks: [DockerNetwork!]!
 
