@@ -14,10 +14,10 @@
               {{ service.type }}
             </div>
           </q-card-section>
-          <q-card-section>
+          <q-card-section v-if="service.type!='internal' ">
             <component :is="createComponent" v-model="form.extra" />
           </q-card-section>
-          <q-card-section>
+          <q-card-section v-if="service.type!='internal' ">
             <reset-and-save
               :modified="modified"
               @save="submit"
