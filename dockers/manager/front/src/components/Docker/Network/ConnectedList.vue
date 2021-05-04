@@ -33,7 +33,6 @@
           label="Connect a container"
         >
           <template #after>
-            
             <q-btn
               icon="eva-plus"
               round
@@ -55,7 +54,6 @@
           label="Connect a container"
         >
           <template #after>
-            
             <q-btn
               icon="eva-plus"
               round
@@ -73,21 +71,13 @@
 
 <script>
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import graphql from "src/gql/docker";
-
-const {
-  mutations: {
-    detachContainerFromDockerNetwork,
-    attachContainerToDockerNetwork
-  },
-  queries: { getDockerContainers }
-} = graphql;
+import gql from "src/gql";
 
 export default {
   components: { ContainerLink },
   apollo: {
     containers: {
-      query: getDockerContainers,
+      query: gql.docker.GET_CONTAINERS,
       update: data => data.docker.containers
     }
   },
@@ -109,7 +99,7 @@ export default {
   methods: {
     attachContainer() {
       this.runMutation(
-        attachContainerToDockerNetwork,
+        gql.docker.ATTACH_CONTAINER_TO_NETWORK,
         {
           network: this.network.name,
           container: this.containerToConnect.label
@@ -121,7 +111,7 @@ export default {
 
     detachContainer(n) {
       this.runMutation(
-        detachContainerFromDockerNetwork,
+        gql.docker.DETACH_CONTAINER_FROM_NETWORK,
         {
           network: this.network.name,
           container: n

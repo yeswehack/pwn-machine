@@ -1,18 +1,14 @@
 <template>
   <div class="column q-py-sm">
-    <div
-      class="row q-col-gutter-md items-stretch justify-start"
-      v-if="network"
-    >
-      <div class="col col-6 q-gutter-md" >
+    <div class="row q-col-gutter-md items-stretch justify-start" v-if="network">
+      <div class="col col-6 q-gutter-md">
         <KeyValueTable title="IPAM Config" readonly :value="IPAMConfig" />
         <KeyValueTable title="Labels" readonly :value="network.labels" />
       </div>
       <div class="col col-6">
-        <ConnectedList :network="network"  @needRefresh="refresh"/>
+        <ConnectedList :network="network" @needRefresh="refresh" />
       </div>
-      <div class="col col-6">
-      </div>
+      <div class="col col-6"></div>
     </div>
     <q-inner-loading :showing="!network">
       <div class="row q-col-gutter-md items-stretch justify-evenly">
@@ -25,10 +21,7 @@
 <script>
 import KeyValueTable from "src/components/KeyValueTable.vue";
 import ConnectedList from "src/components/Docker/Network/ConnectedList.vue";
-import graphql from "src/gql/docker";
-const {
-  queries: { getDockerNetwork }
-} = graphql;
+import gql from "src/gql";
 
 export default {
   components: { KeyValueTable, ConnectedList },
@@ -37,7 +30,7 @@ export default {
   },
   apollo: {
     network: {
-      query: getDockerNetwork,
+      query: gql.docker.GET_NETWORK,
       variables() {
         return { name: this.name };
       },
@@ -45,8 +38,8 @@ export default {
     }
   },
   methods: {
-    refresh(){
-      this.$apollo.queries.network.refetch()
+    refresh() {
+      this.$apollo.queries.network.refetch();
     }
   },
   computed: {

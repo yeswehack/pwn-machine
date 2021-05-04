@@ -19,11 +19,7 @@
 
     <template #body-cell-containers="{row: {usedBy}}">
       <div class="q-gutter-sm row">
-        <ContainerLink
-          :name="name"
-          :key="name"
-          v-for="{ name } of usedBy"
-        />
+        <ContainerLink :name="name" :key="name" v-for="{ name } of usedBy" />
       </div>
     </template>
 
@@ -42,23 +38,17 @@ import BaseTable from "src/components/BaseTable.vue";
 import CreateNetwork from "src/components/Docker/Network/Create.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-
-import graphql from "src/gql/docker";
-
-const {
-  mutations: { deleteDockerNetwork },
-  queries: { getDockerNetworks }
-} = graphql;
+import gql from "src/gql";
 
 export default {
   components: { BaseTable, CreateNetwork, NetworkDetails, ContainerLink },
   apollo: {
     networks: {
-      query: getDockerNetworks,
+      query: gql.docker.GET_NETWORKS,
       update: data => data.docker.networks
     }
   },
-  created(){
+  created() {
     this.$root.$on("refresh", () => this.$apollo.queries.networks.refetch());
   },
   computed: {
@@ -106,15 +96,15 @@ export default {
       };
 
       this.runMutation(
-        deleteDockerNetwork,
+        gql.docker.DELETE_NETWORK,
         variables,
         `Network ${network.name} deleted.`,
         store => {
-          const data = store.readQuery({ query: getDockerNetworks });
+          const data = store.readQuery({ query: gql.docker.GET_NETWORKS });
           data.docker.networks = data.docker.networks.filter(
             n => n.id != network.id
           );
-          store.writeQuery({ query: getDockerNetworks, data });
+          store.writeQuery({ query: gql.docker.GET_NETWORKS, data });
         }
       );
     }

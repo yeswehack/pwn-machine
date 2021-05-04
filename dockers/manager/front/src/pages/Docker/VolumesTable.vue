@@ -31,26 +31,13 @@ import BaseTable from "src/components/BaseTable.vue";
 import VolumeDetails from "src/components/Docker/Volume/Details.vue";
 import CreateVolume from "src/components/Docker/Volume/Create.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
+import gql from "src/gql";
 
-import gql from "graphql-tag";
 export default {
   components: { BaseTable, VolumeDetails, CreateVolume, ContainerLink },
   apollo: {
     volumes: {
-      query: gql`
-        query getVolumes {
-          docker {
-            volumes {
-              name
-              mountpoint
-              usedBy {
-                id
-                name
-              }
-            }
-          }
-        }
-      `,
+      query: gql.docker.GET_VOLUMES,
       update: data => data.docker.volumes
     }
   },

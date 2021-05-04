@@ -13,11 +13,15 @@
     <template #body-cell-image="{row}">
       <ImageLink :name="row.image.repository" />
     </template>
-    <template #body-cell-volumes="{row}">
+    <!--template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
-        <VolumeLink :name="name" :key="name" v-for="{ name } of row.mounts.filter(n=>n.name)" />
+        <VolumeLink
+          :name="name"
+          :key="name"
+          v-for="{ name } of row.mounts.filter(n => n.name)"
+        />
       </div>
-    </template>
+    </template-->
     <template #body-cell-networks="{row}">
       <div class="q-gutter-sm">
         <NetworkLink
@@ -56,10 +60,7 @@ import NetworkLink from "src/components/Docker/Network/Link.vue";
 import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
-
-import graphql from "src/gql/docker"
-
-const {queries: {getDockerContainers}} = graphql;
+import gql from "src/gql";
 
 export default {
   components: {
@@ -69,13 +70,13 @@ export default {
     CreateContainer,
     ContainerStatus,
     ImageLink,
-    VolumeLink,
+    //VolumeLink,
     NetworkLink
   },
   apollo: {
     containers: {
-      query: getDockerContainers,
-      update: data => data.docker.containers
+      query: gql.docker.GET_CONTAINERS,
+      update: ({ dockerContainers }) => dockerContainers
     }
   },
   computed: mapGetters(["loading"]),
@@ -92,14 +93,14 @@ export default {
         name: "image",
         label: "Image",
         align: "left",
-        field: row => row.image.repository,
+        field: ({ image }) => image.repository,
         sortable: true
       },
       {
         name: "volumes",
         label: "Volumes",
         align: "left",
-        field: row => row.volumeMounts.map(m => m.name),
+        //field: ({ volumeMounts }) => volumeMounts.map(m => m.name),
         format: val => shortDate(val),
         sortable: true
       },
@@ -107,21 +108,22 @@ export default {
         name: "networks",
         label: "Networks",
         align: "left",
-        field: row => row.connectedNetworks.map(n => n.name),
+        //field: ({ connectedNetworks }) => connectedNetworks.map(n => n.name),
         sortable: true
       },
       {
         name: "exposedPort",
         label: "Exposed ports",
         align: "left",
-        field: row => row.exposedPorts.map(e => e.protocol + e.containerPort),
+        //field: ({ exposedPorts }) =>
+        //  exposedPorts.map(e => e.protocol + e.containerPort),
         sortable: true
       },
       {
         name: "status",
         label: "Status",
         align: "left",
-        field: row => row.status,
+        field: ({ status }) => status,
         sortable: true
       }
     ];

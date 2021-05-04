@@ -134,7 +134,7 @@ import NetworksInfo from "src/components/Docker/Container/NetworksInfo.vue";
 import MountsInfo from "src/components/Docker/Container/MountsInfo.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
-import gql from "graphql-tag";
+import gql from "src/gql";
 
 export default {
   components: {
@@ -152,39 +152,11 @@ export default {
   },
   apollo: {
     container: {
-      query: gql`
-        query getContainer($name: String!) {
-          docker {
-            container(name: $name) {
-              id
-              name
-              status
-              labels {
-                key
-                value
-              }
-              environ {
-                key
-                value
-              }
-              mounts {
-                name
-                source
-                destination
-                rw
-              }
-              image {
-                id
-                repository
-              }
-            }
-          }
-        }
-      `,
+      query: gql.docker.GET_CONTAINERS,
       variables() {
         return { name: this.name };
       },
-      update: data => data.docker.container
+      update: ({ container }) => container
     }
   },
   data() {
