@@ -1,0 +1,11 @@
+type KeyValue {
+    key: String!
+    value: String!
+}
+
+input KeyValueInput {
+    key: String!
+    value: String
+}
+
+scalar DateTime

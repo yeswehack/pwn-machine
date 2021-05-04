@@ -16,6 +16,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from ariadne.asgi import GraphQL
 
 from .redis import client as redis_client
+from . import docker
 from . import traefik
 from . import dns
 from .auth import auth_middleware

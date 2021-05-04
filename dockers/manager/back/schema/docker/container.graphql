@@ -1,0 +1,24 @@
+type DockerContainer {
+    id: ID!
+    name: String!
+    labels: [KeyValue!]!
+    image: DockerImage!
+    created: DateTime!
+    command: [String!]!
+    environment: [KeyValue!]!
+    #mounts
+    #volumeMounts
+    #networks
+    #publishedPorts
+    status: DockerContainerStatus!
+}
+
+enum DockerContainerStatus {
+    CREATED
+    RESTARTING
+    RUNNING
+    REMOVING
+    PAUSED
+    EXITED
+    DEAD
+}

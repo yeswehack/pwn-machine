@@ -1,0 +1,20 @@
+fragment ImageFragment on DockerImage {
+  id
+  tags {
+    repository
+    tag
+  }
+  labels {
+    key
+    value
+  }
+  parent
+  created
+  size
+  entrypoint
+  command
+  environment {
+    key
+    value
+  }
+}

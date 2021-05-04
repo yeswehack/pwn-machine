@@ -1,0 +1,31 @@
+type DockerImage {
+    id: ID!
+    tags: [DockerImageTag!]!
+    labels: [KeyValue!]!
+    parent: ID!
+    created: DateTime!
+    size: Int!
+    entrypoint: [String!]
+    command: [String!]
+    environment: [KeyValue!]!
+}
+
+
+input DockerImageFilters {
+    tags: [DockerImageTagInput!]! = []
+    labels: [KeyValueInput!]! = []
+    before: [ID!]! = []
+    since: [ID!]! = []
+    dangling: Boolean
+}
+
+
+type DockerImageTag {
+    repository: String!
+    tag: String!
+}
+
+input DockerImageTagInput {
+    repository: String!
+    tag: String
+}
