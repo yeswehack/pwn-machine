@@ -6,12 +6,12 @@
     :loading="$apollo.loading"
     :data="containers"
     :columns="columns"
-    v-on:cloneRow="cloneContainer"
-    v-on:newRow="newContainer"
-    v-on:delete="deleteContainer"
+    @cloneRow="cloneContainer"
+    @newRow="newContainer"
+    @delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <ImageLink :name="row.image.repository" />
+      <ImageLink :name="row.image.tags[0].repository" />
     </template>
     <!--template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
@@ -22,7 +22,7 @@
         />
       </div>
     </template-->
-    <template #body-cell-networks="{row}">
+    <!--template #body-cell-networks="{row}">
       <div class="q-gutter-sm">
         <NetworkLink
           :name="name"
@@ -30,17 +30,17 @@
           v-for="{ name } of row.connectedNetworks"
         />
       </div>
-    </template>
-    <template #body-cell-exposedPort="{row}">
+    </template-->
+    <!--template #body-cell-exposedPort="{row}">
       <PortList :ports="row.exposedPorts" />
-    </template>
+    </template-->
     <template #body-cell-status="{row}">
       <ContainerStatus :status="row.status" />
     </template>
 
-    <template #details="{ row }" auto-width>
-      <ContainerDetails :name="row.name" />
-    </template>
+    <!--template #details="{ row }" auto-width>
+      <ContainerDetails :container="row" />
+    </template-->
 
     <template #popup>
       <CreateContainer v-on:submit="createContainer" v-model="containerForm" />
@@ -64,14 +64,14 @@ import gql from "src/gql";
 
 export default {
   components: {
-    ContainerDetails,
+    //ContainerDetails,
     BaseTable,
-    PortList,
+    //PortList,
     CreateContainer,
     ContainerStatus,
-    ImageLink,
+    ImageLink
     //VolumeLink,
-    NetworkLink
+    //NetworkLink
   },
   apollo: {
     containers: {
@@ -93,7 +93,7 @@ export default {
         name: "image",
         label: "Image",
         align: "left",
-        field: ({ image }) => image.repository,
+        field: ({ image }) => image.tags[0].repository,
         sortable: true
       },
       {
@@ -101,7 +101,7 @@ export default {
         label: "Volumes",
         align: "left",
         //field: ({ volumeMounts }) => volumeMounts.map(m => m.name),
-        format: val => shortDate(val),
+        format: shortDate,
         sortable: true
       },
       {

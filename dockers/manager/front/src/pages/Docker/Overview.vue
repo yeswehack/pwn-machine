@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     getStatusColor(status) {
-      switch (status) {
+      switch (status.toLowerCase()) {
         case "running":
         case "created":
         case "restarting":
