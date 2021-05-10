@@ -1,5 +1,5 @@
 from ..utils import registerQuery, createType
-from . import docker_client, KeyValue
+from . import docker_client, KeyValue, RepoTag
 from datetime import datetime
 
 DockerImage = createType("DockerImage")
@@ -12,12 +12,12 @@ async def resolve_images(*_, onlyFinal=True, filters=None):
 
 @DockerImage.field("tags")
 async def resolve_image_tags(image, _):
-    return [KeyValue(ref.split(":"), "repository", "tag") for ref in image.tags]
+    return [RepoTag(*ref.split(":", 1)) for ref in image.tags]
 
 
 @DockerImage.field("labels")
 async def resolve_image_labels(image, _):
-    return [KeyValue(label) for label in image.labels.items()]
+    return [KeyValue(k, v) for k, v in image.labels.items()]
 
 
 @DockerImage.field("parent")
@@ -47,4 +47,4 @@ async def resolve_image_command(image, _):
 
 @DockerImage.field("environment")
 async def resolve_image_environment(image, _):
-    return [KeyValue(var.split("=")) for var in image.attrs["Config"]["Env"]]
+    return [KeyValue(*var.split("=", 1)) for var in image.attrs["Config"]["Env"]]

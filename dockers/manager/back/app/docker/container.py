@@ -12,7 +12,7 @@ async def resolve_containers(*_, onlyRunning=True):
 
 @DockerContainer.field("labels")
 async def resolve_container_labels(container, _):
-    return [KeyValue(label) for label in container.labels.items()]
+    return [KeyValue(k, v) for k, v in container.labels.items()]
 
 
 @DockerContainer.field("created")
@@ -27,7 +27,7 @@ async def resolve_container_command(container, _):
 
 @DockerContainer.field("environment")
 async def resolve_container_environment(container, _):
-    return [KeyValue(var.split("=")) for var in container.attrs["Config"]["Env"]]
+    return [KeyValue(*var.split("=", 1)) for var in container.attrs["Config"]["Env"]]
 
 
 @DockerContainer.field("status")
