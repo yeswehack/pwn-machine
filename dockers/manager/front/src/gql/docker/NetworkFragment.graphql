@@ -1,0 +1,18 @@
+#import "./ContainerFragment.graphql"
+fragment NetworkFragment on DockerNetwork {
+  id
+  name
+  labels {
+    key
+    value
+  }
+  created
+  ipv6
+  driver
+  internal
+  subnet
+  gateway
+  containers {
+    ...ContainerFragment
+  }
+}

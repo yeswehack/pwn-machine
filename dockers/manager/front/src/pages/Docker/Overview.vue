@@ -10,33 +10,16 @@
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
-import gql from "graphql-tag";
-
+import gql from "src/gql";
 
 export default {
   apollo: {
     containers: {
-      query: gql`
-        query getContainers {
-          docker {
-            containers {
-              name
-              status
-              exposedPorts {
-                containerPort
-                hostPort
-              }
-              connectedNetworks {
-                name
-              }
-            }
-          }
-        }
-      `,
+      query: gql.docker.GET_CONTAINERS,
       variables() {
         return { name: this.name };
       },
-      update: data => data.docker.containers
+      update: ({ containers }) => containers
     }
   },
   computed: {
@@ -46,7 +29,7 @@ export default {
   },
   methods: {
     getStatusColor(status) {
-      switch (status) {
+      switch (status.toLowerCase()) {
         case "running":
         case "created":
         case "restarting":
@@ -99,7 +82,9 @@ export default {
         if (container.exposedPorts.some(p => p.hostPort)) {
           elements.push(
             internetEdge(
-              container.exposedPorts.map(ep => `${ep.hostPort}->${ep.containerPort}`),
+              container.exposedPorts.map(
+                ep => `${ep.hostPort}->${ep.containerPort}`
+              ),
               container.name
             )
           );

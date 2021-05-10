@@ -6,19 +6,23 @@
     :loading="$apollo.loading"
     :data="containers"
     :columns="columns"
-    v-on:cloneRow="cloneContainer"
-    v-on:newRow="newContainer"
-    v-on:delete="deleteContainer"
+    @cloneRow="cloneContainer"
+    @newRow="newContainer"
+    @delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <ImageLink :name="row.image.repository" />
+      <ImageLink :name="row.image.tags[0].repository" />
     </template>
-    <template #body-cell-volumes="{row}">
+    <!--template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
-        <VolumeLink :name="name" :key="name" v-for="{ name } of row.mounts.filter(n=>n.name)" />
+        <VolumeLink
+          :name="name"
+          :key="name"
+          v-for="{ name } of row.mounts.filter(n => n.name)"
+        />
       </div>
-    </template>
-    <template #body-cell-networks="{row}">
+    </template-->
+    <!--template #body-cell-networks="{row}">
       <div class="q-gutter-sm">
         <NetworkLink
           :name="name"
@@ -26,17 +30,17 @@
           v-for="{ name } of row.connectedNetworks"
         />
       </div>
-    </template>
-    <template #body-cell-exposedPort="{row}">
+    </template-->
+    <!--template #body-cell-exposedPort="{row}">
       <PortList :ports="row.exposedPorts" />
-    </template>
+    </template-->
     <template #body-cell-status="{row}">
       <ContainerStatus :status="row.status" />
     </template>
 
-    <template #details="{ row }" auto-width>
-      <ContainerDetails :name="row.name" />
-    </template>
+    <!--template #details="{ row }" auto-width>
+      <ContainerDetails :container="row" />
+    </template-->
 
     <template #popup>
       <CreateContainer v-on:submit="createContainer" v-model="containerForm" />
@@ -56,26 +60,23 @@ import NetworkLink from "src/components/Docker/Network/Link.vue";
 import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
-
-import graphql from "src/gql/docker"
-
-const {queries: {getDockerContainers}} = graphql;
+import gql from "src/gql";
 
 export default {
   components: {
-    ContainerDetails,
+    //ContainerDetails,
     BaseTable,
-    PortList,
+    //PortList,
     CreateContainer,
     ContainerStatus,
-    ImageLink,
-    VolumeLink,
-    NetworkLink
+    ImageLink
+    //VolumeLink,
+    //NetworkLink
   },
   apollo: {
     containers: {
-      query: getDockerContainers,
-      update: data => data.docker.containers
+      query: gql.docker.GET_CONTAINERS,
+      update: ({ dockerContainers }) => dockerContainers
     }
   },
   computed: mapGetters(["loading"]),
@@ -92,36 +93,37 @@ export default {
         name: "image",
         label: "Image",
         align: "left",
-        field: row => row.image.repository,
+        field: ({ image }) => image.tags[0].repository,
         sortable: true
       },
       {
         name: "volumes",
         label: "Volumes",
         align: "left",
-        field: row => row.volumeMounts.map(m => m.name),
-        format: val => shortDate(val),
+        //field: ({ volumeMounts }) => volumeMounts.map(m => m.name),
+        format: shortDate,
         sortable: true
       },
       {
         name: "networks",
         label: "Networks",
         align: "left",
-        field: row => row.connectedNetworks.map(n => n.name),
+        //field: ({ connectedNetworks }) => connectedNetworks.map(n => n.name),
         sortable: true
       },
       {
         name: "exposedPort",
         label: "Exposed ports",
         align: "left",
-        field: row => row.exposedPorts.map(e => e.protocol + e.containerPort),
+        //field: ({ exposedPorts }) =>
+        //  exposedPorts.map(e => e.protocol + e.containerPort),
         sortable: true
       },
       {
         name: "status",
         label: "Status",
         align: "left",
-        field: row => row.status,
+        field: ({ status }) => status,
         sortable: true
       }
     ];

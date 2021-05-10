@@ -26,30 +26,14 @@
 import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "graphql-tag";
+import gql from "src/gql";
 
 export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     images: {
-      query: gql`
-        query getImages {
-          docker {
-            images {
-              id
-              shortId
-              repository
-              tag
-              created
-              size
-              usedBy {
-                name
-              }
-            }
-          }
-        }
-      `,
-      update: data => data.docker.images
+      query: gql.docker.GET_IMAGES,
+      update: ({ dockerImages }) => dockerImages
     }
   },
   data() {
@@ -59,7 +43,7 @@ export default {
           name: "id",
           label: "Image ID",
           align: "left",
-          field: "shortId",
+          field: ({ id }) => id,
           classes: "text-mono",
           sortable: true
         },
@@ -67,14 +51,14 @@ export default {
           name: "repository",
           align: "left",
           label: "Repository",
-          field: "repository",
+          field: ({ tags }) => tags[0]?.repository,
           sortable: true
         },
         {
           name: "tag",
           label: "Tag",
           align: "left",
-          field: "tag",
+          field: ({ tags }) => tags[0]?.tag,
           sortable: true
         },
         {
@@ -104,8 +88,8 @@ export default {
     };
   },
   computed: {
-    loading(){
-      return this.$apollo.queries.images.loading
+    loading() {
+      return this.$apollo.queries.images.loading;
     }
   },
   methods: {

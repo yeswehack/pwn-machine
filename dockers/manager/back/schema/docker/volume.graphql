@@ -1,4 +1,6 @@
 type DockerVolume {
-    id: ID!
     name: String!
+    labels: [KeyValue!]!
+    created: DateTime!
+    mountpoint: String!
 }

@@ -11,7 +11,7 @@ export default {
   },
   computed: {
     color() {
-      switch (this.status) {
+      switch (this.status.toLowerCase()) {
         case "running":
         case "created":
         case "restarting":

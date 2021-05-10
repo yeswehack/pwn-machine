@@ -77,13 +77,7 @@
 import KeyValueTable from "src/components/KeyValueTable.vue";
 import HelpLink from "src/components/HelpLink.vue";
 import DeepForm from "src/mixins/DeepForm.js";
-
-import graphql from "src/gql/docker";
-
-const {
-  mutations: { createDockerNetwork },
-  queries: { getDockerNetworks }
-} = graphql;
+import gql from "src/gql";
 
 export default {
   mixins: [DeepForm],
@@ -117,15 +111,15 @@ export default {
       };
 
       this.runMutation(
-        createDockerNetwork,
+        gql.docker.CREATE_NETWORK,
         variables,
         `Network ${f.name} created.`,
         (store, { network }) => {
-          const data = store.readQuery({ query: getDockerNetworks });
+          const data = store.readQuery({ query: gql.docker.GET_NETWORKS });
           data.docker.networks = data.docker.networks
             .filter(n => n.id != network.id)
             .concat([network]);
-          store.writeQuery({ query: getDockerNetworks, data });
+          store.writeQuery({ query: gql.docker.GET_NETWORKS, data });
           this.$emit("close");
         }
       );
