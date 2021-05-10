@@ -9,3 +9,14 @@ type DockerVolume {
   mountpoint: String!
   usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
+
+extend type Mutation {
+  dockerCreateVolume(name: String, labels: [KeyValueInput!]! = []): DockerVolume
+  dockerRemoveVolume(name: String!, force: Boolean = false): DockerVolume
+  dockerPruneVolumes: DockerPruneVolumesResult
+}
+
+type DockerPruneVolumesResult {
+  volumes: [DockerVolume!]!
+  size: Float!
+}
