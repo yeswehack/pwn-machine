@@ -4,7 +4,7 @@ type DockerImage {
     labels: [KeyValue!]!
     parent: ID!
     created: DateTime!
-    size: Int!
+    size: Float!
     entrypoint: [String!]
     command: [String!]
     environment: [KeyValue!]!
