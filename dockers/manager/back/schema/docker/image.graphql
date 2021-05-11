@@ -39,9 +39,8 @@ type DockerSearchImageResult {
 
 type DockerSearchImageTagResult {
   name: String!
-  size: Float!,
+  size: Float!
   lastUpdated: DateTime
-
 }
 
 extend type Query {
@@ -49,5 +48,8 @@ extend type Query {
 }
 
 extend type Query {
-  dockerSearchImageTag(repoName: String!, imageName: String!): [DockerSearchImageTagResult!]!
+  dockerSearchImageTag(
+    repoName: String!
+    imageName: String!
+  ): [DockerSearchImageTagResult!]!
 }
