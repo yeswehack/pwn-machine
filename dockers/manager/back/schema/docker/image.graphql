@@ -1,6 +1,6 @@
 type DockerImage {
   id: ID!
-  name: String!
+  name: String
   tags: [DockerImageTag!]!
   labels: [KeyValue!]!
   parent: ID!

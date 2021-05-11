@@ -1,6 +1,5 @@
 from ..utils import registerQuery, createType
-from . import docker_client, KeyValue
-from datetime import datetime
+from . import docker_client, KeyValue, formatTime
 
 DockerContainer = createType("DockerContainer")
 DockerContainerMount = createType("DockerContainerMount")
@@ -18,7 +17,7 @@ async def resolve_container_labels(container, _):
 
 @DockerContainer.field("created")
 async def resolve_container_created(container, _):
-    return str(datetime.fromisoformat(container.attrs["Created"].partition(".")[0]))
+    return formatTime(container.attrs["Created"])
 
 
 @DockerContainer.field("command")

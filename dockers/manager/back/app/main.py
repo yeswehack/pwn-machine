@@ -1,4 +1,3 @@
-
 import ariadne
 from .utils.registration import (
     registered_mutations,
@@ -39,7 +38,7 @@ class PowerDNSApiMiddleware(BaseHTTPMiddleware):
     async def __call__(self, scope, receive, send):
         if scope["type"] == "websocket":
             ws = WebSocket(scope=scope, receive=receive, send=send)
-            ws.state.dns_redis =  PowerdnsRedisApi(redis_client, "dns")
+            ws.state.dns_redis = PowerdnsRedisApi(redis_client, "dns")
         return await super().__call__(scope, receive, send)
 
     async def dispatch(self, request, call_next):

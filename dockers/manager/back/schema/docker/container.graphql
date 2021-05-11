@@ -1,39 +1,38 @@
 type DockerContainer {
-    id: ID!
-    name: String!
-    labels: [KeyValue!]!
-    image: DockerImage!
-    created: DateTime!
-    command: [String!]!
-    environment: [KeyValue!]!
-    mounts: [DockerContainerMount!]!
-    #networks
-    #publishedPorts
-    status: DockerContainerStatus!
+  id: ID!
+  name: String!
+  labels: [KeyValue!]!
+  image: DockerImage!
+  created: DateTime!
+  command: [String!]!
+  environment: [KeyValue!]!
+  mounts: [DockerContainerMount!]!
+  #networks
+  #publishedPorts
+  status: DockerContainerStatus!
 }
 
 enum DockerContainerStatus {
-    CREATED
-    RESTARTING
-    RUNNING
-    REMOVING
-    PAUSED
-    EXITED
-    DEAD
+  CREATED
+  RESTARTING
+  RUNNING
+  REMOVING
+  PAUSED
+  EXITED
+  DEAD
 }
 
-
 type DockerContainerMount {
-    type: DockerContainerMountType!
-    volume: DockerVolume
-    source: String
-    target: String!
-    readonly: Boolean!
+  type: DockerContainerMountType!
+  volume: DockerVolume
+  source: String
+  target: String!
+  readonly: Boolean!
 }
 
 enum DockerContainerMountType {
-    BIND
-    VOLUME
-    TMPFS
-    NPIPE
+  BIND
+  VOLUME
+  TMPFS
+  NPIPE
 }

@@ -1,6 +1,5 @@
 from ..utils import registerQuery, createType
-from . import docker_client, KeyValue
-from datetime import datetime
+from . import docker_client, KeyValue, formatTime
 
 DockerVolume = createType("DockerVolume")
 
@@ -17,7 +16,7 @@ async def resolve_volume_labels(volume, _):
 
 @DockerVolume.field("created")
 async def resolve_volume_created(volume, _):
-    return str(datetime.fromisoformat(volume.attrs["CreatedAt"].partition(".")[0]))
+    return formatTime(volume.attrs["CreatedAt"])
 
 
 @DockerVolume.field("mountpoint")
