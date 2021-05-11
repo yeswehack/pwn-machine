@@ -3,4 +3,5 @@ type DockerVolume {
     labels: [KeyValue!]!
     created: DateTime!
     mountpoint: String!
+    usedBy: [DockerContainer!]!
 }

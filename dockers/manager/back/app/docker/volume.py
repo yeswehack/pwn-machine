@@ -23,3 +23,8 @@ async def resolve_volume_created(volume, _):
 @DockerVolume.field("mountpoint")
 async def resolve_volume_mountpoint(volume, _):
     return volume.attrs["Mountpoint"]
+
+
+@DockerVolume.field("usedBy")
+async def resolve_volume_used_by(volume, _):
+    return docker_client.containers.list(filters={"volume": volume.attrs["Name"]})

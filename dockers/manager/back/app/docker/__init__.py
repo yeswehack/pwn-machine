@@ -3,13 +3,15 @@ from dataclasses import dataclass
 
 docker_client = docker.from_env()
 
-@dataclass
-class KeyValue():
-    key:str
-    value:str = ""
 
 @dataclass
-class RepoTag():
+class KeyValue:
+    key: str
+    value: str = ""
+
+
+@dataclass
+class RepoTag:
     repository: str
     tag: str = "latest"
 

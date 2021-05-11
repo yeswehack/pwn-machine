@@ -6,8 +6,7 @@ type DockerContainer {
     created: DateTime!
     command: [String!]!
     environment: [KeyValue!]!
-    #mounts
-    #volumeMounts
+    mounts: [DockerContainerMount!]!
     #networks
     #publishedPorts
     status: DockerContainerStatus!
@@ -21,4 +20,20 @@ enum DockerContainerStatus {
     PAUSED
     EXITED
     DEAD
+}
+
+
+type DockerContainerMount {
+    type: DockerContainerMountType!
+    volume: DockerVolume
+    source: String
+    target: String!
+    readonly: Boolean!
+}
+
+enum DockerContainerMountType {
+    BIND
+    VOLUME
+    TMPFS
+    NPIPE
 }
