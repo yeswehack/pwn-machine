@@ -54,8 +54,9 @@ export default {
           parent: this
         })
         .onOk(tag => {
-          this.$refs.select.add(tag)
+          this.$refs.select.add(tag);
           this.model = tag;
+          this.$emit("input",tag);
         });
     }
   }
