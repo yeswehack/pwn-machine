@@ -1,5 +1,6 @@
 fragment ImageFragment on DockerImage {
   id
+  name
   tags {
     repository
     tag

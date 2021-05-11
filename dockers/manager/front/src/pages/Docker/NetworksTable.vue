@@ -2,11 +2,13 @@
   <BaseTable
     ref="table"
     name="network"
-    rkey="name"
-    :loading="loading"
+    row-key="name"
+    :loading="$apollo.loading"
     :data="networks"
     :columns="columns"
-    @deleteRow="deleteNetwork"
+    @create="createNetwork"
+    @clone="cloneNetwork"
+    @delete="deleteNetwork"
   >
     <template #body-cell-driver="{row}">
       <q-badge :color="getDriverColor(row.driver)" :label="row.driver" />
@@ -17,25 +19,25 @@
       <q-badge color="negative" label="no" v-else />
     </template>
 
-    <template #body-cell-containers="{row: {usedBy}}">
+    <template #body-cell-containers="{row: {containers}}">
       <div class="q-gutter-sm row">
-        <ContainerLink :name="name" :key="name" v-for="{ name } of usedBy" />
+        <container-link
+          :name="name"
+          :key="name"
+          v-for="{ name } of containers"
+        />
       </div>
     </template>
 
-    <!--template #details="{ row }">
-      <NetworkDetails :name="row.name" />
-    </template-->
-
-    <template #popup="{ row, closePopup }">
-      <CreateNetwork :value="row" @close="closePopup" />
+    <template #details="{ row }">
+      <network-details :network="row" />
     </template>
   </BaseTable>
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable.vue";
-import CreateNetwork from "src/components/Docker/Network/Create.vue";
+import BaseTable from "src/components/BaseTable3.vue";
+import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import gql from "src/gql";
@@ -43,22 +45,13 @@ import gql from "src/gql";
 export default {
   components: {
     BaseTable,
-    CreateNetwork,
-    //NetworkDetails,
+    NetworkDetails,
     ContainerLink
   },
   apollo: {
     networks: {
       query: gql.docker.GET_NETWORKS,
       update: ({ dockerNetworks }) => dockerNetworks
-    }
-  },
-  created() {
-    this.$root.$on("refresh", () => this.$apollo.queries.networks.refetch());
-  },
-  computed: {
-    loading() {
-      return this.$apollo.queries.networks.loading;
     }
   },
   data() {
@@ -78,7 +71,7 @@ export default {
       field("subnet", { classes: "text-mono" }),
       field("containers", {
         label: "Connected containers",
-        field: row => row.usedBy.map(c => c.name)
+        field: row => row.containers.map(c => c.name)
       })
     ];
     return { columns };
@@ -95,23 +88,28 @@ export default {
       }
       return "orange";
     },
+    createNetwork() {
+      this.$q.dialog({
+        component: NetworkDialog,
+        parent: this
+      });
+    },
+    cloneNetwork(network) {
+      this.$q.dialog({
+        component: NetworkDialog,
+        parent: this,
+        network
+      });
+    },
     deleteNetwork(network) {
-      const variables = {
-        name: network.name
-      };
-
-      this.runMutation(
-        gql.docker.DELETE_NETWORK,
-        variables,
-        `Network ${network.name} deleted.`,
-        store => {
-          const data = store.readQuery({ query: gql.docker.GET_NETWORKS });
-          data.docker.networks = data.docker.networks.filter(
-            n => n.id != network.id
-          );
-          store.writeQuery({ query: gql.docker.GET_NETWORKS, data });
-        }
-      );
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${network.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {});
     }
   }
 };

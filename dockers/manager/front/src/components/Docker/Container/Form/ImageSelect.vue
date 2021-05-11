@@ -1,53 +1,62 @@
 <template>
   <q-select
+    ref="select"
     v-bind="$attrs"
-    :options="options"
-    v-model="formData"
-    @filter="filterOptions"
+    :options="imageOptions"
+    v-model="model"
     input-debounce="0"
     label="Image"
     use-input
-    dense
-    filled
     fill-input
+    new-value-mode="add"
     hide-selected
     clearable
-  />
+    @input="update"
+  >
+    <template #append>
+      <q-btn flat round icon="travel_explore" @click.stop="searchImage" />
+    </template>
+  </q-select>
 </template>
 
 <script>
-import DeepForm from "src/mixins/DeepForm.js";
+import gql from "src/gql";
+import ImageSearchVue from "./ImageSearch.vue";
 export default {
-  mixins: [DeepForm],
   props: {
-    filter: {
-      type: Function,
-      default: () => true
-    }
+    value: { type: String, default: null }
   },
   data() {
-    const options = [];
-    return { options };
+    return { model: null };
+  },
+  apollo: {
+    images: {
+      query: gql.docker.GET_IMAGES,
+      update: data => data.dockerImages
+    }
   },
   computed: {
-    imageNames() {
-      return this.$store.getters["docker/images"]
-        .filter(this.filter)
-        .map(image => `${image.Repository}:${image.Tag}`);
+    imageOptions() {
+      return (this.images ?? []).map(image => ({
+        label: image.name,
+        value: image.id
+      }));
     }
   },
   methods: {
-    filterOptions(val, update) {
-      update(() => {
-        if (val === "") {
-          this.options = this.imageNames;
-        } else {
-          const needle = val.toLowerCase();
-          this.options = this.imageNames.filter(
-            v => v.toLowerCase().indexOf(needle) > -1
-          );
-        }
-      });
+    update(v) {
+      this.$emit("input", v?.value ?? null);
+    },
+    searchImage() {
+      this.$q
+        .dialog({
+          component: ImageSearchVue,
+          parent: this
+        })
+        .onOk(tag => {
+          this.$refs.select.add(tag)
+          this.model = tag;
+        });
     }
   }
 };

@@ -1,37 +1,25 @@
 <template>
-  <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card bordered style="min-width: 600px">
-      <q-card-section>
-        <div class="row items-center">
-          <div class="text-h6">Create a new service</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </div>
-      </q-card-section>
-      <q-separator />
-      <create-service :value="serviceForm" @ok="onOK" @cancel="hide" />
-    </q-card>
-  </q-dialog>
+  <base-dialog ref="dialog" title="Create a new service">
+    <template #default="{ok, cancel}">
+      <create-service :value="serviceForm" @ok="ok" @cancel="cancel" />
+    </template>
+  </base-dialog>
 </template>
 
 <script>
+import BaseDialog from "src/components/BaseDialog.vue";
 import CreateService from "./Create.vue";
 export default {
-  components: { CreateService },
-  data() {
-    const form = {};
-    const protocols = ["http", "tcp", "udp"];
-    return { form, protocols };
-  },
+  components: { CreateService, BaseDialog },
   props: {
     service: { type: Object, default: null }
   },
-  computed:{
-    serviceForm(){
-      if (!this.service){
-        return null
+  computed: {
+    serviceForm() {
+      if (!this.service) {
+        return null;
       }
-      return {...this.service, extra: this.service[this.service.type]}
+      return { ...this.service, extra: this.service[this.service.type] };
     }
   },
   methods: {
@@ -41,13 +29,6 @@ export default {
     hide() {
       this.$refs.dialog.hide();
     },
-    onDialogHide() {
-      this.$emit("hide");
-    },
-    onOK() {
-      this.$emit("ok");
-      this.hide();
-    }
   }
 };
 </script>

@@ -1,41 +1,54 @@
 <template>
-  <div class="column q-py-sm">
-    <div class="row q-col-gutter-md items-stretch justify-start" v-if="network">
-      <div class="col col-6 q-gutter-md">
-        <KeyValueTable title="IPAM Config" readonly :value="IPAMConfig" />
-        <KeyValueTable title="Labels" readonly :value="network.labels" />
-      </div>
-      <div class="col col-6">
-        <ConnectedList :network="network" @needRefresh="refresh" />
-      </div>
-      <div class="col col-6"></div>
+  <div class="row q-gutter-md q-py-md">
+    <div class="col">
+      <q-card>
+        <q-card-section>
+          <div class="row items-center q-gutter-md">
+            <div class="text-h6">{{ network.name }}</div>
+            <q-space />
+            <help-link
+              href="https://doc.powerdns.com/authoritative/http-api/zone.html"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="q-col-gutter-md">
+          <ipam-input readonly :value="network.ipam" />
+        </q-card-section>
+        <q-card-section class="q-col-gutter-md">
+          <label-input readonly :value="network.labels" />
+        </q-card-section>
+      </q-card>
     </div>
-    <q-inner-loading :showing="!network">
-      <div class="row q-col-gutter-md items-stretch justify-evenly">
-        <q-spinner-gears size="50px" color="primary" />
-      </div>
-    </q-inner-loading>
+    <div class="col">
+      <q-card>
+        <q-card-section>
+          <container-list-input
+            v-model="network.containers"
+            title="Connected containers"
+          />
+        </q-card-section>
+      </q-card>
+    </div>
   </div>
 </template>
 
 <script>
-import KeyValueTable from "src/components/KeyValueTable.vue";
-import ConnectedList from "src/components/Docker/Network/ConnectedList.vue";
 import gql from "src/gql";
+import IpamInput from "./IpamInput.vue";
+import LabelInput from "../LabelInput.vue";
+import DeepForm from "src/mixins/DeepForm";
+import HelpLink from "src/components/HelpLink.vue";
+import ContainerListInput from "../ContainerListInput.vue";
 
 export default {
-  components: { KeyValueTable, ConnectedList },
   props: {
-    name: String
+    network: { type: Object, required: true }
   },
-  apollo: {
-    network: {
-      query: gql.docker.GET_NETWORK,
-      variables() {
-        return { name: this.name };
-      },
-      update: data => data.docker.network
-    }
+  components: {
+    IpamInput,
+    LabelInput,
+    HelpLink,
+    ContainerListInput
   },
   methods: {
     refresh() {
@@ -43,9 +56,6 @@ export default {
     }
   },
   computed: {
-    loading() {
-      return this.$apollo.queries.network.loading;
-    },
     IPAMConfig() {
       return [
         { key: "Gateway", value: this.network.gateway },

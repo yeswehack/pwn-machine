@@ -1,17 +1,17 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="container"
     rkey="name"
     :loading="$apollo.loading"
     :data="containers"
     :columns="columns"
-    @cloneRow="cloneContainer"
-    @newRow="newContainer"
+    @clone="cloneContainer"
+    @create="createContainer"
     @delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <ImageLink :name="row.image.tags[0].repository" />
+      <image-link :name="row.image.tags[0].repository" />
     </template>
     <!--template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
@@ -35,24 +35,21 @@
       <PortList :ports="row.exposedPorts" />
     </template-->
     <template #body-cell-status="{row}">
-      <ContainerStatus :status="row.status" />
+      <container-status :status="row.status" />
     </template>
 
     <!--template #details="{ row }" auto-width>
       <ContainerDetails :container="row" />
     </template-->
-
-    <template #popup>
-      <CreateContainer v-on:submit="createContainer" v-model="containerForm" />
-    </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable.vue";
+import BaseTable from "src/components/BaseTable3.vue";
 import ContainerDetails from "src/components/Docker/Container/Details.vue";
 import PortList from "src/components/Docker/Container/PortList.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
+import ContainerDialog from "src/components/Docker/Container/Dialog.vue";
 import CreateContainer from "src/components/Docker/Container/Create.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import VolumeLink from "src/components/Docker/Volume/Link.vue";
@@ -67,7 +64,6 @@ export default {
     //ContainerDetails,
     BaseTable,
     //PortList,
-    CreateContainer,
     ContainerStatus,
     ImageLink
     //VolumeLink,
@@ -79,167 +75,38 @@ export default {
       update: ({ dockerContainers }) => dockerContainers
     }
   },
-  computed: mapGetters(["loading"]),
   data() {
+    const col = name => ({
+      name,
+      align: "left",
+      label: name,
+      field: name,
+      sortable: true
+    });
     const columns = [
-      {
-        name: "name",
-        align: "left",
-        label: "name",
-        field: "name",
-        sortable: true
-      },
-      {
-        name: "image",
-        label: "Image",
-        align: "left",
-        field: ({ image }) => image.tags[0].repository,
-        sortable: true
-      },
-      {
-        name: "volumes",
-        label: "Volumes",
-        align: "left",
-        //field: ({ volumeMounts }) => volumeMounts.map(m => m.name),
-        format: shortDate,
-        sortable: true
-      },
-      {
-        name: "networks",
-        label: "Networks",
-        align: "left",
-        //field: ({ connectedNetworks }) => connectedNetworks.map(n => n.name),
-        sortable: true
-      },
-      {
-        name: "exposedPort",
-        label: "Exposed ports",
-        align: "left",
-        //field: ({ exposedPorts }) =>
-        //  exposedPorts.map(e => e.protocol + e.containerPort),
-        sortable: true
-      },
-      {
-        name: "status",
-        label: "Status",
-        align: "left",
-        field: ({ status }) => status,
-        sortable: true
-      }
+      col("name"),
+      col("image"),
+      col("volumes"),
+      col("networks"),
+      col("exposedPort"),
+      col("status")
     ];
-    const containerForm = this.emptyContainer();
-    return { containerForm, columns };
+    return { columns };
   },
   methods: {
-    createContainer(f) {
-      const postData = {};
-      const restartPolicy = {};
-      const hostConfig = {};
-      const setIfNotNull = (obj, key, val) => {
-        if (val === null) return;
-        if (Array.isArray(val) && val.length === 0) return;
-        if (val.constructor === String && val.length === 0) return;
-        if (val.constructor === Object && Object.keys(val).length == 0) return;
-        obj[key] = val;
-      };
-
-      setIfNotNull(postData, "Image", f.image);
-      setIfNotNull(postData, "Cmd", f.extra.cmd);
-      setIfNotNull(postData, "User", f.extra.user);
-      console.log(f.env);
-      setIfNotNull(
-        postData,
-        "Env",
-        Object.entries(f.env).map(([name, v]) => `${name}=${v}`)
-      );
-      setIfNotNull(postData, "Labels", f.labels);
-
-      setIfNotNull(restartPolicy, "Name", f.extra.restartPolicy);
-
-      setIfNotNull(hostConfig, "RestartPolicy ", restartPolicy);
-      setIfNotNull(hostConfig, "Capabilities", f.extra.capabilities);
-      setIfNotNull(postData, "HostConfig ", hostConfig);
-
-      console.log("submit", postData);
-    },
-    deleteContainer() {},
-    newContainer() {
-      this.containerForm = this.emptyContainer();
-    },
-    cloneContainer(container) {
-      this.containerForm = this.containerToForm(container);
-    },
-    emptyContainer() {
-      return {
-        extra: {
-          cmd: null,
-          user: null,
-          restartPolicy: null,
-          capabilities: []
-        },
-        env: {},
-        labels: {},
-        network: {
-          ports: [],
-          networks: []
-        },
-        volumes: [],
-        image: "",
-        name: "",
-        start: true,
-        rm: false
-      };
-    },
-    containerToForm(container) {
-      const networks = Object.keys(container.NetworkSettings.Networks);
-      const ports = Object.entries(container.NetworkSettings.Ports)
-        .filter(([k, v]) => v != null)
-        .map(([k, v]) => {
-          return {
-            host: v[0].HostPort,
-            container: k.split("/")[0],
-            protocol: k.split("/")[1]
-          };
-        });
-      const env = container.Config.Env.reduce((acc, s) => {
-        const [k, v] = s.split(/=(.+)/, 2);
-        return { ...acc, [k]: v };
-      }, {});
-      const volumes = container.Mounts.map(m => {
-        return {
-          type: m.Type,
-          name: m.Type == "volume" ? shortName(m.Name) : m.Source,
-          destination: m.Destination,
-          rw: m.RW
-        };
+    createContainer() {
+      this.$q.dialog({
+        component: ContainerDialog,
+        parent: this
       });
-      const cmd = Array.isArray(container.Config.Cmd)
-        ? quote(container.Config.Cmd)
-        : container.Config.Cmd;
-
-      const restartPolicy = container.HostConfig.RestartPolicy
-        ? container.HostConfig.RestartPolicy.Name
-        : null;
-      const form = {
-        extra: {
-          cmd,
-          user: container.Config.User,
-          restartPolicy,
-          capabilities: []
-        },
-        env,
-        labels: container.Config.Labels,
-        network: {
-          ports,
-          networks
-        },
-        volumes,
-        image: container.Config.Image,
-        name: container.Name,
-        start: true,
-        rm: false
-      };
-      return form;
+    },
+    deleteContainer(container) {},
+    cloneContainer(container) {
+      this.$q.dialog({
+        component: ContainerDialog,
+        parent: this,
+        container
+      });
     }
   }
 };

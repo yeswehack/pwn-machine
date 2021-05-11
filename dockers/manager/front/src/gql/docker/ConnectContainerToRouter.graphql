@@ -1,0 +1,3 @@
+mutation dockerConnectContainerToRouter($input: dockerContainerRouterInput) {
+  dockerConnectContainerToRouter(input: $input)
+}

@@ -1,31 +1,53 @@
 type DockerImage {
-    id: ID!
-    tags: [DockerImageTag!]!
-    labels: [KeyValue!]!
-    parent: ID!
-    created: DateTime!
-    size: Int!
-    entrypoint: [String!]
-    command: [String!]
-    environment: [KeyValue!]!
+  id: ID!
+  name: String!
+  tags: [DockerImageTag!]!
+  labels: [KeyValue!]!
+  parent: ID!
+  created: DateTime!
+  size: Float!
+  entrypoint: [String!]
+  command: [String!]
+  environment: [KeyValue!]!
 }
-
 
 input DockerImageFilters {
-    tags: [DockerImageTagInput!]! = []
-    labels: [KeyValueInput!]! = []
-    before: [ID!]! = []
-    since: [ID!]! = []
-    dangling: Boolean
+  tags: [DockerImageTagInput!]! = []
+  labels: [KeyValueInput!]! = []
+  before: [ID!]! = []
+  since: [ID!]! = []
+  dangling: Boolean
 }
 
-
 type DockerImageTag {
-    repository: String!
-    tag: String!
+  repository: String!
+  tag: String!
 }
 
 input DockerImageTagInput {
-    repository: String!
-    tag: String
+  repository: String!
+  tag: String
+}
+
+type DockerSearchImageResult {
+  name: String!
+  isOfficial: Boolean!
+  isAutomated: Boolean!
+  description: String!
+  starCount: Int!
+}
+
+type DockerSearchImageTagResult {
+  name: String!
+  size: Float!,
+  lastUpdated: DateTime
+
+}
+
+extend type Query {
+  dockerSearchImage(search: String!): [DockerSearchImageResult!]!
+}
+
+extend type Query {
+  dockerSearchImageTag(repoName: String!, imageName: String!): [DockerSearchImageTagResult!]!
 }

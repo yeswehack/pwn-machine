@@ -1,23 +1,23 @@
 <template>
   <base-dialog
     ref="dialog"
-    title="Create a new DNS rule"
-    help="https://doc.powerdns.com/authoritative/http-api/zone.html#objects"
+    title="Create a new docker network"
+    help="https://docs.docker.com/engine/api/v1.41/#operation/NetworkCreate"
   >
     <template #default="{ok, cancel}">
-      <create-rule :value="rule" @ok="ok" @cancel="cancel" />
+      <create-network :value="network" @ok="ok" @cancel="cancel" />
     </template>
   </base-dialog>
 </template>
 
 <script>
-import CreateRule from "./Create.vue";
+import CreateNetwork from "./Create.vue";
 import BaseDialog from "src/components/BaseDialog.vue";
 
 export default {
-  components: { CreateRule, BaseDialog },
+  components: { CreateNetwork, BaseDialog },
   props: {
-    rule: { type: Object, default: null }
+    network: { type: Object, default: null }
   },
   methods: {
     show() {

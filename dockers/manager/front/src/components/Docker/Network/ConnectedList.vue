@@ -1,7 +1,7 @@
 <template>
   <q-table
+  flat
     title="Connected containers"
-    dense
     :pagination="pagination"
     hide-pagination
     :data="connected"
@@ -10,7 +10,7 @@
     no-data-label="No container connected"
   >
     <template #body-cell-name="props">
-      <q-td> <ContainerLink :name="props.value" /> </q-td>
+      <q-td> <container-link :name="props.value" /> </q-td>
     </template>
     <template #body-cell-detach="{row}">
       <q-td key="detach" auto-width class="cursor-pointer">
@@ -78,15 +78,15 @@ export default {
   apollo: {
     containers: {
       query: gql.docker.GET_CONTAINERS,
-      update: data => data.docker.containers
+      update: data => data.dockerContainers
     }
   },
   props: {
-    network: Object
+    network: { type: Object, default: null }
   },
   computed: {
     connected() {
-      return this.network.connectedContainers;
+      return this.network.containers;
     },
     containersNotAlreadyConnected() {
       return (this.containers || []).map(c => ({

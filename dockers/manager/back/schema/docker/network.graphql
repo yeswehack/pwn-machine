@@ -1,12 +1,26 @@
 type DockerNetwork {
-    id: ID!
-    name: String!
-    labels: [KeyValue!]!
-    created: DateTime!
-    ipv6: Boolean!
-    driver: String!
-    internal: Boolean!
-    subnet: String
-    gateway: String
-    containers: [DockerContainer!]!
+  id: ID!
+  name: String!
+  labels: [KeyValue!]!
+  created: DateTime!
+  ipv6: Boolean!
+  driver: String!
+  internal: Boolean!
+  subnet: String
+  gateway: String
+  containers: [DockerContainer!]!
+}
+
+input dockerConnectContainerRouterInput {
+  containerId: ID!
+  networkId: ID!
+}
+
+extend type Mutation {
+  dockerConnectContainerToRouter(
+    input: dockerConnectContainerRouterInput
+  ): Boolean
+  dockerDisconnectContainerFromRouter(
+    input: dockerConnectContainerRouterInput
+  ): Boolean
 }

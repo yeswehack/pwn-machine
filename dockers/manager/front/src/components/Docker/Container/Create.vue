@@ -1,112 +1,62 @@
 <template>
-  <q-card bordered style="width: 700px; max-width: 80vw;">
-    <q-form @submit="submit">
-      <q-card-section>
-        <div class="row items-center q-gutter-md">
-          <div class="text-h6">Create a new container</div>
-          <q-space />
-          <a
-            class="text-white"
-            href="https://docs.docker.com/engine/reference/commandline/container_create/"
-            target="_blank"
-          >
-            <q-icon size="sm" name="help" />
-          </a>
-          <q-btn icon="close" flat round dense v-close-popup />
+  <q-form @submit="submit">
+    <q-card-section class="column q-gutter-md">
+      <div class="col">
+        <div class="column  q-gutter-sm">
+          <q-input v-model="form.name" label="name" />
+          <image-select v-model="form.image" />
         </div>
-      </q-card-section>
-      <q-separator />
-      <q-card-section class="q-col-gutter-md">
-        <div>
-          <q-input filled v-model="formData.name" label="name" />
-        </div>
-        <div>
-          <ImageSelect v-model="formData.image" />
-        </div>
-        <div>
-          <q-expansion-item
-            expand-separator
-            icon="settings"
-            label="Extra config"
-          >
-            <div class="q-py-md">
-              <ExtraConfig v-model="formData.extra" />
-            </div>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            icon="reorder"
-            label="Environment"
-            :caption="`${Object.keys(formData.env).length} variable(s)`"
-          >
-            <div class="q-py-md">
-              <KeyValueTable
-                hidetitle
-                class="bg-grey-9"
-                v-model="formData.env"
-              />
-            </div>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            :caption="`${Object.keys(formData.labels).length} label(s)`"
-            icon="label"
-            label="Labels"
-          >
-            <div class="q-py-md">
-              <KeyValueTable
-                hidetitle
-                v-model="formData.labels"
-                class="bg-grey-9"
-              />
-            </div>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            icon="device_hub"
-            label="Network settings"
-            :caption="
-              `${formData.network.networks.length} netwok(s), ${formData.network.ports.length} exposed port(s)`
-            "
-          >
-            <div class="q-py-md">
-              <NetworkSettings v-model="formData.network" />
-            </div>
-          </q-expansion-item>
-          <q-expansion-item
-            expand-separator
-            icon="storage"
-            label="Volumes"
-            :caption="`${Object.keys(formData.volumes).length} volume(s)`"
-          >
-            <div class="q-py-md">
-              <VolumeSettings v-model="formData.volumes" class="bg-grey-9" />
-            </div>
-          </q-expansion-item>
-        </div>
-      </q-card-section>
-      <q-card-actions align="right" class="q-pa-md q-gutter-md">
-        <q-toggle
-          color="negative"
-          v-model="formData.rm"
-          label="Delete on stop"
-          left-label
-        />
-        <q-toggle
-          color="positive"
-          v-model="formData.start"
-          label="Start the container"
-          left-label
-        />
-        <q-btn color="positive" type="submit" class="q-py-xs q-px-md col-2">
-          {{ formData.start ? "Start" : "Create" }}
-        </q-btn>
-      </q-card-actions>
-      <q-card-actions v-if="true">
-        <pre hidden>{{ JSON.stringify(formData, null, 2) }}</pre>
-      </q-card-actions>
-    </q-form>
-  </q-card>
+      </div>
+      <q-list  separator class="rounded-borders" bordered>
+        <component :is="formChildren.extra" v-model="form.extra" />
+        <component :is="formChildren.environment" v-model="form.environment" />
+        <component :is="formChildren.labels" v-model="form.labels" />
+        <component :is="formChildren.volumes" v-model="form.volumes" />
+      </q-list>
+      <!--
+      <div>
+        <q-expansion-item expand-separator icon="settings" label="Extra config">
+          <div class="q-py-md">
+            <extra-config v-model="form.extra" />
+          </div>
+        </q-expansion-item>
+      </div>
+        <q-expansion-item
+          expand-separator
+          icon="device_hub"
+          label="Network settings"
+          :caption="
+            `${form.network.networks.length} netwok(s), ${form.network.ports.length} exposed port(s)`
+          "
+        >
+          <div class="q-py-md">
+            <NetworkSettings v-model="form.network" />
+          </div>
+        </q-expansion-item>
+      </div>
+        -->
+    </q-card-section>
+    <q-card-actions align="right" class="q-pa-md q-gutter-md">
+      <q-toggle
+        color="negative"
+        v-model="form.rm"
+        label="Delete on stop"
+        left-label
+      />
+      <q-toggle
+        color="positive"
+        v-model="form.start"
+        label="Start the container"
+        left-label
+      />
+      <q-btn color="positive" type="submit" class="q-py-xs q-px-md col-2">
+        {{ form.start ? "Start" : "Create" }}
+      </q-btn>
+    </q-card-actions>
+    <q-card-actions v-if="true">
+      <pre>{{ JSON.stringify(form, null, 2) }}</pre>
+    </q-card-actions>
+  </q-form>
 </template>
 
 <script>
@@ -116,18 +66,30 @@ import ExtraConfig from "./Form/ExtraConfig.vue";
 import NetworkSettings from "./Form/NetworkSettings.vue";
 import VolumeSettings from "./Form/VolumeSettings.vue";
 import DeepForm from "src/mixins/DeepForm.js";
+import EnvironInput from "./Form/EnvironInput.vue";
+import LabelInputVue from "../LabelInput.vue";
 export default {
   mixins: [DeepForm],
+  formDefinition: {
+    name: null,
+    image: null,
+    labels: LabelInputVue,
+    environment: EnvironInput,
+    extra: ExtraConfig,
+    volumes: VolumeSettings
+  },
   components: {
     ImageSelect,
-    KeyValueTable,
+    EnvironInput,
+    ExtraConfig
+    /*KeyValueTable,
     NetworkSettings,
     ExtraConfig,
-    VolumeSettings
+    VolumeSettings*/
   },
   methods: {
     submit() {
-      this.$emit("submit", this.formData);
+      this.$emit("submit", this.form);
     }
   }
 };

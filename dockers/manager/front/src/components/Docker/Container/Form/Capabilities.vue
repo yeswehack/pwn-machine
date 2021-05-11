@@ -1,17 +1,17 @@
 <template>
-  <div class="row items-center q-gutter-sm">
+  <div class="row items-center">
     <q-select
       class="col col-grow"
-      filled
       use-chips
       multiple
       clearable
-      dense
       :options="options"
-      v-model="formData"
+      v-model="model"
+      @input="input"
       label="Capabilities"
     />
     <help-link
+      class="q-ml-md"
       href="https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities"
     />
   </div>
@@ -19,9 +19,8 @@
 
 <script>
 import HelpLink from "src/components/HelpLink";
-import DeepForm from "src/mixins/DeepForm.js";
 export default {
-  mixins: [DeepForm],
+  props: { value: { type: String, default: null } },
   components: { HelpLink },
   data() {
     const options = [
@@ -40,7 +39,12 @@ export default {
       "SETUID",
       "SYS_CHROOT"
     ];
-    return { options };
+    return { options, model: this.value };
+  },
+  methods: {
+    input(v) {
+      this.$emit("input", v ?? null);
+    }
   }
 };
 </script>

@@ -37,54 +37,22 @@ export default {
     }
   },
   data() {
+    const col = (name, opts = {}) => ({
+      name,
+      label: name,
+      align: "left",
+      field: name,
+      sortable: true,
+      ...opts
+    });
+    const columns = [
+      col("name"),
+      col("usedBy"),
+      col("created"),
+      col("size", {format: v => format.humanStorageSize(v),}),
+    ];
     return {
-      columns: [
-        {
-          name: "id",
-          label: "Image ID",
-          align: "left",
-          field: ({ id }) => id,
-          classes: "text-mono",
-          sortable: true
-        },
-        {
-          name: "repository",
-          align: "left",
-          label: "Repository",
-          field: ({ tags }) => tags[0]?.repository,
-          sortable: true
-        },
-        {
-          name: "tag",
-          label: "Tag",
-          align: "left",
-          field: ({ tags }) => tags[0]?.tag,
-          sortable: true
-        },
-        {
-          name: "usedBy",
-          label: "Used by",
-          align: "left",
-          field: "usedBy",
-          sortable: true
-        },
-        {
-          name: "createdAt",
-          label: "Created",
-          align: "left",
-          field: "created",
-          format: v => this.format_time(v),
-          sortable: true
-        },
-        {
-          name: "size",
-          label: "Size",
-          align: "left",
-          field: "size",
-          format: v => format.humanStorageSize(v),
-          sortable: true
-        }
-      ]
+      columns
     };
   },
   computed: {

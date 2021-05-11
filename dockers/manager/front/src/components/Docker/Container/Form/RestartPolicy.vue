@@ -1,16 +1,15 @@
 <template>
-  <div class="row items-center q-gutter-sm">
+  <div class="row items-center">
     <q-select
       class="col col-grow"
-      filled
       clearable
-      dense
       :options="options"
-      v-model="formData"
+      v-model="model"
       label="Restart policy"
+      @input="input"
     />
-
     <help-link
+      class="q-ml-md"
       href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
     />
   </div>
@@ -18,10 +17,9 @@
 
 <script>
 import HelpLink from "src/components/HelpLink";
-import DeepForm from "src/mixins/DeepForm.js";
 export default {
-  mixins: [DeepForm],
   components: { HelpLink },
+  props: { value: { type: String, default: null } },
   data() {
     const options = [
       {
@@ -41,7 +39,12 @@ export default {
         value: "on-failure"
       }
     ];
-    return { options };
+    return { options, model: this.value };
+  },
+  methods: {
+    input(v) {
+      this.$emit("input", v?.value ?? null);
+    }
   }
 };
 </script>

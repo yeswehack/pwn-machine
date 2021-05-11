@@ -1,0 +1,3 @@
+mutation dockerDisconnectContainerFromRouter($input: dockerContainerRouterInput) {
+  dockerDisconnectContainerFromRouter(input: $input)
+}
