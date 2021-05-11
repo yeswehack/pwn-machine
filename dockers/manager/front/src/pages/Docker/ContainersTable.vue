@@ -11,7 +11,7 @@
     @delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <image-link :name="row.image.tags[0].repository" />
+      <image-link :name="row.image.nametags[0].repository" />
     </template>
     <!--template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
