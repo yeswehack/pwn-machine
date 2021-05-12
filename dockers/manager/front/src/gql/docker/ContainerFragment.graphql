@@ -1,4 +1,3 @@
-#import "./ImageFragment.graphql"
 fragment ContainerFragment on DockerContainer {
   id
   name
@@ -7,7 +6,7 @@ fragment ContainerFragment on DockerContainer {
     value
   }
   image {
-    ...ImageFragment
+    name
   }
   created
   command

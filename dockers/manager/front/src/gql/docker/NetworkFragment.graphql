@@ -1,4 +1,3 @@
-#import "./ContainerFragment.graphql"
 fragment NetworkFragment on DockerNetwork {
   id
   name
@@ -13,6 +12,6 @@ fragment NetworkFragment on DockerNetwork {
   subnet
   gateway
   usingContainers {
-    ...ContainerFragment
+    name
   }
 }
