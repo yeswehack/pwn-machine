@@ -8,7 +8,7 @@ type DockerNetwork {
   internal: Boolean!
   subnet: String
   gateway: String
-  containers: [DockerContainer!]!
+  usingContainers: [DockerContainer!]!
 }
 
 input dockerConnectContainerRouterInput {

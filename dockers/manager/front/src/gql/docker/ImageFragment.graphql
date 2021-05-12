@@ -18,4 +18,7 @@ fragment ImageFragment on DockerImage {
     key
     value
   }
+  usingContainers {
+    name
+  }
 }

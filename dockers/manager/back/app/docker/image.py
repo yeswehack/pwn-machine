@@ -63,6 +63,11 @@ async def resolve_image_environment(image, _):
     return [KeyValue(*var.split("=", 1)) for var in image.attrs["Config"]["Env"]]
 
 
+@DockerImage.field("usingContainers")
+async def resolve_image_using_containers(image, _):
+    return docker_client.containers.list(filters={"ancestor": image.id})
+
+
 @registerQuery("dockerSearchImage")
 def resolve_search_image(*_, search):
     return [

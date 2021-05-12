@@ -8,12 +8,12 @@
     :data="volumes"
     :columns="columns"
   >
-    <template #body-cell-usedBy="{row}">
+    <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row">
         <ContainerLink
           :name="name"
           :key="name"
-          v-for="{ name } of row.usedBy"
+          v-for="{ name } of row.containers"
         />
       </div>
     </template>
@@ -47,31 +47,23 @@ export default {
     }
   },
   data() {
-    return {
-      columns: [
-        {
-          name: "name",
-          align: "left",
-          label: "Name",
-          field: "name",
-          sortable: true
-        },
-        {
-          name: "path",
-          label: "Path",
-          align: "left",
-          field: "mountpoint",
-          sortable: true
-        },
-        {
-          name: "usedBy",
-          label: "Used by",
-          align: "left",
-          field: row => row.usedBy.map(c => c.name),
-          sortable: true
-        }
-      ]
-    };
+    const col = (name, opts = {}) => ({
+      name,
+      align: "left",
+      label: name,
+      field: name,
+      sortable: true,
+      ...opts
+    });
+    const columns = [
+      col("name"),
+      col("path", { field: "mountpoint" }),
+      col("containers", {
+        label: "used by",
+        field: "usingContainers"
+      })
+    ];
+    return { columns };
   },
   methods: {
     volumeCreated() {

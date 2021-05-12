@@ -9,6 +9,7 @@ type DockerImage {
   entrypoint: [String!]
   command: [String!]
   environment: [KeyValue!]!
+  usingContainers: [DockerContainer!]!
 }
 
 input DockerImageFilters {

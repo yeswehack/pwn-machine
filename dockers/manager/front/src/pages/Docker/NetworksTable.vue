@@ -55,23 +55,23 @@ export default {
     }
   },
   data() {
-    const field = (n, opt = {}) => ({
-      name: n,
+    const col = (name, opts = {}) => ({
+      name,
       align: "left",
-      label: n,
-      field: n,
+      label: name,
+      field: name,
       sortable: true,
-      ...opt
+      ...opts
     });
     const columns = [
-      field("name"),
-      field("driver"),
-      field("internal"),
-      field("gateway", { classes: "text-mono" }),
-      field("subnet", { classes: "text-mono" }),
-      field("containers", {
-        label: "Connected containers",
-        field: row => row.containers.map(c => c.name)
+      col("name"),
+      col("driver"),
+      col("internal"),
+      col("gateway", { classes: "text-mono" }),
+      col("subnet", { classes: "text-mono" }),
+      col("containers", {
+        label: "used by",
+        field: "usingContainers"
       })
     ];
     return { columns };

@@ -45,6 +45,11 @@ async def resolve_network_gateway(network, _):
     return (network.attrs["IPAM"]["Config"] or [{}])[0].get("Gateway")
 
 
+@DockerNetwork.field("usingContainers")
+async def resolve_network_using_containers(network, _):
+    return network.containers
+
+
 @registerMutation("dockerConnectContainerToRouter")
 async def connect_container(*_, input):
     network = docker_client.networks.get(input["networkId"])

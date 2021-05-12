@@ -8,12 +8,12 @@
     :columns="columns"
     v-on:delete="deleteContainer"
   >
-    <template #body-cell-usedBy="{row}">
+    <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
         <ContainerLink
           :name="name"
           :key="name"
-          v-for="{ name } of row.usedBy"
+          v-for="{ name } of row.containers"
         />
       </div>
     </template>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable.vue";
+import BaseTable from "src/components/BaseTable3.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import gql from "src/gql";
@@ -39,21 +39,22 @@ export default {
   data() {
     const col = (name, opts = {}) => ({
       name,
-      label: name,
       align: "left",
+      label: name,
       field: name,
       sortable: true,
       ...opts
     });
     const columns = [
       col("name", { format: v => v ?? "<no name>" }),
-      col("usedBy"),
       col("created"),
-      col("size", { format: format.humanStorageSize })
+      col("size", { format: format.humanStorageSize }),
+      col("containers", {
+        label: "used by",
+        field: "usingContainers"
+      })
     ];
-    return {
-      columns
-    };
+    return { columns };
   },
   computed: {
     loading() {

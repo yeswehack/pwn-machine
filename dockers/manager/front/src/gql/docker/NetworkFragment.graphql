@@ -12,7 +12,7 @@ fragment NetworkFragment on DockerNetwork {
   internal
   subnet
   gateway
-  containers {
+  usingContainers {
     ...ContainerFragment
   }
 }
