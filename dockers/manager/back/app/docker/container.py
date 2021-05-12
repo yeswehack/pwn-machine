@@ -35,6 +35,23 @@ async def resolve_container_mounts(container, _):
     return container.attrs["Mounts"]
 
 
+@DockerContainer.field("networks")
+async def resolve_container_networks(container, _):
+    return map(
+        docker_client.networks.get,
+        container.attrs["NetworkSettings"]["Networks"].keys(),
+    )
+
+
+@DockerContainer.field("publishedPorts")
+async def resolve_container_published_ports(container, _):
+    return [
+        KeyValue(port, bind["HostPort"])
+        for port, binds in container.ports.items()
+        for bind in binds or []
+    ]
+
+
 @DockerContainer.field("status")
 async def resolve_container_status(container, _):
     return container.status.upper()

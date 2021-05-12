@@ -7,8 +7,8 @@ type DockerContainer {
   command: [String!]!
   environment: [KeyValue!]!
   mounts: [DockerContainerMount!]!
-  #networks
-  #publishedPorts
+  networks: [DockerNetwork!]!
+  publishedPorts: [KeyValue!]!
   status: DockerContainerStatus!
 }
 

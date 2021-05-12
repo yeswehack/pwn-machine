@@ -8,7 +8,7 @@ docker_client = docker.from_env()
 @dataclass
 class KeyValue:
     key: str
-    value: str = ""
+    value: str = None
 
 
 @dataclass
