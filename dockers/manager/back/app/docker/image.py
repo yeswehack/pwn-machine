@@ -1,5 +1,6 @@
 from ..utils import registerQuery, createType
-from . import docker_client, KeyValue, RepoTag, formatTime
+from . import docker_client, KeyValue, formatTime
+from dataclasses import dataclass
 import aiohttp
 import re
 
@@ -13,6 +14,12 @@ TAG_REG = re.compile(r"^[a-z0-9_][a-z0-9_\.\-]{0,127}$", re.IGNORECASE)
 @registerQuery("dockerImages")
 async def resolve_images(*_, onlyFinal=True, filters=None):
     return docker_client.images.list(all=not onlyFinal, filters=filters)
+
+
+@dataclass
+class RepoTag:
+    repository: str
+    tag: str = "latest"
 
 
 @DockerImage.field("tags")
@@ -64,8 +71,10 @@ async def resolve_image_environment(image, _):
 
 
 @DockerImage.field("usingContainers")
-async def resolve_image_using_containers(image, _):
-    return docker_client.containers.list(filters={"ancestor": image.id})
+async def resolve_image_using_containers(image, _, onlyRunning=True):
+    return docker_client.containers.list(
+        all=not onlyRunning, filters={"ancestor": image.id}
+    )
 
 
 @registerQuery("dockerSearchImage")

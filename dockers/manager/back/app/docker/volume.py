@@ -25,5 +25,7 @@ async def resolve_volume_mountpoint(volume, _):
 
 
 @DockerVolume.field("usingContainers")
-async def resolve_volume_using_containers(volume, _):
-    return docker_client.containers.list(filters={"volume": volume.attrs["Name"]})
+async def resolve_volume_using_containers(volume, _, onlyRunning=True):
+    return docker_client.containers.list(
+        all=not onlyRunning, filters={"volume": volume.attrs["Name"]}
+    )

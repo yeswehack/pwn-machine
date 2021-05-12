@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="network"
     row-key="name"
@@ -19,12 +19,12 @@
       <q-badge color="negative" label="no" v-else />
     </template>
 
-    <template #body-cell-containers="{row: {containers}}">
+    <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row">
         <container-link
           :name="name"
           :key="name"
-          v-for="{ name } of containers"
+          v-for="{ name } of row.usingContainers"
         />
       </div>
     </template>
@@ -32,7 +32,7 @@
     <template #details="{ row }">
       <network-details :network="row" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
@@ -69,10 +69,7 @@ export default {
       col("internal"),
       col("gateway", { classes: "text-mono" }),
       col("subnet", { classes: "text-mono" }),
-      col("containers", {
-        label: "used by",
-        field: "usingContainers"
-      })
+      col("containers", { label: "used by" })
     ];
     return { columns };
   },

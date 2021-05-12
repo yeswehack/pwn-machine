@@ -14,5 +14,22 @@ fragment ContainerFragment on DockerContainer {
     key
     value
   }
+  mounts {
+    type
+    volume {
+      name
+    }
+    source
+    target
+    readonly
+  }
+  networks {
+    name
+  }
+  ports {
+    protocol
+    containerPort
+    hostPort
+  }
   status
 }

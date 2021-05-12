@@ -11,12 +11,6 @@ class KeyValue:
     value: str = None
 
 
-@dataclass
-class RepoTag:
-    repository: str
-    tag: str = "latest"
-
-
 def formatTime(t):
     return str(datetime.fromisoformat(t.partition(".")[0]))
 

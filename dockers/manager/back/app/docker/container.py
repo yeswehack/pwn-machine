@@ -1,5 +1,6 @@
 from ..utils import registerQuery, createType
 from . import docker_client, KeyValue, formatTime
+from dataclasses import dataclass
 
 DockerContainer = createType("DockerContainer")
 DockerContainerMount = createType("DockerContainerMount")
@@ -43,12 +44,19 @@ async def resolve_container_networks(container, _):
     )
 
 
-@DockerContainer.field("publishedPorts")
-async def resolve_container_published_ports(container, _):
+@dataclass
+class ExposedPort:
+    containerPort: int
+    protocol: str
+    hostPort: int
+
+
+@DockerContainer.field("ports")
+async def resolve_container_ports(container, _):
     return [
-        KeyValue(port, bind["HostPort"])
+        ExposedPort(*port.upper().split("/"), bind.get("HostPort"))
         for port, binds in container.ports.items()
-        for bind in binds or []
+        for bind in binds or [{}]
     ]
 
 

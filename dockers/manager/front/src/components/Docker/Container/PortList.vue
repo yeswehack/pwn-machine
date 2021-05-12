@@ -4,9 +4,9 @@
       :title="hostPort ? 'Forwarded' : ''"
       :color="hostPort ? 'negative' : 'primary'"
       :key="idx"
-      v-for="[idx, { hostPort, containerPort, protocol }] of ports.entries()"
+      v-for="({ hostPort, containerPort, protocol }, idx) of ports"
     >
-      {{ containerPort }}/{{protocol}}
+      {{ containerPort }}/{{ protocol.toLowerCase() }}
     </q-badge>
     <q-badge title="host driver" color="positive" label="all" v-if="host" />
   </div>
@@ -17,7 +17,7 @@ export default {
   props: {
     ports: Array,
     host: { type: Boolean, default: false }
-  },
+  }
 };
 </script>
 

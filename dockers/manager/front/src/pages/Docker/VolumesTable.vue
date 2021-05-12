@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="volume"
     rkey="name"
@@ -10,7 +10,7 @@
   >
     <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row">
-        <ContainerLink
+        <container-link
           :name="name"
           :key="name"
           v-for="{ name } of row.containers"
@@ -18,12 +18,12 @@
       </div>
     </template>
     <template #popup="{ info }">
-      <CreateVolume :info="info" v-on:created="volumeCreated" />
+      <create-volume :info="info" v-on:created="volumeCreated" />
     </template>
     <template #details="{ row }">
-      <VolumeDetails :name="row.Name"></VolumeDetails>
+      <volume-details :name="row.Name" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>

@@ -11,29 +11,29 @@
     @delete="deleteContainer"
   >
     <template #body-cell-image="{row}">
-      <image-link :name="row.image.tags[0].repository" />
+      <image-link :name="row.image.name" />
     </template>
-    <!--template #body-cell-volumes="{row}">
+    <template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
-        <VolumeLink
+        <volume-link
           :name="name"
           :key="name"
-          v-for="{ name } of row.mounts.filter(n => n.name)"
+          v-for="{ volume: { name } } of row.mounts.filter(n => n.volume)"
         />
       </div>
-    </template-->
-    <!--template #body-cell-networks="{row}">
+    </template>
+    <template #body-cell-networks="{row}">
       <div class="q-gutter-sm">
         <NetworkLink
           :name="name"
           :key="name"
-          v-for="{ name } of row.connectedNetworks"
+          v-for="{ name } of row.networks"
         />
       </div>
-    </template-->
-    <!--template #body-cell-exposedPort="{row}">
-      <PortList :ports="row.exposedPorts" />
-    </template-->
+    </template>
+    <template #body-cell-ports="{row}">
+      <PortList :ports="row.ports" />
+    </template>
     <template #body-cell-status="{row}">
       <container-status :status="row.status" />
     </template>
@@ -63,11 +63,11 @@ export default {
   components: {
     //ContainerDetails,
     BaseTable,
-    //PortList,
+    PortList,
     ContainerStatus,
-    ImageLink
-    //VolumeLink,
-    //NetworkLink
+    ImageLink,
+    VolumeLink,
+    NetworkLink
   },
   apollo: {
     containers: {
@@ -76,19 +76,20 @@ export default {
     }
   },
   data() {
-    const col = name => ({
+    const col = (name, opts = {}) => ({
       name,
       align: "left",
       label: name,
       field: name,
-      sortable: true
+      sortable: true,
+      ...opts
     });
     const columns = [
       col("name"),
       col("image"),
       col("volumes"),
       col("networks"),
-      col("exposedPort"),
+      col("ports", { label: "exposed ports" }),
       col("status")
     ];
     return { columns };

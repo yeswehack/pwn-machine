@@ -8,7 +8,7 @@ type DockerContainer {
   environment: [KeyValue!]!
   mounts: [DockerContainerMount!]!
   networks: [DockerNetwork!]!
-  publishedPorts: [KeyValue!]!
+  ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
 }
 
@@ -35,4 +35,15 @@ enum DockerContainerMountType {
   VOLUME
   TMPFS
   NPIPE
+}
+
+type DockerContainerPort {
+  protocol: DockerContainerPortProtocol!
+  containerPort: Int!
+  hostPort: Int
+}
+
+enum DockerContainerPortProtocol {
+  TCP
+  UDP
 }

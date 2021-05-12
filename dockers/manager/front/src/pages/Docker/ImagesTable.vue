@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="image"
     rkey="id"
@@ -10,16 +10,16 @@
   >
     <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
-        <ContainerLink
+        <container-link
           :name="name"
           :key="name"
-          v-for="{ name } of row.containers"
+          v-for="{ name } of row.usingContainers"
         />
       </div>
     </template>
 
     <template #details> </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
@@ -49,10 +49,7 @@ export default {
       col("name", { format: v => v ?? "<no name>" }),
       col("created"),
       col("size", { format: format.humanStorageSize }),
-      col("containers", {
-        label: "used by",
-        field: "usingContainers"
-      })
+      col("containers", { label: "used by" })
     ];
     return { columns };
   },
