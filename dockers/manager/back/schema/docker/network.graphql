@@ -1,5 +1,8 @@
 type DockerNetwork {
     id: ID!
     name: String!
+    labels: [KeyValue!]!
+    created: DateTime!
+    ipv6: Boolean!
     containers: [DockerContainer!]!
 }
