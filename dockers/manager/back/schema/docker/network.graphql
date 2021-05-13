@@ -4,5 +4,9 @@ type DockerNetwork {
     labels: [KeyValue!]!
     created: DateTime!
     ipv6: Boolean!
+    driver: String!
+    internal: Boolean!
+    subnet: String
+    gateway: String
     containers: [DockerContainer!]!
 }
