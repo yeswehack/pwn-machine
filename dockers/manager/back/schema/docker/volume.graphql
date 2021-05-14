@@ -1,3 +1,7 @@
+extend type Query {
+  dockerVolumes: [DockerVolume!]!
+}
+
 type DockerVolume {
   name: String!
   labels: [KeyValue!]!

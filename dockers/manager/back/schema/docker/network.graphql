@@ -1,3 +1,7 @@
+extend type Query {
+  dockerNetworks: [DockerNetwork!]!
+}
+
 type DockerNetwork {
   id: ID!
   name: String!
@@ -11,16 +15,16 @@ type DockerNetwork {
   usingContainers: [DockerContainer!]!
 }
 
-input dockerConnectContainerRouterInput {
-  containerId: ID!
-  networkId: ID!
-}
-
 extend type Mutation {
   dockerConnectContainerToRouter(
     input: dockerConnectContainerRouterInput
-  ): Boolean
+  ): Boolean!
   dockerDisconnectContainerFromRouter(
     input: dockerConnectContainerRouterInput
-  ): Boolean
+  ): Boolean!
+}
+
+input dockerConnectContainerRouterInput {
+  containerId: ID!
+  networkId: ID!
 }

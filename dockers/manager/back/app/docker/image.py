@@ -110,8 +110,8 @@ async def resolve_search_tag(*_, repoName, imageName):
     return [
         {
             "name": f"{repoName}/{imageName}:{tag['name']}",
-            "lastUpdated": formatTime(t) if (t := tag["last_updated"]) else "never",
             "size": tag["full_size"],
+            "lastUpdated": formatTime(t) if (t := tag["last_updated"]) else None,
         }
         for tag in await get_tags_for_image(repoName, imageName)
     ]
