@@ -12,7 +12,7 @@ async def resolve_networks(*_):
 
 @DockerNetwork.field("labels")
 async def resolve_network_labels(network, _):
-    return [KeyValue(k, v) for k, v in network.attrs["Labels"].items()]
+    return [KeyValue(*label) for label in network.attrs["Labels"].items()]
 
 
 @DockerNetwork.field("created")

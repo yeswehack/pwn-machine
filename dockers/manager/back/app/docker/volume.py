@@ -11,7 +11,7 @@ async def resolve_volumes(*_):
 
 @DockerVolume.field("labels")
 async def resolve_volume_labels(volume, _):
-    return [KeyValue(k, v) for k, v in (volume.attrs["Labels"] or {}).items()]
+    return [KeyValue(*label) for label in (volume.attrs["Labels"] or {}).items()]
 
 
 @DockerVolume.field("created")

@@ -1,16 +1,5 @@
 extend type Query {
-  dockerImages(
-    onlyFinal: Boolean = true
-    filters: DockerImageFilters
-  ): [DockerImage!]!
-}
-
-input DockerImageFilters {
-  tags: [DockerImageTagInput!]! = []
-  labels: [KeyValueInput!]! = []
-  before: [ID!]! = []
-  since: [ID!]! = []
-  dangling: Boolean
+  dockerImages(onlyFinal: Boolean = true): [DockerImage!]!
 }
 
 type DockerImage {
@@ -59,5 +48,5 @@ extend type Query {
 type DockerSearchImageTagResult {
   name: String!
   size: Float!
-  lastUpdated: DateTime
+  lastUpdated: DateTime!
 }
