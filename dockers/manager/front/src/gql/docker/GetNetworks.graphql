@@ -1,0 +1,6 @@
+#import "./NetworkFragment.graphql"
+query GetNetworks {
+  dockerNetworks {
+    ...NetworkFragment
+  }
+}

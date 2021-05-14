@@ -23,9 +23,9 @@
       </div>
     </template>
 
-    <template #details="{ row }">
+    <!--template #details="{ row }">
       <NetworkDetails :name="row.name" />
-    </template>
+    </template-->
 
     <template #popup="{ row, closePopup }">
       <CreateNetwork :value="row" @close="closePopup" />
@@ -41,11 +41,16 @@ import ContainerLink from "src/components/Docker/Container/Link.vue";
 import gql from "src/gql";
 
 export default {
-  components: { BaseTable, CreateNetwork, NetworkDetails, ContainerLink },
+  components: {
+    BaseTable,
+    CreateNetwork,
+    //NetworkDetails,
+    ContainerLink
+  },
   apollo: {
     networks: {
       query: gql.docker.GET_NETWORKS,
-      update: data => data.docker.networks
+      update: ({ dockerNetworks }) => dockerNetworks
     }
   },
   created() {
