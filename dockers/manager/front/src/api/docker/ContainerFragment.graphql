@@ -29,7 +29,10 @@ fragment ContainerFragment on DockerContainer {
   ports {
     protocol
     containerPort
-    hostPort
+    hostBindings {
+      ip
+      port
+    }
   }
   status
 }
