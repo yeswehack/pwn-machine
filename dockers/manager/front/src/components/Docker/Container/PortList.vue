@@ -1,12 +1,15 @@
 <template>
   <div class="q-gutter-xs">
     <q-badge
-      :title="hostPort ? 'Forwarded' : ''"
-      :color="hostPort ? 'negative' : 'primary'"
+      :title="hostBindings.length ? 'Forwarded' : ''"
+      :color="hostBindings.length ? 'negative' : 'primary'"
       :key="idx"
-      v-for="({ hostPort, containerPort, protocol }, idx) of ports"
+      v-for="({ hostBindings, containerPort, protocol }, idx) of ports"
     >
       {{ containerPort }}/{{ protocol.toLowerCase() }}
+      <q-tooltip>
+        {{ hostBindings.map(({ ip, port }) => `${ip}:${port}`).join(", ") }}
+      </q-tooltip>
     </q-badge>
     <q-badge title="host driver" color="positive" label="all" v-if="host" />
   </div>
