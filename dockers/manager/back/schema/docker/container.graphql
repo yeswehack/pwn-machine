@@ -40,7 +40,12 @@ enum DockerContainerMountType {
 type DockerContainerPort {
   protocol: DockerContainerPortProtocol!
   containerPort: Int!
-  hostPort: Int
+  hostBindings: [DockerContainerPortHostBinding!]!
+}
+
+type DockerContainerPortHostBinding {
+  ip: String!
+  port: Int!
 }
 
 enum DockerContainerPortProtocol {

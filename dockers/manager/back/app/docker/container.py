@@ -28,7 +28,9 @@ async def resolve_container_command(container, _):
 
 @DockerContainer.field("environment")
 async def resolve_container_environment(container, _):
-    return [KeyValue(*var.partition("=")[::2]) for var in container.attrs["Config"]["Env"]]
+    return [
+        KeyValue(*var.partition("=")[::2]) for var in container.attrs["Config"]["Env"]
+    ]
 
 
 @DockerContainer.field("mounts")
@@ -46,17 +48,25 @@ async def resolve_container_networks(container, _):
 
 @dataclass
 class ExposedPort:
-    containerPort: int
     protocol: str
-    hostPort: int
+    containerPort: int
+    hostBindings: list
 
 
 @DockerContainer.field("ports")
 async def resolve_container_ports(container, _):
     return [
-        ExposedPort(*port.upper().split("/"), bind.get("HostPort"))
+        ExposedPort(
+            *port.upper().rpartition("/")[::-2],
+            [
+                {
+                    "ip": bind["HostIp"],
+                    "port": bind["HostPort"],
+                }
+                for bind in binds or []
+            ],
+        )
         for port, binds in container.ports.items()
-        for bind in binds or [{}]
     ]
 
 
