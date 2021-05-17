@@ -27,7 +27,6 @@ async def resolve_image_tags(image, _):
 
 @DockerImage.field("name")
 def resolve_image_name(image, *_):
-    print(image.attrs)
     name = "<no name>"
     if len(image.attrs["RepoTags"]):
         name = image.attrs["RepoTags"][0]

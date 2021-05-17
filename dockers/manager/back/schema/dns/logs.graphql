@@ -1,10 +1,19 @@
-type DnsLog {
-    origin: String!
-    time: String!
-    domain: String!
-    type: DnsRuleType
+
+type DnsLogResponse {
+    name: String!
+    rdata: String!
+    type: DnsRuleType!
 }
 
+type DnsLog {
+    nodeId: ID!
+    origin: String!
+    date: DateTime!
+    query: String!
+    type: DnsRuleType!
+    error: String
+    responses: [DnsLogResponse!]!
+}
 input DnsLogFilter {
     domain: String
     type: String

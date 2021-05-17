@@ -3,7 +3,7 @@
     ref="select"
     v-bind="$attrs"
     :options="imageOptions"
-    v-model="model"
+    v-model="form"
     input-debounce="0"
     label="Image"
     use-input
@@ -11,7 +11,6 @@
     new-value-mode="add"
     hide-selected
     clearable
-    @input="update"
   >
     <template #append>
       <q-btn flat round icon="travel_explore" @click.stop="searchImage" />
@@ -22,13 +21,10 @@
 <script>
 import gql from "src/gql";
 import ImageSearchVue from "./ImageSearch.vue";
+import DeepForm from 'src/mixins/DeepForm';
 export default {
-  props: {
-    value: { type: String, default: null }
-  },
-  data() {
-    return { model: null };
-  },
+  mixins: [DeepForm],
+  formDefinition: null,
   apollo: {
     images: {
       query: gql.docker.GET_IMAGES,
@@ -55,8 +51,7 @@ export default {
         })
         .onOk(tag => {
           this.$refs.select.add(tag);
-          this.model = tag;
-          this.$emit("input",tag);
+          this.form = tag;
         });
     }
   }

@@ -1,0 +1,12 @@
+type Cursor {
+    from: Int!
+    size: Int!
+}
+
+
+interface Paginated {
+    next: Cursor
+    prev: Cursor
+    total: Int!
+    totalPage: Int!
+}

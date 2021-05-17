@@ -1,0 +1,24 @@
+type DockerContainerShell {
+  nodeId: ID!
+  containerName: String!
+  running: Boolean!
+  cmd: [String!]!
+}
+
+extend type Query {
+  dockerContainerShells: [DockerContainerShell!]!
+  dockerContainerShell(id: ID): DockerContainerShell
+}
+
+input SpawnContainerShellInput {
+    containerName: String!
+    cmd: String!
+    privileged: Boolean
+    environment: [KeyValueInput!]
+    workdir: String
+    user: String
+}
+
+extend type Mutation {
+  dockerSpawnContainerShell(input: SpawnContainerShellInput!): DockerContainerShell
+}

@@ -1,40 +1,43 @@
 <template>
-  <div class="column q-col-gutter-sm">
-    <q-table
-      v-bind="$attrs"
-      :columns="columns"
-      dense
-      :loading="$apollo.queries.logs.loading"
-      :data="logs"
-      hide-pagination
-      :pagination.sync="pagination"
-      no-data-label="No logs available."
-      table-header-style="text-transform: capitalize"
-    >
-      <template #body-cell-id="{pageIndex}">
-        <q-td auto-width>
-          {{ pageIndex + (page - 1) * count + 1 }}
-        </q-td>
-      </template>
-      <template #body-cell-origin="{value}">
-        <q-td>
-          <a :href="`https://ip-api.com/${value}`" target="_blank">{{
-            value
-          }}</a>
-        </q-td>
-      </template>
-      <template #no-data="props">
-        <q-btn
-          round
-          flat
-          size="xs"
-          icon="eva-loader-outline"
-          :loading="$apollo.queries.logs.loading"
-          class=" q-mr-md no-pointer-events"
-        />
-        {{ props.message }}
-      </template>
-    </q-table>
+  <div class="col column">
+    <div class="row full-width">
+      <q-table
+      class="full-width"
+        v-bind="$attrs"
+        :columns="columns"
+        dense
+        :loading="$apollo.queries.logs.loading"
+        :data="logs"
+        hide-pagination
+        :pagination.sync="pagination"
+        no-data-label="No logs available."
+        table-header-style="text-transform: capitalize"
+      >
+        <template #body-cell-id="{pageIndex}">
+          <q-td auto-width>
+            {{ pageIndex + (page - 1) * count + 1 }}
+          </q-td>
+        </template>
+        <template #body-cell-origin="{value}">
+          <q-td>
+            <a :href="`https://ip-api.com/${value}`" target="_blank">{{
+              value
+            }}</a>
+          </q-td>
+        </template>
+        <template #no-data="props">
+          <q-btn
+            round
+            flat
+            size="xs"
+            icon="eva-loader-outline"
+            :loading="$apollo.queries.logs.loading"
+            class=" q-mr-md no-pointer-events"
+          />
+          {{ props.message }}
+        </template>
+      </q-table>
+    </div>
     <div class="row q-gutter-md q-px-sm justify-end">
       <q-input
         v-model.number="pagination.rowsPerPage"
@@ -68,7 +71,6 @@
 
 <script>
 import db from "src/gql";
-import gql from "graphql-tag";
 import { date } from "quasar";
 
 export default {
@@ -90,9 +92,10 @@ export default {
           }
         };
       },
-      fetchPolicy:"network-only",
+      fetchPolicy: "network-only",
       pollInterval: 5000,
-      update: data => data.dnsLogs,
+      update: data => data.dnsLogs
+      /*
       subscribeToMore: {
         document: gql`
           subscription getLog($filter: DnsLogFilter) {
@@ -112,8 +115,8 @@ export default {
             filter: { domain: this.domain, type: this.type }
           };
         },
-        updateQuery(previousResult, { subscriptionData })  {
-          if (this.page > 1) return
+        updateQuery(previousResult, { subscriptionData }) {
+          if (this.page > 1) return;
           if (subscriptionData.data.dnsLogs) {
             return {
               dnsLogs: [
@@ -123,7 +126,7 @@ export default {
             };
           }
         }
-      }
+      }*/
     }
   },
   data() {
@@ -138,13 +141,14 @@ export default {
       ...opt
     });
     const columns = [
-      field("id"),
+      field("date", {
+        format: v => date.formatDate(v * 1000, "YYYY-MM-DD HH:mm:ss")
+      }),
       field("origin"),
-      field("domain", { label: "Query" }),
-      field("type"),
-      field("time", {
-        label: "Date",
-        format: v => date.formatDate(v * 1000, "YYYY-MM-DD HH:mm:ss.SSS")
+      field("error"),
+      field("query", { field: row => `${row.type} - ${row.query}` }),
+      field("responses", {
+        field: row => row.responses.map(r => r.rdata).join(", ")
       })
     ];
     return {

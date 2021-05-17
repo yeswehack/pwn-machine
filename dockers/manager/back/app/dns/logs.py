@@ -1,6 +1,8 @@
 from ..utils import createType, registerQuery, registerSubscription
 from functools import wraps
 from fnmatch import fnmatch
+from ..api import es
+
 
 def with_dns_redis(f):
     @wraps(f)
@@ -13,10 +15,18 @@ def with_dns_redis(f):
 
 DnsLog = createType("DnsLog")
 
+
 @registerQuery("dnsLogs")
-@with_dns_redis
-async def query_dns_logs(*_, dns_redis, filter={}, cursor={}):
-    return await dns_redis.get_logs(**filter, **cursor)
+async def query_dns_logs(*_, filter={}, cursor={}):
+    r = await es.search(index="powerdns-logs", sort="date:desc")
+    logs = []
+    for hit in r["hits"]["hits"]:
+        entry = hit["_source"]
+        entry["nodeId"] = hit["_id"]
+        if hit["_source"]["return_code"] != "NOERROR":
+            entry["error"] = hit["_source"]["return_code"]
+        logs.append(entry)
+    return logs
 
 
 @registerSubscription("dnsLogs")
@@ -31,5 +41,7 @@ async def dns_logs_subscription(*_, dns_redis, filter={}):
                 continue
             key = event["channel"][15:]
             log = await dns_redis.client.hgetall(key)
-            if fnmatch(log["domain"], domain_filter) and fnmatch(log["type"], type_filter):
+            if fnmatch(log["domain"], domain_filter) and fnmatch(
+                log["type"], type_filter
+            ):
                 yield log

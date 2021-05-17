@@ -6,7 +6,8 @@ from ..utils import (
     create_node_id,
     createInterface,
 )
-from . import with_traefik_http, with_traefik_redis
+from . import with_traefik_redis
+from ..api import get_traefik_http_api as traefik_http
 
 
 TraefikService = createInterface("TraefikService")
@@ -36,12 +37,11 @@ def resolve_service_type(service, *_):
 
 
 @registerQuery("traefikServices")
-@with_traefik_http
-async def resolve_TraefikServices(*_, traefik_http, protocols=None):
+async def resolve_TraefikServices(*_, protocols=None):
     print(protocols)
     if (protocols):
-        return await traefik_http.get_services(protocols)
-    return await traefik_http.get_services()
+        return await traefik_http().get_services(protocols)
+    return await traefik_http().get_services()
 
 
 @TraefikService.field("enabled")
@@ -55,11 +55,10 @@ async def resolve_nodeid(service, *_):
 
 
 @TraefikService.field("usedBy")
-@with_traefik_http
-async def resolve_usedBy(service, *_, traefik_http):
+async def resolve_usedBy(service, *_):
     if "usedBy" not in service:
         return []
-    return await traefik_http.get_routers_used_by(service["usedBy"])
+    return await traefik_http().get_routers_used_by(service["usedBy"])
 
 
 @TraefikService.field("type")

@@ -48,7 +48,11 @@ export default {
     },
     buildOriginalForm() {
       const definition = this.$options.formDefinition;
-      if (Array.isArray(definition)) {
+      
+      if (definition === null){
+        this.originalForm = null
+      }
+      else if (Array.isArray(definition)) {
         this.originalForm = this.value ? [...this.value] : [...definition];
       } else {
         const originalForm = {};

@@ -1,12 +1,11 @@
 <template>
   <q-expansion-item
-    expand-separator
     icon="attach_money"
     label="Environment"
     :caption="`${form.length} variable(s)`"
   >
-    <q-separator />
     <q-card>
+      <q-separator />
       <q-card-section>
         <div class="row">
           <q-input
@@ -78,7 +77,6 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],

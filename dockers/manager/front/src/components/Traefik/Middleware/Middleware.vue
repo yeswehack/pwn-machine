@@ -54,7 +54,6 @@ export default {
     },
     fields() {
       // definition fields sorted alphabetically
-      console.log(this.type, mdinfo)
       const keys = Object.keys(this.definition).sort();
       return keys.map(k => [k, this.definition[k]]);
     },

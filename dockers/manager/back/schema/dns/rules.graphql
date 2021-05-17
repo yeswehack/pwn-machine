@@ -10,6 +10,7 @@ enum DnsRuleType {
   CDS
   CNAME
   DNSKEY
+  DS
   KEY
   LOC
   MX
@@ -41,15 +42,16 @@ type DnsRecord {
 
 input DnsRecordInput {
   content: String!
-  enabled: Boolean
+  enabled: Boolean! = true
 }
 
 type DnsRule {
-  nodeId: ID
-  zone: String
-  name: String
-  type: DnsRuleType
-  ttl: Int
+  nodeId: ID!
+  zone: String!
+  name: String!
+  type: DnsRuleType!
+  ttl: Int!
+  isLua: Boolean!
   records: [DnsRecord!]
 }
 
@@ -58,6 +60,7 @@ input CreateDnsRuleInput {
   name: String!
   type: DnsRuleType!
   ttl: Int!
+  isLua: Boolean!
   records: [DnsRecordInput!]
 }
 

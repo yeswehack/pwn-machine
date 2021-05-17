@@ -4,6 +4,7 @@ import re
 import asyncio
 import logging
 import time
+from ..utils.cached import cacheMethodForQuery
 from fnmatch import fnmatch
 from ..utils import dnsname, undnsname, validate_node_id
 
@@ -73,20 +74,16 @@ def get_soa(zone):
     return None
 
 
-class PowerDNSApi:
+class PowerdnsHTTPApi:
     def __init__(self, root, session):
         self.root = root
         self.session = session
-        self.cache = {}
-        self.runnings = set()
 
-    @contextmanager
-    def running(self, name):
-        try:
-            self.runnings.add(name)
-            yield
-        finally:
-            self.runnings.remove(name)
+
+    @classmethod
+    def create(cls, root, session):
+        cls._instance = cls(root, session)
+        return cls._instance
 
     async def post(self, path, data):
         log(f"API POST {path}")
@@ -107,7 +104,8 @@ class PowerDNSApi:
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"
         return await self.session.delete(full_path)
 
-    async def _get(self, path):
+    @cacheMethodForQuery
+    async def get(self, path):
         log(f"API GET {path}")
 
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"
@@ -115,52 +113,38 @@ class PowerDNSApi:
         async with self.session.get(full_path) as response:
             return await response.json()
 
-    # All responses are cached for the duration of the HTTP request
-    async def get(self, path, allow_cache=True):
-        if allow_cache:
-            while path in self.runnings:
-                await asyncio.sleep(0.1)
-            if path in self.cache:
-                return self.cache[path]
-
-            with self.running(path):
-                response = await self._get(path)
-        else:
-            response = await self._get(path)
-
-        self.cache[path] = response
-        return response
-
-    async def get_zone(self, zone_id, allow_cache=True):
+    async def get_zone(self, zone_id):
         try:
             return await self.get(
-                f"/api/v1/servers/localhost/zones/{dnsname(zone_id)}", allow_cache
+                f"/api/v1/servers/localhost/zones/{dnsname(zone_id)}"
             )
-        except:
+        except Exception as e:
+            print("ERROR", e)
             return None
 
-    async def get_zones(self, allow_cache=True):
+    async def get_zones(self):
         zones = await self.get("/api/v1/servers/localhost/zones")
-        return zones
+        
+        return [z for z in zones if z['name'] != "."]
 
-    async def get_soa(self, zone_id, allow_cache=True):
-        info = await self.get_zone(zone_id, allow_cache)
+    async def get_soa(self, zone_id):
+        info = await self.get_zone(zone_id)
         soa = get_soa(info)
         return soa
 
-    async def get_rules_for_zone(self, zone_id, allow_cache=True):
-        info = await self.get_zone(zone_id, allow_cache)
+    async def get_rules_for_zone(self, zone_id):
+        info = await self.get_zone(zone_id)
         return [{**z, "zone": undnsname(info["name"])} for z in info["rrsets"]]
 
-    async def get_rules(self, allow_cache=True):
+    async def get_rules(self):
         rules = []
-        for zone in await self.get_zones(allow_cache):
-            rules += await self.get_rules_for_zone(zone["id"], allow_cache)
+        for zone in await self.get_zones():
+            rules += await self.get_rules_for_zone(zone["id"])
 
         return rules
 
-    async def get_rule(self, zone, name, type, allow_cache=False):
-        rules = await self.get_rules_for_zone(zone, allow_cache)
+    async def get_rule(self, zone, name, type):
+        rules = await self.get_rules_for_zone(zone)
         return find_record(rules, name, type)
 
     async def update_soa(self, zone_name, soa):
@@ -199,7 +183,7 @@ class PowerDNSApi:
         if zone_info is None:
             raise Exception("This zone doesn't exists.")
         await self.update_soa(zone_name, soa)
-        return await self.get_zone(zone_name, allow_cache=False)
+        return await self.get_zone(zone_name)
 
     async def delete_zone(self, nodeId):
         zone_name = validate_node_id(nodeId, "DNS_ZONE")[0]
@@ -220,11 +204,11 @@ class PowerDNSApi:
         }
 
         await self.patch(f"/api/v1/servers/localhost/zones/{zone}", {"rrsets": [rrset]})
-        return await self.get_rule(zone, name, type, allow_cache=False)
+        return await self.get_rule(zone, name, type)
 
     async def enable_rule(self, nodeId, enabled):
         zone, name, type = validate_node_id(nodeId, "DNS_RULE")
-        rule = await self.get_rule(zone, name, type, allow_cache=False)
+        rule = await self.get_rule(zone, name, type)
         if rule is None:
             raise Exception("Rule not found")
 
@@ -287,12 +271,3 @@ class PowerdnsRedisApi:
             pos += len(keys)
         return logs
 
-
-@asynccontextmanager
-async def new_powerdns_http_client(root, key):
-    headers = {"X-Api-Key": key}
-    try:
-        async with aiohttp.ClientSession(headers=headers) as session:
-            yield PowerDNSApi(root, session)
-    finally:
-        pass

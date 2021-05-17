@@ -10,6 +10,8 @@ from .registration import (
 
 
 def dnsname(s):
+    if s == "=2E":
+        return s
     return s if s.endswith(".") else f"{s}."
 
 

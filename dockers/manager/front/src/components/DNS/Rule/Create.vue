@@ -1,43 +1,59 @@
 <template>
   <q-form @submit="submit">
-    <q-card-section class="q-col-gutter-md">
+    <q-card-section class="column q-col-gutter-md">
       <q-select
-        filled
         required
         v-model="form.zone"
         :options="zoneNames"
         label="zone"
+        class="col"
       />
       <q-input
-        filled
         required
         :disable="!form.zone"
         v-model="form.name"
         :rules="[validateName]"
         label="name"
+        class="col"
       />
-      <q-select
-        filled
-        :disable="!form.zone"
-        v-model="form.type"
-        :options="types"
-        label="type"
-      />
-      <q-input
-        :disable="!form.zone"
-        type="number"
-        filled
-        min="0"
-        v-model.number="form.ttl"
-        label="TTL"
-      />
+      <div class="row q-gutter-md ">
+        <q-toggle :disable="!form.zone" label="Lua record" v-model="form.isLua" />
+        <q-select
+          :disable="!form.zone"
+          v-model="form.type"
+          :options="types"
+          class="col"
+          label="type"
+        />
+        <q-input
+          :disable="!form.zone"
+          type="number"
+          min="0"
+          v-model.number="form.ttl"
+          class="col"
+          label="TTL"
+        />
+      </div>
+      <div class="col editor-container" v-if="isLua">
+        <monaco-editor
+          v-model="form.records[0].content"
+          :options="editorOptions"
+          class="editor"
+          language="lua"
+          theme="vs-dark"
+        />
+      </div>
       <component
+        v-else
         :disable="!form.zone"
         :is="formChildren.records"
         v-model="form.records"
         object-key="content"
         label="Records"
       />
+    </q-card-section>
+    <q-card-section v-if="0">
+      <pre>{{ form }}</pre>
     </q-card-section>
     <q-card-section>
       <reset-and-save :modified="modified" @reset="reset" @save="submit" />
@@ -49,6 +65,7 @@
 import DeepForm from "src/mixins/DeepForm.js";
 import ListInput from "../../ListInput.vue";
 import db from "src/gql";
+import MonacoEditor from "vue-monaco";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 const types = [
@@ -58,9 +75,9 @@ const types = [
   "ALIAS",
   "APL",
   "CAA",
-  "CERT",
   "CDNSKEY",
   "CDS",
+  "CERT",
   "CNAME",
   "DNSKEY",
   "KEY",
@@ -75,20 +92,20 @@ const types = [
   "PTR",
   "RP",
   "RRSIG",
+  "SMIMEA",
   "SOA",
   "SPF",
-  "SSHFP",
   "SRV",
+  "SSHFP",
   "TKEY",
-  "TSIG",
   "TLSA",
-  "SMIMEA",
+  "TSIG",
   "TXT",
   "URI"
 ];
 
 export default {
-  components: { ResetAndSave },
+  components: { ResetAndSave, MonacoEditor },
   mixins: [DeepForm],
   props: {
     value: Object,
@@ -102,33 +119,27 @@ export default {
   },
   formDefinition: {
     zone: null,
+    isLua: false,
     name: null,
     type: null,
     records: ListInput,
     ttl: 3600
   },
   data() {
-    const recordColumns = [
-      {
-        name: "content",
-        align: "left",
-        label: "content",
-        field: "content",
-        headerStyle: "width: 90%"
-      },
-      {
-        name: "enabled",
-        align: "left",
-        label: "enabled",
-        field: "enabled",
-        headerStyle: "width: 10%"
-      }
-    ];
-    return { types, recordColumns };
+    const editorOptions = {
+      minimap: { enabled: false },
+      padding: { bottom: 100, top: 100 },
+      lineDecorationsWidth: 5,
+      lineNumbers: false,
+    };
+    return { types, editorOptions };
   },
   computed: {
     zoneNames() {
       return (this.zones ?? []).map(z => z.name);
+    },
+    isLua() {
+      return this.form.isLua;
     }
   },
   methods: {
@@ -137,9 +148,6 @@ export default {
       if (name !== this.form.zone && !name.endsWith(suffix)) {
         return `Name must ends with ${this.form.zone}`;
       }
-    },
-    createRecord() {
-      return { content: "", enabled: true };
     },
     submit() {
       const input = {
@@ -157,6 +165,28 @@ export default {
           this.$emit("ok");
         });
     }
+  },
+  watch: {
+    isLua(v) {
+      if (v && this.form.records.length == 0) {
+        this.form.records = [{ content: "return ''" }];
+      }
+    }
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.editor-container {
+  display: grid;
+  grid-template-rows: 300px;
+  grid-template-columns: 1fr;
+}
+
+.editor {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+</style>

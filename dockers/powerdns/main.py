@@ -1,62 +1,85 @@
-#!/usr/bin/env python
-import re
-import signal
-import redis
-import time
-import os
 import asyncio
+import socket
 import sys
-from uuid import uuid4
+from struct import unpack
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-EXPIRE_DURATION = int(os.getenv("EXPIRE_DURATION", 60 * 60 * 24))
-MAX_LOG_ENTRY = 10000
-query_reg = re.compile(
-    r"^\w+ \d{2} \d{2}:\d{2}:\d{2} Remote (\d+\.\d+.\d+.\d+) wants ([^ ]+) .*"
-)
+import dns.rcode
+import dns.rdatatype
+from google.protobuf.message import DecodeError
 
+from elasticsearch import AsyncElasticsearch
 
-def escape_decode(s):
-    def replace(m):
-        return chr(int(m.group(1)))
+import dnsmessage_pb2
 
-    return re.sub(r"\\(\d{3})", replace, s)
+GRABBER_HOST = "127.0.0.1"
+GRABBER_PORT = 4000
+ES_HOSTS = ["elasticsearch"]
+ES_INDEX = "powerdns-logs"
 
-
-def log_query(redis_client, query):
-    log_key = f"dns/logs"
-    data_key = f"dns/data/{uuid4()}"
-    r = (
-        redis_client.pipeline()
-        .lpush(log_key, data_key)
-        .ltrim(log_key, 0, MAX_LOG_ENTRY)
-        .hset(data_key, mapping=query)
-        .expire(data_key, EXPIRE_DURATION)
-        .execute()
-    )
+es = AsyncElasticsearch(ES_HOSTS)
 
 
-def parse_query(l):
-    if match := query_reg.match(l):
-        origin = match.group(1)
-        query = match.group(2)[1:-2]
-        domain, _, type = query.rpartition("|")
-        domain = escape_decode(domain)
-
-        return {"origin": origin, "domain": domain, "type": type, "time": time.time()}
-    return None
+async def save_to_es(log):
+    await es.index(index=ES_INDEX, body=log)
 
 
-def main():
-    redis_client = redis.from_url(REDIS_URL)
-    with open("/dev/stdin") as f:
-        while l := f.readline():
-            line = l[:-1]
-            print(line)
-            query = parse_query(line)
-            if query:
-                log_query(redis_client, query)
+def rrs_to_response(rrs):
+    decode = lambda x: x.decode()
+    mapping = {
+        "A": lambda x: socket.inet_ntop(socket.AF_INET, x),
+        "AAAA": lambda x: socket.inet_ntop(socket.AF_INET6, x),
+        "CNAME": decode,
+        "MX": decode,
+        "PTR": decode,
+        "NS": decode,
+        "SPF": decode,
+        "SRV": decode,
+        "TXT": decode,
+    }
+    data_type = dns.rdatatype.to_text(rrs.type)
+    rdata = mapping[data_type](rrs.rdata)
+    return {
+        "name": rrs.name,
+        "type": data_type,
+        "rdata": rdata,
+    }
+
+
+def msg_to_log(msg):
+    log = {}
+    if 0 < msg.response.rcode > 4095:
+        log["return_code"] = "UNKNOW_ERROR"
+    else:
+        log["return_code"] = dns.rcode.to_text(msg.response.rcode)
+
+    log["responses"] = [rrs_to_response(rrs) for rrs in msg.response.rrs]
+    log["origin"] = socket.inet_ntoa(getattr(msg, "from"))
+    log["date"] = msg.timeSec
+    log["query"] = msg.question.qName
+    log["type"] = dns.rdatatype.to_text(msg.question.qType)
+    return log
+
+
+async def log_handler(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    while True:
+        (size,) = unpack("!H", await reader.readexactly(2))
+        data = await reader.readexactly(size)
+        msg = dnsmessage_pb2.PBDNSMessage()
+        try:
+            msg.ParseFromString(data)
+            if msg.type == dnsmessage_pb2.PBDNSMessage.DNSResponseType:
+                log = msg_to_log(msg)
+                asyncio.ensure_future(save_to_es(log))
+        except DecodeError as e:
+            print(f"Error parsing message, {e}")
+
+
+async def main():
+    server = await asyncio.start_server(log_handler, GRABBER_HOST, GRABBER_PORT)
+    print(f"Log grabber server started on {GRABBER_HOST}:{GRABBER_PORT}")
+    async with server:
+        await server.serve_forever()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

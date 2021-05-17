@@ -10,7 +10,7 @@
         </q-toolbar-title>
       </q-toolbar>
 
-      <q-tabs align="left" v-if="showMenu">
+      <q-tabs align="left" v-if="showMenu" class="tabs">
         <q-route-tab :to="{ name: 'dockerIndex' }" label="Docker" />
         <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
         <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
@@ -21,7 +21,9 @@
     </q-header>
 
     <q-page-container>
-      <router-view />
+      <transition>
+        <router-view />
+      </transition>
     </q-page-container>
     <Downloader />
     <Uploader />
@@ -39,8 +41,8 @@ export default {
       return this.$route.name != "login";
     },
     requireLogin() {
-      return !this.$store.getters.validToken;
-    },
+      return false;
+    }
   },
   watch: {
     requireLogin(v) {
@@ -51,3 +53,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.tabs a {
+  text-decoration: none;
+}
+</style>

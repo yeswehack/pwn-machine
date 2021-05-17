@@ -29,6 +29,7 @@ services:
       
     networks:
       - manager-net
+      - elasticsearch-net
 
 ##
 # TRAEFIK
@@ -66,6 +67,24 @@ services:
     networks:
       - traefik
       - manager-net
+  elasticsearch:
+    image: elasticsearch:7.12.1
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+    networks:
+      - elasticsearch-net
+      
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      
+
+
 ##
 # Manager
 ##      
@@ -89,11 +108,13 @@ services:
 ###
 
 volumes:
+  elasticsearch-data:
   powerdns-db:
     name: powerdns-db
   redis-data:
 
 networks:
   manager-net:
+  elasticsearch-net:
   traefik:
     name: traefik

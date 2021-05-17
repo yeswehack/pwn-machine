@@ -1,7 +1,6 @@
 import docker
 from dataclasses import dataclass
-
-docker_client = docker.from_env()
+from ..api import docker_client
 
 @dataclass
 class KeyValue():
@@ -18,3 +17,4 @@ from . import image
 from . import container
 from . import network
 from . import volume
+from . import shell

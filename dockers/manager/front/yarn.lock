@@ -6182,6 +6182,11 @@ moment@^2.22.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
+monaco-editor@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.20.0.tgz#5d5009343a550124426cb4d965a4d27a348b4dea"
+  integrity sha512-hkvf4EtPJRMQlPC3UbMoRs0vTAFAYdzFQ+gpMb8A+9znae1c43q8Mab9iVsgTcg/4PNiLGGn3SlDIa8uvK1FIQ==
+
 mongodb@3.6.6:
   version "3.6.6"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.6.6.tgz#92e3658f45424c34add3003e3046c1535c534449"
@@ -6288,6 +6293,11 @@ nan@^2.12.1:
   version "2.14.2"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
   integrity sha512-M2ufzIiINKCuDfBSAUr1vWQ+vuVcA9kqx8JJUsbQi6yf1uGRyb7HfpdfUr5qLXf3B/t8dPvcjhKMmlfnP47EzQ==
+
+nano-assign@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/nano-assign/-/nano-assign-1.0.1.tgz#abb1c50d0416b865fb37bbd155c5368bb54378e5"
+  integrity sha512-1K8ncUoAYFPYcCZqrB+K2XQaFCmA35rryJCtPkGrG3zYkwm+iIUZRIHyaAfuy6zxaK9siPdjeJq7+Inijm6xhw==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -9179,6 +9189,14 @@ vue-loader@15.9.5:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-monaco@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/vue-monaco/-/vue-monaco-1.2.2.tgz#5e88bd25bf013a32d8fb051acab7bc186c3753e4"
+  integrity sha512-+BhCHeAuDmjtCUP9MUxan6OjGgOqDR7xHlNScZ8Cfq32iac76Fv7z6RfC+lSrp0YpCjEPl6bvpY21N11UBRmMg==
+  dependencies:
+    monaco-editor "^0.20.0"
+    nano-assign "^1.0.0"
 
 vue-router@3.2.0:
   version "3.2.0"

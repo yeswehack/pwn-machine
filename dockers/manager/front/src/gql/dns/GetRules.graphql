@@ -5,6 +5,7 @@ query getDNSRules {
     name
     type
     ttl
+    isLua
     records {
       content
       enabled
