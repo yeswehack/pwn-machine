@@ -37,9 +37,6 @@
         </q-list>
       </q-card-section>
       <q-card-section>
-        <pre>{{ form }}</pre>
-      </q-card-section>
-      <q-card-section>
         <reset-and-save :modified="modified" @save="submit" @reset="reset" />
       </q-card-section>
     </q-card>
