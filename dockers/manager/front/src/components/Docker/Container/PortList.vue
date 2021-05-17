@@ -7,7 +7,7 @@
       v-for="({ hostBindings, containerPort, protocol }, idx) of ports"
     >
       {{ containerPort }}/{{ protocol.toLowerCase() }}
-      <q-tooltip>
+      <q-tooltip v-if="hostBindings.length">
         {{ hostBindings.map(({ ip, port }) => `${ip}:${port}`).join(", ") }}
       </q-tooltip>
     </q-badge>
