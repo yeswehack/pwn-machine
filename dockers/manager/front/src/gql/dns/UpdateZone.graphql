@@ -1,4 +1,4 @@
-mutation updateDnsRule($nodeId: ID!, $patch: UpdateDnsZoneInput!) {
+mutation updateDnsZone($nodeId: ID!, $patch: UpdateDnsZoneInput!) {
   updateDnsZone(nodeId: $nodeId, patch: $patch) {
     name
     serial

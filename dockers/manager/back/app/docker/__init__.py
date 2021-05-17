@@ -1,16 +1,19 @@
 import docker
 from dataclasses import dataclass
 from ..api import docker_client
+from datetime import datetime
+
+docker_client = docker.from_env()
+
 
 @dataclass
-class KeyValue():
-    key:str
-    value:str = ""
+class KeyValue:
+    key: str
+    value: str = None
 
-@dataclass
-class RepoTag():
-    repository: str
-    tag: str = "latest"
+
+def formatTime(t):
+    return str(datetime.fromisoformat(t.partition(".")[0]))
 
 
 from . import image

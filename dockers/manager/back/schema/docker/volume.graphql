@@ -1,6 +1,7 @@
 type DockerVolume {
-    name: String!
-    labels: [KeyValue!]!
-    created: DateTime!
-    mountpoint: String!
+  name: String!
+  labels: [KeyValue!]!
+  created: DateTime!
+  mountpoint: String!
+  usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }

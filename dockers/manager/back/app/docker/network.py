@@ -1,7 +1,6 @@
-from ..utils import registerQuery, createType, registerMutation
-from . import docker_client, KeyValue
-import docker
-from datetime import datetime
+from ..utils import registerQuery, registerMutation, createType
+from . import docker_client, KeyValue, formatTime
+from docker.errors import APIError
 
 DockerNetwork = createType("DockerNetwork")
 
@@ -18,7 +17,7 @@ async def resolve_network_labels(network, _):
 
 @DockerNetwork.field("created")
 async def resolve_network_created(network, _):
-    return str(datetime.fromisoformat(network.attrs["Created"].partition(".")[0]))
+    return formatTime(network.attrs["Created"])
 
 
 @DockerNetwork.field("ipv6")
@@ -46,15 +45,21 @@ async def resolve_network_gateway(network, _):
     return (network.attrs["IPAM"]["Config"] or [{}])[0].get("Gateway")
 
 
+@DockerNetwork.field("usingContainers")
+async def resolve_network_using_containers(network, _):
+    return network.containers
+
+
 @registerMutation("dockerConnectContainerToRouter")
 async def connect_container(*_, input):
     network = docker_client.networks.get(input["networkId"])
     container = docker_client.containers.get(input["containerId"])
     try:
         network.connect(container)
-    except docker.api.APIError:
+    except APIError:
         return False
     return True
+
 
 @registerMutation("dockerDisconnectContainerFromRouter")
 async def connect_container(*_, input):
@@ -62,6 +67,6 @@ async def connect_container(*_, input):
     container = docker_client.containers.get(input["containerId"])
     try:
         network.disconnect(container)
-    except docker.api.APIError:
+    except APIError:
         return False
     return True

@@ -22,6 +22,7 @@ def escape_lua(lua):
     return lua
 
 
+
 def unescape_lua(lua):
     if not lua.startswith(";return loadstring("):
         return lua

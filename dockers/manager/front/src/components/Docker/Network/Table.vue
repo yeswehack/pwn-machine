@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="network"
     row-key="name"
@@ -19,12 +19,12 @@
       <q-badge color="negative" label="no" v-else />
     </template>
 
-    <template #body-cell-containers="{row: {containers}}">
+    <template #body-cell-containers="{row}">
       <div class="q-gutter-sm row">
         <container-link
           :name="name"
           :key="name"
-          v-for="{ name } of containers"
+          v-for="{ name } of row.usingContainers"
         />
       </div>
     </template>
@@ -32,7 +32,7 @@
     <template #details="{ row }">
       <network-details :network="row" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
@@ -55,24 +55,21 @@ export default {
     }
   },
   data() {
-    const field = (n, opt = {}) => ({
-      name: n,
+    const col = (name, opts = {}) => ({
+      name,
       align: "left",
-      label: n,
-      field: n,
+      label: name,
+      field: name,
       sortable: true,
-      ...opt
+      ...opts
     });
     const columns = [
-      field("name"),
-      field("driver"),
-      field("internal"),
-      field("gateway", { classes: "text-mono" }),
-      field("subnet", { classes: "text-mono" }),
-      field("containers", {
-        label: "Connected containers",
-        field: row => row.containers.map(c => c.name)
-      })
+      col("name"),
+      col("driver"),
+      col("internal"),
+      col("gateway", { classes: "text-mono" }),
+      col("subnet", { classes: "text-mono" }),
+      col("containers", { label: "used by" })
     ];
     return { columns };
   },
