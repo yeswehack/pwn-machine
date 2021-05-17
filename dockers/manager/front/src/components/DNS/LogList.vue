@@ -1,8 +1,8 @@
 <template>
-  <div class="col column">
+  <div class="column full-width">
     <div class="row full-width">
       <q-table
-      class="full-width"
+        class="full-width"
         v-bind="$attrs"
         :columns="columns"
         dense
@@ -13,13 +13,23 @@
         no-data-label="No logs available."
         table-header-style="text-transform: capitalize"
       >
-        <template #body-cell-id="{pageIndex}">
+        <template #body-cell-date="{value}">
           <q-td auto-width>
-            {{ pageIndex + (page - 1) * count + 1 }}
+            {{ value }}
+          </q-td>
+        </template>
+        <template #body-cell-type="{value}">
+          <q-td auto-width>
+            {{ value }}
+          </q-td>
+        </template>
+        <template #body-cell-error="{value}">
+          <q-td auto-width>
+            <q-badge color="negative" :label="value" v-if="value" />
           </q-td>
         </template>
         <template #body-cell-origin="{value}">
-          <q-td>
+          <q-td auto-width>
             <a :href="`https://ip-api.com/${value}`" target="_blank">{{
               value
             }}</a>
@@ -145,11 +155,12 @@ export default {
         format: v => date.formatDate(v * 1000, "YYYY-MM-DD HH:mm:ss")
       }),
       field("origin"),
-      field("error"),
-      field("query", { field: row => `${row.type} - ${row.query}` }),
+      field("type", { align: "center" }),
+      field("query"),
       field("responses", {
         field: row => row.responses.map(r => r.rdata).join(", ")
-      })
+      }),
+      field("error")
     ];
     return {
       pagination,
