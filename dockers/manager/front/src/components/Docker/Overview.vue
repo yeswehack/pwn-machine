@@ -10,12 +10,12 @@
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
       variables() {
         return { name: this.name };
       },

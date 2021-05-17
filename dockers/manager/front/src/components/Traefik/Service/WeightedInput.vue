@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import gql from "graphql-tag"
 import DeepForm from "src/mixins/DeepForm";
+import api from 'src/api';
 
 export default {
   mixins: [DeepForm],
@@ -88,13 +88,7 @@ export default {
   formDefinition: [],
   apollo: {
     services: {
-      query: gql`
-        query getServices($protocols: [TraefikProtocol!]) {
-          traefikServices(protocols: $protocols) {
-            name
-          }
-        }
-      `,
+      query: api.traefik.GET_SERVICES,
       variables() {
         return { protocols: [this.protocol] };
       },

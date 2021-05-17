@@ -54,7 +54,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: { ContainerLink },
@@ -65,7 +65,7 @@ export default {
   },
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
       update: data => data.dockerContainers
     }
   },

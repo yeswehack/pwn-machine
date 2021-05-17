@@ -26,13 +26,13 @@
 import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     images: {
-      query: gql.docker.GET_IMAGES,
+      query: api.docker.GET_IMAGES,
       variables: { onlyFinal: true },
       update: ({ dockerImages }) => dockerImages
     }

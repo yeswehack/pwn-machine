@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import gql from "src/api";
+import api from "src/api";
 import ImageSearchVue from "./ImageSearch.vue";
 import DeepForm from 'src/mixins/DeepForm';
 export default {
@@ -27,7 +27,7 @@ export default {
   formDefinition: null,
   apollo: {
     images: {
-      query: gql.docker.GET_IMAGES,
+      query: api.docker.GET_IMAGES,
       update: data => data.dockerImages
     }
   },

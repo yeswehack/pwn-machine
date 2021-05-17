@@ -40,7 +40,7 @@ import BaseTable from "src/components/BaseTable.vue";
 import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: {
@@ -50,7 +50,7 @@ export default {
   },
   apollo: {
     networks: {
-      query: gql.docker.GET_NETWORKS,
+      query: api.docker.GET_NETWORKS,
       update: ({ dockerNetworks }) => dockerNetworks
     }
   },

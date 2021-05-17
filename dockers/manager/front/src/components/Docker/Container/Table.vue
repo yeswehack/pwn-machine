@@ -57,7 +57,7 @@ import NetworkLink from "src/components/Docker/Network/Link.vue";
 import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: {
@@ -71,7 +71,7 @@ export default {
   },
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
       update: ({ dockerContainers }) => dockerContainers
     }
   },

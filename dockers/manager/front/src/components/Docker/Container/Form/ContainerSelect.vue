@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import gql from "src/api";
+import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 export default {
   mixins: [DeepForm],
@@ -13,7 +13,7 @@ export default {
   },
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
       variables: { onlyRunning: true },
       update: data => data.dockerContainers
     }

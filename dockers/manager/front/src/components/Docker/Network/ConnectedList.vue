@@ -71,13 +71,13 @@
 
 <script>
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: { ContainerLink },
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
       update: data => data.dockerContainers
     }
   },

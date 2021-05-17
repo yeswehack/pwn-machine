@@ -18,13 +18,13 @@
 
 <script>
 import TabPage from "../components/TabPage.vue";
-import gql from "src/api";
+import api from "src/api";
 
 export default {
   components: { TabPage },
   apollo: {
     shells: {
-      query: gql.docker.GET_CONTAINER_SHELLS,
+      query: api.docker.GET_CONTAINER_SHELLS,
       update: data => data.dockerContainerShells
     }
   }

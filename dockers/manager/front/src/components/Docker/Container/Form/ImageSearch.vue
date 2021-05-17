@@ -100,12 +100,12 @@
 
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
-import gql from "src/api";
+import api from "src/api";
 export default {
   components: { BaseDialog },
   apollo: {
     images: {
-      query: gql.docker.SEARCH_IMAGE,
+      query: api.docker.SEARCH_IMAGE,
       debounce: 250,
       throttle: 250,
       skip() {
@@ -118,7 +118,7 @@ export default {
       fetchPolicy: "cache-first"
     },
     imageTags: {
-      query: gql.docker.SEARCH_IMAGE_TAG,
+      query: api.docker.SEARCH_IMAGE_TAG,
       skip: true,
       update: data => data.dockerSearchImageTag,
       variables() {
