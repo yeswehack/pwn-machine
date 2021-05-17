@@ -37,21 +37,21 @@ export default {
           target
         }
       });
-      const zoneNode = name => node(`z-${name}`, name, ["zone"]);
+      const zoneNode = zone => node(`z-${zone.nodeId}`, zone.name, ["zone"]);
       const ruleNode = (rule, cls) =>
-        node(`ru-${rule.name}-${rule.type}`, `${rule.name} (${rule.type})`, ["rule"]);
-      const recordNode = record => node(`re-${record.content}`, record.content, ["record", record.enabled ? 'enabled': 'disabled']);
+        node(`ru-${rule.nodeId}`, `${rule.name} (${rule.type})`, ["rule"]);
+      const recordNode = (rule, record) => node(`re-${rule.nodeId}-${record.content}`, record.content, ["record", record.enabled ? 'enabled': 'disabled']);
 
       for (const zone of zones) {
-        elements.push(zoneNode(zone.name));
+        elements.push(zoneNode(zone));
 
         for (const rule of zone.rules) {
           elements.push(ruleNode(rule));
-          elements.push(edge(`z-${zone.name}`, `ru-${rule.name}-${rule.type}`));
+          elements.push(edge(`z-${zone.nodeId}`, `ru-${rule.nodeId}`));
 
           for (const record of rule.records) {
-            elements.push(recordNode(record));
-            elements.push(edge(`ru-${rule.name}-${rule.type}`, `re-${record.content}`));
+            elements.push(recordNode(rule, record));
+            elements.push(edge(`ru-${rule.nodeId}`, `re-${rule.nodeId}-${record.content}`));
           }
 
         }

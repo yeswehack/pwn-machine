@@ -1,7 +1,9 @@
 query dnsOverview {
   dnsZones {
+    nodeId
     name
     rules {
+      nodeId
       name
       type
       records {
