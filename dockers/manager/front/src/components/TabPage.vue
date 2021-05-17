@@ -9,6 +9,7 @@
       active-color="primary"
       align="left"
       narrow-indicator
+      v-mutation="hookNavigation"
     >
       <slot name="default"></slot>
     </q-tabs>
@@ -20,7 +21,7 @@
         :leave-active-class="slideOut"
         @before-leave="floatElement"
       >
-        <router-view />
+        <router-view :key="$route.path" />
       </transition>
     </div>
   </q-page>
@@ -32,24 +33,34 @@ export default {
     return {
       slideIn: "animated slideInRight",
       slideOut: "animated slideOutLeft",
-      oldIdx: null
+      oldIdx: null,
+      oldSlots: null
     };
   },
   mounted() {
-    for (const [idx, slot] of this.$slots.default.entries()) {
-      if (slot.elm.getAttribute("aria-current") == "page") {
-        this.oldIdx = idx;
-      }
-      slot.elm.addEventListener(
-        "click",
-        () => {
-          this.navigate(idx);
-        },
-        true
-      );
-    }
+    this.hookNavigation();
   },
   methods: {
+    hookNavigation() {
+      if (this.oldSlots == this.$slots) return;
+      for (const [idx, { elm }] of this.$slots.default.entries()) {
+        if (elm.getAttribute("aria-current") == "page") {
+          this.oldIdx = idx;
+        }
+        if (!elm.getAttribute("aria-hooked")) {
+          elm.addEventListener(
+            "click",
+            () => {
+              this.navigate(elm.getAttribute("aria-idx"));
+            },
+            true
+          );
+          elm.setAttribute("aria-hooked", true);
+        }
+        elm.setAttribute("aria-idx", idx);
+      }
+      this.oldSlots = this.$slots;
+    },
     navigate(idx) {
       if (this.oldIdx !== null) {
         if (idx < this.oldIdx) {
@@ -80,8 +91,7 @@ export default {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   overflow-x: hidden;
-  
-  
+
   // Hacky way to hide children transition overflow
   &::before,
   &::after {
