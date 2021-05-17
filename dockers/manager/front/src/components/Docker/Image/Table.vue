@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import BaseTable from "src/components/BaseTable3.vue";
+import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import gql from "src/gql";
