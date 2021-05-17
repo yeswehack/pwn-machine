@@ -7,8 +7,8 @@
       v-for="({ hostBindings, containerPort, protocol }, idx) of ports"
     >
       {{ containerPort }}/{{ protocol.toLowerCase() }}
-      <q-tooltip v-for="({ ip, port }, i) of hostBindings" :key="i">
-        {{ `${ip}:${port}` }}
+      <q-tooltip>
+        {{ hostBindings.map(({ ip, port }) => `${ip}:${port}`).join(", ") }}
       </q-tooltip>
     </q-badge>
     <q-badge title="host driver" color="positive" label="all" v-if="host" />
