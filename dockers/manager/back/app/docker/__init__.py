@@ -11,8 +11,8 @@ class KeyValue(NamedTuple):
     value: str = None
 
 
-def formatTime(t):
-    return str(datetime.fromisoformat(t.partition(".")[0]))
+def formatTime(time):
+    return str(datetime.fromisoformat(time[:19]))
 
 
 from . import image
