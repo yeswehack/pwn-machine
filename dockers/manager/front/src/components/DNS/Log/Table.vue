@@ -26,18 +26,14 @@
         />
       </div>
     </div>
-    <div class="row full-width">
-      <div class="col col-auto">
-        <log-list
-          bordered
-          flat
-          :rows-per-page="20"
-          hide-title
-          :domain="domain"
-          :type="type"
-        />
-      </div>
-    </div>
+    <log-list
+      bordered
+      flat
+      :rows-per-page="20"
+      hide-title
+      :domain="domain"
+      :type="type"
+    />
   </div>
 </template>
 
