@@ -41,7 +41,7 @@ const traefikRoute = {
       component: () => import("components/Traefik/Router/Table.vue")
     },
     {
-      path: "middelwares",
+      path: "middlewares",
       name: "traefikMiddlewares",
       component: () => import("components/Traefik/Middleware/Table.vue")
     },
