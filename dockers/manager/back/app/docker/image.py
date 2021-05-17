@@ -24,7 +24,7 @@ class RepoTag:
 
 @DockerImage.field("tags")
 async def resolve_image_tags(image, _):
-    return [RepoTag(*ref.split(":", 1)) for ref in image.tags]
+    return [RepoTag(*ref.partition(":")[::2]) for ref in image.tags]
 
 
 @DockerImage.field("name")
@@ -67,7 +67,7 @@ async def resolve_image_command(image, _):
 
 @DockerImage.field("environment")
 async def resolve_image_environment(image, _):
-    return [KeyValue(*var.split("=", 1)) for var in image.attrs["Config"]["Env"]]
+    return [KeyValue(*var.partition("=")[::2]) for var in image.attrs["Config"]["Env"]]
 
 
 @DockerImage.field("usingContainers")
