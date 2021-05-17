@@ -1,6 +1,6 @@
 from functools import wraps
 import time
-from ..utils import registerQuery, registerMutation, createType, dnsname, create_node_id, undnsname
+from ..utils import registerQuery, registerMutation, createType, create_node_id
 from ..api import get_powerdns_http_api as dns_http
 
 
@@ -19,7 +19,7 @@ def resolve_nodeid(zone, *_):
 
 @DnsZone.field("name")
 def resolve_name(zone, *_):
-    return undnsname(zone['name'])
+    return zone['name']
 
 @DnsZone.field("soa")
 def resolve_soa(zone, *_):

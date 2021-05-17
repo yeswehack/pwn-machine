@@ -6,10 +6,8 @@ from ..api import get_powerdns_http_api as dns_http
 from ..utils import (
     create_node_id,
     createType,
-    dnsname,
     registerMutation,
     registerQuery,
-    undnsname,
 )
 
 
@@ -51,7 +49,7 @@ async def get_dns_rules(*_):
 
 @DnsRule.field("name")
 def resolve_name(rule, *_):
-    return undnsname(rule["name"])
+    return rule["name"]
 
 
 @DnsRule.field("isLua")

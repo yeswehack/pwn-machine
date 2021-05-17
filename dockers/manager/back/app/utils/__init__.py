@@ -9,15 +9,6 @@ from .registration import (
 )
 
 
-def dnsname(s):
-    if s == "=2E":
-        return s
-    return s if s.endswith(".") else f"{s}."
-
-
-def undnsname(s):
-    return s[:-1] if s.endswith(".") else s
-
 
 def base64_encode(s, json=False):
     if json:

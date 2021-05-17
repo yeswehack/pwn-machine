@@ -6,7 +6,7 @@ import logging
 import time
 from ..utils.cached import cacheMethodForQuery
 from fnmatch import fnmatch
-from ..utils import dnsname, undnsname, validate_node_id
+from ..utils import validate_node_id
 
 ZONE_MARKER = "DNS_ZONE"
 
@@ -23,8 +23,8 @@ regex_soa = re.compile(
 
 
 def soa_to_string(soa):
-    nameserver = dnsname(soa["nameserver"])
-    postmaster = dnsname(soa["postmaster"].replace("@", "."))
+    nameserver = soa["nameserver"]
+    postmaster = soa["postmaster"]
     refresh = soa["refresh"]
     retry = soa["retry"]
     expire = soa["expire"]
@@ -34,8 +34,6 @@ def soa_to_string(soa):
 
 
 def rrset_match(name, type):
-    name = dnsname(name)
-
     def do_match(rrset):
         return rrset["name"] == name and rrset["type"] == type
 
@@ -116,7 +114,7 @@ class PowerdnsHTTPApi:
     async def get_zone(self, zone_id):
         try:
             return await self.get(
-                f"/api/v1/servers/localhost/zones/{dnsname(zone_id)}"
+                f"/api/v1/servers/localhost/zones/{zone_id}"
             )
         except Exception as e:
             print("ERROR", e)
@@ -134,7 +132,7 @@ class PowerdnsHTTPApi:
 
     async def get_rules_for_zone(self, zone_id):
         info = await self.get_zone(zone_id)
-        return [{**z, "zone": undnsname(info["name"])} for z in info["rrsets"]]
+        return [{**z, "zone": info["name"]} for z in info["rrsets"]]
 
     async def get_rules(self):
         rules = []
@@ -149,7 +147,7 @@ class PowerdnsHTTPApi:
 
     async def update_soa(self, zone_name, soa):
         zone_info = await self.get_zone(zone_name)
-        rule = find_record(zone_info["rrsets"], dnsname(zone_name), "SOA")
+        rule = find_record(zone_info["rrsets"], zone_name, "SOA")
         if rule is None:
             raise Exception(f"Rule {zone} with type SOA is not found on {zone}.")
 
@@ -167,9 +165,9 @@ class PowerdnsHTTPApi:
         if zone_info is not None:
             raise Exception("A zone with this name already exists.")
         data = {
-            "name": dnsname(name),
+            "name": name,
             "kind": "native",
-            "nameservers": [dnsname(soa["nameserver"])],
+            "nameservers": [soa["nameserver"]],
             "soa_edit": "INCEPTION-EPOCH",
             "soa_edit_api": "INCEPTION-EPOCH",
         }
@@ -218,7 +216,7 @@ class PowerdnsHTTPApi:
 
     async def create_rule(self, zone_name, name, type, ttl, records):
         zone = await self.get_zone(zone_name)
-        name = dnsname(name)
+        name = name
         if zone is None:
             raise Exception("Invalid zone")
         if find_record(zone["rrsets"], name, type):

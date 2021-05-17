@@ -1,8 +1,14 @@
 <template>
   <q-form @submit="submit">
     <q-card-section>
-      <q-input required v-model="form.name" label="Name" class="q-pb-md" />
-      <component :is="formChildren.soa" v-model="form.soa" />
+      <q-input
+        required
+        v-model="form.name"
+        label="Name"
+        class="q-pb-md"
+        :rules="[endsWithDot]"
+      />
+      <component :is="formChildren.soa" v-model="form.soa"/>
     </q-card-section>
     <q-card-section>
       <reset-and-save :modified="modified" @reset="reset" @save="submit" />
@@ -23,6 +29,9 @@ export default {
     soa: SoaForm
   },
   methods: {
+    endsWithDot(s) {
+      if (s && !s.endsWith(".")) return "Must end with a dot.";
+    },
     submit() {
       this.$apollo
         .mutate({
