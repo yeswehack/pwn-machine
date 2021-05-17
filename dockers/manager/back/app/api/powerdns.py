@@ -55,8 +55,8 @@ def find_record(rrsets, name, type):
 def string_to_soa(str):
     groups = regex_soa.match(str)
     return {
-        "nameserver": groups["nameserver"][:-1],
-        "postmaster": groups["postmaster"][:-1].replace(".", "@", 1),
+        "nameserver": groups["nameserver"],
+        "postmaster": groups["postmaster"],
         "expire": int(groups["expire"]),
         "refresh": int(groups["refresh"]),
         "retry": int(groups["retry"]),
