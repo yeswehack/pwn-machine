@@ -17,7 +17,11 @@
         class="col"
       />
       <div class="row q-gutter-md ">
-        <q-toggle :disable="!form.zone" label="Lua record" v-model="form.isLua" />
+        <q-toggle
+          :disable="!form.zone"
+          label="Lua record"
+          v-model="form.isLua"
+        />
         <q-select
           :disable="!form.zone"
           v-model="form.type"
@@ -34,15 +38,7 @@
           label="TTL"
         />
       </div>
-      <div class="col editor-container" v-if="isLua">
-        <monaco-editor
-          v-model="form.records[0].content"
-          :options="editorOptions"
-          class="editor"
-          language="lua"
-          theme="vs-dark"
-        />
-      </div>
+      <lua-editor v-model="form.records[0].content" v-if="isLua" />
       <component
         v-else
         :disable="!form.zone"
@@ -63,10 +59,10 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import ListInput from "../../ListInput.vue";
 import api from "src/api";
-import MonacoEditor from "vue-monaco";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import LuaEditor from "./LuaEditor.vue";
+import RuleInput from './RuleInput.vue';
 
 const types = [
   "A",
@@ -105,7 +101,7 @@ const types = [
 ];
 
 export default {
-  components: { ResetAndSave, MonacoEditor },
+  components: { ResetAndSave, LuaEditor },
   mixins: [DeepForm],
   props: {
     value: Object,
@@ -122,17 +118,11 @@ export default {
     isLua: false,
     name: null,
     type: null,
-    records: ListInput,
+    records: RuleInput,
     ttl: 3600
   },
   data() {
-    const editorOptions = {
-      minimap: { enabled: false },
-      padding: { bottom: 100, top: 100 },
-      lineDecorationsWidth: 5,
-      lineNumbers: false,
-    };
-    return { types, editorOptions };
+    return { types};
   },
   computed: {
     zoneNames() {
@@ -176,17 +166,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.editor-container {
-  display: grid;
-  grid-template-rows: 300px;
-  grid-template-columns: 1fr;
-}
-
-.editor {
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 4px;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-</style>

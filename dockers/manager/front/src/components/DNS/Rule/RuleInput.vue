@@ -1,6 +1,6 @@
 <template>
   <div class="q-mb-md">
-    <label class="row text-bold">Headers</label>
+    <label class="row text-bold">Records</label>
     <div class="row q-gutter-sm">
       <q-input
         class="col"
