@@ -24,7 +24,7 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import db from "src/gql";
+import api from "src/api";
 import LabelInput from "../LabelInput.vue";
 import IpamInput from "./IpamInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";

@@ -5,14 +5,14 @@
 <script>
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
-import db from "src/gql";
+import api from "src/api";
 import BaseOverview from '../BaseOverview.vue';
 
 export default {
   components: { BaseOverview },
   apollo: {
     zones: {
-      query: db.dns.OVERVIEW,
+      query: api.dns.OVERVIEW,
       fetchPolicy: 'cache-and-network',
       update: data => data.dnsZones
     }

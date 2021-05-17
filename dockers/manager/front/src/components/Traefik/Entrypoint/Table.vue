@@ -30,7 +30,7 @@
 import BaseTable from "src/components/BaseTable.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
-import db from "src/gql";
+import api from "src/api";
 
 export default {
   components: {
@@ -40,7 +40,7 @@ export default {
   },
   apollo: {
     entrypoints: {
-      query: db.traefik.GET_ENTRYPOINTS,
+      query: api.traefik.GET_ENTRYPOINTS,
       update: data => data.traefikEntrypoints
     }
   },

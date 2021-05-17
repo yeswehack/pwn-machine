@@ -54,7 +54,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   components: { ContainerLink },

@@ -100,7 +100,7 @@
 
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
-import gql from "src/gql";
+import gql from "src/api";
 export default {
   components: { BaseDialog },
   apollo: {

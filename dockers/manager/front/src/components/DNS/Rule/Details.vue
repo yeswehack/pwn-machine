@@ -51,7 +51,7 @@ import RuleInput from "./RuleInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
-import db from "src/gql";
+import api from "src/api";
 
 export default {
   mixins: [DeepForm],
@@ -86,9 +86,9 @@ export default {
         records: this.form.records.map(r => ({ content: r.content, enabled: r.enabled }))
       };
       this.$apollo.mutate({
-        mutation: db.dns.UPDATE_RULE,
+        mutation: api.dns.UPDATE_RULE,
         variables: { nodeId: this.value.nodeId, patch },
-        refetchQueries: [{ query: db.dns.GET_RULES }]
+        refetchQueries: [{ query: api.dns.GET_RULES }]
       });
     }
   }

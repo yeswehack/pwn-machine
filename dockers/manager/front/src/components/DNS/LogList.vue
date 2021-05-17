@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import db from "src/gql";
+import api from "src/api";
 import { date } from "quasar";
 
 export default {
@@ -82,7 +82,7 @@ export default {
   },
   apollo: {
     logs: {
-      query: db.dns.GET_LOGS,
+      query: api.dns.GET_LOGS,
       variables() {
         return {
           filter: { domain: this.domain, type: this.type },

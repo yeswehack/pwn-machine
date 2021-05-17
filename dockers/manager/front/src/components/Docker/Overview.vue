@@ -10,7 +10,7 @@
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   apollo: {

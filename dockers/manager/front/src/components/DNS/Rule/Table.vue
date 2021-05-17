@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import db from "src/gql";
+import api from "src/api";
 import BaseTable from "src/components/BaseTable.vue";
 import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
@@ -43,7 +43,7 @@ export default {
   components: { BaseTable, ZoneLink, RuleDetails },
   apollo: {
     rules: {
-      query: db.dns.GET_RULES,
+      query: api.dns.GET_RULES,
       update: data => data.dnsRules
     }
   },
@@ -81,9 +81,9 @@ export default {
     },
     toggleRule(rule, value) {
       this.$apollo.mutate({
-        mutation: db.dns.ENABLE_RULE,
+        mutation: api.dns.ENABLE_RULE,
         variables: { nodeId: rule.nodeId, enabled: value },
-        refetchQueries: [{ query: db.dns.GET_RULES }]
+        refetchQueries: [{ query: api.dns.GET_RULES }]
       });
     },
     cloneRule(rule) {
@@ -103,9 +103,9 @@ export default {
         })
         .onOk(() => {
           this.$apollo.mutate({
-            mutation: db.dns.DELETE_RULE,
+            mutation: api.dns.DELETE_RULE,
             variables: { nodeId: rule.nodeId },
-            refetchQueries: [{ query: db.dns.GET_RULES }]
+            refetchQueries: [{ query: api.dns.GET_RULES }]
           });
         });
     },

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import gql from "src/gql";
+import gql from "src/api";
 import IpamInput from "./IpamInput.vue";
 import LabelInput from "../LabelInput.vue";
 import DeepForm from "src/mixins/DeepForm";

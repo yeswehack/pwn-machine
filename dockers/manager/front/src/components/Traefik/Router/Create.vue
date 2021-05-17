@@ -63,7 +63,7 @@
 <script>
 import ServiceDialog from "../Service/Dialog.vue";
 import { extend } from "quasar";
-import db from "src/gql";
+import api from "src/api";
 export default {
   props: {
     hideName: {type: Boolean, default: false},
@@ -71,11 +71,11 @@ export default {
   },
   apollo: {
     entrypoints: {
-      query: db.traefik.GET_ENTRYPOINTS,
+      query: api.traefik.GET_ENTRYPOINTS,
       update: data => data.traefikEntrypoints
     },
     services: {
-      query: db.traefik.GET_SERVICES,
+      query: api.traefik.GET_SERVICES,
       update: data => data.traefikServices
     }
   },
@@ -126,9 +126,9 @@ export default {
       };
       this.$apollo
         .mutate({
-          mutation: db.traefik.CREATE_ROUTER,
+          mutation: api.traefik.CREATE_ROUTER,
           variables: { input },
-          refetchQueries: [{ query: db.traefik.GET_ROUTERS }]
+          refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
         })
         .then(r => {
           this.$emit("ok");

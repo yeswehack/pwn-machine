@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { login as loginMutation } from "src/gql/auth/mutations";
+import { login as loginMutation } from "src/api/auth/mutations";
 
 const dayDuration = 60 * 60 * 24;
 const expireOptions = [

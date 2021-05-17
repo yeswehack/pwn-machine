@@ -26,7 +26,7 @@
 import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   components: { BaseTable, ContainerLink },

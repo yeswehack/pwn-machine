@@ -21,13 +21,13 @@ import BaseTable from "src/components/BaseTable.vue";
 import ZoneDialog from "src/components/DNS/Zone/Dialog.vue";
 import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
-import db from "src/gql/";
+import api from "src/api";
 
 export default {
   components: { BaseTable, ZoneDetails },
   apollo: {
     zones: {
-      query: db.dns.GET_ZONES,
+      query: api.dns.GET_ZONES,
       update: data => data.dnsZones
     }
   },
@@ -55,11 +55,11 @@ export default {
         })
         .onOk(() => {
           this.$apollo.mutate({
-            mutation: db.dns.DELETE_ZONE,
+            mutation: api.dns.DELETE_ZONE,
             variables: { nodeId: zone.nodeId },
             refetchQueries: [
-              { query: db.dns.GET_ZONES },
-              { query: db.dns.GET_RULES }
+              { query: api.dns.GET_ZONES },
+              { query: api.dns.GET_RULES }
             ]
           });
         });

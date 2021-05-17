@@ -18,7 +18,7 @@
 
 <script>
 import TabPage from "../components/TabPage.vue";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   components: { TabPage },

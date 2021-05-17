@@ -57,7 +57,7 @@ import NetworkLink from "src/components/Docker/Network/Link.vue";
 import { mapGetters } from "vuex";
 import { shortDate, shortName } from "src/utils";
 import { quote } from "shell-quote";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   components: {

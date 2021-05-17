@@ -40,7 +40,7 @@ import BaseTable from "src/components/BaseTable.vue";
 import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/gql";
+import gql from "src/api";
 
 export default {
   components: {

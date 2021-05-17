@@ -14,7 +14,7 @@
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import SoaForm from "src/components/DNS/Zone/SoaForm.vue";
 import DeepForm from "src/mixins/DeepForm.js";
-import db from "src/gql";
+import api from "src/api";
 export default {
   mixins: [DeepForm],
   components: { ResetAndSave },
@@ -26,9 +26,9 @@ export default {
     submit() {
       this.$apollo
         .mutate({
-          mutation: db.dns.CREATE_ZONE,
+          mutation: api.dns.CREATE_ZONE,
           variables: { input: this.form },
-          refetchQueries: [{ query: db.dns.GET_ZONES }]
+          refetchQueries: [{ query: api.dns.GET_ZONES }]
         })
         .then(() => {
           this.$emit("ok");

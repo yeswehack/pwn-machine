@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import gql from "src/gql";
+import gql from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 export default {
   mixins: [DeepForm],

@@ -40,7 +40,7 @@ import BaseTable from "src/components/BaseTable.vue";
 import MiddlewareDetails from "src/components/Traefik/Middleware/Details.vue";
 import MiddlewareDialog from "src/components/Traefik/Middleware/Dialog.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
-import db from "src/gql";
+import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 export default {
   components: {
@@ -51,7 +51,7 @@ export default {
   },
   apollo: {
     middlewares: {
-      query: db.traefik.GET_MIDDLEWARES,
+      query: api.traefik.GET_MIDDLEWARES,
       update: data => data.traefikMiddlewares
     }
   },
@@ -99,9 +99,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: db.traefik.DELETE_MIDDLEWARE,
+              mutation: api.traefik.DELETE_MIDDLEWARE,
               variables: { nodeId: middleware.nodeId },
-              refetchQueries: [{ query: db.traefik.GET_MIDDLEWARES }]
+              refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
             })
             .then(response => {
               const deleted = response.data.traefikDeleteMiddleware.ok;

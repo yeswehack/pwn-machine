@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import gql from "src/gql";
+import gql from "src/api";
 import ImageSearchVue from "./ImageSearch.vue";
 import DeepForm from 'src/mixins/DeepForm';
 export default {

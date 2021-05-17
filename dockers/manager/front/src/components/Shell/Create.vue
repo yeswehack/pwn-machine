@@ -51,7 +51,7 @@ import DeepForm from "src/mixins/DeepForm";
 import ContainerSelect from "../Docker/Container/Form/ContainerSelect.vue";
 import EnvironInputVue from "../Docker/Container/Form/EnvironInput.vue";
 import ResetAndSave from "../ResetAndSave.vue";
-import gql from "src/gql";
+import gql from "src/api";
 export default {
   mixins: [DeepForm],
   formDefinition: {

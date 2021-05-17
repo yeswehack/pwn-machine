@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import db from "src/gql";
+import api from "src/api";
 import DeepForm from "src/mixins/DeepForm.js";
 import CreateHttpLoadBalancer from "./CreateHttpLoadBalancer.vue";
 import CreateHttpMirroring from "./CreateHttpMirroring.vue";
@@ -162,7 +162,7 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+          refetchQueries: [{ query: api.traefik.GET_SERVICES }]
         })
         .then(r => {
           this.$emit("ok");
@@ -179,7 +179,7 @@ export default {
         .mutate({
           mutation,
           variables,
-          refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+          refetchQueries: [{ query: api.traefik.GET_SERVICES }]
         })
         .then(r => {
           this.$emit("ok");

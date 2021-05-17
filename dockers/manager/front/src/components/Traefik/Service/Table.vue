@@ -44,7 +44,7 @@ import ServiceDialog from "src/components/Traefik/Service/Dialog.vue";
 import BaseTable from "src/components/BaseTable.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
-import db from "src/gql";
+import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 
 export default {
@@ -57,7 +57,7 @@ export default {
   },
   apollo: {
     services: {
-      query: db.traefik.GET_SERVICES,
+      query: api.traefik.GET_SERVICES,
       update: data => data.traefikServices
     }
   },
@@ -106,9 +106,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: db.traefik.DELETE_SERVICE,
+              mutation: api.traefik.DELETE_SERVICE,
               variables: { nodeId: service.nodeId },
-              refetchQueries: [{ query: db.traefik.GET_SERVICES }]
+              refetchQueries: [{ query: api.traefik.GET_SERVICES }]
             })
             .then(response => {
               const deleted = response.data.traefikDeleteService.ok;

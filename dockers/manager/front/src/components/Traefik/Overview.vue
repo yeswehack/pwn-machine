@@ -5,14 +5,14 @@
 <script>
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
-import db from "src/gql";
+import api from "src/api";
 import BaseOverview from "../BaseOverview.vue";
 
 export default {
   components: { BaseOverview },
   apollo: {
     entrypoints: {
-      query: db.traefik.OVERVIEW,
+      query: api.traefik.OVERVIEW,
       update: data => data.traefikEntrypoints
     }
   },

@@ -48,7 +48,7 @@ import ServiceLink from "src/components/Traefik/Service/Link.vue";
 import EntrypointLink from "src/components/Traefik/Entrypoint/Link.vue";
 import MiddlewareLink from "src/components/Traefik/Middleware/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
-import db from "src/gql";
+import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
 
 export default {
@@ -63,7 +63,7 @@ export default {
   },
   apollo: {
     routers: {
-      query: db.traefik.GET_ROUTERS,
+      query: api.traefik.GET_ROUTERS,
       update: data => data.traefikRouters
     }
   },
@@ -119,9 +119,9 @@ export default {
           const input = { protocol: router.protocol, name: router.name };
           this.$apollo
             .mutate({
-              mutation: db.traefik.DELETE_ROUTER,
+              mutation: api.traefik.DELETE_ROUTER,
               variables: { input },
-              refetchQueries: [{ query: db.traefik.GET_ROUTERS }]
+              refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
             })
             .then(response => {
               const deleted = response.data.traefikDeleteRouter.ok;

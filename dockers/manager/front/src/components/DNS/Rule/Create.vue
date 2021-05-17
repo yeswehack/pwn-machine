@@ -64,7 +64,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
 import ListInput from "../../ListInput.vue";
-import db from "src/gql";
+import api from "src/api";
 import MonacoEditor from "vue-monaco";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
@@ -113,7 +113,7 @@ export default {
   },
   apollo: {
     zones: {
-      query: db.dns.GET_ZONES,
+      query: api.dns.GET_ZONES,
       update: data => data.dnsZones
     }
   },
@@ -157,9 +157,9 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: db.dns.CREATE_RULE,
+          mutation: api.dns.CREATE_RULE,
           variables: { input },
-          refetchQueries: [{ query: db.dns.GET_RULES }]
+          refetchQueries: [{ query: api.dns.GET_RULES }]
         })
         .then(() => {
           this.$emit("ok");
