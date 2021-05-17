@@ -28,7 +28,7 @@ async def resolve_container_command(container, _):
 
 @DockerContainer.field("environment")
 async def resolve_container_environment(container, _):
-    return [KeyValue(*var.split("=", 1)) for var in container.attrs["Config"]["Env"]]
+    return [KeyValue(*var.partition("=")[::2]) for var in container.attrs["Config"]["Env"]]
 
 
 @DockerContainer.field("mounts")
