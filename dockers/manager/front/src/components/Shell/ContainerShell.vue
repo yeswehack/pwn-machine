@@ -4,6 +4,7 @@
       <q-resize-observer @resize="onResize" />
     </div>
     <q-btn
+      v-if="started"
       class="poweroff"
       round
       icon="power_settings_new"
@@ -22,10 +23,25 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 const WS_URL = `ws://127.0.0.1:8000/shell`;
 
 function openWS(url) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const ws = new WebSocket(url);
     ws.addEventListener("open", () => resolve(ws));
+    ws.addEventListener("error", e => reject(e));
   });
+}
+
+function waitForSocketClose(ws) {
+  return new Promise(resolve => {
+    ws.addEventListener("close", () => {
+      resolve();
+    });
+  });
+}
+
+async function closeSocket(ws) {
+  const p = waitForSocketClose(ws);
+  ws.close();
+  return await p;
 }
 
 class Shell {
@@ -43,22 +59,42 @@ class Shell {
   }
 
   async start(el, url) {
-    return new Promise(resolve => {
-      openWS(url).then(ws => {
-        this.ws = ws;
-        this.ws.addEventListener("message", evt => {
-          this.onRemoteData(evt.data);
+    return new Promise((resolve, reject) => {
+      openWS(url)
+        .then(ws => {
+          this.ws = ws;
+          this.ws.addEventListener("message", evt => {
+            this.onRemoteData(evt.data);
+          });
+          this.ws.addEventListener("close", () => {
+            this.term.blur();
+            this.started = false;
+            resolve();
+          });
+          this.term.open(el);
+          this.term.focus();
+          this.started = true;
+          this.fit();
+        })
+        .catch(e => {
+          reject(e);
         });
-        this.ws.addEventListener("close", () => {
-          this.term.blur()
-          resolve()
-        });
-        this.term.open(el);
-        this.term.focus();
-        this.started = true;
-        this.fit();
-      });
     });
+  }
+
+  async stop() {
+    if (!this.ws) return;
+    switch (this.ws.readyState) {
+      case WebSocket.CONNECTING:
+      case WebSocket.OPEN:
+        await closeSocket(this.ws);
+        break;
+      case WebSocket.CLOSING:
+        await waitForSocketClose(this.ws);
+        break;
+      case WebSocket.CLOSED:
+        break;
+    }
   }
 
   onRemoteData(data) {
@@ -108,18 +144,41 @@ export default {
     },
     exit() {
       this.shell.exit();
+    },
+    disconnect() {
+      return this.shell.stop();
+    },
+    connect() {
+      this.shell
+        .start(this.$refs.terminal, WS_URL + "/" + this.uuid)
+        .then(() => {
+          this.$q.notify({
+            message: "Connection closed",
+            color: "negative",
+            position: "top"
+          });
+        })
+        .catch(e => {
+          this.$router.push({ name: "shellNew" });
+        });
     }
   },
-  beforeDestroy() {
+  computed: {
+    started() {
+      return this.shell?.started ?? false;
+    }
   },
   mounted() {
-    this.shell.start(this.$refs.terminal, WS_URL + "/" + this.uuid).then(() => {
-      this.$q.notify({
-        message: "Connection closed",
-        color: "negative",
-        position: "top"
-      })
-    });
+    this.connect();
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      async handler() {
+        //await this.disconnect();
+        //this.connect();
+      }
+    }
   }
 };
 </script>

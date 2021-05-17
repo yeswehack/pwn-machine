@@ -21,7 +21,7 @@
                     />
                   </div>
                   <div class="col">
-                    <q-input label="Working directory" v-model="form.workDir" />
+                    <q-input label="Working directory" v-model="form.workdir" />
                   </div>
                   <div class="col">
                     <q-toggle label="Privileged" v-model="form.privileged" />
@@ -56,7 +56,7 @@ export default {
   mixins: [DeepForm],
   formDefinition: {
     user: null,
-    workDir: null,
+    workdir: null,
     privileged: false,
     cmd: "/bin/sh -c 'if which bash; then bash ; else sh ; fi'",
     containerName: ContainerSelect,
@@ -65,10 +65,16 @@ export default {
   components: { ContainerSelect, ResetAndSave },
   methods: {
     submit() {
-      this.$apollo.mutate({
-        mutation: gql.docker.SPAWN_SHELL,
-        variables: { input: this.form }
-      });
+      this.$apollo
+        .mutate({
+          mutation: api.docker.SPAWN_CONTAINER_SHELL,
+          variables: { input: this.form },
+          refetchQueries: [{ query: api.docker.GET_CONTAINER_SHELLS }]
+        })
+        .then(({ data }) => {
+          const uuid = data.dockerSpawnContainerShell.nodeId;
+          this.$router.push({ name: "shellId", params: { uuid } });
+        });
     }
   }
 };
