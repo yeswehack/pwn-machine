@@ -1,82 +1,48 @@
 <template>
-  <div class="column full-width">
-    <div class="row full-width">
-      <q-table
-        class="full-width"
-        v-bind="$attrs"
-        :columns="columns"
-        dense
-        :loading="$apollo.queries.logs.loading"
-        :data="logs"
-        hide-pagination
-        :pagination.sync="pagination"
-        no-data-label="No logs available."
-        table-header-style="text-transform: capitalize"
-      >
-        <template #body-cell-date="{value}">
-          <q-td auto-width>
-            {{ value }}
-          </q-td>
-        </template>
-        <template #body-cell-type="{value}">
-          <q-td auto-width>
-            {{ value }}
-          </q-td>
-        </template>
-        <template #body-cell-error="{value}">
-          <q-td auto-width>
-            <q-badge color="negative" :label="value" v-if="value" />
-          </q-td>
-        </template>
-        <template #body-cell-origin="{value}">
-          <q-td auto-width>
-            <a :href="`https://ip-api.com/${value}`" target="_blank">{{
-              value
-            }}</a>
-          </q-td>
-        </template>
-        <template #no-data="props">
-          <q-btn
-            round
-            flat
-            size="xs"
-            icon="eva-loader-outline"
-            :loading="$apollo.queries.logs.loading"
-            class=" q-mr-md no-pointer-events"
-          />
-          {{ props.message }}
-        </template>
-      </q-table>
-    </div>
-    <div class="row q-gutter-md q-px-sm justify-end">
-      <q-input
-        v-model.number="pagination.rowsPerPage"
-        dense
-        type="number"
-        class="col col-auto"
-        label="Row per page"
-        style="max-width: 7em"
+  <q-table
+    class="full-width"
+    v-bind="$attrs"
+    :columns="columns"
+    dense
+    @request="onRequest"
+    :loading="$apollo.queries.dnsLogs.loading"
+    :data="logs"
+    :pagination.sync="pagination"
+    no-data-label="No logs available."
+    table-header-style="text-transform: capitalize"
+  >
+    <template #body-cell-date="{value}">
+      <q-td auto-width>
+        {{ value }}
+      </q-td>
+    </template>
+    <template #body-cell-type="{value}">
+      <q-td auto-width>
+        {{ value }}
+      </q-td>
+    </template>
+    <template #body-cell-error="{value}">
+      <q-td auto-width>
+        <q-badge color="negative" :label="value" v-if="value" />
+      </q-td>
+    </template>
+    <template #body-cell-origin="{value}">
+      <q-td auto-width>
+        <a :href="`https://ip-api.com/${value}`" target="_blank">{{ value }}</a>
+      </q-td>
+    </template>
+    <template #no-data="props">
+      <q-btn
+        round
+        flat
+        size="xs"
+        icon="eva-loader-outline"
+        :loading="$apollo.queries.dnsLogs.loading"
+        class=" q-mr-md no-pointer-events"
       />
-      <q-input
-        v-model.number="page"
-        dense
-        max="1000"
-        min="1"
-        type="number"
-        class="col col-auto"
-        label="Page"
-        style="max-width: 7em"
-      />
-      <q-pagination
-        class="col col-auto"
-        v-model="page"
-        :max="page + 5"
-        :max-pages="4"
-        :boundary-numbers="false"
-        direction-links
-      />
-    </div>
-  </div>
+      {{ props.message }}
+    </template>
+  </q-table>
 </template>
 
 <script>
@@ -91,57 +57,31 @@ export default {
     rowsPerPage: { type: Number, default: 10 }
   },
   apollo: {
-    logs: {
+    dnsLogs: {
       query: api.dns.GET_LOGS,
       variables() {
+        const { page, rowsPerPage } = this.pagination
         return {
           filter: { query: this.domain, type: this.type },
-          cursor: {
-            from: this.from,
-            size: this.size
-          }
+          cursor: { from: (page - 1) * rowsPerPage, size: rowsPerPage }
         };
       },
       fetchPolicy: "network-only",
-      pollInterval: 5000,
-      update: data => data.dnsLogs.result
-      /*
-      subscribeToMore: {
-        document: gql`
-          subscription getLog($filter: DnsLogFilter) {
-            dnsLogs(filter: $filter) {
-              origin
-              time
-              domain
-              type
-            }
-          }
-        `,
-        skip() {
-          return this.page > 1;
-        },
-        variables() {
-          return {
-            filter: { domain: this.domain, type: this.type }
-          };
-        },
-        updateQuery(previousResult, { subscriptionData }) {
-          if (this.page > 1) return;
-          if (subscriptionData.data.dnsLogs) {
-            return {
-              dnsLogs: [
-                subscriptionData.data.dnsLogs,
-                ...previousResult.dnsLogs
-              ]
-            };
-          }
-        }
-      }*/
+      pollInterval: 5000
+    }
+  },
+  methods: {
+    onRequest(props) {
+      const { page, rowsPerPage } = props.pagination;
+      this.pagination.page = page;
+      this.pagination.rowsPerPage = rowsPerPage;
+      this.$apollo.queries.dnsLogs.refetch();
     }
   },
   data() {
     const pagination = {
-      rowsPerPage: this.rowsPerPage
+      rowsPerPage: this.rowsPerPage,
+      rowsNumber: 1
     };
     const field = (name, opt = {}) => ({
       name,
@@ -164,23 +104,23 @@ export default {
     ];
     return {
       pagination,
-      columns,
-      page: 1
+      columns
     };
   },
   watch: {
-    page(v) {
-      this.page = Math.min(Math.max(v, 1), 500);
-      if (this.page > 1) {
-        this.$apollo.subscriptions.logs.stop();
-      } else {
-        this.$apollo.subscriptions.logs.start();
-      }
+    dnsLogs(dnsLogs) {
+      this.pagination.rowsNumber = dnsLogs.total;
     }
   },
   computed: {
+    rowNumber() {
+      return this.logs?.total ?? 0;
+    },
+    logs() {
+      return this.dnsLogs?.result ?? [];
+    },
     from() {
-      return Math.max(this.page - 1, 0) * this.size;
+      return 0;
     },
     size() {
       return this.pagination.rowsPerPage;
