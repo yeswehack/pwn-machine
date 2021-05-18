@@ -2,7 +2,7 @@
   <base-table
     ref="table"
     name="container"
-    rkey="name"
+    row-key="id"
     :loading="$apollo.loading"
     :data="containers"
     :columns="columns"
@@ -24,7 +24,7 @@
     </template>
     <template #body-cell-networks="{row}">
       <div class="q-gutter-sm">
-        <NetworkLink
+        <network-link
           :name="name"
           :key="name"
           v-for="{ name } of row.networks"
@@ -32,15 +32,15 @@
       </div>
     </template>
     <template #body-cell-ports="{row}">
-      <PortList :ports="row.ports" />
+      <port-list :ports="row.ports" />
     </template>
     <template #body-cell-status="{row}">
       <container-status :status="row.status" />
     </template>
 
-    <!--template #details="{ row }" auto-width>
-      <ContainerDetails :container="row" />
-    </template-->
+    <template #details="{ row }" auto-width>
+      <container-details :container="row" />
+    </template>
   </base-table>
 </template>
 
@@ -61,7 +61,7 @@ import api from "src/api";
 
 export default {
   components: {
-    //ContainerDetails,
+    ContainerDetails,
     BaseTable,
     PortList,
     ContainerStatus,

@@ -7,7 +7,7 @@
     <q-card>
       <q-separator />
       <q-card-section>
-        <div class="row">
+        <div class="row" v-if="!readonly">
           <q-input
             class="col"
             flat
@@ -34,25 +34,35 @@
             </template>
           </q-input>
         </div>
+
         <q-list separator dense padding>
+          <q-item v-if="readonly">
+            <q-item-section>
+              <div class="row q-col-gutter-sm">
+                <div class="col col-6 text-bold">Name</div>
+                <div class="col col-6 text-bold">Value</div>
+              </div>
+            </q-item-section>
+          </q-item>
           <q-item :key="idx" v-for="(entry, idx) of form">
             <q-item-section>
               <div class="row q-col-gutter-sm">
-                <div class="col col-6">
+                <div class="col col-6 ellipsis">
                   {{ entry.key }}
-                  <q-popup-edit v-model="form[idx].key">
+                  <q-popup-edit v-model="form[idx].key" v-if="!readonly">
                     <q-input v-model.number="form[idx].key" dense autofocus />
                   </q-popup-edit>
                 </div>
-                <div class="col ">
+                <div class="col ellipsis">
                   {{ entry.value }}
 
-                  <q-popup-edit v-model="form[idx].value">
+                  <q-popup-edit v-model="form[idx].value" v-if="!readonly">
                     <q-input v-model.number="form[idx].value" dense autofocus />
                   </q-popup-edit>
                 </div>
                 <div class="col col-auto">
                   <q-btn
+                    v-if="!readonly"
                     flat
                     dense
                     icon="eva-close"
@@ -82,7 +92,8 @@ export default {
   mixins: [DeepForm],
   formDefinition: [],
   props: {
-    label: { type: String, default: null }
+    label: { type: String, default: null },
+    readonly: { type: Boolean, default: false }
   },
   data() {
     return { model: { key: "", value: "" } };

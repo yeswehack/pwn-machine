@@ -8,12 +8,13 @@
     label="Image"
     use-input
     fill-input
+    :readonly="readonly"
     new-value-mode="add"
     hide-selected
     clearable
   >
     <template #append>
-      <q-btn flat round icon="travel_explore" @click.stop="searchImage" />
+      <q-btn flat round icon="travel_explore" @click.stop="searchImage" v-if="!readonly" />
     </template>
   </q-select>
 </template>
@@ -21,8 +22,9 @@
 <script>
 import api from "src/api";
 import ImageSearchVue from "./ImageSearch.vue";
-import DeepForm from 'src/mixins/DeepForm';
+import DeepForm from "src/mixins/DeepForm";
 export default {
+  props: { readonly: { type: Boolean, default: false } },
   mixins: [DeepForm],
   formDefinition: null,
   apollo: {

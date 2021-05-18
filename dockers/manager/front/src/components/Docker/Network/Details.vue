@@ -2,21 +2,7 @@
   <div class="row q-gutter-md q-py-md">
     <div class="col">
       <q-card>
-        <q-card-section>
-          <div class="row items-center q-gutter-md">
-            <div class="text-h6">{{ network.name }}</div>
-            <q-space />
-            <help-link
-              href="https://docs.docker.com/engine/reference/commandline/network_create/"
-            />
-          </div>
-        </q-card-section>
-        <q-card-section class="q-col-gutter-md">
-          <ipam-input readonly :value="network.ipam" />
-        </q-card-section>
-        <q-card-section class="q-col-gutter-md">
-          <label-input readonly :value="network.labels" />
-        </q-card-section>
+        <create-network :value="network" readonly />
       </q-card>
     </div>
     <div class="col">
@@ -37,6 +23,7 @@
 <script>
 import IpamInput from "./IpamInput.vue";
 import LabelInput from "../LabelInput.vue";
+import CreateNetwork from "./Create.vue";
 import HelpLink from "src/components/HelpLink.vue";
 import ContainerListInput from "../ContainerListInput.vue";
 import api from "src/api";
@@ -46,9 +33,7 @@ export default {
     network: { type: Object, required: true }
   },
   components: {
-    IpamInput,
-    LabelInput,
-    HelpLink,
+    CreateNetwork,
     ContainerListInput
   },
   methods: {

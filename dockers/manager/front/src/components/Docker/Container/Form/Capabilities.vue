@@ -1,20 +1,20 @@
 <template>
-  <div class="row items-center">
-    <q-select
-      class="col col-grow"
-      use-chips
-      multiple
-      clearable
-      :options="options"
-      v-model="model"
-      @input="input"
-      label="Capabilities"
-    />
-    <help-link
-      class="q-ml-md"
-      href="https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities"
-    />
-  </div>
+  <q-select
+    v-bind="$attrs"
+    use-chips
+    multiple
+    clearable
+    :options="options"
+    v-model="model"
+    @input="input"
+    label="Capabilities"
+  >
+    <template #after>
+      <help-link
+        href="https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities"
+      />
+    </template>
+  </q-select>
 </template>
 
 <script>
