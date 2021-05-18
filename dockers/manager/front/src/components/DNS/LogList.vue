@@ -80,6 +80,7 @@ export default {
   },
   data() {
     const pagination = {
+      page: 1,
       rowsPerPage: this.rowsPerPage,
       rowsNumber: 1
     };

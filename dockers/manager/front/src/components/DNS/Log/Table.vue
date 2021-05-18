@@ -1,13 +1,13 @@
 <template>
-  <div class="column full-width q-col-gutter-md">
-    <div class="row q-gutter-md ">
+  <div class="full-width column">
+    <div class="row q-gutter-md items-center q-mb-md">
       <div class="col">
         <q-input filled v-model="domain" label="Domain" />
       </div>
       <div class="col col-auto">
         <q-input filled v-model="type" label="Type" />
       </div>
-      <div class="col col-auto q-pt-sm">
+      <div class="col col-auto">
         <q-btn
           icon="eva-cloud-download-outline"
           title="Download all matching log as json"
@@ -16,7 +16,7 @@
           color="primary"
         />
       </div>
-      <div class="col col-auto q-pt-sm">
+      <div class="col col-auto">
         <q-btn
           icon="eva-trash"
           title="Delete all matching log"

@@ -1,46 +1,51 @@
 <template>
-  <q-form>
-    <q-card style="min-width: 50vw" bordered>
-      <q-card-section class="q-gutter-sm">
-        <component
-          :is="formChildren.containerName"
-          v-model="form.containerName"
-        />
-        <q-input label="Command" v-model="form.cmd" />
-
-        <q-list separator class="rounded-borders" bordered>
-          <q-expansion-item label="Extra config" icon="star">
-            <q-card>
-              <q-card-section>
-                <div class="column q-col-gutter-sm">
-                  <div class="col">
-                    <q-input
-                      label="User"
-                      v-model="form.user"
-                      hint="format: <name|uid>[:<group|gid>]"
-                    />
-                  </div>
-                  <div class="col">
-                    <q-input label="Working directory" v-model="form.workdir" />
-                  </div>
-                  <div class="col">
-                    <q-toggle label="Privileged" v-model="form.privileged" />
-                  </div>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
+  <div class="row justify-center full-width">
+    <q-form style="min-width: 600px">
+      <q-card bordered>
+        <q-card-section class="q-gutter-sm">
           <component
-            :is="formChildren.environment"
-            v-model="form.environment"
+            :is="formChildren.containerName"
+            v-model="form.containerName"
           />
-        </q-list>
-      </q-card-section>
-      <q-card-section>
-        <reset-and-save :modified="modified" @save="submit" @reset="reset" />
-      </q-card-section>
-    </q-card>
-  </q-form>
+          <q-input label="Command" v-model="form.cmd" />
+
+          <q-list separator class="rounded-borders" bordered>
+            <q-expansion-item label="Extra config" icon="star">
+              <q-card>
+                <q-card-section>
+                  <div class="column q-col-gutter-sm">
+                    <div class="col">
+                      <q-input
+                        label="User"
+                        v-model="form.user"
+                        hint="format: <name|uid>[:<group|gid>]"
+                      />
+                    </div>
+                    <div class="col">
+                      <q-input
+                        label="Working directory"
+                        v-model="form.workdir"
+                      />
+                    </div>
+                    <div class="col">
+                      <q-toggle label="Privileged" v-model="form.privileged" />
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+            <component
+              :is="formChildren.environment"
+              v-model="form.environment"
+            />
+          </q-list>
+        </q-card-section>
+        <q-card-section>
+          <reset-and-save :modified="modified" @save="submit" @reset="reset" />
+        </q-card-section>
+      </q-card>
+    </q-form>
+  </div>
 </template>
 
 <script>

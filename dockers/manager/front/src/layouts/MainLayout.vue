@@ -10,7 +10,8 @@
         </q-toolbar-title>
       </q-toolbar>
 
-      <q-tabs align="left" v-if="showMenu" class="tabs">
+      <q-tabs align="left" v-if="showMenu" class="tabs" 
+      narrow-indicator>
         <q-route-tab :to="{ name: 'dockerIndex' }" label="Docker" />
         <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
         <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />

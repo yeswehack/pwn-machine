@@ -1,7 +1,7 @@
 <template>
   <div class="terminal-container">
     <div ref="terminal" class="terminal">
-      <q-resize-observer @resize="onResize" />
+      <q-resize-observer @resize="onResize" :debounce="300" />
     </div>
     <q-btn
       v-if="started"
@@ -188,11 +188,13 @@ export default {
 .terminal {
   flex-grow: 1;
   height: 100%;
+  width: 100%;
 }
 
 .terminal-container {
   flex-grow: 1;
   height: 100%;
+  width: 100%;
   position: relative;
 }
 

@@ -3,7 +3,7 @@
     ref="table"
     name="image"
     row-key="id"
-    :loading="loading"
+    :loading="$apollo.queries.images.loading"
     :data="images"
     :columns="columns"
     v-on:delete="deleteContainer"
@@ -53,11 +53,6 @@ export default {
       col("containers", { label: "used by" })
     ];
     return { columns };
-  },
-  computed: {
-    loading() {
-      return this.$apollo.queries.images.loading;
-    }
   },
   methods: {
     format_time(s) {

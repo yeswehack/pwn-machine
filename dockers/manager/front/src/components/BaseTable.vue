@@ -1,20 +1,20 @@
 <template>
   <q-table
+    v-on="$listeners"
+    v-bind="$attrs"
+    flat
+    hide-pagination
     ref="table"
     class="pm-table full-width"
-    flat
+    table-header-style="text-transform: capitalize"
     :row-key="rowKey"
-    hide-pagination
     :loading="loading"
     :columns="columns"
     :pagination="pagination"
     :filter="filter"
-    table-header-style="text-transform: capitalize"
-    v-bind="$attrs"
-    @row-click="toggleRow"
-    v-on="$listeners"
     :no-data-label="`You don't have any ${name}.`"
     :expanded.sync="expanded"
+    @row-click="toggleRow"
   >
     <template #top>
       <q-btn
@@ -32,7 +32,11 @@
       </q-input>
     </template>
     <template #body="props">
-      <q-tr :props="props" :name="props.row[rowKey]" @click="toggleRow(props.row)">
+      <q-tr
+        :props="props"
+        :name="props.row[rowKey]"
+        @click="toggleRow(props.row)"
+      >
         <q-menu touch-position context-menu>
           <q-list dense class="rounded-borders bg-grey-9">
             <q-item v-close-popup clickable @click="$emit('clone', props.row)">

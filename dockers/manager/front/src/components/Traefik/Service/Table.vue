@@ -1,5 +1,6 @@
 <template>
   <base-table
+    class=""
     ref="table"
     name="service"
     row-key="name"

@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="middleware"
     row-key="name"
@@ -30,9 +30,9 @@
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <MiddlewareDetails :middleware="row"  />
+      <MiddlewareDetails :middleware="row" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
