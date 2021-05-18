@@ -21,12 +21,13 @@ es = AsyncElasticsearch(ES_HOSTS)
 
 
 async def wait_for_es(es):
-    # wait for es for ~30s
-    for i in range(30):
+    # wait for es for ~5m
+    for i in range(300):
         try:
-            await es.wait_for_status("yellow")
+            await es.cluster.health(wait_for_status="yellow")
             return
         except:
+            print("Waiting for elasticsearch")
             await asyncio.sleep(1)
             continue
     print("Unable to connect to elasticsearch, stopping process")
@@ -102,12 +103,18 @@ async def log_handler(reader: asyncio.StreamReader, writer: asyncio.StreamWriter
 
 async def main():
     await wait_for_es(es)
+
     if not await es.indices.exists(ES_INDEX):
         await init_mappings()
     server = await asyncio.start_server(log_handler, GRABBER_HOST, GRABBER_PORT)
     print(f"Log grabber server started on {GRABBER_HOST}:{GRABBER_PORT}")
+
     async with server:
+        await asyncio.create_subprocess_shell("/usr/sbin/pdns_server --daemon=true")
+        await asyncio.create_subprocess_shell("/usr/sbin/pdns_recursor --daemon=true")
         await server.serve_forever()
+
+    await asyncui.gather([auth, recursor])
 
 
 if __name__ == "__main__":
