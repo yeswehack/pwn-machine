@@ -7,6 +7,9 @@
     :data="volumes"
     :columns="columns"
     no-details
+    @create="createVolume"
+    @clone="cloneVolume"
+    @delete="deleteVolume"
   >
     <template #body-cell-usingContainers="{row}">
       <div class="q-gutter-sm row">
@@ -22,6 +25,7 @@
 
 <script>
 import BaseTable from "src/components/BaseTable.vue";
+import ContainerDialog from "./Dialog.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 
@@ -32,6 +36,22 @@ export default {
       query: api.docker.GET_VOLUMES,
       update: data => data.dockerVolumes
     }
+  },
+  methods: {
+    createVolume() {
+      this.$q.dialog({
+        component: ContainerDialog,
+        parent: this
+      });
+    },
+    cloneVolume(volume) {
+      this.$q.dialog({
+        component: ContainerDialog,
+        parent: this,
+        volume
+      });
+    },
+    deleteVolume(volume) {}
   },
   data() {
     const col = (name, opts = {}) => ({
@@ -51,6 +71,6 @@ export default {
       })
     ];
     return { columns };
-  },
+  }
 };
 </script>
