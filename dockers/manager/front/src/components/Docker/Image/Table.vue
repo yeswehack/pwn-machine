@@ -47,7 +47,7 @@ export default {
       ...opts
     });
     const columns = [
-      col("name", { format: v => v ?? "<no name>" }),
+      col("name"),
       col("created"),
       col("size", { format: v => format.humanStorageSize(v) }),
       col("containers", { label: "used by" })
