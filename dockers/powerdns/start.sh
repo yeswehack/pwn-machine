@@ -23,6 +23,4 @@ echo 'SELECT 1 FROM domains;' | mysql -u "${DB_USER}" -p"${DB_PASSWORD}" -h "${D
 )
 mkdir -p /var/run/pdns-recursor
 # start server
-poetry run python -u main.py  &
-/usr/sbin/pdns_server --loglevel=9 --daemon=no &
-/usr/sbin/pdns_recursor --loglevel=9 --daemon=no 
+poetry run python -u main.py
