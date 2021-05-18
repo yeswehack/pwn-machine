@@ -26,6 +26,7 @@ export default {
   height: calc(100% - 20px);
 }
 .overview {
-  flex-grow: 1;
+  height: 100%;
+  width: 100%;
 }
 </style>

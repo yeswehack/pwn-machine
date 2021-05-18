@@ -55,10 +55,11 @@ export default {
 
         for (const port of container.ports) {
           let forwards = [];
-          
 
           for (const binding of port.hostBindings) {
-            forwards.push(`${binding.ip}:${binding.port}->${port.containerPort}`);
+            forwards.push(
+              `${binding.ip}:${binding.port}->${port.containerPort}`
+            );
           }
           if (forwards.length) {
             elements.push(internetEdge(forwards, container.name));

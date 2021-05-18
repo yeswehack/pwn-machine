@@ -1,19 +1,19 @@
 <template>
-  <base-overview ref='overview' :loading="$apollo.queries.zones.loading" />
+  <base-overview ref="overview" :loading="$apollo.queries.zones.loading" />
 </template>
 
 <script>
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
 import api from "src/api";
-import BaseOverview from '../BaseOverview.vue';
+import BaseOverview from "../BaseOverview.vue";
 
 export default {
   components: { BaseOverview },
   apollo: {
     zones: {
       query: api.dns.OVERVIEW,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: "cache-and-network",
       update: data => data.dnsZones
     }
   },
@@ -40,7 +40,11 @@ export default {
       const zoneNode = zone => node(`z-${zone.nodeId}`, zone.name, ["zone"]);
       const ruleNode = (rule, cls) =>
         node(`ru-${rule.nodeId}`, `${rule.name} (${rule.type})`, ["rule"]);
-      const recordNode = (rule, record) => node(`re-${rule.nodeId}-${record.content}`, record.content, ["record", record.enabled ? 'enabled': 'disabled']);
+      const recordNode = (rule, record) =>
+        node(`re-${rule.nodeId}-${record.content}`, record.content, [
+          "record",
+          record.enabled ? "enabled" : "disabled"
+        ]);
 
       for (const zone of zones) {
         elements.push(zoneNode(zone));
@@ -51,9 +55,10 @@ export default {
 
           for (const record of rule.records) {
             elements.push(recordNode(rule, record));
-            elements.push(edge(`ru-${rule.nodeId}`, `re-${rule.nodeId}-${record.content}`));
+            elements.push(
+              edge(`ru-${rule.nodeId}`, `re-${rule.nodeId}-${record.content}`)
+            );
           }
-
         }
       }
       cytoscape({
@@ -104,7 +109,7 @@ export default {
             style: {
               "text-valign": "center",
               "text-halign": "right",
-              "text-margin-x": "2",
+              "text-margin-x": "2"
             }
           },
           {
@@ -138,13 +143,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.graph-container {
-  width: 100%;
-  height: calc(100% - 20px);
-}
-.overview {
-  flex-grow: 1;
-}
-</style>
