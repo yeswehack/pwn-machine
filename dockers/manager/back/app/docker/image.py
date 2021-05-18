@@ -33,6 +33,8 @@ def resolve_image_name(image, *_):
         return image.attrs["RepoTags"][0]
     if image.attrs["RepoDigests"]:
         return image.attrs["RepoDigests"][0].rpartition("@")[0]
+    _, _, id = image.attrs["Id"].partition(":")
+    return id[:12]
 
 
 @DockerImage.field("labels")
