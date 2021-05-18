@@ -10,9 +10,36 @@ type DockerNetwork {
   ipv6: Boolean!
   driver: String!
   internal: Boolean!
-  subnet: String
-  gateway: String
+  ipams: [DockerNetworkIpam!]!
   usingContainers: [DockerContainer!]!
+}
+
+extend type Mutation {
+  dockerCreateNetwork(
+    name: String!
+    labels: [KeyValueInput!]! = []
+    ipv6: Boolean = false
+    driver: String! = "bridge"
+    internal: Boolean = false
+    ipam: DockerNetworkIpamInput
+  ): DockerNetwork
+}
+
+type DockerNetworkIpam {
+  subnet: String!
+  ipRange: String
+  gateway: String
+}
+
+input DockerNetworkIpamInput {
+  subnet: String
+  ipRange: String
+  gateway: String
+}
+
+extend type Mutation {
+  dockerRemoveNetwork(id: ID!): DockerNetwork
+  dockerPruneNetworks: [DockerNetwork!]
 }
 
 extend type Mutation {

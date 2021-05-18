@@ -28,7 +28,7 @@ async def resolve_image_tags(image, _):
 
 
 @DockerImage.field("name")
-def resolve_image_name(image, *_):
+async def resolve_image_name(image, *_):
     if image.attrs["RepoTags"]:
         return image.attrs["RepoTags"][0]
     if image.attrs["RepoDigests"]:
@@ -78,7 +78,7 @@ async def resolve_image_using_containers(image, _, onlyRunning=True):
 
 
 @registerQuery("dockerSearchImage")
-def resolve_search_image(*_, search):
+async def resolve_search_image(*_, search):
     return [
         {
             "name": image["name"],

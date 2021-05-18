@@ -67,8 +67,14 @@ export default {
       col("name"),
       col("driver"),
       col("internal"),
-      col("gateway", { classes: "text-mono" }),
-      col("subnet", { classes: "text-mono" }),
+      col("gateway", {
+        classes: "text-mono",
+        field: ({ ipams }) => ipams[0]?.gateway
+      }),
+      col("subnet", {
+        classes: "text-mono",
+        field: ({ ipams }) => ipams[0]?.subnet
+      }),
       col("containers", { label: "used by" })
     ];
     return { columns };
