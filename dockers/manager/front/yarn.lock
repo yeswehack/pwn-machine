@@ -3003,6 +3003,13 @@ cors@~2.8.5:
     object-assign "^4"
     vary "^1"
 
+cose-base@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cose-base/-/cose-base-2.0.0.tgz#6fc56eca81d44c388f1099d3f3ba4feb67c0403e"
+  integrity sha512-SdE/oR+5SmdxI5lflXiD9RsUfJ78bXbAzpKkMuK890wVa2PTHQGl1pVwpNca81PWQArM4lNdYmLOt1gCyOdfbg==
+  dependencies:
+    layout-base "^2.0.0"
+
 cosmiconfig@^5.0.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-5.2.1.tgz#040f726809c591e77a17c0a3626ca45b4f168b1a"
@@ -3283,6 +3290,13 @@ cytoscape-dagre@^2.3.2:
   integrity sha512-dL9+RvGkatSlIdOKXiFwHpnpTo8ydFMqIYzZFkImJXNbDci3feyYxR46wFoaG9GFiWimc6XD9Lm0x29b1wvWpw==
   dependencies:
     dagre "^0.8.5"
+
+cytoscape-fcose@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-fcose/-/cytoscape-fcose-2.0.0.tgz#2d4ae5f80f7a7251bbd16184289cb4eca10af3f4"
+  integrity sha512-Wy80mbn50qKba5KH2GhZRPZYZGvGXCVK3yWcxSxrZOMJwXmoFQqp76OLUASgdSk5jPsrH3XA+O/bW+hJ5I0Dzw==
+  dependencies:
+    cose-base "^2.0.0"
 
 cytoscape@^3.18.1:
   version "3.18.2"
@@ -5687,6 +5701,11 @@ launch-editor@^2.2.1:
   dependencies:
     chalk "^2.3.0"
     shell-quote "^1.6.1"
+
+layout-base@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/layout-base/-/layout-base-2.0.0.tgz#1d772ec88600cfd27aed1720c604f6021fa1e67f"
+  integrity sha512-I3y9zwMl7/ZaGCeQMUwBVABQ0Vz5c1DFlmMtcON4H/E1sBx+RFOcd7SH8nmkOZ0L2wfVPr68MXvtTZB93vT+2w==
 
 lazystream@^1.0.0:
   version "1.0.0"
