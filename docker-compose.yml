@@ -26,7 +26,7 @@ services:
       - "8081:8081"
     depends_on:
       - powerdns-db
-      
+      - elasticsearch
     networks:
       - manager-net
       - elasticsearch-net
