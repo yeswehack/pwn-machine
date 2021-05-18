@@ -16,12 +16,8 @@
     <div
       class="row justify-center bg-dark q-pa-md page-content rounded-borders"
     >
-      <transition
-        :enter-active-class="slideIn"
-        :leave-active-class="slideOut"
-        @before-leave="floatElement"
-      >
-        <router-view :key="$route.path" />
+      <transition @before-enter="beforeEnter" @before-leave="beforeLeave">
+        <router-view class="animated" :key="$route.path" />
       </transition>
     </div>
   </q-page>
@@ -31,8 +27,6 @@
 export default {
   data() {
     return {
-      slideIn: "animated slideInRight",
-      slideOut: "animated slideOutLeft",
       oldIdx: null,
       oldSlots: null
     };
@@ -47,33 +41,23 @@ export default {
         if (elm.getAttribute("aria-current") == "page") {
           this.oldIdx = idx;
         }
-        if (!elm.getAttribute("aria-hooked")) {
-          elm.addEventListener(
-            "click",
-            () => {
-              this.navigate(elm.getAttribute("aria-idx"));
-            },
-            true
-          );
-          elm.setAttribute("aria-hooked", true);
-        }
         elm.setAttribute("aria-idx", idx);
       }
       this.oldSlots = this.$slots;
     },
-    navigate(idx) {
-      if (this.oldIdx !== null) {
-        if (idx < this.oldIdx) {
-          this.slideIn = "animated slideInLeft";
-          this.slideOut = "animated slideOutRight";
-        } else {
-          this.slideIn = "animated slideInRight";
-          this.slideOut = "animated slideOutLeft";
-        }
-      }
-      this.oldIdx = idx;
+    beforeEnter(el){
+      const linkEl = document.activeElement.parentElement;
+      const newIdx = linkEl.getAttribute("aria-idx");
+      const slideOut = newIdx < this.oldIdx ? "slideInLeft" : "slideInRight";
+      el.classList.add(slideOut);
     },
-    floatElement(el) {
+    beforeLeave(el) {
+      const linkEl = document.activeElement.parentElement;
+      const newIdx = linkEl.getAttribute("aria-idx");
+      const slideOut = newIdx < this.oldIdx ? "slideOutRight" : "slideOutLeft";
+      this.oldIdx = newIdx;
+      el.classList.add(slideOut);
+
       const { width, height } = el.getBoundingClientRect();
       Object.assign(el.style, {
         width: `${width}px`,
