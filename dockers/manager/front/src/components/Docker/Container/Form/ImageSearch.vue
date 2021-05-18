@@ -23,7 +23,15 @@
             :rows-per-page-options="[0]"
             @row-click="selectImage"
           >
-            <template #body-cell-info="props">
+            <template #body-cell-name="props">
+              <q-td :props="props">
+                {{ props.value }}
+                <q-tooltip>
+                  {{ props.row.description }}
+                </q-tooltip>
+              </q-td>
+            </template>
+            <template #body-cell-link="props">
               <q-td :props="props">
                 <q-btn
                   flat
@@ -36,9 +44,6 @@
                   size="sm"
                   @click.stop=""
                 />
-                <q-tooltip>
-                  {{ props.row.description }}
-                </q-tooltip>
               </q-td>
             </template>
             <template #body-cell-isOfficial="props">
@@ -95,12 +100,12 @@
 
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
-import gql from "src/gql";
+import api from "src/api";
 export default {
   components: { BaseDialog },
   apollo: {
     images: {
-      query: gql.docker.SEARCH_IMAGE,
+      query: api.docker.SEARCH_IMAGE,
       debounce: 250,
       throttle: 250,
       skip() {
@@ -113,7 +118,7 @@ export default {
       fetchPolicy: "cache-first"
     },
     imageTags: {
-      query: gql.docker.SEARCH_IMAGE_TAG,
+      query: api.docker.SEARCH_IMAGE_TAG,
       skip: true,
       update: data => data.dockerSearchImageTag,
       variables() {
@@ -139,8 +144,8 @@ export default {
       ...opts
     });
     const imageColumns = [
-      col("name", { align: "left" }),
-      col("info"),
+      col("name", { label: "Name", align: "left" }),
+      col("link", {label: "Link", align:"center"}),
       col("isOfficial", { label: "Official", align: "center" }),
       col("isAutomated", { label: "Automated", align: "center" }),
       col("starCount", { label: "Stars" })

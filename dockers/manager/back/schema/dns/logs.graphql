@@ -1,23 +1,37 @@
-type DnsLog {
-    origin: String!
-    time: String!
-    domain: String!
-    type: DnsRuleType
+
+type DnsLogResponse {
+    name: String!
+    rdata: String!
+    type: DnsRuleType!
 }
 
+type DnsLog implements Node {
+
+    nodeId: ID!
+    origin: String!
+    date: DateTime!
+    query: String!
+    type: DnsRuleType!
+    error: String
+    responses: [DnsLogResponse!]!
+}
 input DnsLogFilter {
-    domain: String
+    query: String
     type: String
 }
 
-input CursorInput{
-    offset: Int
-    count: Int
+type DnsLogResult implements Paginated {
+    next: Cursor
+    prev: Cursor
+    total: Int!
+    result: [DnsLog!]
 }
 
 extend type Query{
-    dnsLogs(filter: DnsLogFilter, cursor: CursorInput): [DnsLog!]!
+    dnsLogs(filter: DnsLogFilter, cursor: CursorInput!): DnsLogResult!
 }
+
+
 
 extend type Subscription{
     dnsLogs(filter: DnsLogFilter): DnsLog

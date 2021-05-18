@@ -1,0 +1,6 @@
+query getContainerShells {
+  dockerContainerShells {
+    nodeId
+    containerName
+  }
+}

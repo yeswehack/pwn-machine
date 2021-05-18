@@ -18,17 +18,16 @@ services:
       context: ./dockers/powerdns
       args:
         - API_KEY=test
-    environment:
-      REDIS_URL: redis://redis/0
     ports:
       - "53:53"
       - "53:53/udp"
       - "8081:8081"
     depends_on:
       - powerdns-db
-      
+      - elasticsearch
     networks:
       - manager-net
+      - elasticsearch-net
 
 ##
 # TRAEFIK
@@ -48,7 +47,7 @@ services:
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
-      - "--api.dashboard=true"
+      - "--api.dashboard=false"
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"
       - "--entryPoints.web.address=:80"
@@ -66,6 +65,23 @@ services:
     networks:
       - traefik
       - manager-net
+  elasticsearch:
+    image: elasticsearch:7.12.1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - elasticsearch-net
+      
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      
+
+
 ##
 # Manager
 ##      
@@ -89,11 +105,13 @@ services:
 ###
 
 volumes:
+  elasticsearch-data:
   powerdns-db:
     name: powerdns-db
   redis-data:
 
 networks:
   manager-net:
+  elasticsearch-net:
   traefik:
     name: traefik

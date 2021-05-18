@@ -26,7 +26,7 @@
           <div class="text-h6">Logs</div>
         </q-card-section>
         <q-card-section>
-          <log-list flat :domain="`*${value.name}`" type="*" />
+          <log-list flat :domain="`*${value.name.slice(0, -1)}`" type="*" />
         </q-card-section>
       </q-card>
     </div>
@@ -36,7 +36,7 @@
 import HelpLink from "src/components/HelpLink.vue";
 import SoaForm from "./SoaForm.vue";
 import LogList from "src/components/DNS/LogList.vue";
-import db from "src/gql";
+import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
@@ -52,9 +52,9 @@ export default {
   methods: {
     submit() {
       this.$apollo.mutate({
-        mutation: db.dns.UPDATE_ZONE,
+        mutation: api.dns.UPDATE_ZONE,
         variables: { nodeId: this.value.nodeId, patch: { soa: this.form.soa } },
-        refetchQueries: [{ query: db.dns.GET_ZONES }]
+        refetchQueries: [{ query: api.dns.GET_ZONES }]
       });
     }
   }

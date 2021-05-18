@@ -1,0 +1,21 @@
+fragment NetworkFragment on DockerNetwork {
+  id
+  name
+  labels {
+    key
+    value
+  }
+  created
+  ipv6
+  driver
+  internal
+  ipams {
+    subnet
+    ipRange
+    gateway
+  }
+  usingContainers {
+    id
+    name
+  }
+}

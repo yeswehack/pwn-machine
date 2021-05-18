@@ -1,36 +1,79 @@
-from functools import wraps
 import time
+import re
+from functools import wraps
+
+from ..api import get_powerdns_http_api as dns_http
 from ..utils import (
-    registerQuery,
-    registerMutation,
-    createType,
-    dnsname,
     create_node_id,
-    undnsname,
+    createType,
+    registerMutation,
+    registerQuery,
 )
 
 
-def with_dns_http(f):
-    @wraps(f)
-    def wrapper(obj, info, *args, **kwargs):
-        dns_http = info.context["request"].state.dns_http
-        return f(obj, info, *args, **kwargs, dns_http=dns_http)
+def escape_lua(lua):
+    lua = lua.replace("\\", '\\x5c')
+    lua = lua.replace('"', '\\x22')
+    lua = lua.replace("'", '\\x27')
+    lua = lua.replace("\n", '\\x0a')
+    return f";return loadstring('{lua}')()"
+    return lua
 
-    return wrapper
+
+
+def unescape_lua(lua):
+    if not lua.startswith(";return loadstring("):
+        return lua
+    
+    lua = lua[20:-4]
+    lua = lua.replace('\\x5c', "\\")
+    lua = lua.replace('\\x22', '"')
+    lua = lua.replace('\\x27', "'")
+    lua = lua.replace("\\x0a", '\n')
+    return lua
+
+
+def parse_lua_record(record):
+    type, _, content = record.partition(" ")
+    unescaped_content = unescape_lua(content[1:-1])
+    return type, unescaped_content
 
 
 DnsRule = createType("DnsRule")
 
 
 @registerQuery("dnsRules")
-@with_dns_http
-async def get_dns_rules(*_, dns_http):
-    return await dns_http.get_rules()
+async def get_dns_rules(*_):
+    return await dns_http().get_rules()
 
 
 @DnsRule.field("name")
 def resolve_name(rule, *_):
-    return undnsname(rule["name"])
+    return rule["name"]
+
+
+@DnsRule.field("isLua")
+def resolve_islua(rule, *_):
+    return rule["type"] == "LUA"
+
+@DnsRule.field("type")
+def resolve_islua(rule, *_):
+    if rule["type"] != "LUA":
+        return rule["type"]
+    type, _ = parse_lua_record(rule["records"][0]["content"])
+    return type
+
+
+@DnsRule.field("records")
+def resolve_islua(rule, *_):
+    if rule["type"] != "LUA":
+        return rule["records"]
+
+    records = []
+    for record in rule["records"]:
+        type, content = parse_lua_record(record["content"])
+        records.append({**record, "content": content})
+    return records
 
 
 @DnsRule.field("nodeId")
@@ -47,28 +90,40 @@ def resolve_enabled(record, *_):
 
 
 @registerMutation("createDnsRule")
-@with_dns_http
-async def create_dns_rule_mutation(*_, dns_http, input):
+async def create_dns_rule_mutation(*_, input):
+    records = input["records"]
     zone = input["zone"]
     name = input["name"]
-    type = input["type"]
     ttl = input["ttl"]
-    records = input["records"]
-    return await dns_http.create_rule(zone, name, type, ttl, records)
+    type = input["type"]
+    if len(records) < 1:
+        raise ValueError("At least one record required")
+
+    if input["isLua"]:
+        record = input["records"][0]
+        escaped_content = escape_lua(record['content'])
+        formated = f'{type} "{escaped_content}"'
+        print(formated)
+        records = [{"content": formated, "enabled": record["enabled"]}]
+        type = "LUA"
+
+    return await dns_http().create_rule(zone, name, type, ttl, records)
+
 
 @registerMutation("updateDnsRule")
-@with_dns_http
-async def update_dns_zone_mutation(*_, dns_http, nodeId, patch):
+async def update_dns_zone_mutation(*_, nodeId, patch):
     ttl = patch["ttl"]
     records = patch["records"]
-    return await dns_http.update_rule(nodeId, ttl, records)
+    r = await dns_http().update_rule(nodeId, ttl, records)
+    print(r)
+    return r
+
 
 @registerMutation("deleteDnsRule")
-@with_dns_http
-async def delete_dns_rule_mutation(*_, dns_http, nodeId):
-    return await dns_http.delete_rule(nodeId)
+async def delete_dns_rule_mutation(*_, nodeId):
+    return await dns_http().delete_rule(nodeId)
+
 
 @registerMutation("enableDnsRule")
-@with_dns_http
-async def delete_dns_rule_mutation(*_, dns_http, nodeId, enabled):
-    return await dns_http.enable_rule(nodeId, enabled)
+async def delete_dns_rule_mutation(*_, nodeId, enabled):
+    return await dns_http().enable_rule(nodeId, enabled)

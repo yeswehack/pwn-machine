@@ -5,7 +5,7 @@
       <q-select
         class="col"
         flat
-        v-model="model.name"
+        v-model="model"
         :options="containersNotAlreadyConnected"
         @keypress.enter.prevent="addEntry"
         label="Connect a container"
@@ -36,7 +36,7 @@
                 icon="eva-close"
                 color="negative"
                 size="sm"
-                @click="removeEntry(idx)"
+                @click="removeEntry(idx, entry)"
               />
             </div>
           </div>
@@ -54,7 +54,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import gql from "src/gql";
+import api from "src/api";
 
 export default {
   components: { ContainerLink },
@@ -65,30 +65,35 @@ export default {
   },
   apollo: {
     containers: {
-      query: gql.docker.GET_CONTAINERS,
+      query: api.docker.GET_CONTAINERS,
+      variables: { onlyRunning: true },
       update: data => data.dockerContainers
     }
   },
   data() {
-    return { model: { name: null } };
+    return { model: null };
   },
   formDefinition: [],
   computed: {
     containersNotAlreadyConnected() {
       return (this.containers || []).map(c => ({
         label: c.name,
-        value: c.id,
+        container: c,
         disable: !!this.form.find(x => x.name == c.name)
       }));
     }
   },
   methods: {
     addEntry() {
-      this.form.unshift({ name: this.model.name.label });
-      this.model = { name: null };
+      if (!this.model) return;
+      const container = this.model.container;
+      this.form.unshift({ id: container.id, name: container.name });
+      this.$emit("add", container.id);
+      this.model = null;
     },
-    removeEntry(idx) {
+    removeEntry(idx, entry) {
       this.form.splice(idx, 1);
+      this.$emit("remove", entry.id);
     }
   }
 };

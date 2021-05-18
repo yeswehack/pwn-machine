@@ -36,10 +36,12 @@ def settings_to_kv(settings, prefix=""):
 
 
 class TraefikRedisApi:
+    _instance = None
     def __init__(self, client, root, http_api):
         self.client = client
         self.root = root
         self.http_api = http_api
+
 
     def _with_root_key(self, key):
         return f"{self.root}/{key.lstrip('/')}"
@@ -101,6 +103,17 @@ class TraefikHTTPApi:
         self.cache = {}
         self.runnings = set()
         return
+
+
+    @classmethod
+    def create(cls, root, session):
+        cls._instance = cls(root, session)
+        return cls._instance
+
+    @classmethod
+    def get(cls):
+        return cls._instance
+
 
     async def _get(self, path):
         log(f"API GET {path}")
@@ -231,6 +244,6 @@ class TraefikHTTPApi:
 async def new_traefik_http_client(root):
     try:
         async with aiohttp.ClientSession() as session:
-            yield TraefikHTTPApi(root, session)
+            yield TraefikHTTPApi.create(root, session)
     finally:
         pass

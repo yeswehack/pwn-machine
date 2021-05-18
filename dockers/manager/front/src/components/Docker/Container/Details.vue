@@ -8,10 +8,10 @@
               <div class="text-h6">{{ container.name }}</div>
             </div>
             <div class="col-auto q-mx-md">
-              <ImageLink :name="container.image.tags[0].repository" />
+              <image-link :name="container.image.name" />
             </div>
             <div class="col-auto q-mx-md">
-              <ContainerStatus :status="container.status" />
+              <container-status :status="container.status" />
             </div>
             <q-space />
             <div class="col-auto q-gutter-sm">
@@ -84,22 +84,16 @@
     </div>
     <div class="row q-col-gutter-md">
       <!-- NETWORKS -->
-      <div class="col col-grow" v-if="0">
-        <NetworksInfo :settings="container.connectedNetworks" />
+      <div class="col col-6">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              Settings
+            </div>
+          </q-card-section>
+          <create-container readonly :value="container" />
+        </q-card>
       </div>
-      <!-- ENVIRON -->
-      <div class="col col-grow">
-        <KeyValueTable title="Env" readonly :value="container.environment" />
-      </div>
-      <!-- LABELS -->
-      <div class="col col-grow">
-        <KeyValueTable title="Labels" readonly :value="container.labels" />
-      </div>
-
-      <!-- VOLUMES -->
-      <!--div class="col col-grow" v-if="container.mounts.length">
-          <MountsInfo :mounts="container.mounts" />
-        </div-->
 
       <!-- LOGS -->
       <div class="col col-12" v-if="0">
@@ -121,16 +115,16 @@
 </template>
 
 <script>
-import KeyValueTable from "src/components/KeyValueTable.vue";
+import CreateContainer from "./Create.vue";
 import NetworksInfo from "src/components/Docker/Container/NetworksInfo.vue";
 import MountsInfo from "src/components/Docker/Container/MountsInfo.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
+import LabelInput from "../LabelInput.vue";
 
 export default {
   components: {
-    KeyValueTable,
-    NetworksInfo,
+    CreateContainer,
     //MountsInfo,
     ImageLink,
     ContainerStatus

@@ -19,12 +19,12 @@ function AuthMiddleware(store) {
     if (to.matched.some(r => r.meta.noauth)) {
       return next()
     }
-    console.log("Valid token", store.getters.validToken)
-    if (store.getters.validToken) {
+    next()
+    /* if (store.getters.validToken) {
       next()
     } else {
       next({ name: "login" })
-    }
+    } */
   }
 }
 

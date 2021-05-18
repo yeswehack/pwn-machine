@@ -55,7 +55,13 @@ async def resolve_network_using_containers(network, _):
 
 @registerMutation("dockerCreateNetwork")
 async def resolve_create_network(
-    *_, name, labels: list[KeyValue], ipv6=False, driver, internal=False, ipam=None,
+    *_,
+    name,
+    labels: list[KeyValue],
+    ipv6=False,
+    driver,
+    internal=False,
+    ipam: dict[str, str] = None,
 ):
     try:
         return docker_client.networks.create(
@@ -104,7 +110,7 @@ async def resolve_prune_networks(*_):
     ]
 
 
-@registerMutation("dockerConnectContainerToRouter")
+@registerMutation("dockerConnectContainerToNetwork")
 async def resolve_connect_container(*_, input):
     network = docker_client.networks.get(input["networkId"])
     container = docker_client.containers.get(input["containerId"])
@@ -115,7 +121,7 @@ async def resolve_connect_container(*_, input):
     return True
 
 
-@registerMutation("dockerDisconnectContainerFromRouter")
+@registerMutation("dockerDisconnectContainerFromNetwork")
 async def resolve_connect_container(*_, input):
     network = docker_client.networks.get(input["networkId"])
     container = docker_client.containers.get(input["containerId"])

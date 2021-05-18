@@ -5,7 +5,6 @@ export default async function(/* { app, router, store, ssrContext, urlPath, redi
   const fragmentMatcher = new IntrospectionFragmentMatcher({
     introspectionQueryResultData
   });
-  console.log(fragmentMatcher)
   return {
     default: {
       // 'apollo-link-http' config

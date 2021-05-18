@@ -2,14 +2,6 @@ from ..redis import client as redis_client
 from functools import wraps
 
 
-def with_traefik_http(f):
-    @wraps(f)
-    def wrapper(obj, info, *args, **kwargs):
-        traefik_http = info.context["request"].state.traefik_http
-        return f(obj, info, *args, **kwargs, traefik_http=traefik_http)
-
-    return wrapper
-
 def with_traefik_redis(f):
     @wraps(f)
     def wrapper(obj, info, *args, **kwargs):

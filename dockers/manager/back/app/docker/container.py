@@ -50,15 +50,23 @@ async def resolve_container_networks(container, _):
 class ExposedPort:
     protocol: str
     containerPort: int
-    hostPort: int
+    hostBindings: list
 
 
 @DockerContainer.field("ports")
 async def resolve_container_ports(container, _):
     return [
-        ExposedPort(*port.upper().rpartition("/")[::-2], bind.get("HostPort"))
+        ExposedPort(
+            *port.upper().rpartition("/")[::-2],
+            [
+                {
+                    "ip": bind["HostIp"],
+                    "port": bind["HostPort"],
+                }
+                for bind in binds or []
+            ],
+        )
         for port, binds in container.ports.items()
-        for bind in binds or [{}]
     ]
 
 

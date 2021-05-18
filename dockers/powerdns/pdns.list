@@ -1,1 +1,2 @@
 deb [arch=amd64] http://repo.powerdns.com/debian buster-auth-master main
+deb [arch=amd64] http://repo.powerdns.com/debian buster-rec-master main

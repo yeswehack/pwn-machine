@@ -1,43 +1,55 @@
 <template>
   <q-form @submit="submit">
-    <q-card-section class="q-col-gutter-md">
+    <q-card-section class="column q-col-gutter-md">
       <q-select
-        filled
         required
         v-model="form.zone"
         :options="zoneNames"
         label="zone"
+        class="col"
       />
       <q-input
-        filled
         required
         :disable="!form.zone"
         v-model="form.name"
         :rules="[validateName]"
         label="name"
+        class="col"
       />
-      <q-select
-        filled
-        :disable="!form.zone"
-        v-model="form.type"
-        :options="types"
-        label="type"
-      />
-      <q-input
-        :disable="!form.zone"
-        type="number"
-        filled
-        min="0"
-        v-model.number="form.ttl"
-        label="TTL"
-      />
+      <div class="row q-gutter-md ">
+        <q-toggle
+          :disable="!form.zone"
+          label="Lua record"
+          v-model="form.isLua"
+        />
+        <q-select
+          :disable="!form.zone"
+          v-model="form.type"
+          :options="types"
+          class="col"
+          label="type"
+        />
+        <q-input
+          :disable="!form.zone"
+          type="number"
+          min="0"
+          v-model.number="form.ttl"
+          class="col"
+          label="TTL"
+        />
+      </div>
+      <lua-editor v-model="form.records[0].content" v-if="isLua" />
       <component
+        v-else
         :disable="!form.zone"
         :is="formChildren.records"
         v-model="form.records"
         object-key="content"
         label="Records"
       />
+    </q-card-section>
+    <q-card-section v-if="0">
+      <pre>{{ form }}</pre>
     </q-card-section>
     <q-card-section>
       <reset-and-save :modified="modified" @reset="reset" @save="submit" />
@@ -47,9 +59,10 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import ListInput from "../../ListInput.vue";
-import db from "src/gql";
+import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import LuaEditor from "./LuaEditor.vue";
+import RuleInput from './RuleInput.vue';
 
 const types = [
   "A",
@@ -58,9 +71,9 @@ const types = [
   "ALIAS",
   "APL",
   "CAA",
-  "CERT",
   "CDNSKEY",
   "CDS",
+  "CERT",
   "CNAME",
   "DNSKEY",
   "KEY",
@@ -75,20 +88,20 @@ const types = [
   "PTR",
   "RP",
   "RRSIG",
+  "SMIMEA",
   "SOA",
   "SPF",
-  "SSHFP",
   "SRV",
+  "SSHFP",
   "TKEY",
-  "TSIG",
   "TLSA",
-  "SMIMEA",
+  "TSIG",
   "TXT",
   "URI"
 ];
 
 export default {
-  components: { ResetAndSave },
+  components: { ResetAndSave, LuaEditor },
   mixins: [DeepForm],
   props: {
     value: Object,
@@ -96,39 +109,27 @@ export default {
   },
   apollo: {
     zones: {
-      query: db.dns.GET_ZONES,
+      query: api.dns.GET_ZONES,
       update: data => data.dnsZones
     }
   },
   formDefinition: {
     zone: null,
+    isLua: false,
     name: null,
     type: null,
-    records: ListInput,
+    records: RuleInput,
     ttl: 3600
   },
   data() {
-    const recordColumns = [
-      {
-        name: "content",
-        align: "left",
-        label: "content",
-        field: "content",
-        headerStyle: "width: 90%"
-      },
-      {
-        name: "enabled",
-        align: "left",
-        label: "enabled",
-        field: "enabled",
-        headerStyle: "width: 10%"
-      }
-    ];
-    return { types, recordColumns };
+    return { types};
   },
   computed: {
     zoneNames() {
       return (this.zones ?? []).map(z => z.name);
+    },
+    isLua() {
+      return this.form.isLua;
     }
   },
   methods: {
@@ -138,9 +139,6 @@ export default {
         return `Name must ends with ${this.form.zone}`;
       }
     },
-    createRecord() {
-      return { content: "", enabled: true };
-    },
     submit() {
       const input = {
         ...this.form,
@@ -149,14 +147,22 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: db.dns.CREATE_RULE,
+          mutation: api.dns.CREATE_RULE,
           variables: { input },
-          refetchQueries: [{ query: db.dns.GET_RULES }]
+          refetchQueries: [{ query: api.dns.GET_RULES }]
         })
         .then(() => {
           this.$emit("ok");
         });
     }
+  },
+  watch: {
+    isLua(v) {
+      if (v && this.form.records.length == 0) {
+        this.form.records = [{ content: "return ''" }];
+      }
+    }
   }
 };
 </script>
+

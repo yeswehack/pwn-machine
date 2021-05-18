@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import db from "src/gql";
+import api from "src/api";
 import { extend } from "quasar";
 import Middleware from "src/components/Traefik/Middleware/Middleware.vue";
 import mdinfo from "src/components/Traefik/Middleware/definitions.json";
@@ -107,7 +107,7 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: db.traefik.GET_MIDDLEWARES }]
+          refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
         })
         .then(r => {
           this.$emit("ok");
@@ -124,7 +124,7 @@ export default {
         .mutate({
           mutation,
           variables,
-          refetchQueries: [{ query: db.traefik.GET_MIDDLEWARES }]
+          refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
         })
         .then(r => {
           this.$emit("ok");

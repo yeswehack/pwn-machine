@@ -1,63 +1,134 @@
 <template>
   <q-page padding class="page">
     <q-tabs
-      v-model="tab_"
       dense
       rounded
       inline-label
       shadow
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
       active-color="primary"
-      indicator-color="primary"
       align="left"
-      @input="updatePath"
       narrow-indicator
+      v-mutation="hookNavigation"
     >
-      <slot name="top"></slot>
+      <slot name="default"></slot>
     </q-tabs>
-
-    <q-tab-panels v-model="tab_" animated class="panels">
-      <slot name="tabs"></slot>
-    </q-tab-panels>
+    <div
+      class="row justify-center bg-dark q-pa-md page-content rounded-borders"
+    >
+      <transition
+        :enter-active-class="slideIn"
+        :leave-active-class="slideOut"
+        @before-leave="floatElement"
+      >
+        <router-view :key="$route.path" />
+      </transition>
+    </div>
   </q-page>
 </template>
 
 <script>
 export default {
-  props: {
-    tab: String,
-    pathTemplate: String
-  },
-
   data() {
-    return { tab_: this.tab };
+    return {
+      slideIn: "animated slideInRight",
+      slideOut: "animated slideOutLeft",
+      oldIdx: null,
+      oldSlots: null
+    };
+  },
+  mounted() {
+    this.hookNavigation();
   },
   methods: {
-    updatePath(newVal) {
-      if (newVal !== null)
-        this.$router.push(this.pathTemplate.replace(/\{\}/, newVal));
-    },
-  },
-  watch: {
-    $route(to, from) {
-      if (to.params.tab != this.tab_) {
-        this.tab_ = to.params.tab;
+    hookNavigation() {
+      if (this.oldSlots == this.$slots) return;
+      for (const [idx, { elm }] of this.$slots.default.entries()) {
+        if (elm.getAttribute("aria-current") == "page") {
+          this.oldIdx = idx;
+        }
+        if (!elm.getAttribute("aria-hooked")) {
+          elm.addEventListener(
+            "click",
+            () => {
+              this.navigate(elm.getAttribute("aria-idx"));
+            },
+            true
+          );
+          elm.setAttribute("aria-hooked", true);
+        }
+        elm.setAttribute("aria-idx", idx);
       }
+      this.oldSlots = this.$slots;
+    },
+    navigate(idx) {
+      if (this.oldIdx !== null) {
+        if (idx < this.oldIdx) {
+          this.slideIn = "animated slideInLeft";
+          this.slideOut = "animated slideOutRight";
+        } else {
+          this.slideIn = "animated slideInRight";
+          this.slideOut = "animated slideOutLeft";
+        }
+      }
+      this.oldIdx = idx;
+    },
+    floatElement(el) {
+      const { width, height } = el.getBoundingClientRect();
+      Object.assign(el.style, {
+        width: `${width}px`,
+        height: `${height}px`,
+        position: "absolute",
+        top: "76px",
+        left: "16px"
+      });
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+.page-content {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  overflow-x: hidden;
+
+  // Hacky way to hide children transition overflow
+  &::before,
+  &::after {
+    content: "";
+    width: 24px;
+    position: absolute;
+    top: 0;
+    height: 100%;
+
+    background: #121212;
+    z-index: 100;
+  }
+  &::before {
+    left: 0px;
+  }
+  &::after {
+    right: 0px;
+  }
+}
 .page .tabs {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  text-decoration: none;
 }
 .page {
   display: grid;
+  width: 100%;
+  grid-template-columns: 100%;
   grid-template-rows: auto 1fr;
   flex-direction: column;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14),
     0 3px 1px -2px rgba(0, 0, 0, 0.12);
+  overflow-x: hidden;
 }
-
+</style>
+<style>
+.tabs a {
+  text-decoration: none;
+}
 </style>

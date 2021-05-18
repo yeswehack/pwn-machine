@@ -1,9 +1,6 @@
-import docker
 from typing import NamedTuple
 from datetime import datetime
-
-docker_client = docker.from_env()
-
+from ..api import docker_client
 
 
 class KeyValue(NamedTuple):
@@ -19,3 +16,4 @@ from . import image
 from . import container
 from . import network
 from . import volume
+from . import shell

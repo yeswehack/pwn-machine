@@ -6,15 +6,20 @@
           <div class="row items-center q-gutter-md">
             <div class="text-h6">{{ value.name }}</div>
             <q-space />
-            <div title="Rule type" class="text-mono">{{ value.type }}</div>
+            <div title="Rule type" class="text-mono">
+              {{ value.type }}
+              <q-badge rounded label="LUA" class="q-ml-sm" v-if="value.isLua" />
+            </div>
             <help-link
               href="https://doc.powerdns.com/authoritative/http-api/zone.html"
             />
           </div>
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-gutter-md">
           <q-input v-model.number="form.ttl" type="number" label="TTL" />
+          <lua-editor v-model="form.records[0].content" v-if="value.isLua" />
           <component
+            v-else
             :is="formChildren.records"
             v-model="form.records"
             object-key="content"
@@ -38,7 +43,7 @@
           <div class="text-h6">Logs</div>
         </q-card-section>
         <q-card-section>
-          <log-list flat :domain="value.name" :type="value.type" />
+          <log-list flat :domain="value.name.slice(0, -1)" :type="logType" />
         </q-card-section>
       </q-card>
     </div>
@@ -51,11 +56,12 @@ import RuleInput from "./RuleInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
-import db from "src/gql";
+import api from "src/api";
+import LuaEditor from "./LuaEditor.vue";
 
 export default {
   mixins: [DeepForm],
-  components: { ResetAndSave, HelpLink, LogList },
+  components: { ResetAndSave, HelpLink, LogList, LuaEditor },
   formDefinition: {
     records: RuleInput,
     ttl: 3600
@@ -79,16 +85,24 @@ export default {
     ];
     return { ttl: 0, recordColumns, records: [] };
   },
+  computed:{
+    logType(){
+      return this.value.type
+    }
+  },
   methods: {
     submit() {
       const patch = {
         ...this.form,
-        records: this.form.records.map(r => ({ content: r.content, enabled: r.enabled }))
+        records: this.form.records.map(r => ({
+          content: r.content,
+          enabled: r.enabled
+        }))
       };
       this.$apollo.mutate({
-        mutation: db.dns.UPDATE_RULE,
+        mutation: api.dns.UPDATE_RULE,
         variables: { nodeId: this.value.nodeId, patch },
-        refetchQueries: [{ query: db.dns.GET_RULES }]
+        refetchQueries: [{ query: api.dns.GET_RULES }]
       });
     }
   }

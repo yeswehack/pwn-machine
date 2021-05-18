@@ -1,18 +1,18 @@
 <template>
-  <div class="row items-center">
-    <q-select
-      class="col col-grow"
-      clearable
-      :options="options"
-      v-model="model"
-      label="Restart policy"
-      @input="input"
-    />
-    <help-link
-      class="q-ml-md"
-      href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
-    />
-  </div>
+  <q-select
+    v-bind="$attrs"
+    clearable
+    :options="options"
+    v-model="model"
+    label="Restart policy"
+    @input="input"
+  >
+    <template #after>
+      <help-link
+        href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
+      />
+    </template>
+  </q-select>
 </template>
 
 <script>

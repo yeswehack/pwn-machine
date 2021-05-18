@@ -8,7 +8,7 @@
     <q-separator />
     <q-card>
       <q-card-section>
-        <div class="row">
+        <div class="row" v-if="!readonly">
           <q-input
             class="col col-6"
             flat
@@ -47,13 +47,13 @@
           <q-item :key="idx" v-for="(entry, idx) of form">
             <q-item-section>
               <div class="row q-col-gutter-sm">
-                <div class="col col-6">
+                <div class="col col-6 ellipsis">
                   {{ entry.key }}
                   <q-popup-edit v-model="form[idx].key" v-if="!readonly">
                     <q-input v-model="form[idx].key" dense autofocus />
                   </q-popup-edit>
                 </div>
-                <div class="col ">
+                <div class="col ellipsis">
                   {{ entry.value }}
 
                   <q-popup-edit v-model="form[idx].value" v-if="!readonly">
@@ -99,6 +99,7 @@ export default {
   formDefinition: [],
   methods: {
     addEntry() {
+      if (!this.model.key) return
       this.form.unshift(this.model);
       this.model = { key: "", value: "" };
     },

@@ -1,37 +1,27 @@
+from collections import defaultdict
+from functools import lru_cache
+
+import aiohttp
 import ariadne
-from .utils.registration import (
-    registered_mutations,
-    registered_queries,
-    registered_types,
-    registered_subscriptions,
-)
+from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
-from starlette.websockets import WebSocket
-from starlette.requests import HTTPConnection
-from starlette.routing import Router, Route, Mount, WebSocketRoute
-from starlette.staticfiles import StaticFiles
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
-from ariadne.asgi import GraphQL
+from starlette.requests import HTTPConnection
+from starlette.routing import Mount, Route, Router, WebSocketRoute
+from starlette.staticfiles import StaticFiles
+from starlette.websockets import WebSocket
+from starlette_context import context
+from starlette_context.middleware import RawContextMiddleware
 
-from .redis import client as redis_client
-from . import docker
-from . import traefik
-from . import dns
+from . import dns, docker, traefik
+from .api.shell import handle_shell
+from .api.powerdns import PowerdnsRedisApi, PowerdnsHTTPApi
+from .api.traefik import TraefikRedisApi, TraefikHTTPApi
 from .auth import auth_middleware
-from .api.traefik import new_traefik_http_client, TraefikRedisApi
-from .api.powerdns import new_powerdns_http_client, PowerdnsRedisApi
-
-
-class TraefikApiMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        async with new_traefik_http_client("http://127.0.0.1:8080/api") as client:
-            request.state.traefik_http = client
-            request.state.traefik_redis = TraefikRedisApi(
-                redis_client, "traefik", client
-            )
-            response = await call_next(request)
-        return response
+from .redis import client as redis_client
+from .utils.registration import (registered_mutations, registered_queries,
+                                 registered_subscriptions, registered_types)
 
 
 class PowerDNSApiMiddleware(BaseHTTPMiddleware):
@@ -42,11 +32,19 @@ class PowerDNSApiMiddleware(BaseHTTPMiddleware):
         return await super().__call__(scope, receive, send)
 
     async def dispatch(self, request, call_next):
+        get_request()
         async with new_powerdns_http_client("http://127.0.0.1:8081", "test") as client:
             request.state.dns_http = client
             request.state.dns_redis = PowerdnsRedisApi(redis_client, "dns")
             response = await call_next(request)
         return response
+
+
+class RequestCacheMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        context["cache"] = dict()
+        context["cache_disabled"] = False
+        return await call_next(request)
 
 
 type_defs = ariadne.load_schema_from_path("./schema")
@@ -84,11 +82,29 @@ class StaticFilesFallback(StaticFiles):
         await response(scope, receive, send)
 
 
+sessions = {}
+
+
+async def on_startup():
+    sessions["traefik"] = aiohttp.ClientSession()
+    sessions["powerdns"] = aiohttp.ClientSession(headers={"X-Api-Key": "test"})
+    TraefikHTTPApi.create("http://127.0.0.1:8080/api", sessions["traefik"])
+    PowerdnsHTTPApi.create("http://127.0.0.1:8081", sessions["powerdns"])
+
+
+async def on_shutdown():
+    await sessions["traefik"].close()
+    await sessions["powerdns"].close()
+
+
 app = Starlette(
     routes=[
         Route("/api", GraphQL(schema, middleware=[auth_middleware])),
         WebSocketRoute("/api", GraphQL(schema=schema)),
+        WebSocketRoute("/shell/{uuid:str}", handle_shell),
         # Mount("/", StaticFilesFallback(directory="static", html=True)),
     ],
-    middleware=[Middleware(TraefikApiMiddleware), Middleware(PowerDNSApiMiddleware)],
+    on_startup=[on_startup],
+    on_shutdown=[on_shutdown],
+    middleware=[Middleware(RawContextMiddleware), Middleware(RequestCacheMiddleware)],
 )

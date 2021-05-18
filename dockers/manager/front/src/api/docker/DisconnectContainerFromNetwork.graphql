@@ -1,0 +1,3 @@
+mutation dockerDisconnectContainerFromNetwork($input: dockerConnectContainerNetworkInput) {
+  dockerDisconnectContainerFromNetwork(input: $input)
+}

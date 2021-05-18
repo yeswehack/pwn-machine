@@ -7,8 +7,12 @@ authors = ["BitK <bitk@yeswehack.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 redis = "^3.5.3"
+protobuf = "^3.16.0"
+dnspython = "^2.1.0"
+elasticsearch = {extras = ["async"], version = "^7.12.1"}
 
 [tool.poetry.dev-dependencies]
+black = {version = "^21.5b1", allow-prereleases = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

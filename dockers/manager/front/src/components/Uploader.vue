@@ -32,7 +32,7 @@ export default {
   computed: {
     headers() {
       return [
-        { name: "Authorization", value: `Bearer ${this.$store.getters.token}` }
+        { name: "Authorization", value: `Bearer ` }
       ];
     }
   },

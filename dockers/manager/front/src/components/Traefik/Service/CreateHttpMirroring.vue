@@ -11,14 +11,14 @@
 </template>
 
 <script>
-import db from "src/gql";
+import api from "src/api";
 import DeepForm from "src/mixins/DeepForm.js";
 import MirrorsInput from "./MirrorsInput.vue"
 export default {
   mixins: [DeepForm],
   apollo: {
     services: {
-      query: db.traefik.GET_SERVICES,
+      query: api.traefik.GET_SERVICES,
       update: data => data.traefikServices
     }
   },

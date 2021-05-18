@@ -43,15 +43,15 @@ extend type Mutation {
 }
 
 extend type Mutation {
-  dockerConnectContainerToRouter(
-    input: dockerConnectContainerRouterInput
+  dockerConnectContainerToNetwork(
+    input: dockerConnectContainerNetworkInput
   ): Boolean!
-  dockerDisconnectContainerFromRouter(
-    input: dockerConnectContainerRouterInput
+  dockerDisconnectContainerFromNetwork(
+    input: dockerConnectContainerNetworkInput
   ): Boolean!
 }
 
-input dockerConnectContainerRouterInput {
+input dockerConnectContainerNetworkInput {
   containerId: ID!
   networkId: ID!
 }

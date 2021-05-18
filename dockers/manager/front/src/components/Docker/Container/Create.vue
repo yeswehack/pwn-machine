@@ -1,42 +1,20 @@
 <template>
   <q-form @submit="submit">
     <q-card-section class="column q-gutter-md">
-      <div class="col">
+      <div class="col" v-if="!readonly">
         <div class="column  q-gutter-sm">
           <q-input v-model="form.name" label="name" />
-          <image-select v-model="form.image" />
+          <image-select v-model="form.image"  />
         </div>
       </div>
-      <q-list  separator class="rounded-borders" bordered>
-        <component :is="formChildren.extra" v-model="form.extra" />
-        <component :is="formChildren.environment" v-model="form.environment" />
-        <component :is="formChildren.labels" v-model="form.labels" />
-        <component :is="formChildren.volumes" v-model="form.volumes" />
+      <q-list separator class="rounded-borders" bordered>
+        <component :readonly="readonly" :is="formChildren.extra" v-model="form.extra" />
+        <component :readonly="readonly" :is="formChildren.environment" v-model="form.environment" />
+        <component :readonly="readonly" :is="formChildren.labels" v-model="form.labels" />
+        <component :readonly="readonly" :is="formChildren.volumes" v-model="form.volumes" />
       </q-list>
-      <!--
-      <div>
-        <q-expansion-item expand-separator icon="settings" label="Extra config">
-          <div class="q-py-md">
-            <extra-config v-model="form.extra" />
-          </div>
-        </q-expansion-item>
-      </div>
-        <q-expansion-item
-          expand-separator
-          icon="device_hub"
-          label="Network settings"
-          :caption="
-            `${form.network.networks.length} netwok(s), ${form.network.ports.length} exposed port(s)`
-          "
-        >
-          <div class="q-py-md">
-            <NetworkSettings v-model="form.network" />
-          </div>
-        </q-expansion-item>
-      </div>
-        -->
     </q-card-section>
-    <q-card-actions align="right" class="q-pa-md q-gutter-md">
+    <q-card-actions align="right" class="q-pa-md q-gutter-md" v-if="!readonly">
       <q-toggle
         color="negative"
         v-model="form.rm"
@@ -53,7 +31,7 @@
         {{ form.start ? "Start" : "Create" }}
       </q-btn>
     </q-card-actions>
-    <q-card-actions v-if="true">
+    <q-card-actions v-if="false">
       <pre>{{ JSON.stringify(form, null, 2) }}</pre>
     </q-card-actions>
   </q-form>
@@ -61,14 +39,15 @@
 
 <script>
 import ImageSelect from "./Form/ImageSelect.vue";
-import KeyValueTable from "src/components/KeyValueTable.vue";
 import ExtraConfig from "./Form/ExtraConfig.vue";
-import NetworkSettings from "./Form/NetworkSettings.vue";
 import VolumeSettings from "./Form/VolumeSettings.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import EnvironInput from "./Form/EnvironInput.vue";
 import LabelInputVue from "../LabelInput.vue";
 export default {
+  props: {
+    readonly: { type: Boolean, default: false }
+  },
   mixins: [DeepForm],
   formDefinition: {
     name: null,
@@ -82,10 +61,6 @@ export default {
     ImageSelect,
     EnvironInput,
     ExtraConfig
-    /*KeyValueTable,
-    NetworkSettings,
-    ExtraConfig,
-    VolumeSettings*/
   },
   methods: {
     submit() {

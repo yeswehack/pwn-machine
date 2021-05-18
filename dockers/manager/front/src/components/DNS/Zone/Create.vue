@@ -1,8 +1,14 @@
 <template>
   <q-form @submit="submit">
     <q-card-section>
-      <q-input required v-model="form.name" label="Name" class="q-pb-md" />
-      <component :is="formChildren.soa" v-model="form.soa" />
+      <q-input
+        required
+        v-model="form.name"
+        label="Name"
+        class="q-pb-md"
+        :rules="[endsWithDot]"
+      />
+      <component :is="formChildren.soa" v-model="form.soa"/>
     </q-card-section>
     <q-card-section>
       <reset-and-save :modified="modified" @reset="reset" @save="submit" />
@@ -14,7 +20,7 @@
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import SoaForm from "src/components/DNS/Zone/SoaForm.vue";
 import DeepForm from "src/mixins/DeepForm.js";
-import db from "src/gql";
+import api from "src/api";
 export default {
   mixins: [DeepForm],
   components: { ResetAndSave },
@@ -23,12 +29,15 @@ export default {
     soa: SoaForm
   },
   methods: {
+    endsWithDot(s) {
+      if (s && !s.endsWith(".")) return "Must end with a dot.";
+    },
     submit() {
       this.$apollo
         .mutate({
-          mutation: db.dns.CREATE_ZONE,
+          mutation: api.dns.CREATE_ZONE,
           variables: { input: this.form },
-          refetchQueries: [{ query: db.dns.GET_ZONES }]
+          refetchQueries: [{ query: api.dns.GET_ZONES }]
         })
         .then(() => {
           this.$emit("ok");

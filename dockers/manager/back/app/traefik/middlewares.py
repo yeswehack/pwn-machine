@@ -8,7 +8,8 @@ from ..utils import (
     createInterface,
     create_node_id,
 )
-from . import with_traefik_http, with_traefik_redis
+from . import with_traefik_redis
+from ..api import get_traefik_http_api as traefik_http
 
 
 def create_mutation_resolver(object_type, type_name):
@@ -110,11 +111,10 @@ async def enabled_resolver(middleware, *_):
 
 
 @TraefikMiddleware.field("usedBy")
-@with_traefik_http
-async def resolver(middleware, *_, traefik_http):
+async def resolver(middleware, *_):
     if "usedBy" not in middleware:
         return []
-    return await traefik_http.get_routers_used_by(middleware["usedBy"], ("http",))
+    return await traefik_http().get_routers_used_by(middleware["usedBy"], ("http",))
 
 
 @TraefikMiddleware.type_resolver
@@ -125,9 +125,8 @@ def resolve_middleware_type(obj, *_):
 
 
 @registerQuery("traefikMiddlewares")
-@with_traefik_http
-async def resolve_middlewares(*_, traefik_http):
-    return await traefik_http.get_middlewares()
+async def resolve_middlewares(*_):
+    return await traefik_http().get_middlewares()
 
 
 @registerMutation("traefikDeleteMiddleware")

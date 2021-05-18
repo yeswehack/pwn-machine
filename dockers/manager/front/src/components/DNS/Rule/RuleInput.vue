@@ -1,6 +1,6 @@
 <template>
   <div class="q-mb-md">
-    <label class="row text-bold">Headers</label>
+    <label class="row text-bold">Records</label>
     <div class="row q-gutter-sm">
       <q-input
         class="col"
@@ -63,7 +63,6 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import deepcopy from "deepcopy";
 
 export default {
   mixins: [DeepForm],
