@@ -5,9 +5,12 @@
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
+import fcose from 'cytoscape-fcose';
 import api from "src/api";
 import BaseOverview from "../BaseOverview.vue";
 
+
+cytoscape.use( fcose );
 export default {
   components: { BaseOverview },
   apollo: {
@@ -21,20 +24,17 @@ export default {
     renderOveriew(containers) {
       const colorHash = new ColorHash({ saturation: 1 });
 
-      const edge = (n, f, t) => ({
-        data: { id: `${n}${f}${t}`, name: n, source: f, target: t },
-        style: { "line-color": colorHash.hex(n) }
-      });
+      const internet = {
+        data: { id: "Internet" },
+        position: { x: 0, y: 0 },
+        classes: ["internet", "network"]
+      };
 
-      const internetEdge = (e, n) => ({
-        data: {
-          id: `internet${n}`,
-          name: `${e.join(", ")}`,
-          source: n,
-          target: "Internet"
-        },
-        style: { "line-color": "red", width: 1 }
-      });
+      const host = {
+        data: { id: "host" },
+        position: { x: 0, y: 0 },
+        classes: ["host", "network"]
+      };
 
       const containerNode = c => ({
         data: { id: c.name },
@@ -42,12 +42,43 @@ export default {
         classes: ["container"]
       });
 
-      const internet = {
-        data: { id: "Internet" },
-        position: { x: 0, y: 0 },
-        style: { "border-color": "red", "border-width": ".5" }
+      const edge = (container, network) => ({
+        data: {
+          id: `${container.name}${network.name}`,
+          source: container.name,
+          target: network.name
+        },
+        style: { "line-color": colorHash.hex(network.name) }
+      });
+
+      const internetEdge = (container, name) => ({
+        data: {
+          id: `${container.name}$internet$`,
+          name,
+          source: container.name,
+          target: "Internet"
+        },
+        style: { "line-color": "#ff2200" }
+      });
+
+      const hostEdge = (container, name) => ({
+        data: {
+          id: `${container.name}$host$`,
+          name,
+          source: container.name,
+          target: "host"
+        },
+        style: { "line-color": "#ff2200" }
+      });
+
+      const networkNode = n => {
+        const classes = n.name == "host" ? ["host", "network"] : ["network"];
+        return {
+          data: { id: n.name },
+          style: { "border-color": colorHash.hex(n.name) },
+          classes
+        };
       };
-      const networks = {};
       const elements = [internet];
 
       for (const container of containers) {
@@ -62,18 +93,16 @@ export default {
             );
           }
           if (forwards.length) {
-            elements.push(internetEdge(forwards, container.name));
+            elements.push(internetEdge(container, forwards.join(", ")));
           }
         }
-        for (const { name: networkName } of container.networks) {
-          if (!(networkName in networks)) {
-            networks[networkName] = [container.name];
-          } else {
-            networks[networkName].forEach(n => {
-              elements.push(edge(networkName, container.name, n));
-            });
-            networks[networkName].push(container.name);
+        for (const network of container.networks) {
+          if (network.name == "host") {
+            elements.push(hostEdge(container));
+            continue;
           }
+          elements.push(networkNode(network));
+          elements.push(edge(container, network));
         }
       }
 
@@ -90,8 +119,29 @@ export default {
               color: "white",
               "font-size": 5,
               width: 5,
+              "text-margin-y": -1,
               height: 5,
-              shape: "ellipse"
+              shape: "square"
+            }
+          },
+          {
+            selector: ".network",
+            style: {
+              width: 10,
+              height: 10,
+              shape: "ellipse",
+              "background-color": "#1d1d1d",
+              "border-width": 1
+            }
+          },
+          {
+            selector: ".internet, .host",
+            style: {
+              width: 10,
+              height: 10,
+              shape: "ellipse",
+              "background-color": "#888888",
+              "border-color": "#ff2200"
             }
           },
           {
@@ -107,10 +157,10 @@ export default {
           }
         ],
         layout: {
-          name: "cose",
+          name: "fcose",
+          randomize: true,
           fit: true,
           animate: false,
-          nodeDimensionsIncludeLabels: false
         }
       });
       cy.on("mouseover", "edge", function(event) {
