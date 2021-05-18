@@ -22,6 +22,7 @@
     "core-js": "^3.6.5",
     "cytoscape": "^3.18.1",
     "cytoscape-dagre": "^2.3.2",
+    "cytoscape-fcose": "^2.0.0",
     "deep-equal": "^2.0.5",
     "deepcopy": "^2.1.0",
     "lodash": "^4.17.21",
