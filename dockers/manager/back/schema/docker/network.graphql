@@ -11,16 +11,16 @@ type DockerNetwork {
   usingContainers: [DockerContainer!]!
 }
 
-input dockerConnectContainerRouterInput {
+input dockerConnectContainerNetworkInput {
   containerId: ID!
   networkId: ID!
 }
 
 extend type Mutation {
-  dockerConnectContainerToRouter(
-    input: dockerConnectContainerRouterInput
+  dockerConnectContainerToNetwork(
+    input: dockerConnectContainerNetworkInput
   ): Boolean
-  dockerDisconnectContainerFromRouter(
-    input: dockerConnectContainerRouterInput
+  dockerDisconnectContainerFromNetwork(
+    input: dockerConnectContainerNetworkInput
   ): Boolean
 }

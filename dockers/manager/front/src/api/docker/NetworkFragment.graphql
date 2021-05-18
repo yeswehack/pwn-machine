@@ -12,6 +12,7 @@ fragment NetworkFragment on DockerNetwork {
   subnet
   gateway
   usingContainers {
+    id
     name
   }
 }

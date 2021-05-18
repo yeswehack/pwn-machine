@@ -7,7 +7,7 @@
             <div class="text-h6">{{ network.name }}</div>
             <q-space />
             <help-link
-              href="https://doc.powerdns.com/authoritative/http-api/zone.html"
+              href="https://docs.docker.com/engine/reference/commandline/network_create/"
             />
           </div>
         </q-card-section>
@@ -23,7 +23,9 @@
       <q-card>
         <q-card-section>
           <container-list-input
-            v-model="network.containers"
+            @add="connectContainer"
+            @remove="disconnectContainer"
+            :value="network.usingContainers"
             title="Connected containers"
           />
         </q-card-section>
@@ -33,12 +35,11 @@
 </template>
 
 <script>
-import api from "src/api";
 import IpamInput from "./IpamInput.vue";
 import LabelInput from "../LabelInput.vue";
-import DeepForm from "src/mixins/DeepForm";
 import HelpLink from "src/components/HelpLink.vue";
 import ContainerListInput from "../ContainerListInput.vue";
+import api from "src/api";
 
 export default {
   props: {
@@ -53,14 +54,22 @@ export default {
   methods: {
     refresh() {
       this.$apollo.queries.network.refetch();
-    }
-  },
-  computed: {
-    IPAMConfig() {
-      return [
-        { key: "Gateway", value: this.network.gateway },
-        { key: "Subnet", value: this.network.subnet }
-      ];
+    },
+    connectContainer(containerId) {
+      const input = { networkId: this.network.id, containerId };
+      this.$apollo.mutate({
+        mutation: api.docker.CONNECT_TO_NETWORK,
+        variables: { input },
+        refetchQueries: [{ query: api.docker.GET_NETWORKS }]
+      });
+    },
+    disconnectContainer(containerId) {
+      const input = { networkId: this.network.id, containerId };
+      this.$apollo.mutate({
+        mutation: api.docker.DISCONNECT_FROM_NETWORK,
+        variables: { input },
+        refetchQueries: [{ query: api.docker.GET_NETWORKS }]
+      });
     }
   }
 };

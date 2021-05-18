@@ -1,49 +1,36 @@
 <template>
   <base-table
-    ref="table"
     name="volume"
-    rkey="name"
+    row-key="name"
     :expendable="true"
-    :loading="loading"
+    :loading="$apollo.queries.volumes.loading"
     :data="volumes"
     :columns="columns"
+    no-details
   >
-    <template #body-cell-containers="{row}">
+    <template #body-cell-usingContainers="{row}">
       <div class="q-gutter-sm row">
         <container-link
           :name="name"
           :key="name"
-          v-for="{ name } of row.containers"
+          v-for="{ name } of row.usingContainers"
         />
       </div>
-    </template>
-    <template #popup="{ info }">
-      <create-volume :info="info" v-on:created="volumeCreated" />
-    </template>
-    <template #details="{ row }">
-      <volume-details :name="row.Name" />
     </template>
   </base-table>
 </template>
 
 <script>
 import BaseTable from "src/components/BaseTable.vue";
-import VolumeDetails from "src/components/Docker/Volume/Details.vue";
-import CreateVolume from "src/components/Docker/Volume/Create.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 
 export default {
-  components: { BaseTable, VolumeDetails, CreateVolume, ContainerLink },
+  components: { BaseTable, ContainerLink },
   apollo: {
     volumes: {
       query: api.docker.GET_VOLUMES,
-      update: data => data.docker.volumes
-    }
-  },
-  computed: {
-    loading() {
-      return this.$apollo.queries.getVolumes.loading;
+      update: data => data.dockerVolumes
     }
   },
   data() {
@@ -58,24 +45,12 @@ export default {
     const columns = [
       col("name"),
       col("path", { field: "mountpoint" }),
-      col("containers", {
+      col("usingContainers", {
         label: "used by",
         field: "usingContainers"
       })
     ];
     return { columns };
   },
-  methods: {
-    volumeCreated() {
-      this.$emit("refetch");
-      this.$refs.table.closePopup();
-    }
-  }
 };
 </script>
-
-<style lang="scss" scoped>
-.short {
-  max-width: 15vw;
-}
-</style>
