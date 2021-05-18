@@ -95,16 +95,16 @@ export default {
       query: api.dns.GET_LOGS,
       variables() {
         return {
-          filter: { domain: this.domain, type: this.type },
+          filter: { query: this.domain, type: this.type },
           cursor: {
-            offset: this.offset,
-            count: this.count
+            from: this.from,
+            size: this.size
           }
         };
       },
       fetchPolicy: "network-only",
       pollInterval: 5000,
-      update: data => data.dnsLogs
+      update: data => data.dnsLogs.result
       /*
       subscribeToMore: {
         document: gql`
@@ -179,10 +179,10 @@ export default {
     }
   },
   computed: {
-    offset() {
-      return Math.max(this.page - 1, 0) * this.count;
+    from() {
+      return Math.max(this.page - 1, 0) * this.size;
     },
-    count() {
+    size() {
       return this.pagination.rowsPerPage;
     },
     title() {

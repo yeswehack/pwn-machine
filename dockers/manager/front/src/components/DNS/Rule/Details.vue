@@ -43,7 +43,7 @@
           <div class="text-h6">Logs</div>
         </q-card-section>
         <q-card-section>
-          <log-list flat :domain="value.name" :type="value.type" />
+          <log-list flat :domain="value.name.slice(0, -1)" :type="logType" />
         </q-card-section>
       </q-card>
     </div>
@@ -84,6 +84,11 @@ export default {
       }
     ];
     return { ttl: 0, recordColumns, records: [] };
+  },
+  computed:{
+    logType(){
+      return this.value.type
+    }
   },
   methods: {
     submit() {

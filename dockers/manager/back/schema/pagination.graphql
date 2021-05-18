@@ -2,11 +2,18 @@ type Cursor {
     from: Int!
     size: Int!
 }
+input CursorInput {
+    from: Int!
+    size: Int!
+}
 
+interface Node{
+    nodeId: ID!
+}
 
 interface Paginated {
     next: Cursor
     prev: Cursor
     total: Int!
-    totalPage: Int!
+    result: [Node!]
 }

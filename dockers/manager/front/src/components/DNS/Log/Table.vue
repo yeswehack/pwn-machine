@@ -31,7 +31,7 @@
       flat
       :rows-per-page="20"
       hide-title
-      :domain="domain"
+      :domain="domain.slice(0, -1)"
       :type="type"
     />
   </div>

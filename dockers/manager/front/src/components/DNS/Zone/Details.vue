@@ -26,7 +26,7 @@
           <div class="text-h6">Logs</div>
         </q-card-section>
         <q-card-section>
-          <log-list flat :domain="`*${value.name}`" type="*" />
+          <log-list flat :domain="`*${value.name.slice(0, -1)}`" type="*" />
         </q-card-section>
       </q-card>
     </div>
