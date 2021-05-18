@@ -154,7 +154,7 @@ export default {
     const tagColumns = [
       col("name", { align: "left" }),
       col("size", { label: "Size" }),
-      col("lastUpdated", { label: "Last update" })
+      col("updated", { label: "Last update", format: v => v ?? "never" })
     ];
 
     return {

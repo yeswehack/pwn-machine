@@ -9,8 +9,11 @@ fragment NetworkFragment on DockerNetwork {
   ipv6
   driver
   internal
-  subnet
-  gateway
+  ipams {
+    subnet
+    ipRange
+    gateway
+  }
   usingContainers {
     id
     name

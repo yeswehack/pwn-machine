@@ -1,3 +1,7 @@
+extend type Query {
+  dockerNetworks: [DockerNetwork!]!
+}
+
 type DockerNetwork {
   id: ID!
   name: String!
@@ -6,21 +10,48 @@ type DockerNetwork {
   ipv6: Boolean!
   driver: String!
   internal: Boolean!
-  subnet: String
-  gateway: String
+  ipams: [DockerNetworkIpam!]!
   usingContainers: [DockerContainer!]!
 }
 
-input dockerConnectContainerNetworkInput {
-  containerId: ID!
-  networkId: ID!
+extend type Mutation {
+  dockerCreateNetwork(
+    name: String!
+    labels: [KeyValueInput!]! = []
+    ipv6: Boolean = false
+    driver: String! = "bridge"
+    internal: Boolean = false
+    ipam: DockerNetworkIpamInput
+  ): DockerNetwork
+}
+
+type DockerNetworkIpam {
+  subnet: String!
+  ipRange: String
+  gateway: String
+}
+
+input DockerNetworkIpamInput {
+  subnet: String
+  ipRange: String
+  gateway: String
+}
+
+extend type Mutation {
+  dockerRemoveNetwork(id: ID!): DockerNetwork
+  dockerPruneNetworks: [DockerNetwork!]
 }
 
 extend type Mutation {
   dockerConnectContainerToNetwork(
     input: dockerConnectContainerNetworkInput
-  ): Boolean
+  ): Boolean!
   dockerDisconnectContainerFromNetwork(
     input: dockerConnectContainerNetworkInput
-  ): Boolean
+  ): Boolean!
+}
+
+input dockerConnectContainerNetworkInput {
+  containerId: ID!
+  networkId: ID!
 }

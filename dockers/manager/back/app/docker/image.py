@@ -12,8 +12,8 @@ TAG_REG = re.compile(r"^[a-z0-9_][a-z0-9_\.\-]{0,127}$", re.IGNORECASE)
 
 
 @registerQuery("dockerImages")
-async def resolve_images(*_, onlyFinal=True, filters=None):
-    return docker_client.images.list(all=not onlyFinal, filters=filters)
+async def resolve_images(*_, onlyFinal=True):
+    return docker_client.images.list(all=not onlyFinal)
 
 
 @dataclass
@@ -28,7 +28,7 @@ async def resolve_image_tags(image, _):
 
 
 @DockerImage.field("name")
-def resolve_image_name(image, *_):
+async def resolve_image_name(image, *_):
     if image.attrs["RepoTags"]:
         return image.attrs["RepoTags"][0]
     if image.attrs["RepoDigests"]:
@@ -39,7 +39,7 @@ def resolve_image_name(image, *_):
 
 @DockerImage.field("labels")
 async def resolve_image_labels(image, _):
-    return [KeyValue(k, v) for k, v in image.labels.items()]
+    return [KeyValue(*label) for label in image.labels.items()]
 
 
 @DockerImage.field("parent")
@@ -80,7 +80,7 @@ async def resolve_image_using_containers(image, _, onlyRunning=True):
 
 
 @registerQuery("dockerSearchImage")
-def resolve_search_image(*_, search):
+async def resolve_search_image(*_, search):
     return [
         {
             "name": image["name"],
@@ -112,8 +112,8 @@ async def resolve_search_tag(*_, repoName, imageName):
     return [
         {
             "name": f"{repoName}/{imageName}:{tag['name']}",
-            "lastUpdated": formatTime(t) if (t := tag["last_updated"]) else "never",
             "size": tag["full_size"],
+            "lastUpdated": formatTime(tag["last_updated"]),
         }
         for tag in await get_tags_for_image(repoName, imageName)
     ]

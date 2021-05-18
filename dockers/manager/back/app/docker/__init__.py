@@ -1,13 +1,9 @@
-import docker
-from dataclasses import dataclass
-from ..api import docker_client
+from typing import NamedTuple
 from datetime import datetime
+from ..api import docker_client
 
-docker_client = docker.from_env()
 
-
-@dataclass
-class KeyValue:
+class KeyValue(NamedTuple):
     key: str
     value: str = None
 

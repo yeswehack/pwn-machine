@@ -1,3 +1,7 @@
+extend type Query {
+  dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+}
+
 type DockerContainer {
   id: ID!
   name: String!

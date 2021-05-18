@@ -13,7 +13,7 @@ async def resolve_containers(*_, onlyRunning=True):
 
 @DockerContainer.field("labels")
 async def resolve_container_labels(container, _):
-    return [KeyValue(k, v) for k, v in container.labels.items()]
+    return [KeyValue(*label) for label in container.labels.items()]
 
 
 @DockerContainer.field("created")

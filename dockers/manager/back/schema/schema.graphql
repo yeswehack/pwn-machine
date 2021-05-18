@@ -1,12 +1,4 @@
 type Query {
-  dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
-  dockerImages(
-    onlyFinal: Boolean = true
-    filters: DockerImageFilters
-  ): [DockerImage!]!
-  dockerVolumes: [DockerVolume!]!
-  dockerNetworks: [DockerNetwork!]!
-
   traefikRouters: [TraefikRouter!]!
   traefikEntrypoints: [TraefikEntrypoint!]!
   traefikServices(protocols: [TraefikProtocol!]): [TraefikService!]!
