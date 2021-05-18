@@ -1,51 +1,24 @@
 <template>
-  <div class="overview">
-    <div class="graph-container" ref="graphContainer"></div>
-    <q-inner-loading :showing="loading">
-      <q-spinner-gears size="50px" color="primary" />
-    </q-inner-loading>
-  </div>
+  <base-overview ref="overview" :loading="$apollo.queries.containers.loading" />
 </template>
 
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
 import api from "src/api";
+import BaseOverview from "../BaseOverview.vue";
 
 export default {
+  components: { BaseOverview },
   apollo: {
     containers: {
       query: api.docker.GET_CONTAINERS,
-      variables() {
-        return { name: this.name };
-      },
-      update: ({ containers }) => containers
-    }
-  },
-  computed: {
-    loading() {
-      return this.$apollo.queries.containers.loading;
+      variables: { onlyRunning: true },
+      update: data => data.dockerContainers
     }
   },
   methods: {
-    getStatusColor(status) {
-      switch (status.toLowerCase()) {
-        case "running":
-        case "created":
-        case "restarting":
-          return "#21BA45";
-        case "paused":
-          return "#1976D2";
-        case "removing":
-        case "exited":
-        case "dead":
-          return "#C10015";
-      }
-      return "#1976D2";
-    }
-  },
-  watch: {
-    containers() {
+    renderOveriew(containers) {
       const colorHash = new ColorHash({ saturation: 1 });
 
       const edge = (n, f, t) => ({
@@ -77,19 +50,21 @@ export default {
       const networks = {};
       const elements = [internet];
 
-      for (const container of this.containers) {
+      for (const container of containers) {
         elements.push(containerNode(container));
-        if (container.exposedPorts.some(p => p.hostPort)) {
-          elements.push(
-            internetEdge(
-              container.exposedPorts.map(
-                ep => `${ep.hostPort}->${ep.containerPort}`
-              ),
-              container.name
-            )
-          );
+
+        for (const port of container.ports) {
+          let forwards = [];
+          
+
+          for (const binding of port.hostBindings) {
+            forwards.push(`${binding.ip}:${binding.port}->${port.containerPort}`);
+          }
+          if (forwards.length) {
+            elements.push(internetEdge(forwards, container.name));
+          }
         }
-        for (const networkName in container.connectedNetworks) {
+        for (const { name: networkName } of container.networks) {
           if (!(networkName in networks)) {
             networks[networkName] = [container.name];
           } else {
@@ -102,7 +77,7 @@ export default {
       }
 
       const cy = cytoscape({
-        container: this.$refs.graphContainer,
+        container: this.$refs.overview.getContainer(),
 
         elements: elements,
         wheelSensitivity: 0.5,
@@ -143,17 +118,27 @@ export default {
       cy.on("mouseout", "edge", function(event) {
         event.target.style("font-size", 0);
       });
+    },
+    getStatusColor(status) {
+      switch (status.toLowerCase()) {
+        case "running":
+        case "created":
+        case "restarting":
+          return "#21BA45";
+        case "paused":
+          return "#1976D2";
+        case "removing":
+        case "exited":
+        case "dead":
+          return "#C10015";
+      }
+      return "#1976D2";
+    }
+  },
+  watch: {
+    containers(containers) {
+      this.renderOveriew(containers ?? []);
     }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.graph-container {
-  width: 100%;
-  height: calc(100% - 20px);
-}
-.overview {
-  flex-grow: 1;
-}
-</style>
