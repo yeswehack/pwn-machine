@@ -26,14 +26,16 @@
         />
       </div>
     </div>
-    <log-list
-      bordered
-      flat
-      :rows-per-page="20"
-      hide-title
-      :domain="domain.slice(0, -1)"
-      :type="type"
-    />
+    <div class="row">
+      <log-list
+        bordered
+        flat
+        :rows-per-page="20"
+        hide-title
+        :domain="domain.slice(0, -1)"
+        :type="type"
+      />
+    </div>
   </div>
 </template>
 
