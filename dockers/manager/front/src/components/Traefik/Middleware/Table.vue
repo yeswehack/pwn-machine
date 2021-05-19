@@ -68,9 +68,7 @@ export default {
   },
   methods: {
     extraForm(f){
-      const form ={...f, extra: f[f.type]} 
-      console.log(form)
-      return form
+      return {...f, extra: f[f.type]} 
     },
     createMiddleware() {
       this.$q.dialog({
