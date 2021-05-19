@@ -1,6 +1,6 @@
 <template>
   <div class="q-mb-md">
-    <label class="row text-bold">Headers</label>
+    <label class="row text-bold">{{ label }}</label>
     <div class="row q-gutter-sm">
       <q-input
         class="col"
@@ -74,7 +74,7 @@ import deepcopy from "deepcopy";
 export default {
   mixins: [DeepForm],
   props: {
-    label: { type: String, default: null }
+    label: { type: String, default: "Headers" }
   },
   data() {
     return { model: { key: "", value: "" } };
@@ -82,6 +82,7 @@ export default {
   formDefinition: [],
   methods: {
     addEntry() {
+      if (!this.model?.key) return;
       this.form.unshift(this.model);
       this.model = { key: "", value: "" };
     },

@@ -18,19 +18,11 @@
         />
       </div>
     </template>
-
-    <template #body-cell-middlewares="{row}">
-      <middleware-link
-        :name="middleware.name"
-        v-for="(middleware, idx) of row.middlewares"
-        :key="idx"
-      />
-    </template>
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <MiddlewareDetails :middleware="row" />
+      <middleware-details :value="extraForm(row)" />
     </template>
   </base-table>
 </template>
@@ -75,6 +67,11 @@ export default {
     };
   },
   methods: {
+    extraForm(f){
+      const form ={...f, extra: f[f.type]} 
+      console.log(form)
+      return form
+    },
     createMiddleware() {
       this.$q.dialog({
         component: MiddlewareDialog,

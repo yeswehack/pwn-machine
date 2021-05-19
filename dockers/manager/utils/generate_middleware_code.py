@@ -9,6 +9,7 @@ from contextlib import redirect_stdout
 from generate_middleware_schema import generate_schema_from_types
 from generate_middleware_fragments import generate_fragments_from_types
 from generate_middleware_mutations import generate_mutations_from_types
+from generate_middleware_vue import generate_vue_from_types
 
 REF_URL = "https://raw.githubusercontent.com/traefik/traefik/v2.4/docs/content/reference/dynamic-configuration/kv-ref.md"
 
@@ -88,11 +89,13 @@ def parse_middleware(types, l, v):
     parse_line(types[name], options, v, is_array, is_kv)
 
 
+
+
 def generate_json(types):
     return json.dumps(types)
 
 if __name__ == "__main__":
-    choices = ["json", "mutation", "schema", "fragment"]
+    choices = ["json", "mutation", "schema", "fragment", "vue"]
     if len(sys.argv) != 2:
         exit(f"Usage: {sys.argv[0]} <{'|'.join(choices)}>")
     choice = sys.argv[1].lower()
@@ -110,5 +113,8 @@ if __name__ == "__main__":
         print(generate_fragments_from_types(types))
     if "mutation".startswith(choice):
         print(generate_mutations_from_types(types))
+    if "vue".startswith(choice):
+        generate_vue_from_types(types)
+
 # print(json.dumps(types))
 # print()
