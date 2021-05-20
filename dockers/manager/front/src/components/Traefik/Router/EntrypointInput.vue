@@ -3,7 +3,7 @@
     v-model="form"
     multiple
     use-chips
-    :rules="[nonEmptyArray]"
+    :hint="form.length ? '' : 'all'"
     :options="relevantEntrypoints"
     label="entrypoints"
   />
@@ -30,13 +30,6 @@ export default {
         .map(ep => ep.name);
     }
   },
-  methods: {
-    nonEmptyArray(val) {
-      if (val === null || val === undefined || val.length == 0) {
-        return "You must make a selection.";
-      }
-    }
-  }
 };
 </script>
 

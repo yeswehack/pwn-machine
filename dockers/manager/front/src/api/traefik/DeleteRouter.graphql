@@ -1,5 +1,3 @@
-mutation deleteRouter($input: TraefikDeleteRouterInput!) {
-  traefikDeleteRouter(input: $input) {
-    ok
-  }
+mutation deleteRouter($id: ID!) {
+  deleteTraefikRouter(id: $id)
 }

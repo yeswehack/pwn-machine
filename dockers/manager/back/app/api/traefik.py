@@ -36,6 +36,12 @@ def settings_to_kv(settings, prefix=""):
             yield f"{prefix}/{k}", v
 
 
+async def delete_pattern(client, pattern):
+    for key in await client.keys(pattern):
+        log(f"REDIS delete key: {key}")
+        await client.delete(key)
+
+
 class TraefikRedisApi:
     _instance = None
 
@@ -53,9 +59,7 @@ class TraefikRedisApi:
         return cls._instance
 
     async def delete_pattern(self, pattern):
-        for key in await self.client.keys(pattern):
-            log(f"REDIS delete key: {key}")
-            await self.client.delete(key)
+        return await delete_pattern(self.client, pattern)
 
     # Service
     async def create_service(self, name, protocol, type, settings):
@@ -93,7 +97,45 @@ class TraefikRedisApi:
             raise RuntimeError(f"Unable to update {name}")
         return await self.create_middleware(name, type, settings)
 
-    #
+    # Router
+    async def create_router(self, protocol, settings):
+        name = settings.pop("name")
+        redis_name = name.split("@")[0] if "@" in name else name
+        prefix = f"/{protocol}/routers/{redis_name}"
+        for k, v in settings_to_kv(settings, prefix):
+            await self.client.set(k, v)
+        
+        with no_cache():
+            router = await self.http_api.wait(f"/{protocol}/routers/{redis_name}@redis")
+            router["protocol"] = protocol
+            return  router
+    
+    async def delete_router(self, nodeId):
+        protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
+        redis_name = name.split("@")[0] if "@" in name else name
+        await self.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
+
+        with no_cache():
+            return await self.http_api.wait_delete(f"/{protocol}/routers/{name}")
+
+
+
+    async def update_router(self, nodeId, patch):
+        protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
+        router = await self.http_api.get_router(protocol, name)
+        if router["provider"] != "redis":
+            raise ValueError("You can't edit this router")
+
+        root = f"/{router['protocol']}/routers/{router['name'].split('@')[0]}"
+
+        for key, option in patch.items():
+            print(key, option)
+            await self.delete_pattern(f"{root}/{key}/*")
+            for key, value in settings_to_kv({key: option}):
+                await self.client.set(root + key, value)
+        await asyncio.sleep(1)
+        with no_cache():
+            return await self.http_api.get_router(protocol, name)
 
 
 class TraefikHTTPApi:
@@ -188,6 +230,7 @@ class TraefikHTTPApi:
     async def get_routers_used_by(self, usedBy, protocols=("http", "tcp", "udp")):
         routers = await self.get_routers(protocols)
         return [router for router in routers if router["name"] in usedBy]
+
 
     # Middlewares
     async def get_middleware(self, name):

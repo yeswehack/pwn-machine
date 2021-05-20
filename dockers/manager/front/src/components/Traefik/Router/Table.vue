@@ -39,7 +39,7 @@
     </template>
 
     <template #details="{ row }">
-      <router-details :router="row" />
+      <router-details :value="extraForm(row)" />
     </template>
   </base-table>
 </template>
@@ -131,11 +131,10 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          const input = { protocol: router.protocol, name: router.name };
           this.$apollo
             .mutate({
               mutation: api.traefik.DELETE_ROUTER,
-              variables: { input },
+              variables: { id: router.nodeId },
               refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
             })
             .then(response => {

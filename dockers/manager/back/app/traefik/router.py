@@ -5,8 +5,10 @@ from app.utils import (
     createInterface,
     create_node_id,
 )
-from . import with_traefik_redis
-from app.api import get_traefik_http_api as traefik_http
+from app.api import (
+    get_traefik_http_api as traefik_http,
+    get_traefik_redis_api as traefik_redis,
+)
 
 TraefikRouter = createInterface("TraefikRouter")
 
@@ -78,35 +80,29 @@ async def resolve_traefikrouter_name(router, *_):
     except:
         return None
 
-@registerMutation("traefikCreateHTTPRouter")
-@with_traefik_redis
-async def mutation_create_router(*_, traefik_redis, input):
-    protocol = input["protocol"]
-    name = input["name"]
-    if "rule" in input:
-        traefik_redis.set(f"{protocol}/routers/{name}/rule", input["rule"])
-    traefik_redis.set(f"{protocol}/routers/{name}/service", input["service"])
 
-    for idx, entrypoint in enumerate(input["entryPoints"]):
-        traefik_redis.set(f"{protocol}/routers/{name}/entrypoints/{idx}", entrypoint)
-
-    if "middlewares" in input:
-        for idx, entrypoint in enumerate(input["middlewares"]):
-            traefik_redis.set(
-                f"{protocol}/routers/{name}/middlewares/{idx}", entrypoint
-            )
-
-    router = await traefik_http().wait(f"/{protocol}/routers/{name}@redis")
-    router["protocol"] = protocol
-    return router
+@registerMutation("updateTraefikHTTPRouter")
+@registerMutation("updateTraefikTCPRouter")
+@registerMutation("updateTraefikUDPRouter")
+async def mutation_update_http_router(*_, id, patch):
+    return await traefik_redis().update_router(id, patch)
 
 
-@registerMutation("traefikDeleteRouter")
-@with_traefik_redis
-async def mutation_delete_router(*_, traefik_redis, input):
-    protocol = input["protocol"]
-    name = input["name"]
-    redis_name = name.split("@")[0] if "@" in name else name
-    traefik_redis.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
-    ok = await traefik_http().wait_delete(f"/{protocol}/routers/{name}")
-    return {"ok": ok}
+@registerMutation("createTraefikHTTPRouter")
+async def mutation_create_router(*_, input):
+    return await traefik_redis().create_router("http", input)
+
+
+@registerMutation("createTraefikTCPRouter")
+async def mutation_create_router(*_, input):
+    return await traefik_redis().create_router("tcp", input)
+
+
+@registerMutation("createTraefikUDPRouter")
+async def mutation_create_router(*_, input):
+    return await traefik_redis().create_router("udp", input)
+
+
+@registerMutation("deleteTraefikRouter")
+async def mutation_delete_router(*_, id):
+    return await traefik_redis().delete_router(id)

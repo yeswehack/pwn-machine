@@ -97,20 +97,20 @@ export default {
   },
   methods: {
     submit() {
+      const mutation = api.traefik.CREATE_ROUTER[this.form.protocol];
       const input = {
         name: this.form.name,
-        protocol: this.form.protocol,
         ...this.form.extra
       };
-      /* this.$apollo
+      this.$apollo
         .mutate({
-          mutation: api.traefik.CREATE_ROUTER,
+          mutation,
           variables: { input },
           refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
         })
-        .then(r => {
+        .then(() => {
           this.$emit("ok");
-        }); */
+        });
     },
     nonEmpty(val) {
       if (val === null || val === undefined) {

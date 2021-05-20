@@ -11,7 +11,7 @@
         />
       </div>
       <div class="col col-auto">
-        <q-input type="number" label="Prority" v-model.number="form.prority" />
+        <q-input type="number" label="Prority" v-model.number="form.priority" />
       </div>
     </div>
     <component

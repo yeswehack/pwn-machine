@@ -1,0 +1,6 @@
+#import "./RouterFragment.graphql"
+mutation updateTCPRouter($id: ID!, $patch: TraefikTCPRouterPatch!) {
+  updateTraefikTCPRouter(id: $id, patch: $patch) {
+    ...RouterFragment
+  }
+}

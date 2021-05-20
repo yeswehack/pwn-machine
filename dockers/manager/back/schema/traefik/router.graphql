@@ -78,17 +78,32 @@ type TraefikUDPRouter implements TraefikRouter {
 input TraefikHTTPRouterInput {
   name: String!
 
-  entryPoints: [String!]!
-  middlewares: [String!]!
-  priority: Int!
+  entryPoints: [String!]! = []
+  middlewares: [String!]! = []
+  priority: Int
   rule: String!
-  service: String!
+  service: String
+  tls: TraefikTLSInput
+}
+
+input TraefikHTTPRouterPatch {
+  entryPoints: [String!]
+  middlewares: [String!]
+  priority: Int
+  rule: String
+  service: String
   tls: TraefikTLSInput
 }
 
 input TraefikTCPRouterInput {
   name: String!
 
+  entryPoints: [String!]!
+  rule: String!
+  service: String
+  tls: TraefikTLSInput
+}
+input TraefikTCPRouterPatch {
   entryPoints: [String!]!
   rule: String!
   service: String
@@ -102,13 +117,21 @@ input TraefikUDPRouterInput {
   service: String
 }
 
+input TraefikUDPRouterPatch {
+  entryPoints: [String!]!
+  service: String
+}
+
 extend type Query {
   traefikRouters: [TraefikRouter!]!
 }
 
 extend type Mutation {
-  traefikCreateHTTPRouter(input: TraefikHTTPRouterInput!): TraefikHTTPRouter!
-  traefikCreateTCPRouter(input: TraefikTCPRouterInput!): TraefikTCPRouter!
-  traefikCreateUDPRouter(input: TraefikUDPRouterInput!): TraefikUDPRouter!
-  traefikDeleteRouter(id: ID!): Boolean
+  createTraefikHTTPRouter(input: TraefikHTTPRouterInput!): TraefikHTTPRouter!
+  createTraefikTCPRouter(input: TraefikTCPRouterInput!): TraefikTCPRouter!
+  createTraefikUDPRouter(input: TraefikUDPRouterInput!): TraefikUDPRouter!
+  updateTraefikHTTPRouter(id: ID!, patch: TraefikHTTPRouterPatch!): TraefikHTTPRouter!
+  updateTraefikTCPRouter(id: ID!, patch: TraefikTCPRouterPatch!): TraefikTCPRouter!
+  updateTraefikUDPRouter(id: ID!, patch: TraefikUDPRouterPatch!): TraefikUDPRouter!
+  deleteTraefikRouter(id: ID!): Boolean
 }
