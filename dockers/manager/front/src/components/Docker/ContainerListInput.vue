@@ -7,20 +7,9 @@
         flat
         v-model="model"
         :options="containersNotAlreadyConnected"
-        @keypress.enter.prevent="addEntry"
+        @input="addEntry"
         label="Connect a container"
-      >
-        <template #append>
-          <q-btn
-            dense
-            flat
-            size="md"
-            icon="eva-plus"
-            color="positive"
-            @click.stop="addEntry"
-          />
-        </template>
-      </q-select>
+      />
     </div>
     <q-list separator dense padding>
       <q-item :key="idx" v-for="(entry, idx) of form">

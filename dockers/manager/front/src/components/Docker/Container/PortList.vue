@@ -6,7 +6,11 @@
       v-for="({ hostBindings, containerPort, protocol }, idx) of ports"
     >
       {{ containerPort }}/{{ protocol.toLowerCase() }}
-      <q-tooltip v-if="hostBindings.length">
+      <q-tooltip
+        v-if="hostBindings.length"
+        anchor="top middle"
+        self="bottom middle"
+       >
         <div class="column ">
           <div
             class="col text-right"

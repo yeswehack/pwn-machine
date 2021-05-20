@@ -1,5 +1,5 @@
 <template>
-  <base-dialog ref="dialog" title="Create a new service">
+  <base-dialog ref="dialog" title="Create a new service" size="700">
     <template #default="{ok, cancel}">
       <create-service :value="serviceForm" @ok="ok" @cancel="cancel" />
     </template>

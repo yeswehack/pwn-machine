@@ -83,6 +83,10 @@ class PowerdnsHTTPApi:
         cls._instance = cls(root, session)
         return cls._instance
 
+    @classmethod
+    def get_instance(cls):
+        return cls._instance
+
     async def post(self, path, data):
         log(f"API POST {path}")
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"

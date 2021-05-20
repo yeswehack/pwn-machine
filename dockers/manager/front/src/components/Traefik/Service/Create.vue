@@ -101,7 +101,8 @@ export default {
       this.form.type =
         availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
     },
-    currentType() {
+    currentType(v, old) {
+      if (!old) return
       const instance = this.instanciateSubForm(
         getCreateComponent(this.form),
         this.form
@@ -153,7 +154,7 @@ export default {
       this.loading = true;
       const protocol = this.form.protocol;
       const type = this.form.type;
-      const mutation = db.traefik.CREATE_SERVICE[protocol][type];
+      const mutation = api.traefik.CREATE_SERVICE[protocol][type];
       const input = {
         name: this.form.name,
         [type]: { ...this.form.extra, __typename: undefined }
@@ -170,7 +171,7 @@ export default {
     },
     async updateService() {
       const type = this.form.type;
-      const mutation = db.traefik.UPDATE_SERVICE[type];
+      const mutation = api.traefik.UPDATE_SERVICE[type];
       const variables = {
         nodeId: this.service.nodeId,
         patch: { ...this.form.extra, __typename: undefined }

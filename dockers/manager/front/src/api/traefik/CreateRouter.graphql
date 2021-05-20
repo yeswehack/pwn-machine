@@ -1,6 +1,0 @@
-#import "./RouterFragment.graphql"
-mutation createRouter($input: TraefikRouterInput!) {
-  traefikCreateRouter(input: $input) {
-    ...RouterFragment
-  }
-}

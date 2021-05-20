@@ -10,6 +10,7 @@ fragment ContainerFragment on DockerContainer {
   }
   created
   command
+  privileged
   environment {
     key
     value
@@ -23,8 +24,12 @@ fragment ContainerFragment on DockerContainer {
     target
     readonly
   }
-  networks {
-    name
+  connections {
+    aliases
+    ipAddress
+    network {
+      name
+    }
   }
   ports {
     protocol

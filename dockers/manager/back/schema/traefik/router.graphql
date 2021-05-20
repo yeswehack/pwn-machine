@@ -1,32 +1,114 @@
-type TraefikRouter {
-    nodeId: ID!
-    name: String!
-    protocol: TraefikProtocol!
-    entryPoints: [TraefikEntrypoint!]!
-    service: TraefikService
-    rule: String
-    priority: Int!
-    enabled: Boolean!
-    using: [String]
-    provider: String
-    error: [String!]
-    middlewares: [TraefikMiddleware!]!
+interface TraefikRouter {
+  nodeId: ID!
+  name: String!
+  protocol: TraefikProtocol!
+  entryPoints: [TraefikEntrypoint!]!
+  service: TraefikService
+  enabled: Boolean!
+  using: [String]
+  provider: String
+  error: [String!]
+}
+
+type TraefikTLSDomain {
+    main: String
+    sans: [String!]!
+}
+
+type TraefikTLS {
+    certResolver: String
+    domains: [TraefikTLSDomain!]!
+}
+
+input TraefikTLSDomainInput {
+    main: String
+    sans: [String!]!
 }
 
 
-input TraefikRouterInput {
-    name: String!
-    protocol: TraefikProtocol!
-    entryPoints: [String!]!
-    service: String!
-    rule: String
+input TraefikTLSInput {
+    certResolver: String
+    domains: [TraefikTLSDomainInput!]!
 }
 
-input TraefikDeleteRouterInput{
-    protocol: TraefikProtocol!
-    name: String!
+type TraefikHTTPRouter implements TraefikRouter {
+  nodeId: ID!
+  name: String!
+  protocol: TraefikProtocol!
+  entryPoints: [TraefikEntrypoint!]!
+  service: TraefikService
+  enabled: Boolean!
+  using: [String]
+  provider: String
+  error: [String!]
+
+  middlewares: [TraefikMiddleware!]!
+  priority: Int!
+  rule: String!
+  tls: TraefikTLS
 }
 
-type TraefikDeleteRouterResponse {
-    ok: Boolean!
+type TraefikTCPRouter implements TraefikRouter {
+  nodeId: ID!
+  name: String!
+  protocol: TraefikProtocol!
+  entryPoints: [TraefikEntrypoint!]!
+  service: TraefikService
+  enabled: Boolean!
+  using: [String]
+  provider: String
+  error: [String!]
+
+  rule: String!
+  tls: TraefikTLS
+}
+
+type TraefikUDPRouter implements TraefikRouter {
+  nodeId: ID!
+  name: String!
+  protocol: TraefikProtocol!
+  entryPoints: [TraefikEntrypoint!]!
+  service: TraefikService
+  enabled: Boolean!
+  using: [String]
+  provider: String
+  error: [String!]
+}
+
+input TraefikHTTPRouterInput {
+  name: String!
+
+  entryPoints: [String!]!
+  middlewares: [String!]!
+  priority: Int!
+  rule: String!
+  service: String!
+  tls: TraefikTLSInput
+}
+
+input TraefikTCPRouterInput {
+  name: String!
+
+  entryPoints: [String!]!
+  rule: String!
+  service: String
+  tls: TraefikTLSInput
+}
+
+input TraefikUDPRouterInput {
+  name: String!
+
+  entryPoints: [String!]!
+  service: String
+}
+
+extend type Query {
+  traefikRouters: [TraefikRouter!]!
+}
+
+extend type Mutation {
+  traefikCreateHTTPRouter(input: TraefikHTTPRouterInput!): TraefikHTTPRouter!
+  traefikCreateTCPRouter(input: TraefikTCPRouterInput!): TraefikTCPRouter!
+  traefikCreateUDPRouter(input: TraefikUDPRouterInput!): TraefikUDPRouter!
+  traefikDeleteRouter(id: ID!): Boolean
 }

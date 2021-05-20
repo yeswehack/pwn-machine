@@ -1,5 +1,5 @@
 <template>
-  <BaseTable
+  <base-table
     ref="table"
     name="router"
     row-key="name"
@@ -11,19 +11,23 @@
     :columns="columns"
   >
     <template #body-cell-type="{row}">
-      <ProtocolBadge :protocol="row.protocol" />
+      <protocol-badge :protocol="row.protocol" />
     </template>
     <template #body-cell-entryPoints="{row}">
       <div class="q-gutter-xs">
-        <EntrypointLink :name="entrypoint.name" :key="idx" v-for="(entrypoint, idx) of row.entryPoints"/>
+        <entrypoint-link
+          :name="entrypoint.name"
+          :key="idx"
+          v-for="(entrypoint, idx) of row.entryPoints"
+        />
       </div>
     </template>
     <template #body-cell-service="{row}">
-      <ServiceLink :service="row.service" />
+      <service-link :service="row.service" />
     </template>
     <template #body-cell-middlewares="{row}">
       <div class="q-gutter-xs">
-        <MiddlewareLink
+        <middleware-link
           :name="middleware.name"
           :key="idx"
           v-for="(middleware, idx) of row.middlewares"
@@ -35,9 +39,9 @@
     </template>
 
     <template #details="{ row }">
-      <RouterDetails :router="row" />
+      <router-details :router="extraForm(row)" />
     </template>
-  </BaseTable>
+  </base-table>
 </template>
 
 <script>
@@ -90,6 +94,9 @@ export default {
     };
   },
   methods: {
+    extraForm(f) {
+      return { ...f, extra: f[f.protocol] };
+    },
     createRouter() {
       this.$q.dialog({
         component: RouterDialog,
@@ -100,7 +107,7 @@ export default {
       this.$q.dialog({
         component: RouterDialog,
         parent: this,
-        router
+        router: this.extraForm(router)
       });
     },
     routerCreated() {

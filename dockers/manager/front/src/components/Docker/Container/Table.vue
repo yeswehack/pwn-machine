@@ -13,6 +13,17 @@
     <template #body-cell-image="{row}">
       <image-link :name="row.image.name" />
     </template>
+    <template #body-cell-name="{value, row}">
+      {{ value }}
+      <q-badge
+        rounded
+        color="red"
+        align="top"
+        v-if="row.privileged"
+        title="Privileged"
+        class="q-ml-xs"
+      />
+    </template>
     <template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
         <volume-link
@@ -23,12 +34,19 @@
       </div>
     </template>
     <template #body-cell-networks="{row}">
-      <div class="q-gutter-sm">
+      <div class="row q-gutter-sm">
         <network-link
-          :name="name"
-          :key="name"
-          v-for="{ name } of row.networks"
-        />
+          :name="connection.network.name"
+          :key="idx"
+          v-for="(connection, idx) of row.connections"
+        >
+          <q-tooltip
+            v-if="connection.ipAddress"
+            anchor="top middle"
+            self="bottom middle"
+            >{{ connection.ipAddress }}</q-tooltip
+          >
+        </network-link>
       </div>
     </template>
     <template #body-cell-ports="{row}">

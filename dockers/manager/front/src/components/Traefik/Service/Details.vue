@@ -1,23 +1,23 @@
 <template>
-  <base-details :errors="service.error">
+  <base-details :errors="value.error">
     <template #body>
       <div class="col col-6">
         <q-card>
           <q-card-section class="row q-gutter-sm items-center">
             <div class="col col-auto">
-              <protocol-badge :protocol="service.protocol" />
+              <protocol-badge :protocol="value.protocol" />
             </div>
             <div class="text-h6 col">
-              {{ service.name }}
+              {{ value.name }}
             </div>
             <div class="col col-auto">
-              {{ service.type }}
+              {{ value.type }}
             </div>
           </q-card-section>
-          <q-card-section v-if="service.type!='internal' ">
+          <q-card-section v-if="value.type!='internal' ">
             <component :is="createComponent" v-model="form.extra" />
           </q-card-section>
-          <q-card-section v-if="service.type!='internal' ">
+          <q-card-section v-if="value.type!='internal' ">
             <reset-and-save
               :modified="modified"
               @save="submit"
@@ -48,9 +48,6 @@ export default {
     extra(value) {
       return getCreateComponent(value);
     }
-  },
-  props: {
-    service: { type: Object, required: true }
   },
   computed: {
     createComponent() {

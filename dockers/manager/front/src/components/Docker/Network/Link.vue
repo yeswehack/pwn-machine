@@ -1,11 +1,13 @@
 <template>
-  <PMLink path="/docker/networks" :name="name" :color="color" />
+  <pm-link path="/docker/networks" :name="name" :color="color">
+    <slot />
+  </pm-link>
 </template>
 
 <script>
-import PMLink from "src/components/PMLink.vue";
+import PmLink from "src/components/PMLink.vue";
 export default {
-  components: { PMLink },
+  components: { PmLink },
   props: { name: String },
   computed: {
     color() {

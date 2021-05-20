@@ -7,11 +7,13 @@ fragment RouterFragment on TraefikRouter {
   service {
     name
   }
-  middlewares {
-    name
+  ... on TraefikHTTPRouter {
+    middlewares {
+      name
+    }
+    priority
+    rule
   }
-  priority
-  rule
   enabled
   protocol
   provider

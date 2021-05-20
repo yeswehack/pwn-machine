@@ -1,10 +1,13 @@
-import aiohttp
 import asyncio
-import logging
 import json
+import logging
 import re
 from contextlib import asynccontextmanager, contextmanager
+
+import aiohttp
+
 from ..utils import base64_decode, validate_node_id
+from ..utils.cached import cacheMethodForQuery, no_cache
 
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
@@ -37,32 +40,32 @@ def settings_to_kv(settings, prefix=""):
 
 class TraefikRedisApi:
     _instance = None
-    def __init__(self, client, root, http_api):
+    def __init__(self, client, http_api):
         self.client = client
-        self.root = root
         self.http_api = http_api
 
 
-    def _with_root_key(self, key):
-        return f"{self.root}/{key.lstrip('/')}"
+    @classmethod
+    def create(cls, client, http_api):
+        cls._instance = cls(client, http_api)
+        return cls._instance
 
-    def set(self, key, value):
-        print("SET", key, value)
-        return self.client.set(self._with_root_key(key), value)
+    @classmethod
+    def get_instance(cls):
+        return cls._instance
 
-    def delete_pattern(self, pattern):
-        full_pattern = self._with_root_key(pattern)
-        log(f"REDIS delete pattern: {full_pattern}")
-        for key in self.client.keys(full_pattern):
-            log(f"REDIS delete key: {key.decode()}")
-            self.client.delete(key)
+
+    async def delete_pattern(self, pattern):
+        for key in await self.client.keys(pattern):
+            log(f"REDIS delete key: {key}")
+            await self.client.delete(key)
 
     # Service
     async def create_service(self, name, protocol, type, settings):
         redis_name = name.split("@")[0] if "@" in name else name
         prefix = f"/{protocol}/services/{redis_name}/{type}"
         for k, v in settings_to_kv(settings, prefix):
-            self.set(k, v)
+            await self.client.set(k, v)
         service = await self.http_api.wait(f"/{protocol}/services/{redis_name}@redis")
         service["protocol"] = protocol
         return service
@@ -70,21 +73,21 @@ class TraefikRedisApi:
     async def delete_service(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_SERVICE")
         redis_name = name.split("@")[0] if "@" in name else name
-        self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
+        await self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
         return await self.http_api.wait_delete(f"/{protocol}/services/{name}")
 
     # Middleware
     async def delete_middleware(self, nodeId):
         name = validate_node_id(nodeId, "TRAEFIK_MW")[0]
         redis_name = name.split("@")[0] if "@" in name else name
-        self.delete_pattern(f"/http/middlewares/{redis_name}/*")
+        await self.delete_pattern(f"/http/middlewares/{redis_name}/*")
         return await self.http_api.wait_delete(f"/http/middlewares/{name}")
 
     async def create_middleware(self, name, type, settings):
         redis_name = name.split("@")[0] if "@" in name else name
         prefix = f"/http/middlewares/{redis_name}/{type}"
         for k, v in settings_to_kv(settings, prefix):
-            self.set(k, v)
+            await self.client.set(k, v)
         return await self.http_api.wait(f"/http/middlewares/{redis_name}@redis")
 
     async def update_middleware(self, nodeId, type, settings):
@@ -100,8 +103,6 @@ class TraefikHTTPApi:
     def __init__(self, root, session):
         self.root = root
         self.session = session
-        self.cache = {}
-        self.runnings = set()
         return
 
 
@@ -111,41 +112,16 @@ class TraefikHTTPApi:
         return cls._instance
 
     @classmethod
-    def get(cls):
+    def get_instance(cls):
         return cls._instance
 
 
-    async def _get(self, path):
+    @cacheMethodForQuery
+    async def get(self, path):
         log(f"API GET {path}")
-
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"
-
         async with self.session.get(full_path) as response:
             return await response.json()
-
-    @contextmanager
-    def running(self, name):
-        try:
-            self.runnings.add(name)
-            yield
-        finally:
-            self.runnings.remove(name)
-
-    # All responses are cached for the duration of the HTTP request
-    async def get(self, path, allow_cache=True):
-        if allow_cache:
-            while path in self.runnings:
-                await asyncio.sleep(0.1)
-            if path in self.cache:
-                return self.cache[path]
-
-            with self.running(path):
-                response = await self._get(path)
-        else:
-            response = await self._get(path)
-
-        self.cache[path] = response
-        return response
 
     # Do request until it succede
     # if it fail wait more and more .1 -> 1
@@ -153,7 +129,8 @@ class TraefikHTTPApi:
         max_try = 10
         while max_try := max_try - 1:
             try:
-                return await self.get(path, allow_cache=False)
+                with no_cache():
+                    return await self.get(path)
             except:
                 await asyncio.sleep(0.1 * (10 - max_try))
 
@@ -163,7 +140,8 @@ class TraefikHTTPApi:
         max_try = 10
         try:
             while max_try := max_try - 1:
-                await self.get(path, allow_cache=False)
+                with no_cache():
+                    await self.get(path)
                 await asyncio.sleep(0.1 * (10 - max_try))
             return False
         except Exception as e:

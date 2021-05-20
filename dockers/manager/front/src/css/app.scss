@@ -8,16 +8,17 @@
   font-family: monospace;
 }
 
-
 a {
   color: var(--q-color-primary);
   text-decoration: none;
 }
 
-a:hover{
+a:hover {
   text-decoration: underline;
 }
-
+.display-contents {
+  display: contents;
+}
 
 @keyframes spin {
   from {

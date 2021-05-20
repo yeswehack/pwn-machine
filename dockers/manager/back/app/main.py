@@ -2,6 +2,7 @@ from collections import defaultdict
 from functools import lru_cache
 
 import aiohttp
+import aioredis
 import ariadne
 from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
@@ -15,9 +16,10 @@ from starlette_context import context
 from starlette_context.middleware import RawContextMiddleware
 
 from . import dns, docker, traefik
+from .api.NamespacedRedis import NamespacedRedis
+from .api.powerdns import PowerdnsHTTPApi, PowerdnsRedisApi
 from .api.shell import handle_shell
-from .api.powerdns import PowerdnsRedisApi, PowerdnsHTTPApi
-from .api.traefik import TraefikRedisApi, TraefikHTTPApi
+from .api.traefik import TraefikHTTPApi, TraefikRedisApi
 from .auth import auth_middleware
 from .redis import client as redis_client
 from .utils.registration import (registered_mutations, registered_queries,
@@ -86,9 +88,16 @@ sessions = {}
 
 
 async def on_startup():
+    redis_client = aioredis.from_url("redis://localhost", decode_responses=True)
+
+    ## Traefik
     sessions["traefik"] = aiohttp.ClientSession()
+    traefik_http = TraefikHTTPApi.create("http://127.0.0.1:8080/api", sessions["traefik"])
+    ns_traefik_redis = NamespacedRedis("traefik", redis_client)
+    TraefikRedisApi.create(ns_traefik_redis, traefik_http)
+
+    ## PowerDNS
     sessions["powerdns"] = aiohttp.ClientSession(headers={"X-Api-Key": "test"})
-    TraefikHTTPApi.create("http://127.0.0.1:8080/api", sessions["traefik"])
     PowerdnsHTTPApi.create("http://127.0.0.1:8081", sessions["powerdns"])
 
 

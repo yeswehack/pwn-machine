@@ -1,12 +1,17 @@
 
-from .traefik import TraefikHTTPApi 
+from .traefik import TraefikHTTPApi , TraefikRedisApi
 from .powerdns import PowerdnsHTTPApi
 from .elasticsearch import es
 from .shell import ShellManager
 from .docker import docker_client 
 
 def get_traefik_http_api():
-    return TraefikHTTPApi._instance
+    return TraefikHTTPApi.get_instance()
+
+def get_traefik_redis_api():
+    return TraefikRedisApi.get_instance()
 
 def get_powerdns_http_api():
-    return PowerdnsHTTPApi._instance
+    return PowerdnsHTTPApi.get_instance()
+
+

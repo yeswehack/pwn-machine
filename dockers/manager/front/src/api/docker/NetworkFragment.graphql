@@ -5,6 +5,7 @@ fragment NetworkFragment on DockerNetwork {
     key
     value
   }
+  builtin
   created
   ipv6
   driver
@@ -14,8 +15,12 @@ fragment NetworkFragment on DockerNetwork {
     ipRange
     gateway
   }
-  usingContainers {
-    id
-    name
+  connections {
+    ipv4Address
+    ipv6Address
+    container{
+      name
+      id
+    }
   }
 }

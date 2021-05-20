@@ -1,11 +1,11 @@
 <template>
-  <PMLink path="/docker/containers" :name="name" />
+  <pm-link path="/docker/containers" :name="name"><slot/></pm-link>
 </template>
 
 <script>
-import PMLink from "src/components/PMLink.vue";
+import PmLink from "src/components/PMLink.vue";
 export default {
-  components: { PMLink },
+  components: { PmLink },
   props: { name: String }
 };
 </script>

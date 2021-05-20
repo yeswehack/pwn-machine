@@ -6,7 +6,7 @@ TraefikEntrypoint = createType("TraefikEntrypoint")
 
 
 @registerQuery("traefikEntrypoints")
-async def resolve_TraefikEntrypoints(*_):
+async def resolve_TraefikEntrypoints(*_, protocols=[]):
     return await traefik_http().get_entrypoints()
 
 

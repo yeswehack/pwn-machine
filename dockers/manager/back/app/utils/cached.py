@@ -25,6 +25,7 @@ def cacheMethodForQuery(func):
 
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
+
         cache = context["cache"]
         key = (func.__qualname__, args, frozenset(kwargs.items()))
         if key not in cache or context["cache_disabled"]:

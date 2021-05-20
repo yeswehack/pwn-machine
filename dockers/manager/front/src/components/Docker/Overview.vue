@@ -42,9 +42,10 @@ export default {
         classes: ["container"]
       });
 
-      const edge = (container, network) => ({
+      const edge = (container, network, name) => ({
         data: {
           id: `${container.name}${network.name}`,
+          name,
           source: container.name,
           target: network.name
         },
@@ -79,7 +80,7 @@ export default {
           classes
         };
       };
-      const elements = [internet];
+      const elements = [internet, host];
 
       for (const container of containers) {
         elements.push(containerNode(container));
@@ -96,13 +97,14 @@ export default {
             elements.push(internetEdge(container, forwards.join(", ")));
           }
         }
-        for (const network of container.networks) {
+        for (const connection of container.connections) {
+          const network = connection.network
           if (network.name == "host") {
             elements.push(hostEdge(container));
             continue;
           }
           elements.push(networkNode(network));
-          elements.push(edge(container, network));
+          elements.push(edge(container, network, connection.ipAddress));
         }
       }
 

@@ -1,0 +1,6 @@
+#import "./RouterFragment.graphql"
+mutation createTCPRouter($input: TraefikTCPRouterInput!) {
+  traefikCreateTCPRouter(input: $input) {
+    ...RouterFragment
+  }
+}

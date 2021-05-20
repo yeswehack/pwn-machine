@@ -17,29 +17,19 @@ class NamespacedRedis:
         f = getattr(self.client, name)
 
         def basic(key, *args, **kwargs):
+            print(name, self._ns(key))
             return f(self._ns(key), *args, **kwargs)
 
         return basic
 
 
     def __getattr__(self, name):
-        basics = ["get", "set", "hget", "hgetall", "lrange"]
+        basics = ["get", "set", "hget", "hgetall", "lrange", "delete"]
         if name in basics:
             return self.make_basic(name)
+        return super().__getattr__(name)
 
     async def keys(self, key):
         return [self._uns(key) for key in await self.client.keys(self._ns(key))]
 
 
-async def main():
-    c = NamespacedRedis(
-        "dns", aioredis.from_url("redis://localhost", decode_responses=True)
-    )
-    for k in await c.lrange("logs", 0, 100):
-        print(k)
-        v = await c.hgetall(k)
-        print(v)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

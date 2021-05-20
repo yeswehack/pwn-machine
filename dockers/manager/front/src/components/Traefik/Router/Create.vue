@@ -1,73 +1,49 @@
 <template>
-  <q-form @submit="createRouter">
-    <q-card-section class="q-gutter-sm">
-      <q-input v-model="form.name" autofocus required label="Name" v-if="!hideName"/>
+  <div>
+    <q-card-section class="">
+      <q-input v-model="form.name" autofocus required label="Name" />
       <q-select
         v-model="form.protocol"
         :options="protocols"
         required
         :rules="[nonEmpty]"
         label="Protocol"
-        @input="protocolUpdated"
       />
-      <q-input
-        v-if="form.protocol != 'udp'"
-        v-model="form.rule"
-        :disable="!form.protocol"
-        debounce="100"
-        :rules="[validateRule]"
-        :hint="
-          form.protocol == 'http'
-            ? 'ex: Host(`example.com`)'
-            : 'ex: HostSNI(`*`)'
-        "
-        label="Rule"
-      />
-      <q-select
-        v-model="form.entrypoints"
-        :disable="!form.protocol"
-        multiple
-        use-chips
-        :rules="[nonEmptyArray]"
-        :options="relevantentrypoints"
-        label="entrypoints"
-      />
-
-      <q-select
-        :disable="!form.protocol"
-        v-model="form.service"
-        :options="relevantServices"
-        :rules="[nonEmpty]"
-        label="Service"
-      >
-        <template #after>
-          <q-btn
-            title="Create a new service"
-            round
-            dense
-            class="bg-green"
-            color="positive"
-            icon="add"
-            @click="createService"
-          />
-        </template>
-      </q-select>
     </q-card-section>
-    <q-card-actions align="right">
-      <q-btn color="warning" label="Cancel" @click="$emit('cancel')" />
-      <q-btn color="positive" type="submit"  label="Create" />
-    </q-card-actions>
-  </q-form>
+    <component :is="createComponent" v-model="form.extra" />
+    <q-card-section>
+      <reset-and-save :modified="modified" @save="submit" @reset="reset" />
+    </q-card-section>
+  </div>
 </template>
 
 <script>
-import ServiceDialog from "../Service/Dialog.vue";
-import { extend } from "quasar";
 import api from "src/api";
+import CreateHTTP from "./CreateHTTP.vue";
+import CreateTCP from "./CreateTCP.vue";
+import CreateUDP from "./CreateUDP.vue";
+import DeepForm from "src/mixins/DeepForm";
+import ResetAndSave from "src/components/ResetAndSave.vue";
+
+export function getCreateComponent(value) {
+  const mapping = {
+    http: CreateHTTP,
+    tcp: CreateTCP,
+    udp: CreateUDP
+  };
+  console.log("value", value);
+  return mapping[value?.protocol] ?? null;
+}
+
 export default {
-  props: {
-    hideName: {type: Boolean, default: false},
-    router: { type: Object, default: null }
+  components: { ResetAndSave },
+  mixins: [DeepForm],
+  formDefinition: {
+    name: null,
+    protocol: null,
+    extra(value) {
+      return getCreateComponent(value);
+    }
   },
   apollo: {
     entrypoints: {
@@ -80,18 +56,16 @@ export default {
     }
   },
   data() {
-    const originalForm = {
-      name: this.router?.name,
-      protocol: this.router?.protocol || "http",
-      rule: this.router?.rule,
-      entrypoints: this.router?.entryPoints || [],
-      service: this.router?.service?.name
-    };
-    const form = extend(true, {}, originalForm);
     const protocols = ["http", "tcp", "udp"];
-    return { form, protocols, originalForm };
+    return { protocols };
   },
   computed: {
+    currentProtocol() {
+      return this.form.protocol;
+    },
+    createComponent() {
+      return getCreateComponent(this.form);
+    },
     relevantentrypoints() {
       const protocol = this.form.protocol == "udp" ? "udp" : "tcp";
       const entrypoints = (this.entrypoints || []).filter(
@@ -112,19 +86,24 @@ export default {
       }));
     }
   },
+  watch: {
+    currentProtocol(proto, old) {
+      if (!old) return;
+      const instance = this.instanciateSubForm(
+        getCreateComponent(this.form),
+        this.form
+      );
+      this.form.extra = instance.originalForm;
+    }
+  },
   methods: {
-    reset() {
-      this.form = extend(true, {}, originalForm);
-    },
-    createRouter() {
+    submit() {
       const input = {
         name: this.form.name,
         protocol: this.form.protocol,
-        rule: this.form.rule,
-        entryPoints: this.form.entrypoints.map(e => e.label),
-        service: this.form.service.label
+        ...this.form.extra
       };
-      this.$apollo
+      /* this.$apollo
         .mutate({
           mutation: api.traefik.CREATE_ROUTER,
           variables: { input },
@@ -132,37 +111,11 @@ export default {
         })
         .then(r => {
           this.$emit("ok");
-        });
-    },
-    createService() {
-      this.$q.dialog({
-        component: ServiceDialog,
-        parent: this
-      });
+        }); */
     },
     nonEmpty(val) {
       if (val === null || val === undefined) {
         return "You must make a selection.";
-      }
-    },
-    nonEmptyArray(val) {
-      if (val === null || val === undefined || val.length == 0) {
-        return "You must make a selection.";
-      }
-    },
-    protocolUpdated(newProtocol) {
-      this.form.entrypoints = this.form.entrypoints.filter(({ protocol }) => {
-        if (protocol == "tcp" && newProtocol == "http") {
-          return true;
-        }
-        return protocol == newProtocol;
-      });
-
-      this.form.service = null;
-    },
-    validateRule(rule) {
-      if (!this.$api.traefik.isValidRule(rule)) {
-        return `Syntax error`;
       }
     }
   }

@@ -7,3 +7,8 @@ type TraefikEntrypoint {
   address: String!
   usedBy: [TraefikRouter!]!
 }
+
+
+extend type Query{
+  traefikEntrypoints: [TraefikEntrypoint!]!
+}

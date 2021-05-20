@@ -2,6 +2,13 @@ extend type Query {
   dockerNetworks: [DockerNetwork!]!
 }
 
+type DockerNetworkConnection {
+  ipv4Address: String
+  ipv6Address: String
+  container: DockerContainer!
+}
+
+
 type DockerNetwork {
   id: ID!
   name: String!
@@ -10,8 +17,9 @@ type DockerNetwork {
   ipv6: Boolean!
   driver: String!
   internal: Boolean!
+  builtin: Boolean!
   ipams: [DockerNetworkIpam!]!
-  usingContainers: [DockerContainer!]!
+  connections: [DockerNetworkConnection!]!
 }
 
 extend type Mutation {

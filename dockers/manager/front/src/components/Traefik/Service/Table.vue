@@ -34,7 +34,7 @@
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <service-details :service="row" />
+      <service-details :value="extraForm(row)" />
     </template>
   </base-table>
 </template>
@@ -83,6 +83,9 @@ export default {
     };
   },
   methods: {
+    extraForm(f) {
+      return { ...f, extra: f[f.type] };
+    },
     createService() {
       this.$q.dialog({
         component: ServiceDialog,
@@ -93,7 +96,7 @@ export default {
       this.$q.dialog({
         component: ServiceDialog,
         parent: this,
-        service: service
+        service
       });
     },
     deleteService(service) {

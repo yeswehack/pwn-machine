@@ -22,7 +22,7 @@
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <middleware-details :value="extraForm(row)" />
+      <middleware-details :middleware="row" />
     </template>
   </base-table>
 </template>

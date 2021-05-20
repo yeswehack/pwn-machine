@@ -107,7 +107,7 @@ export default {
     async createMiddleware() {
       this.loading = true;
       const type = this.form.type;
-      const mutation = db.traefik.CREATE_MIDDLEWARE[type];
+      const mutation = api.traefik.CREATE_MIDDLEWARE[type];
       const input = {
         name: this.form.name,
         [type]: { ...this.form.extra, __typename: undefined }
@@ -124,7 +124,7 @@ export default {
     },
     async updateMiddleware() {
       const type = this.form.type;
-      const mutation = db.traefik.UPDATE_MIDDLEWARE[type];
+      const mutation = api.traefik.UPDATE_MIDDLEWARE[type];
       const variables = {
         nodeId: this.middleware.nodeId,
         patch: { ...this.form.extra, __typename: undefined }

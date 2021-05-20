@@ -7,7 +7,10 @@ from ..utils import (
     createInterface,
 )
 from . import with_traefik_redis
-from ..api import get_traefik_http_api as traefik_http
+from ..api import (
+    get_traefik_http_api as traefik_http,
+    get_traefik_redis_api as traefik_redis,
+)
 
 
 TraefikService = createInterface("TraefikService")
@@ -39,7 +42,7 @@ def resolve_service_type(service, *_):
 @registerQuery("traefikServices")
 async def resolve_TraefikServices(*_, protocols=None):
     print(protocols)
-    if (protocols):
+    if protocols:
         return await traefik_http().get_services(protocols)
     return await traefik_http().get_services()
 
@@ -96,14 +99,16 @@ def resolve_loadbalancer_servers(loadbalancer, *_):
     servers = loadbalancer.get("servers", [])
     return servers
 
+
 @registerMutation("createTraefikHTTPServiceLoadBalancer")
-@with_traefik_redis
-async def create_http_loadbalancer(*_, traefik_redis, input):
+async def create_http_loadbalancer(*_, input):
     name = input["name"]
-    return await traefik_redis.create_service(name, "http", "loadBalancer", input["loadBalancer"])
+    print(input)
+    return await traefik_redis().create_service(
+        name, "http", "loadBalancer", input["loadBalancer"]
+    )
 
 
 @registerMutation("deleteTraefikService")
-@with_traefik_redis
-async def delete_service(*_, traefik_redis, nodeId):
-    return await traefik_redis.delete_service(nodeId)
+async def delete_service(*_, nodeId):
+    return await traefik_redis().delete_service(nodeId)

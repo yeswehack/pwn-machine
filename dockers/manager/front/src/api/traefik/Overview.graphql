@@ -5,10 +5,16 @@ query overview {
     usedBy {
       name
       protocol
-      rule
 
-      middlewares {
-        name
+      ... on TraefikHTTPRouter {
+        rule
+        middlewares {
+          name
+        }
+      }
+
+      ... on TraefikTCPRouter {
+        rule
       }
 
       service {

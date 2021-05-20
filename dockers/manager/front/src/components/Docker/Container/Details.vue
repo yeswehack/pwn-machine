@@ -83,7 +83,6 @@
       </q-card>
     </div>
     <div class="row q-col-gutter-md">
-      <!-- NETWORKS -->
       <div class="col col-6">
         <q-card>
           <q-card-section>
@@ -92,6 +91,21 @@
             </div>
           </q-card-section>
           <create-container readonly :value="container" />
+        </q-card>
+      </div>
+      <div class="col col-6">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              Networks
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">
+              yop
+            </div>
+          </q-card-section>
+          
         </q-card>
       </div>
 

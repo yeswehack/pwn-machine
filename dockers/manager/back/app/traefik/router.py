@@ -1,8 +1,25 @@
-from ..utils import registerQuery, registerMutation, createType, create_node_id
+from ..utils import (
+    registerQuery,
+    registerMutation,
+    createType,
+    createInterface,
+    create_node_id,
+)
 from . import with_traefik_redis
 from ..api import get_traefik_http_api as traefik_http
 
-TraefikRouter = createType("TraefikRouter")
+TraefikRouter = createInterface("TraefikRouter")
+
+
+@TraefikRouter.type_resolver
+def resolve_router_type(router, *_):
+    mapping = {
+        "http": "TraefikHTTPRouter",
+        "tcp": "TraefikTCPRouter",
+        "udp": "TraefikUDPRouter",
+    }
+    print(router)
+    return mapping[router["protocol"]]
 
 
 @registerQuery("traefikRouters")
@@ -26,7 +43,10 @@ async def resolve_traefik_enabled(router, *_):
     ]
 
 
-@TraefikRouter.field("priority")
+TraefikHTTPRouter = createType("TraefikHTTPRouter")
+
+
+@TraefikHTTPRouter.field("priority")
 def resolve_traefikrouter_name(router, *_):
     if "priority" in router:
         return router["priority"]
@@ -35,7 +55,7 @@ def resolve_traefikrouter_name(router, *_):
     return 0
 
 
-@TraefikRouter.field("middlewares")
+@TraefikHTTPRouter.field("middlewares")
 async def middlewares(router, *_):
     if "middlewares" not in router:
         return []
@@ -56,7 +76,7 @@ async def resolve_traefikrouter_name(router, *_):
     return await traefik_http().get_service(router["protocol"], router["service"])
 
 
-@registerMutation("traefikCreateRouter")
+@registerMutation("traefikCreateHTTPRouter")
 @with_traefik_redis
 async def mutation_create_router(*_, traefik_redis, input):
     protocol = input["protocol"]

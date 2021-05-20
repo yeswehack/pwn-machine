@@ -2,6 +2,12 @@ extend type Query {
   dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
 
+type DockerContainerConnection {
+  aliases: [String!]!
+  ipAddress: String
+  network: DockerNetwork
+}
+
 type DockerContainer {
   id: ID!
   name: String!
@@ -11,9 +17,10 @@ type DockerContainer {
   command: [String!]!
   environment: [KeyValue!]!
   mounts: [DockerContainerMount!]!
-  networks: [DockerNetwork!]!
+  connections: [DockerContainerConnection!]!
   ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
+  privileged: Boolean!
 }
 
 enum DockerContainerStatus {

@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog" @hide="onCancel">
+  <q-dialog ref="dialog" class="base-dialog" @hide="onCancel">
     <q-card bordered :style="style">
       <q-card-section>
         <div class="row items-center q-gutter-sm">
@@ -18,16 +18,23 @@
 <script>
 import HelpLink from "./HelpLink.vue";
 export default {
+  name: "BaseDialog",
   components: { HelpLink },
   props: {
     title: { type: String, required: true },
-    help: { type: String, default: null }
+    help: { type: String, default: null },
   },
-  data(){
-    const style = {"min-width": "800px"}
-    return {style}
+  data() {
+    // get the count of base-dialog on screen and use it as dialog depth
+    const depth = document.querySelectorAll(".base-dialog:not(:empty)").length;
+    const size = 700 - depth * 50
+    const style = { width: `${size}px`, "max-width": "80vw" };
+    return { style };
   },
   methods: {
+    shake() {
+      this.$refs.dialog.shake();
+    },
     show() {
       this.$refs.dialog.show();
     },

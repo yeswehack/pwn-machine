@@ -42,6 +42,15 @@
           { "name": "TraefikUDPServiceLoadBalancer" },
           { "name": "TraefikUDPServiceWeighted" }
         ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "TraefikRouter",
+        "possibleTypes": [
+          { "name": "TraefikHTTPRouter" },
+          { "name": "TraefikTCPRouter" },
+          { "name": "TraefikUDPRouter" }
+        ]
       }
     ]
   }

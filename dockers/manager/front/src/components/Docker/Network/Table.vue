@@ -10,8 +10,17 @@
     @clone="cloneNetwork"
     @delete="deleteNetwork"
   >
-    <template #body-cell-driver="{row}">
-      <q-badge :color="getDriverColor(row.driver)" :label="row.driver" />
+    <template #body-cell-name="{value, row}">
+      <span
+        style="text-decoration:underline;text-decoration-style:dotted"
+        v-if="row.builtin"
+      >
+        {{ value }}
+        <q-tooltip anchor="center right" self="center left">Built-in</q-tooltip>
+      </span>
+      <span v-else>
+        {{ value }}
+      </span>
     </template>
 
     <template #body-cell-internal="{value}">
@@ -20,12 +29,27 @@
     </template>
 
     <template #body-cell-containers="{row}">
-      <div class="q-gutter-sm row">
+      <div class="row q-gutter-sm">
         <container-link
-          :name="name"
-          :key="name"
-          v-for="{ name } of row.usingContainers"
-        />
+          :name="connection.container.name"
+          :key="idx"
+          v-for="(connection, idx) of row.connections"
+        >
+          <q-tooltip
+            v-if="row.name == 'host'"
+            anchor="top middle"
+            self="bottom middle"
+          >
+            Host
+          </q-tooltip>
+          <q-tooltip
+            v-else-if="connection.ipv4Address || connection.ipv6Address"
+            anchor="top middle"
+            self="bottom middle"
+          >
+            {{ connection.ipv4Address }} {{ connection.ipv6Address }}
+          </q-tooltip>
+        </container-link>
       </div>
     </template>
 
@@ -65,7 +89,6 @@ export default {
     });
     const columns = [
       col("name"),
-      col("driver"),
       col("internal"),
       col("gateway", {
         classes: "text-mono",
@@ -75,7 +98,7 @@ export default {
         classes: "text-mono",
         field: ({ ipams }) => ipams[0]?.subnet
       }),
-      col("containers", { label: "used by" })
+      col("containers", { label: "Connected containers" })
     ];
     return { columns };
   },

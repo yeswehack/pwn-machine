@@ -8,23 +8,23 @@ from ..utils import (
     createInterface,
     create_node_id,
 )
-from . import with_traefik_redis
-from ..api import get_traefik_http_api as traefik_http
+from ..api import (
+    get_traefik_http_api as traefik_http,
+    get_traefik_redis_api as traefik_redis,
+)
 
 
 def create_mutation_resolver(object_type, type_name):
     @registerMutation(f"create{object_type}")
-    @with_traefik_redis
-    async def resolve_create_mutation(*_, traefik_redis, input):
+    async def resolve_create_mutation(*_, input):
         middleware_name = input["name"]
-        return await traefik_redis.create_middleware(
+        return await traefik_redis().create_middleware(
             middleware_name, type_name, input[type_name]
         )
 
     @registerMutation(f"update{object_type}")
-    @with_traefik_redis
-    async def resolve_update_mutation(*_, traefik_redis, nodeId, patch):
-        return await traefik_redis.update_middleware(nodeId, type_name, patch)
+    async def resolve_update_mutation(*_, nodeId, patch):
+        return await traefik_redis().update_middleware(nodeId, type_name, patch)
 
 
 def create_type_resolver(type):
@@ -130,6 +130,5 @@ async def resolve_middlewares(*_):
 
 
 @registerMutation("traefikDeleteMiddleware")
-@with_traefik_redis
-async def resolve_delete(*_, traefik_redis, nodeId):
-    return {"ok": traefik_redis.delete_middleware(nodeId)}
+async def resolve_delete(*_, nodeId):
+    return {"ok": traefik_redis().delete_middleware(nodeId)}

@@ -3,6 +3,7 @@
     <q-badge class="col-auto" :color="color">
       {{ shortName }}
     </q-badge>
+    <slot />
   </router-link>
 </template>
 
