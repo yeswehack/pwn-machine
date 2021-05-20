@@ -73,15 +73,16 @@ async def resolve_nodeid(router, *_):
 
 @TraefikRouter.field("service")
 async def resolve_traefikrouter_name(router, *_):
-    return await traefik_http().get_service(router["protocol"], router["service"])
-
+    try:
+        return await traefik_http().get_service(router["protocol"], router["service"])
+    except:
+        return None
 
 @registerMutation("traefikCreateHTTPRouter")
 @with_traefik_redis
 async def mutation_create_router(*_, traefik_redis, input):
     protocol = input["protocol"]
     name = input["name"]
-    print(input)
     if "rule" in input:
         traefik_redis.set(f"{protocol}/routers/{name}/rule", input["rule"])
     traefik_redis.set(f"{protocol}/routers/{name}/service", input["service"])

@@ -1,0 +1,42 @@
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = false
+
+[entryPoints]
+  [entryPoints.http]
+    address=":80"
+  [entryPoints.manager]
+    address=":1337"
+  [entryPoints.https]
+    address=":443"
+
+[providers.file]
+  filename = "/etc/traefik/dynamic_conf.toml"
+
+[log]
+  level = "DEBUG"
+
+[api]
+  insecure = true
+  dashboard = false
+
+
+[certificatesResolvers]
+  [certificatesResolvers.lets-encrypt-http]
+    [certificatesResolvers.lets-encrypt-http.acme]
+      email = "test@example.com"
+      storage = "/data/acme.json"
+      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  
+      [certificatesResolvers.lets-encrypt-http.acme.httpChallenge]
+        entryPoint = "http"
+
+  [certificatesResolvers.lets-encrypt-dns]
+    [certificatesResolvers.lets-encrypt-dns.acme]
+      email = "test@example.com"
+      storage = "/data/acme.json"
+      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      
+      [certificatesResolvers.lets-encrypt-dns.acme.dnsChallenge]
+        provider = "pdns"
+        delayBeforeCheck = 5

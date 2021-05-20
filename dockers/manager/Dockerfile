@@ -9,6 +9,7 @@ RUN yarn build
 
 FROM python:3.9
 WORKDIR /usr/src/app
+RUN apt update && apt install -y docker.io
 RUN pip install --upgrade pip poetry
 COPY back/pyproject.toml ./
 RUN poetry install

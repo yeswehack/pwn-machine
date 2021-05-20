@@ -1,0 +1,11 @@
+
+[http.routers]
+  [http.routers.manager]
+    entryPoints = ["manager"]
+    rule = "PathPrefix(`/`)"
+    service = "manager@file"
+
+[http.services]
+  [http.services.manager.loadBalancer]
+    [[http.services.manager.loadBalancer.servers]]
+      url = "http://manager:5000/"
