@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-card-section class="">
+    <q-card-section>
       <q-input v-model="form.name" autofocus required label="Name" />
       <q-select
         v-model="form.protocol"
@@ -31,7 +31,6 @@ export function getCreateComponent(value) {
     tcp: CreateTCP,
     udp: CreateUDP
   };
-  console.log("value", value);
   return mapping[value?.protocol] ?? null;
 }
 

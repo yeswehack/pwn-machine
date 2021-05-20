@@ -39,7 +39,7 @@
     </template>
 
     <template #details="{ row }">
-      <router-details :router="extraForm(row)" />
+      <router-details :router="row" />
     </template>
   </base-table>
 </template>
@@ -95,7 +95,15 @@ export default {
   },
   methods: {
     extraForm(f) {
-      return { ...f, extra: f[f.protocol] };
+      const extra = {
+        rule: f.rule,
+        priority: f.priority,
+        entryPoints: (f.entryPoints ?? []).map(ep => ep.name),
+        service: f.service?.name,
+        middlewares: (f.middlewares ?? []).map(m => m.name)
+      };
+
+      return { ...f, extra };
     },
     createRouter() {
       this.$q.dialog({

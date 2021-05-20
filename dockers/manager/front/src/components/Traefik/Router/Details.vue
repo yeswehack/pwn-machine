@@ -6,7 +6,7 @@
           <q-card-section class="text-h6">
             {{ router.name }}
           </q-card-section>
-          <create-router hide-name :router="router" />
+          <create-router hide-name :value="extraForm(router)" />
         </q-card>
       </div>
       <div class="col col-6">
@@ -33,10 +33,20 @@ export default {
     }
   },
   data() {
-    return {
-    };
+    return {};
   },
   methods: {
+    extraForm(f) {
+      const extra = {
+        rule: f.rule,
+        priority: f.priority,
+        entryPoints: (f.entryPoints ?? []).map(ep => ep.name),
+        service: f.service?.name,
+        middlewares: (f.middlewares ?? []).map(m => m.name)
+      };
+
+      return { ...f, extra };
+    }
   }
 };
 </script>
