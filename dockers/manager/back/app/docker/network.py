@@ -111,24 +111,19 @@ def resolve_create_network(
 @registerMutation("dockerRemoveNetwork")
 def resolve_remove_network(*_, id):
     try:
-        (network := docker_client.networks.get(id)).remove()
+        docker_client.networks.get(id).remove()
     except (NotFound, APIError):
-        return None
-    return network
+        return False
+    return True
 
 
 @registerMutation("dockerPruneNetworks")
 def resolve_prune_networks(*_):
     try:
-        networks = docker_client.networks.list()
-        result = docker_client.networks.prune()
+        docker_client.networks.prune()
     except APIError:
-        return None
-
-    return [
-        next(network for network in networks if network.name == name)
-        for name in result["NetworksDeleted"] or []
-    ]
+        return False
+    return True
 
 
 @registerMutation("dockerConnectContainerToNetwork")

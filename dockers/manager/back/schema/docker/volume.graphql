@@ -12,11 +12,6 @@ type DockerVolume {
 
 extend type Mutation {
   dockerCreateVolume(name: String, labels: [KeyValueInput!]! = []): DockerVolume
-  dockerRemoveVolume(name: String!, force: Boolean = false): DockerVolume
-  dockerPruneVolumes: DockerPruneVolumesResult
-}
-
-type DockerPruneVolumesResult {
-  volumes: [DockerVolume!]!
-  size: Float!
+  dockerRemoveVolume(name: String!, force: Boolean = false): Boolean!
+  dockerPruneVolumes: Float
 }

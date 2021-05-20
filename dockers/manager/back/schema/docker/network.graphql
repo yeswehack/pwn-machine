@@ -46,8 +46,8 @@ input DockerNetworkIpamInput {
 }
 
 extend type Mutation {
-  dockerRemoveNetwork(id: ID!): DockerNetwork
-  dockerPruneNetworks: [DockerNetwork!]
+  dockerRemoveNetwork(id: ID!): Boolean!
+  dockerPruneNetworks: Boolean!
 }
 
 extend type Mutation {

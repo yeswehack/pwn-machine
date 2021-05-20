@@ -43,24 +43,15 @@ async def resolve_create_volume(*_, name=None, labels: list[KeyValue]):
 @registerMutation("dockerRemoveVolume")
 async def resolve_remove_volume(*_, name, force=False):
     try:
-        (volume := docker_client.volumes.get(name)).remove(force)
+        docker_client.volumes.get(name).remove(force)
     except (NotFound, APIError):
-        return None
-    return volume
+        return False
+    return True
 
 
 @registerMutation("dockerPruneVolumes")
 async def resolve_prune_volumes(*_):
     try:
-        volumes = docker_client.volumes.list()
-        result = docker_client.volumes.prune()
+        return docker_client.volumes.prune()["SpaceReclaimed"]
     except APIError:
         return None
-
-    return {
-        "volumes": [
-            next(volume for volume in volumes if volume.name == name)
-            for name in result["VolumesDeleted"]
-        ],
-        "size": result["SpaceReclaimed"],
-    }
