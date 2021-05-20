@@ -20,7 +20,7 @@ import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
 
-const WS_URL = `${window.location.protocol == "https:" ? "wss": "ws"}://${window.location.host}/shell`;
+const WS_URL = `${window.location.protocol == "https:" ? "wss": "ws"}://${window.location.host}/ws/shell`;
 
 function openWS(url) {
   return new Promise((resolve, reject) => {

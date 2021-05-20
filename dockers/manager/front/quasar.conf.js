@@ -82,6 +82,10 @@ module.exports = function(/* ctx */) {
         "/api": {
           target: "http://localhost:8000",
           ws: true
+        },
+        "/ws/shell": {
+          target: "http://localhost:8000",
+          ws: true
         }
       }
     },

@@ -99,9 +99,9 @@ async def on_shutdown():
 
 app = Starlette(
     routes=[
+        WebSocketRoute("/ws/shell/{uuid:str}", handle_shell),
         Route("/api", GraphQL(schema, middleware=[auth_middleware])),
         WebSocketRoute("/api", GraphQL(schema=schema)),
-        WebSocketRoute("/shell/{uuid:str}", handle_shell),
         Mount("/", StaticFilesFallback(directory="static", html=True)),
     ],
     on_startup=[on_startup],
