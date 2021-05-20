@@ -6,8 +6,8 @@ from contextlib import asynccontextmanager, contextmanager
 
 import aiohttp
 
-from ..utils import base64_decode, validate_node_id
-from ..utils.cached import cacheMethodForQuery, no_cache
+from app.utils import base64_decode, validate_node_id
+from app.utils.cached import cacheMethodForQuery, no_cache
 
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
@@ -20,8 +20,6 @@ ROOT = "http://127.0.0.1:8080/api"
 
 def log(msg):
     logger.info(f"[{__name__}] {msg}")
-
-
 
 
 def settings_to_kv(settings, prefix=""):
@@ -40,10 +38,10 @@ def settings_to_kv(settings, prefix=""):
 
 class TraefikRedisApi:
     _instance = None
+
     def __init__(self, client, http_api):
         self.client = client
         self.http_api = http_api
-
 
     @classmethod
     def create(cls, client, http_api):
@@ -53,7 +51,6 @@ class TraefikRedisApi:
     @classmethod
     def get_instance(cls):
         return cls._instance
-
 
     async def delete_pattern(self, pattern):
         for key in await self.client.keys(pattern):
@@ -105,7 +102,6 @@ class TraefikHTTPApi:
         self.session = session
         return
 
-
     @classmethod
     def create(cls, root, session):
         cls._instance = cls(root, session)
@@ -114,7 +110,6 @@ class TraefikHTTPApi:
     @classmethod
     def get_instance(cls):
         return cls._instance
-
 
     @cacheMethodForQuery
     async def get(self, path):

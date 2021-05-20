@@ -2,8 +2,8 @@ import time
 import re
 from functools import wraps
 
-from ..api import get_powerdns_http_api as dns_http
-from ..utils import (
+from app.api import get_powerdns_http_api as dns_http
+from app.utils import (
     create_node_id,
     createType,
     registerMutation,

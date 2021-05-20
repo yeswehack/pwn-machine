@@ -1,5 +1,5 @@
-from ..utils import createType, registerQuery, create_node_id
-from ..api import get_traefik_http_api as traefik_http
+from app.utils import createType, registerQuery, create_node_id
+from app.api import get_traefik_http_api as traefik_http
 
 
 TraefikEntrypoint = createType("TraefikEntrypoint")

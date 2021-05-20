@@ -1,7 +1,7 @@
 from functools import wraps
 import time
-from ..utils import registerQuery, registerMutation, createType, create_node_id
-from ..api import get_powerdns_http_api as dns_http
+from app.utils import registerQuery, registerMutation, createType, create_node_id
+from app.api import get_powerdns_http_api as dns_http
 
 
 

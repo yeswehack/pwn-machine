@@ -1,7 +1,6 @@
-
 from elasticsearch import AsyncElasticsearch
+from app import config
 
-
-ES_HOSTS = ["127.0.0.1:9200"]
+ES_HOSTS = [config.PM_ELASTIC_SEARCH_HTTP_API]
 
 es = AsyncElasticsearch(ES_HOSTS)

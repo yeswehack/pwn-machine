@@ -1,4 +1,4 @@
-from ..utils import registerQuery, createType
+from app.utils import registerQuery, createType
 from . import docker_client, KeyValue, formatTime
 from dataclasses import dataclass
 

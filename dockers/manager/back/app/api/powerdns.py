@@ -4,9 +4,9 @@ import re
 import asyncio
 import logging
 import time
-from ..utils.cached import cacheMethodForQuery
+from app.utils.cached import cacheMethodForQuery
 from fnmatch import fnmatch
-from ..utils import validate_node_id
+from app.utils import validate_node_id
 
 ZONE_MARKER = "DNS_ZONE"
 

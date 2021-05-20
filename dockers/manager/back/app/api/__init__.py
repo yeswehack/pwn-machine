@@ -4,6 +4,7 @@ from .powerdns import PowerdnsHTTPApi
 from .elasticsearch import es
 from .shell import ShellManager
 from .docker import docker_client 
+from .NamespacedRedis import NamespacedRedis
 
 def get_traefik_http_api():
     return TraefikHTTPApi.get_instance()

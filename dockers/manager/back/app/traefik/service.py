@@ -1,4 +1,4 @@
-from ..utils import (
+from app.utils import (
     registerQuery,
     registerMutation,
     create_kv_resolver,
@@ -7,7 +7,7 @@ from ..utils import (
     createInterface,
 )
 from . import with_traefik_redis
-from ..api import (
+from app.api import (
     get_traefik_http_api as traefik_http,
     get_traefik_redis_api as traefik_redis,
 )

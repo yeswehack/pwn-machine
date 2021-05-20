@@ -1,4 +1,4 @@
-from ..utils import registerQuery, registerMutation, createType
+from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError, NotFound
 from docker.types import IPAMConfig, IPAMPool

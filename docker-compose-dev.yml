@@ -21,6 +21,7 @@ services:
     ports:
       - "53:53"
       - "53:53/udp"
+      - "8081:8081"
     depends_on:
       - powerdns-db
       - elasticsearch
@@ -33,6 +34,8 @@ services:
   ##
   redis:
     image: redis
+    ports:
+      - "6379:6379"
     networks:
       - redis-net
     command: ["redis-server", "--appendonly", "yes"]
@@ -48,8 +51,10 @@ services:
       - "--providers.redis.endpoints=redis:6379"
       - "--providers.redis.rootkey=traefik"
       - "--entryPoints.web.address=:80"
+      - "--entryPoints.udp.address=:1337/udp"
     ports:
       - "80:80"
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -67,6 +72,8 @@ services:
   ##
   elasticsearch:
     image: elasticsearch:7.12.1
+    ports:
+      - 9200:9200
     networks:
       - elasticsearch-net
     environment:
@@ -79,30 +86,31 @@ services:
 ##
 # Manager
 ##
-  manager:
-    image: "manager"
-    build:
-      context: ./dockers/manager
-    depends_on:
-      - powerdns
-      - redis
-      - traefik
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    environment:
-      PM_DISABLE_AUTH: 1
-      PM_REDIS_HOST: "redis://redis"
-      PM_TRAEFIK_HTTP_API: "http://traefik:8080/api"
-      PM_TRAEFIK_REDIS_ROOT: "traefik"
-      PM_POWERDNS_HTTP_API: "http://powerdns:8081"
-      PM_POWERDNS_HTTP_API_KEY: "test"
-      PM_ELASTIC_SEARCH_HTTP_API: "elasticsearch:9200"
-    networks:
-      - redis-net
-      - dns-net
-      - elasticsearch-net
-      - traefik
-###
+# manager:
+#   image: "manager"
+#   build:
+#     context: ./dockers/manager
+#   depends_on:
+#     - powerdns
+#     - redis
+#     - traefik
+#   volumes:
+#     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+#   environment:
+#     PM_REDIS_HOST: "redis://redis"
+#     PM_TRAEFIK_HTTP_API: "http://traefik:8080/api"
+#     PM_TRAEFIK_REDIS_ROOT: "traefik"
+#     PM_POWERDNS_HTTP_API: "http://powerdns:8081"
+#     PM_POWERDNS_HTTP_API_KEY: "test"
+#     PM_ELASTIC_SEARCH_HTTP_API: "127.0.0.1:9200"
+#   ports:
+#     - 5000:5000
+#   networks:
+#     - redis-net
+#     - dns-net
+#     - elasticsearch-net
+#     - traefik
+# ###
 
 volumes:
   elasticsearch-data:

@@ -1,6 +1,6 @@
 import json
 import os
-from ..utils import (
+from app.utils import (
     registerQuery,
     registerMutation,
     createType,
@@ -8,7 +8,7 @@ from ..utils import (
     createInterface,
     create_node_id,
 )
-from ..api import (
+from app.api import (
     get_traefik_http_api as traefik_http,
     get_traefik_redis_api as traefik_redis,
 )

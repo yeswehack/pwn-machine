@@ -1,8 +1,8 @@
 import shlex
 
 
-from ..api import ShellManager
-from ..utils import createType, registerMutation, registerQuery
+from app.api import ShellManager
+from app.utils import createType, registerMutation, registerQuery
 
 DockerContainerShell = createType("DockerContainerShell")
 

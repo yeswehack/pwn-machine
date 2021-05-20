@@ -1,4 +1,4 @@
-from ..utils import (
+from app.utils import (
     registerQuery,
     registerMutation,
     createType,
@@ -6,7 +6,7 @@ from ..utils import (
     create_node_id,
 )
 from . import with_traefik_redis
-from ..api import get_traefik_http_api as traefik_http
+from app.api import get_traefik_http_api as traefik_http
 
 TraefikRouter = createInterface("TraefikRouter")
 

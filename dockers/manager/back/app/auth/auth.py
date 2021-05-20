@@ -5,8 +5,8 @@ import argon2
 import pyotp
 import jwt
 
-from ..utils.registration import registerMutation
-from ..redis import client as redis_client
+from app.utils.registration import registerMutation
+from app.redis import client as redis_client
 
 disable_auth_envvar = "PM_DISABLE_AUTH"
 disable_auth = os.environ.get(disable_auth_envvar) is not None

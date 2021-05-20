@@ -1,6 +1,6 @@
 from typing import NamedTuple
 from datetime import datetime
-from ..api import docker_client
+from app.api import docker_client
 
 
 class KeyValue(NamedTuple):

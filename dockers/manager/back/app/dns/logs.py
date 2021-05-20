@@ -1,7 +1,7 @@
-from ..utils import createType, registerQuery, registerSubscription
+from app.utils import createType, registerQuery, registerSubscription
 from functools import wraps
 from fnmatch import fnmatch
-from ..api import es
+from app.api import es
 
 
 def with_dns_redis(f):
