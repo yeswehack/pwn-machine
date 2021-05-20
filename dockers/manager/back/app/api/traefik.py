@@ -73,6 +73,9 @@ class TraefikRedisApi:
 
     async def delete_service(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_SERVICE")
+        service = await self.http_api.get_service(protocol, name)
+        if service["provider"] != "redis":
+            raise ValueError("You can't delete this service")
         redis_name = name.split("@")[0] if "@" in name else name
         await self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
         return await self.http_api.wait_delete(f"/{protocol}/services/{name}")
@@ -91,11 +94,21 @@ class TraefikRedisApi:
             await self.client.set(k, v)
         return await self.http_api.wait(f"/http/middlewares/{redis_name}@redis")
 
-    async def update_middleware(self, nodeId, type, settings):
-        name = validate_node_id(nodeId, "TRAEFIK_MW")[0]
-        if not await self.delete_middleware(name):
-            raise RuntimeError(f"Unable to update {name}")
-        return await self.create_middleware(name, type, settings)
+    async def update_middleware(self, nodeId, type_name, patch):
+        (name,) = validate_node_id(nodeId, "TRAEFIK_MW")
+        middleware = await self.http_api.get_middleware(name)
+        if middleware["provider"] != "redis":
+            raise ValueError("You can't edit this middleware")
+
+        root = f"/http/middlewares/{middleware['name'].split('@')[0]}/{type_name}"
+
+        for key, option in patch.items():
+            await self.delete_pattern(f"{root}/{key}/*")
+            for key, value in settings_to_kv({key: option}):
+                await self.client.set(root + key, value)
+        await asyncio.sleep(1)
+        with no_cache():
+            return await self.http_api.get_middleware(name)
 
     # Router
     async def create_router(self, protocol, settings):
@@ -131,7 +144,6 @@ class TraefikRedisApi:
         root = f"/{router['protocol']}/routers/{router['name'].split('@')[0]}"
 
         for key, option in patch.items():
-            print(key, option)
             await self.delete_pattern(f"{root}/{key}/*")
             for key, value in settings_to_kv({key: option}):
                 await self.client.set(root + key, value)

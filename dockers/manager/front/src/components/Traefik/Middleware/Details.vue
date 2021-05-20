@@ -33,6 +33,7 @@ import CreateMiddleware from "src/components/Traefik/Middleware/Create.vue";
 import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import api from "src/api";
 export default {
   components: { CreateMiddleware, BaseDetails, ResetAndSave },
   mixins: [DeepForm],
@@ -41,9 +42,17 @@ export default {
       return getCreateComponent(value);
     }
   },
-  computed: {
-    createComponent() {
-      return getCreateComponent(this.middleware);
+  methods: {
+    submit(done) {
+      console.log(this.value);
+      const mutation = api.traefik.UPDATE_MIDDLEWARE[this.value.type];
+      this.$apollo
+        .mutate({
+          mutation,
+          variables: { nodeId: this.value.nodeId, patch: this.form.extra },
+          refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
+        })
+        .then(done);
     }
   }
 };

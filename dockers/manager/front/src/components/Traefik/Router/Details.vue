@@ -48,12 +48,14 @@ export default {
     }
   },
   methods: {
-    submit() {
-      this.$apollo.mutate({
-        mutation: api.traefik.UPDATE_ROUTER[this.value.protocol],
-        variables: { id: this.value.nodeId, patch: this.form.extra },
-        refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
-      });
+    submit(done) {
+      this.$apollo
+        .mutate({
+          mutation: api.traefik.UPDATE_ROUTER[this.value.protocol],
+          variables: { id: this.value.nodeId, patch: this.form.extra },
+          refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
+        })
+        .then(done);
     }
   }
 };

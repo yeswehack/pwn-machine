@@ -114,19 +114,17 @@ export default {
               variables: { nodeId: service.nodeId },
               refetchQueries: [{ query: api.traefik.GET_SERVICES }]
             })
-            .then(response => {
-              const deleted = response.data.traefikDeleteService.ok;
-              if (deleted) {
-                this.$q.notify({
-                  message: `${service.name} deleted.`,
-                  type: "positive"
-                });
-              } else {
-                this.$q.notify({
-                  message: `Unable to delete ${service.name}.`,
-                  type: "negative"
-                });
-              }
+            .then(() => {
+              this.$q.notify({
+                message: `${service.name} deleted.`,
+                type: "positive"
+              });
+            })
+            .catch(error => {
+              this.$q.notify({
+                message: error.message,
+                type: "negative"
+              });
             });
         });
     }

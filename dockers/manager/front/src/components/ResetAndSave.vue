@@ -30,10 +30,11 @@
     <div class="col col-auto">
       <q-btn
         :disabled="!modified || !isLastStep"
+        :loading="isRunning"
         title="Save"
         :color="saveColor"
         icon="eva-save"
-        @click="$emit('save')"
+        @click="save"
       />
     </div>
   </div>
@@ -69,7 +70,16 @@ export default {
       return this.modified ? "primary" : "grey";
     }
   },
+  data() {
+    return { isRunning: false };
+  },
   methods: {
+    save() {
+      this.isRunning = true;
+      this.$emit("save", () => {
+        this.isRunning = false;
+      });
+    },
     reset() {
       this.$emit("update:step", this.firstStep);
       this.$emit("reset");
