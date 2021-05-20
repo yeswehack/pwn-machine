@@ -13,6 +13,9 @@
 [providers.file]
   filename = "/etc/traefik/dynamic_conf.toml"
 
+[providers.redis]
+  endpoints = "redis:6379"
+  rootkey = "traefik"
 [log]
   level = "DEBUG"
 
