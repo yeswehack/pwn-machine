@@ -46,11 +46,19 @@ services:
     image: traefik
     build:
       context: ./dockers/traefik
+
     ports:
       - "80:80"
       - "8080:8080"
+      - "443:443"
+      - "1337:1337"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - traefik-data:/data:rw
+    environment:
+      TRAEFIK_PROVIDERS_REDIS_ENDPOINTS: "redis:6379"
+      TRAEFIK_PROVIDERS_REDIS_ROOTKEY: "traefik"
+      PDNS_API_KEY: "test"
+      PDNS_API_URL: "http://powerdns:8081/"
 
     depends_on:
       - redis
@@ -111,6 +119,7 @@ volumes:
   powerdns-db:
     name: powerdns-db
   redis-data:
+  traefik-data:
 
 networks:
   redis-net:

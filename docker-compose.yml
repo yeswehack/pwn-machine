@@ -51,6 +51,8 @@ services:
     volumes:
       - traefik-data:/data:rw
     environment:
+      TRAEFIK_PROVIDERS_REDIS_ENDPOINTS: "redis:6379"
+      TRAEFIK_PROVIDERS_REDIS_ROOTKEY: "traefik"
       PDNS_API_KEY: "test"
       PDNS_API_URL: "http://powerdns:8081/"
 
