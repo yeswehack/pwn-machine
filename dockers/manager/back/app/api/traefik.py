@@ -104,21 +104,23 @@ class TraefikRedisApi:
         prefix = f"/{protocol}/routers/{redis_name}"
         for k, v in settings_to_kv(settings, prefix):
             await self.client.set(k, v)
-        
+
         with no_cache():
             router = await self.http_api.wait(f"/{protocol}/routers/{redis_name}@redis")
             router["protocol"] = protocol
-            return  router
-    
+            return router
+
     async def delete_router(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
-        redis_name = name.split("@")[0] if "@" in name else name
+        router = await self.http_api.get_router(protocol, name)
+        if router["provider"] != "redis":
+            raise ValueError("You can't delete this router")
+
+        redis_name = name.split("@")[0]
         await self.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
 
         with no_cache():
             return await self.http_api.wait_delete(f"/{protocol}/routers/{name}")
-
-
 
     async def update_router(self, nodeId, patch):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
@@ -230,7 +232,6 @@ class TraefikHTTPApi:
     async def get_routers_used_by(self, usedBy, protocols=("http", "tcp", "udp")):
         routers = await self.get_routers(protocols)
         return [router for router in routers if router["name"] in usedBy]
-
 
     # Middlewares
     async def get_middleware(self, name):

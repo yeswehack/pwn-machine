@@ -138,18 +138,16 @@ export default {
               refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
             })
             .then(response => {
-              const deleted = response.data.traefikDeleteRouter.ok;
-              if (deleted) {
-                this.$q.notify({
-                  message: `${router.name} deleted.`,
-                  type: "positive"
-                });
-              } else {
-                this.$q.notify({
-                  message: `Unable to delete ${router.name}.`,
-                  type: "negative"
-                });
-              }
+              this.$q.notify({
+                message: `${router.name} deleted.`,
+                type: "positive"
+              });
+            })
+            .catch(e => {
+              this.$q.notify({
+                message: `${e.message}`,
+                type: "negative"
+              });
             });
         });
     }

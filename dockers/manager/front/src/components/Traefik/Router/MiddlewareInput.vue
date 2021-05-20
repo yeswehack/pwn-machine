@@ -38,17 +38,8 @@
           <q-item-section side>
             {{ idx + 1 }}
           </q-item-section>
-          <q-item-section v-if="objectKey">
-            {{ entry[objectKey] }}
-            <q-popup-edit v-model="form[idx][objectKey]">
-              <q-input v-model="form[idx][objectKey]" dense autofocus />
-            </q-popup-edit>
-          </q-item-section>
-          <q-item-section v-else>
+          <q-item-section>
             {{ entry }}
-            <q-popup-edit v-model="form[idx]">
-              <q-input v-model="form[idx]" dense autofocus />
-            </q-popup-edit>
           </q-item-section>
           <q-item-section avatar>
             <q-btn
@@ -81,8 +72,8 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
-import MiddlewareDialog from '../Middleware/Dialog.vue';
-import ServiceDialog from '../Service/Dialog.vue';
+import MiddlewareDialog from "../Middleware/Dialog.vue";
+import ServiceDialog from "../Service/Dialog.vue";
 
 function array_move(arr, from, to) {
   arr.splice(to, 0, arr.splice(from, 1)[0]);
@@ -91,7 +82,6 @@ function array_move(arr, from, to) {
 export default {
   mixins: [DeepForm],
   props: {
-    objectKey: { type: String, default: null },
     label: { type: String, default: null }
   },
   apollo: {
@@ -105,27 +95,23 @@ export default {
   },
   formDefinition: [],
   methods: {
-    createMiddleware(){
+    createMiddleware() {
       this.$q.dialog({
         component: MiddlewareDialog,
         root: this
-      })
+      });
     },
-    createService(){
+    createService() {
       this.$q.dialog({
         component: ServiceDialog,
         root: this
-      })
+      });
     },
     addEntry() {
       if (!this.model) {
         return;
       }
-      if (this.objectKey) {
-        this.form.push({ [this.objectKey]: this.model });
-      } else {
-        this.form.push(this.model);
-      }
+      this.form.push(this.model);
       this.model = null;
     },
     removeEntry(idx) {
