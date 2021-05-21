@@ -2,6 +2,10 @@ extend type Query {
   dockerVolumes: [DockerVolume!]!
 }
 
+extend type Mutation {
+  dockerCreateVolume(input: DockerVolumeInput! = {}): DockerVolume
+}
+
 type DockerVolume {
   name: String!
   labels: [KeyValue!]!
@@ -10,8 +14,12 @@ type DockerVolume {
   usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
 
+input DockerVolumeInput {
+  name: String
+  labels: [KeyValueInput!]! = []
+}
+
 extend type Mutation {
-  dockerCreateVolume(name: String, labels: [KeyValueInput!]! = []): DockerVolume
   dockerRemoveVolume(name: String!, force: Boolean = false): Boolean!
   dockerPruneVolumes: Float
 }

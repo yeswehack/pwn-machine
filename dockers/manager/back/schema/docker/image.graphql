@@ -2,9 +2,13 @@ extend type Query {
   dockerImages(onlyFinal: Boolean = true): [DockerImage!]!
 }
 
+extend type Mutation {
+  dockerPullImage(tag: DockerImageTagInput!): DockerImage
+}
+
 type DockerImage {
   id: ID!
-  name: String
+  name: String!
   tags: [DockerImageTag!]!
   labels: [KeyValue!]!
   parent: ID!
@@ -16,9 +20,22 @@ type DockerImage {
   usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
 
+extend type Mutation {
+  dockerTagImage(
+    id: ID!
+    tag: DockerImageTagInput!
+    force: Boolean = false
+  ): DockerImage
+}
+
 type DockerImageTag {
   repository: String!
   tag: String!
+}
+
+input DockerImageTagInput {
+  repository: String!
+  tag: String! = "latest"
 }
 
 extend type Query {
@@ -47,13 +64,6 @@ type DockerSearchImageTagResult {
 }
 
 extend type Mutation {
-  dockerPullImage(repository: String!, tag: String! = "latest"): DockerImage
-  dockerTagImage(
-    id: ID!
-    repository: String!
-    tag: String! = "latest"
-    force: Boolean = false
-  ): DockerImage
   dockerRemoveImage(
     id: ID!
     force: Boolean = false

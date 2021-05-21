@@ -2,12 +2,6 @@ extend type Query {
   dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
 
-type DockerContainerConnection {
-  aliases: [String!]!
-  ipAddress: String
-  network: DockerNetwork
-}
-
 type DockerContainer {
   id: ID!
   name: String!
@@ -15,22 +9,12 @@ type DockerContainer {
   image: DockerImage!
   created: DateTime!
   command: [String!]!
+  privileged: Boolean!
   environment: [KeyValue!]!
   mounts: [DockerContainerMount!]!
   connections: [DockerContainerConnection!]!
   ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
-  privileged: Boolean!
-}
-
-enum DockerContainerStatus {
-  CREATED
-  RESTARTING
-  RUNNING
-  REMOVING
-  PAUSED
-  EXITED
-  DEAD
 }
 
 type DockerContainerMount {
@@ -48,6 +32,12 @@ enum DockerContainerMountType {
   NPIPE
 }
 
+type DockerContainerConnection {
+  aliases: [String!]!
+  ipAddress: String
+  network: DockerNetwork
+}
+
 type DockerContainerPort {
   protocol: DockerContainerPortProtocol!
   containerPort: Int!
@@ -62,6 +52,16 @@ type DockerContainerPortHostBinding {
 enum DockerContainerPortProtocol {
   TCP
   UDP
+}
+
+enum DockerContainerStatus {
+  CREATED
+  RESTARTING
+  RUNNING
+  REMOVING
+  PAUSED
+  EXITED
+  DEAD
 }
 
 extend type Mutation {

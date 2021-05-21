@@ -2,10 +2,8 @@ extend type Query {
   dockerNetworks: [DockerNetwork!]!
 }
 
-type DockerNetworkConnection {
-  ipv4Address: String
-  ipv6Address: String
-  container: DockerContainer!
+extend type Mutation {
+  dockerCreateNetwork(input: DockerNetworkInput!): DockerNetwork
 }
 
 type DockerNetwork {
@@ -15,21 +13,19 @@ type DockerNetwork {
   created: DateTime!
   ipv6: Boolean!
   driver: String!
-  internal: Boolean!
   builtin: Boolean!
+  internal: Boolean!
   ipams: [DockerNetworkIpam!]!
   connections: [DockerNetworkConnection!]!
 }
 
-extend type Mutation {
-  dockerCreateNetwork(
-    name: String!
-    labels: [KeyValueInput!]! = []
-    ipv6: Boolean = false
-    driver: String! = "bridge"
-    internal: Boolean = false
-    ipam: DockerNetworkIpamInput
-  ): DockerNetwork
+input DockerNetworkInput {
+  name: String!
+  labels: [KeyValueInput!]! = []
+  ipv6: Boolean = false
+  driver: String! = "bridge"
+  internal: Boolean = false
+  ipam: DockerNetworkIpamInput
 }
 
 type DockerNetworkIpam {
@@ -46,16 +42,22 @@ input DockerNetworkIpamInput {
 
 extend type Mutation {
   dockerConnectContainerToNetwork(
-    input: dockerConnectContainerNetworkInput
+    input: DockerNetworkConnectionInput
   ): Boolean!
   dockerDisconnectContainerFromNetwork(
-    input: dockerConnectContainerNetworkInput
+    input: DockerNetworkConnectionInput
   ): Boolean!
 }
 
-input dockerConnectContainerNetworkInput {
-  containerId: ID!
+type DockerNetworkConnection {
+  ipv4Address: String
+  ipv6Address: String
+  container: DockerContainer!
+}
+
+input DockerNetworkConnectionInput {
   networkId: ID!
+  containerId: ID!
 }
 
 extend type Mutation {
