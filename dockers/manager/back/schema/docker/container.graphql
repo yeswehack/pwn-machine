@@ -63,3 +63,19 @@ enum DockerContainerPortProtocol {
   TCP
   UDP
 }
+
+extend type Mutation {
+  dockerStartContainer(id: ID!): DockerContainer
+  dockerRestartContainer(id: ID!): DockerContainer
+  dockerPauseContainer(id: ID!): DockerContainer
+  dockerUnpauseContainer(id: ID!): DockerContainer
+  dockerStopContainer(id: ID!): DockerContainer
+  dockerKillContainer(id: ID!): DockerContainer
+  dockerRenameContainer(id: ID!, name: String!): DockerContainer
+  dockerRemoveContainer(
+    id: ID!
+    force: Boolean = false
+    pruneVolumes: Boolean = false
+  ): Boolean!
+  dockerPruneContainers: Float
+}

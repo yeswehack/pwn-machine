@@ -16,11 +16,6 @@ type DockerImage {
   usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
 }
 
-input DockerImageTagInput {
-  repository: String!
-  tag: String
-}
-
 type DockerImageTag {
   repository: String!
   tag: String!
@@ -49,4 +44,20 @@ type DockerSearchImageTagResult {
   name: String!
   size: Float!
   lastUpdated: DateTime!
+}
+
+extend type Mutation {
+  dockerPullImage(repository: String!, tag: String! = "latest"): DockerImage
+  dockerTagImage(
+    id: ID!
+    repository: String!
+    tag: String! = "latest"
+    force: Boolean = false
+  ): DockerImage
+  dockerRemoveImage(
+    id: ID!
+    force: Boolean = false
+    pruneParents: Boolean = true
+  ): Boolean!
+  dockerPruneImages(onlyDangling: Boolean = false): Float
 }
