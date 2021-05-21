@@ -4,7 +4,7 @@ import re
 import asyncio
 import logging
 import time
-from app.utils.cached import cacheMethodForQuery
+from app.utils.cached import cacheMethodForQuery, no_cache
 from fnmatch import fnmatch
 from app.utils import validate_node_id
 
@@ -77,7 +77,6 @@ class PowerdnsHTTPApi:
         self.root = root
         self.session = session
 
-
     @classmethod
     def create(cls, root, session):
         cls._instance = cls(root, session)
@@ -117,17 +116,15 @@ class PowerdnsHTTPApi:
 
     async def get_zone(self, zone_id):
         try:
-            return await self.get(
-                f"/api/v1/servers/localhost/zones/{zone_id}"
-            )
+            return await self.get(f"/api/v1/servers/localhost/zones/{zone_id}")
         except Exception as e:
             print("ERROR", e)
             return None
 
     async def get_zones(self):
         zones = await self.get("/api/v1/servers/localhost/zones")
-        
-        return [z for z in zones if z['name'] != "."]
+
+        return [z for z in zones if z["name"] != "."]
 
     async def get_soa(self, zone_id):
         info = await self.get_zone(zone_id)
@@ -168,16 +165,25 @@ class PowerdnsHTTPApi:
         zone_info = await self.get_zone(name)
         if zone_info is not None:
             raise Exception("A zone with this name already exists.")
+
+        content = soa_to_string(soa)
+        rule = {
+            "name": name,
+            "type": "SOA",
+            "records": [{"content": content, "disabled": False}],
+            "ttl": soa["ttl"],
+        }
         data = {
             "name": name,
-            "kind": "native",
             "nameservers": [soa["nameserver"]],
+            "kind": "native",
+            "rrsets": [rule],
             "soa_edit": "INCEPTION-EPOCH",
             "soa_edit_api": "INCEPTION-EPOCH",
         }
-        await self.post("/api/v1/servers/localhost/zones", data)
-        await self.update_soa(name, soa)
-        return await self.get_zone(name)
+        r = await self.post("/api/v1/servers/localhost/zones", data)
+        with no_cache():
+            return await self.get_zone(name)
 
     async def update_zone(self, nodeId, soa):
         zone_name = validate_node_id(nodeId, "DNS_ZONE")[0]
@@ -272,4 +278,3 @@ class PowerdnsRedisApi:
                             return logs
             pos += len(keys)
         return logs
-
