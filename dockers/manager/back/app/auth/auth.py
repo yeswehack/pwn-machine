@@ -36,10 +36,10 @@ async def resolve_login(*_, password, totp, expire=None):
     if AUTH_DISABLED is False:
         try:
             hasher.verify(await db.password_hash, password)
-        except:
-            raise Exception("Invalid password")
-        if not await db.totp_client.verify(totp):
-            raise Exception("Invalid OTP")
+        except argon2.exceptions.VerificationError:
+            return False
+        if not (await db.totp_client).verify(totp):
+            return False
 
     now = int(time.time())
     payload = {"iss": ISSUER, "iat": now}

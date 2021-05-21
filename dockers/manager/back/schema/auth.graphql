@@ -13,10 +13,9 @@ enum SetupStepNeeded {
 }
 
 extend type Mutation {
-  login(password: String!, otp: Int!, expire: Int): User!
+  login(password: String!, otp: Int!, expire: Int): User
   setPassword(password: String!): Boolean!
   setTotp(uri: String!, totp: Int!): Boolean!
-  register(password: String!, otp: Int!): User!
 }
 
 type User {
