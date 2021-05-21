@@ -53,6 +53,9 @@ export default {
   formDefinition: [],
   computed: {
     caption() {
+      if (this.form.length == 0){
+        return "Automatic"
+      }
       return `${this.form.length} setting(s)`;
     }
   },
