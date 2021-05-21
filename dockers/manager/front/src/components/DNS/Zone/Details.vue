@@ -50,12 +50,12 @@ export default {
     soa: SoaForm
   },
   methods: {
-    submit() {
+    submit(done) {
       this.$apollo.mutate({
         mutation: api.dns.UPDATE_ZONE,
         variables: { nodeId: this.value.nodeId, patch: { soa: this.form.soa } },
         refetchQueries: [{ query: api.dns.GET_ZONES }]
-      });
+      }).then(done);
     }
   }
 };

@@ -52,7 +52,7 @@
 <script>
 import HelpLink from "src/components/HelpLink.vue";
 import LogList from "src/components/DNS/LogList.vue";
-import RuleInput from "./RuleInput.vue";
+import RecordInput from "./RecordInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
@@ -63,7 +63,7 @@ export default {
   mixins: [DeepForm],
   components: { ResetAndSave, HelpLink, LogList, LuaEditor },
   formDefinition: {
-    records: RuleInput,
+    records: RecordInput,
     ttl: 3600
   },
   data() {
@@ -85,13 +85,13 @@ export default {
     ];
     return { ttl: 0, recordColumns, records: [] };
   },
-  computed:{
-    logType(){
-      return this.value.type
+  computed: {
+    logType() {
+      return this.value.type;
     }
   },
   methods: {
-    submit() {
+    submit(done) {
       const patch = {
         ...this.form,
         records: this.form.records.map(r => ({
@@ -99,11 +99,13 @@ export default {
           enabled: r.enabled
         }))
       };
-      this.$apollo.mutate({
-        mutation: api.dns.UPDATE_RULE,
-        variables: { nodeId: this.value.nodeId, patch },
-        refetchQueries: [{ query: api.dns.GET_RULES }]
-      });
+      this.$apollo
+        .mutate({
+          mutation: api.dns.UPDATE_RULE,
+          variables: { nodeId: this.value.nodeId, patch },
+          refetchQueries: [{ query: api.dns.GET_RULES }]
+        })
+        .then(done);
     }
   }
 };

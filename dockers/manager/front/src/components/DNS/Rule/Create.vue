@@ -62,7 +62,7 @@ import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import LuaEditor from "./LuaEditor.vue";
-import RuleInput from './RuleInput.vue';
+import RecordInput from './RecordInput.vue';
 
 const types = [
   "A",
@@ -118,7 +118,7 @@ export default {
     isLua: false,
     name: null,
     type: null,
-    records: RuleInput,
+    records: RecordInput,
     ttl: 3600
   },
   data() {
