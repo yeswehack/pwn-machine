@@ -1,6 +1,6 @@
 from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
-from docker.errors import APIError
+from docker.errors import APIError, ImageNotFound
 from dataclasses import dataclass
 import aiohttp
 import re
@@ -131,23 +131,25 @@ async def resolve_pull_image(*_, repository, tag):
 @registerMutation("dockerTagImage")
 async def resolve_tag_image(*_, id, repository, tag, force=False):
     try:
-        return docker_client.api.tag(id, repository, tag, force)
-    except APIError:
+        docker_client.api.tag(id, repository, tag, force)
+        return docker_client.images.get(id)
+    except (APIError, ImageNotFound):
         return None
 
 
 @registerMutation("dockerRemoveImage")
 async def resolve_remove_image(*_, id, force=False, pruneParents=True):
     try:
-        docker_client.images.remove(id, force, noprune=not pruneParents)
+        docker_client.api.remove_image(id, force, noprune=not pruneParents)
     except APIError:
         return False
     return True
 
 
 @registerMutation("dockerPruneImages")
-async def resolve_prune_images(*_, onlyDangling=True):
+async def resolve_prune_images(*_, onlyDangling=False):
     try:
-        return docker_client.images.prune({"dangling": onlyDangling})["SpaceReclaimed"]
+        filters = {"dangling": onlyDangling}
+        return docker_client.api.prune_images(filters)["SpaceReclaimed"]
     except APIError:
         return None

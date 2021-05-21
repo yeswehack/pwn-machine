@@ -1,6 +1,6 @@
 from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
-from docker.errors import APIError, NotFound
+from docker.errors import APIError
 
 DockerVolume = createType("DockerVolume")
 
@@ -43,8 +43,8 @@ async def resolve_create_volume(*_, name=None, labels: list[KeyValue]):
 @registerMutation("dockerRemoveVolume")
 async def resolve_remove_volume(*_, name, force=False):
     try:
-        docker_client.volumes.get(name).remove(force)
-    except (NotFound, APIError):
+        docker_client.api.remove_volume(name, force)
+    except APIError:
         return False
     return True
 
@@ -52,6 +52,6 @@ async def resolve_remove_volume(*_, name, force=False):
 @registerMutation("dockerPruneVolumes")
 async def resolve_prune_volumes(*_):
     try:
-        return docker_client.volumes.prune()["SpaceReclaimed"]
+        return docker_client.api.prune_volumes()["SpaceReclaimed"]
     except APIError:
         return None

@@ -8,7 +8,6 @@ type DockerNetworkConnection {
   container: DockerContainer!
 }
 
-
 type DockerNetwork {
   id: ID!
   name: String!
@@ -46,11 +45,6 @@ input DockerNetworkIpamInput {
 }
 
 extend type Mutation {
-  dockerRemoveNetwork(id: ID!): Boolean!
-  dockerPruneNetworks: Boolean!
-}
-
-extend type Mutation {
   dockerConnectContainerToNetwork(
     input: dockerConnectContainerNetworkInput
   ): Boolean!
@@ -62,4 +56,9 @@ extend type Mutation {
 input dockerConnectContainerNetworkInput {
   containerId: ID!
   networkId: ID!
+}
+
+extend type Mutation {
+  dockerRemoveNetwork(id: ID!): Boolean!
+  dockerPruneNetworks: Boolean!
 }
