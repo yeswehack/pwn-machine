@@ -1,5 +1,6 @@
-from app.utils import registerQuery, createType
+from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
+from docker.errors import APIError, NotFound
 from dataclasses import dataclass
 
 DockerContainer = createType("DockerContainer")
@@ -16,10 +17,10 @@ def resolve_containers(*_, onlyRunning=True):
 def resolve_container_labels(container, _):
     return [KeyValue(*label) for label in container.labels.items()]
 
+
 @DockerContainer.field("privileged")
 def resolve_container_privileged(container, _):
     return container.attrs["HostConfig"]["Privileged"]
-
 
 
 @DockerContainer.field("created")
@@ -117,3 +118,83 @@ def resolve_container_mount_target(mount, _):
 @DockerContainerMount.field("readonly")
 def resolve_container_mount_readonly(mount, _):
     return not mount["RW"]
+
+
+@registerMutation("dockerStartContainer")
+async def resolve_start_container(*_, id):
+    try:
+        docker_client.api.start(id)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerRestartContainer")
+async def resolve_restart_container(*_, id):
+    try:
+        docker_client.api.restart(id)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerPauseContainer")
+async def resolve_pause_container(*_, id):
+    try:
+        docker_client.api.pause(id)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerUnpauseContainer")
+async def resolve_unpause_container(*_, id):
+    try:
+        docker_client.api.unpause(id)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerStopContainer")
+async def resolve_stop_container(*_, id, timeout):
+    try:
+        docker_client.api.stop(id, timeout)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerKillContainer")
+async def resolve_kill_container(*_, id, signal):
+    try:
+        docker_client.api.kill(id, signal)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerRenameContainer")
+async def resolve_rename_container(*_, id, name):
+    try:
+        docker_client.api.rename(id, name)
+        return docker_client.containers.get(id)
+    except (APIError, NotFound):
+        return None
+
+
+@registerMutation("dockerRemoveContainer")
+async def resolve_remove_container(*_, id, force=False, pruneVolumes=False):
+    try:
+        docker_client.api.remove_container(id, pruneVolumes, force=force)
+    except APIError:
+        return False
+    return True
+
+
+@registerMutation("dockerPruneContainers")
+async def resolve_prune_containers(*_):
+    try:
+        return docker_client.api.prune_containers()["SpaceReclaimed"]
+    except APIError:
+        return None
