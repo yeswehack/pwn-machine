@@ -2,16 +2,24 @@ extend type Query {
   dockerVolumes: [DockerVolume!]!
 }
 
+extend type Mutation {
+  dockerCreateVolume(input: DockerVolumeInput! = {}): DockerVolume
+}
+
 type DockerVolume {
   name: String!
   labels: [KeyValue!]!
   created: DateTime!
   mountpoint: String!
-  usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+  usingContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
+}
+
+input DockerVolumeInput {
+  name: String
+  labels: [KeyValueInput!]! = []
 }
 
 extend type Mutation {
-  dockerCreateVolume(name: String, labels: [KeyValueInput!]! = []): DockerVolume
-  dockerRemoveVolume(name: String!, force: Boolean = false): Boolean!
+  dockerRemoveVolume(name: String!, force: Boolean! = false): Boolean!
   dockerPruneVolumes: Float
 }

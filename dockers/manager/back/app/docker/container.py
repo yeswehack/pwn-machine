@@ -1,26 +1,95 @@
 from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError, NotFound
-from dataclasses import dataclass
+from docker.types import Mount
+from typing import NamedTuple
 
 DockerContainer = createType("DockerContainer")
 DockerContainerMount = createType("DockerContainerMount")
-DockerContainerConnection = createType("DockerContainerConnection")
+
+
+class ContainerMount(NamedTuple):
+    type: str
+    target: str
+    source: str = None
+    volume: str = None
+    readonly: bool = False
+
+
+class ContainerPort(NamedTuple):
+    protocol: str
+    containerPort: int
+    hostBindings: list
 
 
 @registerQuery("dockerContainers")
-def resolve_containers(*_, onlyRunning=True):
+def resolve_containers(*_, onlyRunning):
     return docker_client.containers.list(all=not onlyRunning)
+
+
+def resolve_create_container(
+    *,
+    name=None,
+    labels: list[KeyValue],
+    imageId,
+    command=None,
+    user,
+    workdir,
+    environment: list[KeyValue],
+    privileged,
+    readonly,
+    mounts: list[ContainerMount],
+    ports: list[ContainerPort],
+    onExit: str = None,
+):
+    return docker_client.containers.create(
+        imageId,
+        name=name,
+        labels=dict(labels),
+        command=command,
+        user=user,
+        working_dir=workdir,
+        environment=dict(environment),
+        privileged=privileged,
+        read_only=readonly,
+        mounts=[
+            Mount(target, source, type.lower(), readonly)
+            for type, target, source, _, readonly in (
+                ContainerMount(**mount) for mount in mounts
+            )
+        ],
+        ports={
+            f"{containerPort}/{protocol}": [
+                (*binding.values(),) for binding in hostBindings
+            ]
+            for protocol, containerPort, hostBindings in (
+                ContainerPort(**port) for port in ports
+            )
+        },
+        **{}
+        if onExit is None
+        else {"auto_remove": True}
+        if onExit == "REMOVE"
+        else {
+            "restart_policy": {
+                "Name": {
+                    "RESTART_ON_FAILURE": "on-failure",
+                    "RESTART_UNLESS_STOPPED": "unless-stopped",
+                    "RESTART_ALWAYS": "always",
+                }[onExit]
+            }
+        },
+    )
+
+
+@registerMutation("dockerCreateContainer")
+def resolve_form_create_container(*_, input):
+    return resolve_create_container(**input)
 
 
 @DockerContainer.field("labels")
 def resolve_container_labels(container, _):
     return [KeyValue(*label) for label in container.labels.items()]
-
-
-@DockerContainer.field("privileged")
-def resolve_container_privileged(container, _):
-    return container.attrs["HostConfig"]["Privileged"]
 
 
 @DockerContainer.field("created")
@@ -40,43 +109,46 @@ def resolve_container_environment(container, _):
     ]
 
 
+@DockerContainer.field("privileged")
+def resolve_container_privileged(container, _):
+    return container.attrs["HostConfig"]["Privileged"]
+
+
 @DockerContainer.field("mounts")
 def resolve_container_mounts(container, _):
-    return container.attrs["Mounts"]
+    return [
+        ContainerMount(
+            mount["Type"].upper(),
+            mount.get("Name"),
+            mount.get("Source"),
+            mount["Destination"],
+            not mount["RW"],
+        )
+        for mount in container.attrs["Mounts"]
+    ]
+
+
+@DockerContainerMount.field("volume")
+def resolve_container_mount_volume(mount: ContainerMount, _):
+    return docker_client.volumes.get(name) if (name := mount.volume) else None
 
 
 @DockerContainer.field("connections")
 def resolve_container_connections(container, _):
-    return container.attrs["NetworkSettings"]["Networks"].values()
-
-
-@DockerContainerConnection.field("ipAddress")
-def resolve_connection_ip_address(connection, *_):
-    print(connection)
-    return connection["IPAddress"] or None
-
-
-@DockerContainerConnection.field("aliases")
-def resolve_connection_ip_aliases(connection, *_):
-    return connection["Aliases"] or []
-
-
-@DockerContainerConnection.field("network")
-def resolve_connection_ip_network(connection, *_):
-    return docker_client.networks.get(connection["NetworkID"])
-
-
-@dataclass
-class ExposedPort:
-    protocol: str
-    containerPort: int
-    hostBindings: list
+    return [
+        {
+            "aliases": endpoint["Aliases"] or [],
+            "ipAddress": endpoint["IPAddress"] or None,
+            "network": docker_client.networks.get(name),
+        }
+        for name, endpoint in container.attrs["NetworkSettings"]["Networks"]
+    ]
 
 
 @DockerContainer.field("ports")
 def resolve_container_ports(container, _):
     return [
-        ExposedPort(
+        ContainerPort(
             *port.upper().rpartition("/")[::-2],
             [
                 {
@@ -95,33 +167,8 @@ def resolve_container_status(container, _):
     return container.status.upper()
 
 
-@DockerContainerMount.field("type")
-def resolve_container_mount_type(mount, _):
-    return mount["Type"].upper()
-
-
-@DockerContainerMount.field("volume")
-def resolve_container_mount_volume(mount, _):
-    return docker_client.volumes.get(name) if (name := mount.get("Name")) else None
-
-
-@DockerContainerMount.field("source")
-def resolve_container_mount_source(mount, _):
-    return mount.get("Source")
-
-
-@DockerContainerMount.field("target")
-def resolve_container_mount_target(mount, _):
-    return mount["Destination"]
-
-
-@DockerContainerMount.field("readonly")
-def resolve_container_mount_readonly(mount, _):
-    return not mount["RW"]
-
-
 @registerMutation("dockerStartContainer")
-async def resolve_start_container(*_, id):
+def resolve_start_container(*_, id):
     try:
         docker_client.api.start(id)
         return docker_client.containers.get(id)
@@ -130,7 +177,7 @@ async def resolve_start_container(*_, id):
 
 
 @registerMutation("dockerRestartContainer")
-async def resolve_restart_container(*_, id):
+def resolve_restart_container(*_, id):
     try:
         docker_client.api.restart(id)
         return docker_client.containers.get(id)
@@ -139,7 +186,7 @@ async def resolve_restart_container(*_, id):
 
 
 @registerMutation("dockerPauseContainer")
-async def resolve_pause_container(*_, id):
+def resolve_pause_container(*_, id):
     try:
         docker_client.api.pause(id)
         return docker_client.containers.get(id)
@@ -148,7 +195,7 @@ async def resolve_pause_container(*_, id):
 
 
 @registerMutation("dockerUnpauseContainer")
-async def resolve_unpause_container(*_, id):
+def resolve_unpause_container(*_, id):
     try:
         docker_client.api.unpause(id)
         return docker_client.containers.get(id)
@@ -157,43 +204,43 @@ async def resolve_unpause_container(*_, id):
 
 
 @registerMutation("dockerStopContainer")
-async def resolve_stop_container(*_, id, timeout):
+def resolve_stop_container(*_, id):
     try:
-        docker_client.api.stop(id, timeout)
+        docker_client.api.stop(id)
         return docker_client.containers.get(id)
     except (APIError, NotFound):
         return None
 
 
 @registerMutation("dockerKillContainer")
-async def resolve_kill_container(*_, id, signal):
+def resolve_kill_container(*_, id):
     try:
-        docker_client.api.kill(id, signal)
+        docker_client.api.kill(id)
         return docker_client.containers.get(id)
     except (APIError, NotFound):
         return None
 
 
 @registerMutation("dockerRenameContainer")
-async def resolve_rename_container(*_, id, name):
+def resolve_rename_container(*_, id, name):
     try:
-        docker_client.api.rename(id, name)
+        docker_client.api.rename(id, name=name)
         return docker_client.containers.get(id)
     except (APIError, NotFound):
         return None
 
 
 @registerMutation("dockerRemoveContainer")
-async def resolve_remove_container(*_, id, force=False, pruneVolumes=False):
+def resolve_remove_container(*_, id, force, pruneVolumes):
     try:
-        docker_client.api.remove_container(id, pruneVolumes, force=force)
+        docker_client.api.remove_container(id, v=pruneVolumes, force=force)
     except APIError:
         return False
     return True
 
 
 @registerMutation("dockerPruneContainers")
-async def resolve_prune_containers(*_):
+def resolve_prune_containers(*_):
     try:
         return docker_client.api.prune_containers()["SpaceReclaimed"]
     except APIError:
