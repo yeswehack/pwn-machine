@@ -4,14 +4,9 @@ type Query {
 }
 
 type Mutation {
-  login(password: String!, otp: Int!, expire: Int): User!
-  register(password: String!, otp: Int!): User!
+  _unused: Boolean
 }
 
 type Subscription {
   _unused: Boolean
-}
-
-type User {
-  token: String!
 }
