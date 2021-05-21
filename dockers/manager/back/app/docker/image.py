@@ -1,5 +1,6 @@
-from app.utils import registerQuery, createType
+from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
+from docker.errors import APIError
 from dataclasses import dataclass
 import aiohttp
 import re
@@ -117,3 +118,36 @@ async def resolve_search_tag(*_, repoName, imageName):
         }
         for tag in await get_tags_for_image(repoName, imageName)
     ]
+
+
+@registerMutation("dockerPullImage")
+async def resolve_pull_image(*_, repository, tag):
+    try:
+        return docker_client.images.pull(repository, tag)
+    except APIError:
+        return None
+
+
+@registerMutation("dockerTagImage")
+async def resolve_tag_image(*_, id, repository, tag, force=False):
+    try:
+        return docker_client.api.tag(id, repository, tag, force)
+    except APIError:
+        return None
+
+
+@registerMutation("dockerRemoveImage")
+async def resolve_remove_image(*_, id, force=False, pruneParents=True):
+    try:
+        docker_client.images.remove(id, force, noprune=not pruneParents)
+    except APIError:
+        return False
+    return True
+
+
+@registerMutation("dockerPruneImages")
+async def resolve_prune_images(*_, onlyDangling=True):
+    try:
+        return docker_client.images.prune({"dangling": onlyDangling})["SpaceReclaimed"]
+    except APIError:
+        return None
