@@ -195,6 +195,9 @@ class PowerdnsHTTPApi:
 
     async def delete_zone(self, nodeId):
         zone_name = validate_node_id(nodeId, "DNS_ZONE")[0]
+        zone_info = await self.get_zone(zone_name)
+        if zone_info is None:
+            raise Exception("This zone doesn't exists.")
         r = await self.delete(f"/api/v1/servers/localhost/zones/{zone_name}")
         return 200 <= r.status < 300
 
@@ -246,35 +249,3 @@ class PowerdnsHTTPApi:
             f"/api/v1/servers/localhost/zones/{zone}", {"rrsets": [rrset]}
         )
         return 200 <= r.status < 300
-
-
-class PowerdnsRedisApi:
-    def __init__(self, client, root):
-        self.client = client
-        self.root = root
-
-    async def get_logs(self, domain="*", type="*", offset=0, count=20):
-        c = self.client
-        logs = []
-
-        skipped = 0
-        pos = 0
-        while len(logs) < count:
-            keys = await c.lrange("dns/logs", pos, pos + 10)
-            if not keys:
-                break
-            for key in keys:
-                log = await c.hgetall(key)
-                # If log is empty that mean we reached expired logs
-                if not log:
-                    return logs
-
-                if fnmatch(log["domain"], domain) and fnmatch(log["type"], type):
-                    if skipped < offset:
-                        skipped += 1
-                    else:
-                        logs.append(log)
-                        if len(logs) == count:
-                            return logs
-            pos += len(keys)
-        return logs
