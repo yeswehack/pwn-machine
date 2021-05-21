@@ -11,7 +11,7 @@
           <container-list-input
             @add="connectContainer"
             @remove="disconnectContainer"
-            :value="network.usingContainers"
+            :value="network.connections.map(c=>c.container)"
             title="Connected containers"
           />
         </q-card-section>
@@ -21,10 +21,7 @@
 </template>
 
 <script>
-import IpamInput from "./IpamInput.vue";
-import LabelInput from "../LabelInput.vue";
 import CreateNetwork from "./Create.vue";
-import HelpLink from "src/components/HelpLink.vue";
 import ContainerListInput from "../ContainerListInput.vue";
 import api from "src/api";
 

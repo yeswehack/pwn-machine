@@ -13,8 +13,8 @@
     <q-card-section class="q-gutter-sm">
       <q-list separator class="rounded-borders" bordered>
         <component
-          :is="formChildren.ipam"
-          v-model="form.ipam"
+          :is="formChildren.ipams"
+          v-model="form.ipams"
           :readonly="readonly"
         />
         <component
@@ -34,7 +34,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
 import LabelInput from "../LabelInput.vue";
-import IpamInput from "./IpamInput.vue";
+import IpamsInput from "./IpamsInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export default {
@@ -44,7 +44,7 @@ export default {
   formDefinition: {
     internal: false,
     name: null,
-    ipam: IpamInput,
+    ipams: IpamsInput,
     labels: LabelInput
   },
   methods: {
