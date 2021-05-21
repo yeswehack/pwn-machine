@@ -1,7 +1,7 @@
 from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError, ImageNotFound
-from dataclasses import dataclass
+from typing import NamedTuple
 import aiohttp
 import re
 
@@ -12,15 +12,20 @@ DockerImage = createType("DockerImage")
 TAG_REG = re.compile(r"^[a-z0-9_][a-z0-9_\.\-]{0,127}$", re.IGNORECASE)
 
 
+class RepoTag(NamedTuple):
+    repository: str
+    tag: str = "latest"
+
+
 @registerQuery("dockerImages")
-def resolve_images(*_, onlyFinal=True):
+def resolve_images(*_, onlyFinal):
     return docker_client.images.list(all=not onlyFinal)
 
 
 @registerMutation("dockerPullImage")
-def resolve_pull_image(*_, tag):
+def resolve_pull_image(*_, tag: RepoTag):
     try:
-        return docker_client.images.pull(tag["repository"], tag["tag"])
+        return docker_client.images.pull(**tag)
     except APIError:
         return None
 
@@ -32,12 +37,6 @@ def resolve_image_name(image, *_):
     if image.attrs["RepoDigests"]:
         return image.attrs["RepoDigests"][0].rpartition("@")[0]
     return image.attrs["Id"].partition(":")[2][:12]
-
-
-@dataclass
-class RepoTag:
-    repository: str
-    tag: str = "latest"
 
 
 @DockerImage.field("tags")
@@ -81,16 +80,16 @@ def resolve_image_environment(image, _):
 
 
 @DockerImage.field("usingContainers")
-def resolve_image_using_containers(image, _, onlyRunning=True):
+def resolve_image_using_containers(image, _, onlyRunning):
     return docker_client.containers.list(
         all=not onlyRunning, filters={"ancestor": image.id}
     )
 
 
 @registerMutation("dockerTagImage")
-def resolve_tag_image(*_, id, tag, force=False):
+def resolve_tag_image(*_, id, tag: RepoTag, force):
     try:
-        docker_client.api.tag(id, tag["repository"], tag["tag"], force)
+        docker_client.api.tag(id, **tag, force=force)
         return docker_client.images.get(id)
     except (APIError, ImageNotFound):
         return None
@@ -137,16 +136,16 @@ async def resolve_search_tag(*_, repoName, imageName):
 
 
 @registerMutation("dockerRemoveImage")
-def resolve_remove_image(*_, id, force=False, pruneParents=True):
+def resolve_remove_image(*_, id, force, pruneParents):
     try:
-        docker_client.api.remove_image(id, force, noprune=not pruneParents)
+        docker_client.api.remove_image(id, force=force, noprune=not pruneParents)
     except APIError:
         return False
     return True
 
 
 @registerMutation("dockerPruneImages")
-def resolve_prune_images(*_, onlyDangling=False):
+def resolve_prune_images(*_, onlyDangling):
     try:
         filters = {"dangling": onlyDangling}
         return docker_client.api.prune_images(filters)["SpaceReclaimed"]

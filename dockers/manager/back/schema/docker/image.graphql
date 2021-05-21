@@ -1,5 +1,5 @@
 extend type Query {
-  dockerImages(onlyFinal: Boolean = true): [DockerImage!]!
+  dockerImages(onlyFinal: Boolean! = true): [DockerImage!]!
 }
 
 extend type Mutation {
@@ -17,14 +17,14 @@ type DockerImage {
   entrypoint: [String!]
   command: [String!]
   environment: [KeyValue!]!
-  usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+  usingContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
 }
 
 extend type Mutation {
   dockerTagImage(
     id: ID!
     tag: DockerImageTagInput!
-    force: Boolean = false
+    force: Boolean! = false
   ): DockerImage
 }
 
@@ -66,8 +66,8 @@ type DockerSearchImageTagResult {
 extend type Mutation {
   dockerRemoveImage(
     id: ID!
-    force: Boolean = false
-    pruneParents: Boolean = true
+    force: Boolean! = false
+    pruneParents: Boolean! = true
   ): Boolean!
-  dockerPruneImages(onlyDangling: Boolean = false): Float
+  dockerPruneImages(onlyDangling: Boolean! = false): Float
 }

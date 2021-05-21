@@ -1,5 +1,9 @@
 extend type Query {
-  dockerContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+  dockerContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
+}
+
+extend type Mutation {
+  dockerCreateContainer(input: DockerContainerInput!): DockerContainer
 }
 
 type DockerContainer {
@@ -9,12 +13,27 @@ type DockerContainer {
   image: DockerImage!
   created: DateTime!
   command: [String!]!
-  privileged: Boolean!
   environment: [KeyValue!]!
+  privileged: Boolean!
   mounts: [DockerContainerMount!]!
   connections: [DockerContainerConnection!]!
   ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
+}
+
+input DockerContainerInput {
+  name: String
+  labels: [KeyValueInput!]! = []
+  imageId: String!
+  command: String
+  user: String! = "root"
+  workdir: String! = "/"
+  environment: [KeyValueInput!]! = []
+  privileged: Boolean! = false
+  readonly: Boolean! = false
+  mounts: [DockerContainerMountInput!]! = []
+  ports: [DockerContainerPortInput!]! = []
+  onExit: DockerContainerOnExit
 }
 
 type DockerContainerMount {
@@ -23,6 +42,13 @@ type DockerContainerMount {
   source: String
   target: String!
   readonly: Boolean!
+}
+
+input DockerContainerMountInput {
+  type: DockerContainerMountType! = VOLUME
+  source: String
+  target: String!
+  readonly: Boolean! = false
 }
 
 enum DockerContainerMountType {
@@ -44,14 +70,26 @@ type DockerContainerPort {
   hostBindings: [DockerContainerPortHostBinding!]!
 }
 
+input DockerContainerPortInput {
+  protocol: DockerContainerPortProtocol! = TCP
+  containerPort: Int!
+  hostBindings: [DockerContainerPortHostBindingInput!]! = []
+}
+
 type DockerContainerPortHostBinding {
   ip: String!
   port: Int!
 }
 
+input DockerContainerPortHostBindingInput {
+  ip: String! = "localhost"
+  port: Int
+}
+
 enum DockerContainerPortProtocol {
   TCP
   UDP
+  SCTP
 }
 
 enum DockerContainerStatus {
@@ -64,6 +102,13 @@ enum DockerContainerStatus {
   DEAD
 }
 
+enum DockerContainerOnExit {
+  RESTART_ON_FAILURE
+  RESTART_UNLESS_STOPPED
+  RESTART_ALWAYS
+  REMOVE
+}
+
 extend type Mutation {
   dockerStartContainer(id: ID!): DockerContainer
   dockerRestartContainer(id: ID!): DockerContainer
@@ -74,8 +119,8 @@ extend type Mutation {
   dockerRenameContainer(id: ID!, name: String!): DockerContainer
   dockerRemoveContainer(
     id: ID!
-    force: Boolean = false
-    pruneVolumes: Boolean = false
+    force: Boolean! = false
+    pruneVolumes: Boolean! = false
   ): Boolean!
   dockerPruneContainers: Float
 }

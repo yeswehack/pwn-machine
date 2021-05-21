@@ -22,9 +22,9 @@ type DockerNetwork {
 input DockerNetworkInput {
   name: String!
   labels: [KeyValueInput!]! = []
-  ipv6: Boolean = false
+  ipv6: Boolean! = false
   driver: String! = "bridge"
-  internal: Boolean = false
+  internal: Boolean! = false
   ipam: DockerNetworkIpamInput
 }
 
@@ -42,10 +42,10 @@ input DockerNetworkIpamInput {
 
 extend type Mutation {
   dockerConnectContainerToNetwork(
-    input: DockerNetworkConnectionInput
+    connection: DockerNetworkConnectionInput
   ): Boolean!
   dockerDisconnectContainerFromNetwork(
-    input: DockerNetworkConnectionInput
+    connection: DockerNetworkConnectionInput
   ): Boolean!
 }
 

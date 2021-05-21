@@ -26,7 +26,7 @@ def resolve_volume_mountpoint(volume, _):
 
 
 @DockerVolume.field("usingContainers")
-def resolve_volume_using_containers(volume, _, onlyRunning=True):
+def resolve_volume_using_containers(volume, _, onlyRunning):
     return docker_client.containers.list(
         all=not onlyRunning, filters={"volume": volume.attrs["Name"]}
     )
@@ -43,9 +43,9 @@ def resolve_create_volume(*_, input):
 
 
 @registerMutation("dockerRemoveVolume")
-def resolve_remove_volume(*_, name, force=False):
+def resolve_remove_volume(*_, name, force):
     try:
-        docker_client.api.remove_volume(name, force)
+        docker_client.api.remove_volume(name, force=force)
     except APIError:
         return False
     return True

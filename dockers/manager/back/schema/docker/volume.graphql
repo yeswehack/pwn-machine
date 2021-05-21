@@ -11,7 +11,7 @@ type DockerVolume {
   labels: [KeyValue!]!
   created: DateTime!
   mountpoint: String!
-  usingContainers(onlyRunning: Boolean = true): [DockerContainer!]!
+  usingContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
 }
 
 input DockerVolumeInput {
@@ -20,6 +20,6 @@ input DockerVolumeInput {
 }
 
 extend type Mutation {
-  dockerRemoveVolume(name: String!, force: Boolean = false): Boolean!
+  dockerRemoveVolume(name: String!, force: Boolean! = false): Boolean!
   dockerPruneVolumes: Float
 }

@@ -15,9 +15,9 @@ def resolve_create_network(
     *,
     name,
     labels: list[KeyValue],
-    ipv6=False,
+    ipv6,
     driver,
-    internal=False,
+    internal,
     ipam: dict[str, str] = None,
 ):
     try:
@@ -104,9 +104,9 @@ def resolve_network_connections(network, _):
 
 
 @registerMutation("dockerConnectContainerToNetwork")
-def resolve_connect_container(*_, input):
-    network = docker_client.networks.get(input["networkId"])
-    container = docker_client.containers.get(input["containerId"])
+def resolve_connect_container(*_, connection):
+    network = docker_client.networks.get(connection["networkId"])
+    container = docker_client.containers.get(connection["containerId"])
     try:
         network.connect(container)
     except APIError:
@@ -115,9 +115,9 @@ def resolve_connect_container(*_, input):
 
 
 @registerMutation("dockerDisconnectContainerFromNetwork")
-def resolve_connect_container(*_, input):
-    network = docker_client.networks.get(input["networkId"])
-    container = docker_client.containers.get(input["containerId"])
+def resolve_connect_container(*_, connection):
+    network = docker_client.networks.get(connection["networkId"])
+    container = docker_client.containers.get(connection["containerId"])
     try:
         network.disconnect(container)
     except APIError:
