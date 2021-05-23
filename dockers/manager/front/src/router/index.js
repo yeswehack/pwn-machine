@@ -1,9 +1,18 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-import routes from './routes'
+import routes from "./routes";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
+
+Vue.mixin({
+  methods: {
+    async refresh() {
+      const queries = Object.values(this.$apollo.queries)
+      return queries.forEach(q => q.refetch());
+    }
+  }
+});
 
 /*
  * If not building with SSR mode, you can
@@ -15,27 +24,26 @@ Vue.use(VueRouter)
  */
 
 function AuthMiddleware(store) {
-  return function (to, from, next) {
+  return function(to, from, next) {
     if (to.matched.some(r => r.meta.noauth)) {
-      return next()
+      return next();
     }
-    next()
+    next();
     /* if (store.getters.validToken) {
       next()
     } else {
       next({ name: "login" })
     } */
-  }
+  };
 }
 
-export default function ({ store }) {
+export default function({ store }) {
   const Router = new VueRouter({
     scrollBehavior: (to, from) => {
       if (to.path != from.path) {
-        return { x: 0, y: 0 }
+        return { x: 0, y: 0 };
       }
-      return false
-
+      return false;
     },
     routes,
 
@@ -44,8 +52,8 @@ export default function ({ store }) {
     // quasar.conf.js -> build -> publicPath
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
-  })
+  });
 
-  Router.beforeEach(AuthMiddleware(store))
-  return Router
+  Router.beforeEach(AuthMiddleware(store));
+  return Router;
 }

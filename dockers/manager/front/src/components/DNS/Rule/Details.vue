@@ -101,9 +101,9 @@ export default {
       };
       this.$apollo
         .mutate({
-          mutation: api.dns.UPDATE_RULE,
+          mutation: api.dns.rules.UPDATE_RULE,
           variables: { nodeId: this.value.nodeId, patch },
-          refetchQueries: [{ query: api.dns.GET_RULES }]
+          refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
         })
         .then(done);
     }

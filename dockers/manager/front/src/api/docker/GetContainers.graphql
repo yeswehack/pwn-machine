@@ -1,6 +1,0 @@
-#import "./ContainerFragment.graphql"
-query GetContainers($onlyRunning: Boolean = false) {
-  dockerContainers(onlyRunning: $onlyRunning) {
-    ...ContainerFragment
-  }
-}

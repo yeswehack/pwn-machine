@@ -1,6 +1,0 @@
-#import "./RouterFragment.graphql"
-mutation updateUDPRouter($id: ID!, $patch: TraefikUDPRouterPatch!) {
-  updateTraefikUDPRouter(id: $id, patch: $patch) {
-    ...RouterFragment
-  }
-}

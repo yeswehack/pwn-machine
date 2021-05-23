@@ -1,18 +1,29 @@
 <template>
   <div>
     <q-card-section>
-      <q-input v-model="form.name" autofocus required label="Name" />
+      <q-input
+        ref="name"
+        v-model="form.name"
+        autofocus
+        :rules="[validateName]"
+        label="Name"
+      />
       <q-select
         v-model="form.protocol"
         :options="protocols"
-        required
-        :rules="[nonEmpty]"
         label="Protocol"
       />
     </q-card-section>
-    <component :is="createComponent" v-model="form.extra" />
+    <q-card-section class="q-pt-none">
+      <component :is="createComponent" ref="create" v-model="form.extra" />
+    </q-card-section>
     <q-card-section>
-      <reset-and-save :modified="modified" @save="submit" @reset="reset" />
+      <reset-and-save
+        :modified="modified"
+        @save="submit"
+        :validate="validate"
+        @reset="reset"
+      />
     </q-card-section>
   </div>
 </template>
@@ -50,7 +61,7 @@ export default {
       update: data => data.traefikEntrypoints
     },
     services: {
-      query: api.traefik.GET_SERVICES,
+      query: api.traefik.services.LIST_SERVICES,
       update: data => data.traefikServices
     }
   },
@@ -97,7 +108,7 @@ export default {
   },
   methods: {
     submit() {
-      const mutation = api.traefik.CREATE_ROUTER[this.form.protocol];
+      const mutation = api.traefik.routers.CREATE_ROUTER[this.form.protocol];
       const input = {
         name: this.form.name,
         ...this.form.extra
@@ -106,16 +117,23 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
+          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
         })
         .then(() => {
           this.$emit("ok");
         });
     },
-    nonEmpty(val) {
-      if (val === null || val === undefined) {
-        return "You must make a selection.";
+    validateName(name) {
+      if (!name) {
+        return "You must enter a name.";
       }
+    },
+    validate() {
+      const validators = [
+        this.$refs.name.validate(),
+        this.$refs.create.validate()
+      ];
+      return validators.every(x => x);
     }
   }
 };

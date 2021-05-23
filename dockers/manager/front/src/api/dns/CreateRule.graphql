@@ -1,5 +1,0 @@
-mutation createDnsRule($input: CreateDnsRuleInput!) {
-  createDnsRule(input: $input) {
-    name
-  }
-}

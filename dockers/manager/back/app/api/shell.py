@@ -57,7 +57,6 @@ class ShellManager:
             full_cmd += ["--user", user]
 
         full_cmd += ["-it", container_name, *cmd]
-        print(full_cmd)
         pid, fd = create_pty(full_cmd)
 
         meta = {

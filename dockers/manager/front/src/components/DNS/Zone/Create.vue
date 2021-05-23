@@ -35,9 +35,9 @@ export default {
     submit() {
       this.$apollo
         .mutate({
-          mutation: api.dns.CREATE_ZONE,
+          mutation: api.dns.zones.CREATE_ZONE,
           variables: { input: this.form },
-          refetchQueries: [{ query: api.dns.GET_ZONES }]
+          refetchQueries: [{ query: api.dns.zones.LIST_ZONES }]
         })
         .then(() => {
           this.$emit("ok");

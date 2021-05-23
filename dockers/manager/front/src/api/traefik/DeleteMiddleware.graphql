@@ -1,5 +1,0 @@
-mutation deleteMiddleware($nodeId: ID!) {
-  traefikDeleteMiddleware(nodeId: $nodeId) {
-    ok
-  }
-}

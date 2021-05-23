@@ -107,7 +107,7 @@ export default {
     async createMiddleware() {
       this.loading = true;
       const type = this.form.type;
-      const mutation = api.traefik.CREATE_MIDDLEWARE[type];
+      const mutation = api.traefik.middlewares.CREATE_MIDDLEWARE[type];
       const input = {
         name: this.form.name,
         [type]: { ...this.form.extra, __typename: undefined }
@@ -116,7 +116,7 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
+          refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
         })
         .then(r => {
           this.$emit("ok");
@@ -124,7 +124,7 @@ export default {
     },
     async updateMiddleware() {
       const type = this.form.type;
-      const mutation = api.traefik.UPDATE_MIDDLEWARE[type];
+      const mutation = api.traefik.middlewares.UPDATE_MIDDLEWARE[type];
       const variables = {
         nodeId: this.middleware.nodeId,
         patch: { ...this.form.extra, __typename: undefined }
@@ -133,7 +133,7 @@ export default {
         .mutate({
           mutation,
           variables,
-          refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
+          refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
         })
         .then(r => {
           this.$emit("ok");

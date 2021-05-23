@@ -1,3 +1,0 @@
-mutation dockerConnectContainerToNetwork($input: dockerConnectContainerNetworkInput) {
-  dockerConnectContainerToNetwork(input: $input)
-}

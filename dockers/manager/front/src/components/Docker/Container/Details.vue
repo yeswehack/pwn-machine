@@ -1,6 +1,6 @@
 <template>
-  <div class="column q-py-sm">
-    <div class="col col-grow q-mb-md">
+  <div class="column q-mt-none q-mb-md q-col-gutter-md">
+    <div class="col">
       <q-card dark class="bg-dark">
         <q-card-section class="q-pa-md">
           <div class="row justify-between items-center">
@@ -82,47 +82,51 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="row q-col-gutter-md">
-      <div class="col col-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              Settings
-            </div>
-          </q-card-section>
-          <create-container readonly :value="container" />
-        </q-card>
-      </div>
-      <div class="col col-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              Networks
-            </div>
-          </q-card-section>
-          <q-card-section>
-            <div class="text-h6">
-              yop
-            </div>
-          </q-card-section>
-          
-        </q-card>
-      </div>
+    <div class="col col-auto">
+      <div class="row q-col-gutter-md">
+        <div class="col col-6">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">
+                Settings
+              </div>
+            </q-card-section>
+            <create-container readonly :value="container" />
+          </q-card>
+        </div>
+        <div class="col col-6">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">
+                Networks
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <div class="text-h6">
+                yop
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="col col-12" v-if="container.ps">
+          <details-process :processes="container.ps" />
+        </div>
 
-      <!-- LOGS -->
-      <div class="col col-12" v-if="0">
-        <q-card dark class="bg-dark">
-          <q-card-section>
-            <div class="text-h6">Logs</div>
-          </q-card-section>
+        <!-- LOGS -->
+        <div class="col col-12" v-if="0">
+          <q-card dark class="bg-dark">
+            <q-card-section>
+              <div class="text-h6">Logs</div>
+            </q-card-section>
 
-          <q-separator dark inset />
-          <q-card-section class="q-pa-md">
-            <q-scroll-area horizontal style="height: 200px">
-              <pre>{{ container.Logs }}</pre>
-            </q-scroll-area>
-          </q-card-section>
-        </q-card>
+            <q-separator dark inset />
+            <q-card-section class="q-pa-md">
+              <q-scroll-area horizontal style="height: 200px">
+                <pre>{{ container.Logs }}</pre>
+              </q-scroll-area>
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
     </div>
   </div>
@@ -135,10 +139,14 @@ import MountsInfo from "src/components/Docker/Container/MountsInfo.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import LabelInput from "../LabelInput.vue";
+import DetailsProcess from "./DetailsProcess.vue";
+import api from "src/api";
+import ShellDialog from "src/components/Shell/Dialog.vue";
 
 export default {
   components: {
     CreateContainer,
+    DetailsProcess,
     //MountsInfo,
     ImageLink,
     ContainerStatus
@@ -165,52 +173,57 @@ export default {
   },
   methods: {
     async openShell() {
+      this.$q.dialog({
+        component: ShellDialog,
+        parent: this,
+        container: this.container
+      }); /* 
       const uuid = await this.$api.shell.createContainerShell(
         this.container.Name
       );
-      this.$router.push({ name: "shell", params: { tab: uuid } });
+      this.$router.push({ name: "shell", params: { tab: uuid } }); */
     },
     pauseContainer() {
-      this.$store.dispatch("docker/pauseContainer", this.container.Name);
+      this.$apollo.mutate({
+        mutation: api.docker.container.PAUSE_CONTAINER,
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+      });
     },
     async unpauseContainer() {
-      this.$store.dispatch("docker/unpauseContainer", this.container.Name);
+      this.$apollo.mutate({
+        mutation: api.docker.container.UNPAUSE_CONTAINER,
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+      });
     },
     async startContainer() {
-      this.$api.docker.startContainer(this.container.Name);
+      this.$apollo.mutate({
+        mutation: api.docker.container.START_CONTAINER,
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+      });
     },
     async stopContainer() {
-      this.$api.docker.stopContainer(this.container.Name);
+      this.$apollo.mutate({
+        mutation: api.docker.container.STOP_CONTAINER,
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+      });
     },
     async restartContainer() {
-      this.$api.docker.restartContainer(this.container.Name);
+      this.$apollo.mutate({
+        mutation: api.docker.container.RESTART_CONTAINER,
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+      });
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.logs {
-  position: relative;
-  width: 100px;
-}
-pre {
-  width: 100%;
-  overflow: auto;
-  word-break: break-word;
-}
-.details > * {
-  min-width: 300px;
-}
 .q-card {
   height: 100%;
-  overflow: auto;
-  scrollbar-width: thin;
-}
-code:not(:empty) {
-  background: var(--q-color-dark);
-  padding: 1px 5px;
-  border-radius: 4px;
-  white-space: nowrap;
 }
 </style>

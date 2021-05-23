@@ -29,7 +29,7 @@
 
     <div class="col col-auto">
       <q-btn
-        :disabled="!modified || !isLastStep"
+        :disabled="!isLastStep"
         :loading="isRunning"
         title="Save"
         :color="saveColor"
@@ -45,11 +45,21 @@ export default {
   props: {
     step: { type: String, default: null },
     steps: { type: Array, default: null },
+    validate: { type: Function, default: null },
     modified: { type: Boolean, default: false }
   },
   computed: {
     stepIndex() {
-      return this.steps.indexOf(this.step);
+      if (!this.steps) return 0;
+      return this.steps.findIndex(step =>
+        typeof step == "string" ? step == this.step : step.name == this.step
+      );
+    },
+    currentStep() {
+      if (!this.steps) return null;
+      return this.steps.find(step =>
+        typeof step == "string" ? step == this.step : step.name == this.step
+      );
     },
     firstStep() {
       return this.steps ? this.steps[0] : null;
@@ -58,13 +68,13 @@ export default {
       return this.steps ? this.steps[this.steps.length - 1] : null;
     },
     isFirstStep() {
-      return this.step == this.firstStep;
+      return this.currentStep == this.firstStep;
     },
     isLastStep() {
-      return this.step == this.lastStep;
+      return this.currentStep == this.lastStep;
     },
     saveColor() {
-      return this.modified && this.isLastStep ? "positive" : "grey";
+      return this.isLastStep ? "positive" : "grey";
     },
     resetColor() {
       return this.modified ? "primary" : "grey";
@@ -72,23 +82,48 @@ export default {
   },
   data() {
     return { isRunning: false };
+    validate;
   },
   methods: {
+    emitStep(step) {
+      if (step == null || typeof step == "string") {
+        this.$emit("update:step", step);
+      } else {
+        this.$emit("update:step", step.name);
+      }
+    },
+    validateStep(step) {
+      if (step == null) {
+        return this.validate ? this.validate() : true;
+      }
+      if (typeof step == "string") {
+        return true;
+      } else {
+        return step.validate ? step.validate() : true;
+      }
+    },
     save() {
-      this.isRunning = true;
-      this.$emit("save", () => {
-        this.isRunning = false;
-      });
+      if (this.validateStep(this.currentStep)) {
+        this.isRunning = true;
+        this.$emit("save", () => {
+          this.isRunning = false;
+        });
+      }
     },
     reset() {
-      this.$emit("update:step", this.firstStep);
+      this.emitStep(this.firstStep);
       this.$emit("reset");
+      this.$nextTick(() => {
+        this.validateStep(this.currentStep);
+      });
     },
     nextStep() {
-      this.$emit("update:step", this.steps[this.stepIndex + 1]);
+      if (this.validateStep(this.currentStep)) {
+        this.emitStep(this.steps[this.stepIndex + 1]);
+      }
     },
     previousStep() {
-      this.$emit("update:step", this.steps[this.stepIndex - 1]);
+      this.emitStep(this.steps[this.stepIndex - 1]);
     }
   }
 };

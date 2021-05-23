@@ -1,6 +1,0 @@
-#import "./RouterFragment.graphql"
-mutation updateHTTPRouter($id: ID!, $patch: TraefikHTTPRouterPatch!) {
-  updateTraefikHTTPRouter(id: $id, patch: $patch) {
-    ...RouterFragment
-  }
-}

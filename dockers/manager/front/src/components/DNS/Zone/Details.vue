@@ -52,9 +52,9 @@ export default {
   methods: {
     submit(done) {
       this.$apollo.mutate({
-        mutation: api.dns.UPDATE_ZONE,
+        mutation: api.dns.zones.UPDATE_ZONE,
         variables: { nodeId: this.value.nodeId, patch: { soa: this.form.soa } },
-        refetchQueries: [{ query: api.dns.GET_ZONES }]
+        refetchQueries: [{ query: api.dns.zones.LIST_ZONES }]
       }).then(done);
     }
   }

@@ -5,7 +5,7 @@
     use-chips
     :hint="form.length ? '' : 'all'"
     :options="relevantEntrypoints"
-    label="entrypoints"
+    label="Entrypoint"
   />
 </template>
 
@@ -24,7 +24,6 @@ export default {
   },
   computed: {
     relevantEntrypoints() {
-      console.log(this.entrypoints)
       return (this.entrypoints ?? [])
         .filter(ep => ep.protocol == this.protocol)
         .map(ep => ep.name);

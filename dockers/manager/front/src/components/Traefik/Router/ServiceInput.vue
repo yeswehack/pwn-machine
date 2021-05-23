@@ -1,6 +1,8 @@
 <template>
   <q-select
+    ref="select"
     v-model="form"
+    clearable
     :rules="[nonEmptyArray]"
     :options="serviceNames"
     label="Service"
@@ -29,7 +31,7 @@ export default {
   formDefinition: null,
   apollo: {
     services: {
-      query: api.traefik.GET_SERVICES,
+      query: api.traefik.services.LIST_SERVICES,
       variables() {
         return { protocols: [this.protocol] };
       },
@@ -44,7 +46,7 @@ export default {
   methods: {
     nonEmptyArray(val) {
       if (val === null || val === undefined || val.length == 0) {
-        return "You must make a selection.";
+        return "You must select a service.";
       }
     },
     createService() {
@@ -52,6 +54,9 @@ export default {
         component: ServiceDialog,
         parent: this
       });
+    },
+    validate() {
+      return this.$refs.select.validate();
     }
   }
 };

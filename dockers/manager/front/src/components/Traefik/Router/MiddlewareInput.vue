@@ -1,5 +1,5 @@
 <template>
-  <div class="list-input q-mb-md">
+  <div class="column">
     <q-select
       v-bind="$attrs"
       flat
@@ -86,7 +86,7 @@ export default {
   },
   apollo: {
     middlewares: {
-      query: api.traefik.GET_MIDDLEWARES,
+      query: api.traefik.middlewares.LIST_MIDDLEWARES,
       update: data => data.traefikMiddlewares
     }
   },

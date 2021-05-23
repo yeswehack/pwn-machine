@@ -3,13 +3,30 @@
     ref="table"
     name="container"
     row-key="id"
-    :loading="$apollo.loading"
+    :query="$apollo.queries.containers"
     :data="containers"
     :columns="columns"
     @clone="cloneContainer"
     @create="createContainer"
     @delete="deleteContainer"
   >
+    <template #header-button>
+      <q-btn
+        rounded
+        label="Prune"
+        color="negative"
+        icon="eva-trash-outline"
+        @click="pruneContainers"
+      />
+    </template>
+    <template #menu="{row}">
+      <q-item v-close-popup clickable @click="exposeContainer(row)">
+        <q-item-section avatar>
+          <q-avatar icon="eva-globe-outline" />
+        </q-item-section>
+        <q-item-section>Expose via traefik ...</q-item-section>
+      </q-item>
+    </template>
     <template #body-cell-image="{row}">
       <image-link :name="row.image.name" />
     </template>
@@ -68,14 +85,13 @@ import ContainerDetails from "src/components/Docker/Container/Details.vue";
 import PortList from "src/components/Docker/Container/PortList.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ContainerDialog from "src/components/Docker/Container/Dialog.vue";
-import CreateContainer from "src/components/Docker/Container/Create.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import VolumeLink from "src/components/Docker/Volume/Link.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
-import { mapGetters } from "vuex";
-import { shortDate, shortName } from "src/utils";
-import { quote } from "shell-quote";
+import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
 import api from "src/api";
+import { format } from "quasar";
+const { humanStorageSize } = format;
 
 export default {
   components: {
@@ -89,7 +105,7 @@ export default {
   },
   apollo: {
     containers: {
-      query: api.docker.GET_CONTAINERS,
+      query: api.docker.container.LIST_CONTAINERS,
       update: ({ dockerContainers }) => dockerContainers
     }
   },
@@ -113,6 +129,36 @@ export default {
     return { columns };
   },
   methods: {
+    pruneContainers() {
+      this.$q
+        .dialog({
+          title: "Prune containers ?",
+          message: "This will remove all stopped containers.",
+          color: "negative",
+          type: "confirm",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: api.docker.container.PRUNE_CONTAINERS,
+              refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+            })
+            .then(({ data }) => {
+              const deleted = data.pruneDockerContainers.deleted;
+              const reclaimed = humanStorageSize(
+                data.pruneDockerContainers.spaceReclaimed
+              );
+              const message = deleted.length
+                ? `${deleted.length} container${deleted.length > 1 ? 's' : ''} deleted (${reclaimed})`
+                : `No container deleted.`;
+              this.$q.notify({
+                message,
+                type: "positive"
+              });
+            });
+        });
+    },
     createContainer() {
       this.$q.dialog({
         component: ContainerDialog,
@@ -125,6 +171,13 @@ export default {
         component: ContainerDialog,
         parent: this,
         container
+      });
+    },
+    exposeContainer(container) {
+      this.$q.dialog({
+        component: ExposeContainerDialog,
+        parent: this,
+        containerId: container.id,
       });
     }
   }

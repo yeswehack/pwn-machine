@@ -28,7 +28,6 @@ def resolve_soa(zone, *_):
 
 @DnsZone.field("rules")
 def resolve_rules(zone, *_):
-    print("ZONE", zone)
     return dns_http().get_rules_for_zone(zone["id"])
 
 

@@ -17,7 +17,7 @@ type DockerImage {
   entrypoint: [String!]
   command: [String!]
   environment: [KeyValue!]!
-  usingContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
+  usedBy(onlyRunning: Boolean! = true): [DockerContainer!]!
 }
 
 extend type Mutation {

@@ -1,9 +1,39 @@
 extend type Query {
   dockerContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
+  dockerContainerByName(name: String!): DockerContainer
+  dockerContainerById(id: ID!): DockerContainer
 }
 
 extend type Mutation {
   dockerCreateContainer(input: DockerContainerInput!): DockerContainer
+  dockerStartContainer(id: ID!): DockerContainer
+  dockerRestartContainer(id: ID!): DockerContainer
+  dockerPauseContainer(id: ID!): DockerContainer
+  dockerUnpauseContainer(id: ID!): DockerContainer
+  dockerStopContainer(id: ID!): DockerContainer
+  dockerKillContainer(id: ID!): DockerContainer
+  dockerRenameContainer(id: ID!, name: String!): DockerContainer
+  dockerRemoveContainer(
+    id: ID!
+    force: Boolean! = false
+    pruneVolumes: Boolean! = false
+  ): Boolean!
+  pruneDockerContainers: PruneResponse!
+}
+
+
+type DockerContainerProcess {
+  user: String!
+  pid: String!
+  cpu: String!
+  mem: String!
+  vsz: String!
+  rss: String!
+  tty: String!
+  stat: String!
+  start: String!
+  time: String!
+  command: String!
 }
 
 type DockerContainer {
@@ -14,11 +44,12 @@ type DockerContainer {
   created: DateTime!
   command: [String!]!
   environment: [KeyValue!]!
-  privileged: Boolean!
   mounts: [DockerContainerMount!]!
   connections: [DockerContainerConnection!]!
   ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
+  privileged: Boolean!
+  ps: [DockerContainerProcess]
 }
 
 input DockerContainerInput {
@@ -107,20 +138,4 @@ enum DockerContainerOnExit {
   RESTART_UNLESS_STOPPED
   RESTART_ALWAYS
   REMOVE
-}
-
-extend type Mutation {
-  dockerStartContainer(id: ID!): DockerContainer
-  dockerRestartContainer(id: ID!): DockerContainer
-  dockerPauseContainer(id: ID!): DockerContainer
-  dockerUnpauseContainer(id: ID!): DockerContainer
-  dockerStopContainer(id: ID!): DockerContainer
-  dockerKillContainer(id: ID!): DockerContainer
-  dockerRenameContainer(id: ID!, name: String!): DockerContainer
-  dockerRemoveContainer(
-    id: ID!
-    force: Boolean! = false
-    pruneVolumes: Boolean! = false
-  ): Boolean!
-  dockerPruneContainers: Float
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="list-inputq-mb-md">
     <q-input
-      v-bind='$attrs'
+      v-bind="$attrs"
       flat
       v-model="model"
       @keypress.enter.prevent="addEntry"
@@ -47,6 +47,7 @@
         <q-item-section>...</q-item-section>
       </q-item>
     </q-list>
+    <label class="row text-negative" v-if="errorMsg">{{ errorMsg }}</label>
   </div>
 </template>
 
@@ -56,17 +57,18 @@ import DeepForm from "src/mixins/DeepForm";
 export default {
   mixins: [DeepForm],
   props: {
+    rules: { type: Array, default: () => [] },
     objectKey: { type: String, default: null },
     label: { type: String, default: null }
   },
   data() {
-    return { model: ""};
+    return { model: "", errorMsg: "" };
   },
   formDefinition: [],
   methods: {
     addEntry() {
-      if (!this.model){
-        return
+      if (!this.model) {
+        return;
       }
       if (this.objectKey) {
         this.form.unshift({ [this.objectKey]: this.model });
@@ -74,9 +76,22 @@ export default {
         this.form.unshift(this.model);
       }
       this.model = null;
+      this.validate();
+    },
+    validate() {
+      this.errorMsg = "";
+      for (const rule of this.rules) {
+        const msg = rule(this.form);
+        if (msg) {
+          this.errorMsg = msg;
+          return false;
+        }
+      }
+      return true;
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);
+      this.validate();
     }
   }
 };

@@ -3,6 +3,7 @@
     ref="table"
     name="middleware"
     row-key="name"
+    :query="$apollo.queries.middlewares"
     :data="middlewares"
     :columns="columns"
     @create="createMiddleware"
@@ -43,7 +44,7 @@ export default {
   },
   apollo: {
     middlewares: {
-      query: api.traefik.GET_MIDDLEWARES,
+      query: api.traefik.middlewares.LIST_MIDDLEWARES,
       update: data => data.traefikMiddlewares
     }
   },
@@ -94,9 +95,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.traefik.DELETE_MIDDLEWARE,
+              mutation: api.traefik.middlewares.DELETE_MIDDLEWARE,
               variables: { nodeId: middleware.nodeId },
-              refetchQueries: [{ query: api.traefik.GET_MIDDLEWARES }]
+              refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
             })
             .then(response => {
               const deleted = response.data.traefikDeleteMiddleware.ok;

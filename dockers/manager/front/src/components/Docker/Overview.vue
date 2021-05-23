@@ -15,7 +15,7 @@ export default {
   components: { BaseOverview },
   apollo: {
     containers: {
-      query: api.docker.GET_CONTAINERS,
+      query: api.docker.container.LIST_CONTAINERS,
       variables: { onlyRunning: true },
       update: data => data.dockerContainers
     }

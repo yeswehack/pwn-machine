@@ -3,7 +3,7 @@
     ref="table"
     name="image"
     row-key="id"
-    :loading="$apollo.queries.images.loading"
+    :query="$apollo.queries.images"
     :data="images"
     :columns="columns"
     v-on:delete="deleteContainer"
@@ -32,7 +32,7 @@ export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     images: {
-      query: api.docker.GET_IMAGES,
+      query: api.docker.image.LIST_IMAGES,
       variables: { onlyFinal: true },
       update: ({ dockerImages }) => dockerImages
     }

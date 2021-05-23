@@ -1,12 +1,21 @@
-from utils import info_input_name, info_name, info_name, type_name, input_name
-import textwrap
+from utils import (
+    info_input_name,
+    info_name,
+    info_name,
+    type_name,
+    input_name,
+    fragment_name,
+    const_name,
+)
+from textwrap import indent
 
-def generate_sub_fragment(fields):
+
+def generate_basic(fields):
     graphql = ""
     for attr, value in fields.items():
         if isinstance(value, dict):
             graphql += f"{attr} {{\n"
-            graphql += generate_sub_fragment(value)
+            graphql += indent(generate_basic(value), "  ")
             graphql += f"}}\n"
         elif value == "KV":
             graphql += f"{attr} {{\n"
@@ -15,34 +24,51 @@ def generate_sub_fragment(fields):
             graphql += f"}}\n"
         else:
             graphql += f"{attr}\n"
-    return textwrap.indent(graphql, "  ")
+    return graphql
+
+
+def generate_sub_fragment(name, fields):
+    graphql = f"fragment {fragment_name(name)} on {type_name(name)} {{\n"
+    graphql += f"  {name} {{\n"
+    graphql += indent(generate_basic(fields), "    ")
+    graphql += "  }\n"
+    graphql += "}\n"
+
+    js = f"export const {const_name(name).upper()} = gql`\n"
+    js += indent(graphql, "  ")
+    js += "`\n"
+    return js
 
 
 def generate_fragment(name, fields):
     graphql = ""
     graphql += f"... on {type_name(name)} {{\n"
-    graphql += f"  nodeId\n"
-    graphql += f"  name\n"
-    graphql += f"  type\n"
-    graphql += f"  enabled\n"
-    graphql += f"  usedBy {{\n"
-    graphql += f"    name \n"
-    graphql += f"  }}\n"
-    graphql += f"  {name} {{\n"
-    graphql += textwrap.indent(generate_sub_fragment(fields), "  ")
-    graphql += f"  }}\n"
+    graphql += f"  ...{fragment_name(name)}\n"
     graphql += f"}}\n"
-    return textwrap.indent(graphql, "  ")
+    return indent(graphql, "  ")
 
 
 def generate_fragments_from_types(types):
-    prefix = "fragment TraefikMiddlewareFragment on TraefikMiddleware {\n"
-    prefix += "  name\n"
-    prefix += "  nodeId\n"
+    header = "fragment MiddlewareFragment on TraefikMiddleware {\n"
+    header += f"  nodeId\n"
+    header += f"  name\n"
+    header += f"  type\n"
+    header += f"  enabled\n"
+    header += f"  usedBy {{\n"
+    header += f"    nodeId \n"
+    header += f"    name \n"
+    header += f"  }}\n"
 
+    prefix = ""
     graphql = ""
+    footer = "}\n"
     for middleware_name, fields in types.items():
+        footer += f"${{{const_name(middleware_name)}}}\n"
+        prefix += generate_sub_fragment(middleware_name, fields)
         graphql += generate_fragment(middleware_name, fields)
 
-    suffix = "}"
-    return prefix + graphql + suffix
+    js = 'import gql from "graphql-tag"\n\n'
+    js += f"export const {const_name('middleware')} = gql`\n"
+    js += indent( header + graphql + footer, "  ")
+    js += "`\n"
+    return prefix + js

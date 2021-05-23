@@ -3,7 +3,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  dockerCreateVolume(input: DockerVolumeInput! = {}): DockerVolume
+  createDockerVolume(input: DockerVolumeInput! = {}): DockerVolume
+  deleteDockerVolume(name: String!, force: Boolean! = false): Boolean!
+  pruneDockerVolumes: PruneResponse!
 }
 
 type DockerVolume {
@@ -11,15 +13,10 @@ type DockerVolume {
   labels: [KeyValue!]!
   created: DateTime!
   mountpoint: String!
-  usingContainers(onlyRunning: Boolean! = true): [DockerContainer!]!
+  usedBy(onlyRunning: Boolean! = false): [DockerContainer!]!
 }
 
 input DockerVolumeInput {
   name: String
   labels: [KeyValueInput!]! = []
-}
-
-extend type Mutation {
-  dockerRemoveVolume(name: String!, force: Boolean! = false): Boolean!
-  dockerPruneVolumes: Float
 }

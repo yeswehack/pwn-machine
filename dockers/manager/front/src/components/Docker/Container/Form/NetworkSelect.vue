@@ -54,7 +54,6 @@ export default {
   methods: {
     checkForConflict(opt) {
       if (["none", "host"].includes(opt.value)) {
-        console.log("reset")
         this.$refs.select.reset()
         //this.$refs.select.add(opt.value)
       }

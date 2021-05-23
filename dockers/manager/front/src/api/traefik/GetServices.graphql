@@ -1,6 +1,0 @@
-#import "./ServiceFragment.graphql"
-query GetServices($protocols: [TraefikProtocol!]) {
-  traefikServices(protocols: $protocols) {
-    ...TraefikServiceFragment
-  }
-}

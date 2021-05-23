@@ -2,7 +2,7 @@
   <base-table
     ref="table"
     name="rule"
-    :loading="$apollo.queries.rules.loading"
+    :query="$apollo.queries.rules"
     :data="rules"
     :columns="columns"
     @create="createRule"
@@ -43,7 +43,7 @@ export default {
   components: { BaseTable, ZoneLink, RuleDetails },
   apollo: {
     rules: {
-      query: api.dns.GET_RULES,
+      query: api.dns.rules.LIST_RULES,
       update: data => data.dnsRules
     }
   },
@@ -81,9 +81,9 @@ export default {
     },
     toggleRule(rule, value) {
       this.$apollo.mutate({
-        mutation: api.dns.ENABLE_RULE,
+        mutation: api.dns.rules.ENABLE_RULE,
         variables: { nodeId: rule.nodeId, enabled: value },
-        refetchQueries: [{ query: api.dns.GET_RULES }]
+        refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
       });
     },
     cloneRule(rule) {
@@ -103,9 +103,9 @@ export default {
         })
         .onOk(() => {
           this.$apollo.mutate({
-            mutation: api.dns.DELETE_RULE,
+            mutation: api.dns.rules.DELETE_RULE,
             variables: { nodeId: rule.nodeId },
-            refetchQueries: [{ query: api.dns.GET_RULES }]
+            refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
           });
         });
     },

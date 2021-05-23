@@ -8,7 +8,7 @@ const shellRoute = {
       path: "new",
       props: true,
       name: "shellNew",
-      component: () => import("components/Shell/Create.vue")
+      component: () => import("components/Shell/CreatePage.vue")
     },
     {
       path: ":uuid",

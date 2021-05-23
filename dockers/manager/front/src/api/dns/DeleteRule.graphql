@@ -1,3 +1,0 @@
-mutation deleteDnsRule($nodeId: ID!) {
-  deleteDnsRule(nodeId: $nodeId)
-}

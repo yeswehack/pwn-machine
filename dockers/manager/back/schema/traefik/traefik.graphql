@@ -8,11 +8,6 @@ enum TraefikProtocol {
   http
 }
 
-
-type DeleteResponse {
-  ok: Boolean!
-}
-
 extend type Mutation {
-  traefikDeleteMiddleware(nodeId: ID) : DeleteResponse!
+  deleteTraefikMiddleware(nodeId: ID) : Boolean!
 }

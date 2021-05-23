@@ -105,7 +105,7 @@ export default {
   components: { BaseDialog },
   apollo: {
     images: {
-      query: api.docker.SEARCH_IMAGE,
+      query: api.docker.image.SEARCH_IMAGE,
       debounce: 250,
       throttle: 250,
       skip() {
@@ -118,7 +118,7 @@ export default {
       fetchPolicy: "cache-first"
     },
     imageTags: {
-      query: api.docker.SEARCH_IMAGE_TAG,
+      query: api.docker.image.SEARCH_IMAGE_TAG,
       skip: true,
       update: data => data.dockerSearchImageTag,
       variables() {

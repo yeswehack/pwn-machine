@@ -13,6 +13,10 @@ export function showErrors(vm, errors) {
   }
 }
 
+export function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 export function shortName(name) {
   if (name.match(/^[a-f0-9]{64}$/)) {
     return name.substr(0, 12);

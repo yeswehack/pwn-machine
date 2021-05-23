@@ -1,6 +1,6 @@
 import shlex
 
-
+from . import kv_to_dict
 from app.api import ShellManager
 from app.utils import createType, registerMutation, registerQuery
 
@@ -22,7 +22,7 @@ def spawn_container(*_, input):
     container_name = input["containerName"]
     cmd = shlex.split(input["cmd"])
     privileged = input.get("privileged", False)
-    environment = input.get("environment", [])
+    environment = kv_to_dict(input.get("environment", []))
     workdir = input.get("workdir", None)
     user = input.get("user", None)
 

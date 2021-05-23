@@ -1,9 +1,0 @@
-query dockerSearchImage($search: String!) {
-  dockerSearchImage(search:$search) {
-    name
-    description
-    starCount
-    isOfficial
-    isAutomated
-  }
-}

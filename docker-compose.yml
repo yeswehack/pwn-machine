@@ -40,6 +40,7 @@ services:
       - redis-data:/data
 
   traefik:
+    container_name:  traefik
     image: traefik
     build:
       context: ./dockers/traefik

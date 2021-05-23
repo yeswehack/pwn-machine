@@ -13,10 +13,17 @@
               </div>
             </div>
           </q-card-section>
-          <component :is="formChildren.extra" v-model="form.extra" />
+          <q-card-section>
+            <component
+              ref="create"
+              :is="formChildren.extra"
+              v-model="form.extra"
+            />
+          </q-card-section>
           <q-card-section>
             <reset-and-save
               :modified="modified"
+              :validate="validate"
               @save="submit"
               @reset="reset"
             />
@@ -51,11 +58,14 @@ export default {
     submit(done) {
       this.$apollo
         .mutate({
-          mutation: api.traefik.UPDATE_ROUTER[this.value.protocol],
+          mutation: api.traefik.routers.UPDATE_ROUTER[this.value.protocol],
           variables: { id: this.value.nodeId, patch: this.form.extra },
-          refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
+          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
         })
         .then(done);
+    },
+    validate() {
+      return this.$refs.create.validate();
     }
   }
 };

@@ -1,0 +1,4 @@
+type PruneResponse {
+  deleted: [String!]!
+  spaceReclaimed: Float!
+}

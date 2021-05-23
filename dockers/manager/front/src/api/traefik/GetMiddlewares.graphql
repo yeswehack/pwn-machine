@@ -1,6 +1,0 @@
-#import "./MiddlewareFragment.graphql"
-query GetMiddlewares {
-  traefikMiddlewares {
-    ...TraefikMiddlewareFragment
-  }
-}

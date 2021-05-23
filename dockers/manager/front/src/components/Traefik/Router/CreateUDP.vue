@@ -1,16 +1,17 @@
 <template>
-  <q-card-section class="column q-col-gutter-sm">
+  <div class="column q-col-gutter-sm">
     <component
       :is="formChildren.entryPoints"
       v-model="form.entryPoints"
       protocol="udp"
     />
     <component
+      ref="service"
       :is="formChildren.service"
       v-model="form.service"
       protocol="udp"
     />
-  </q-card-section>
+  </div>
 </template>
 
 <script>
@@ -29,6 +30,9 @@ export default {
       if (!this.$api.traefik.isValidRule(rule)) {
         return `Syntax error`;
       }
+    },
+    validate() {
+      return this.$refs.service.validate();
     }
   }
 };

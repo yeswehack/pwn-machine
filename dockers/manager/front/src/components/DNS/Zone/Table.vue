@@ -3,7 +3,7 @@
     ref="table"
     name="zone"
     row-key="nodeId"
-    :loading="$apollo.queries.zones.loading"
+    :query="$apollo.queries.zones"
     :data="zones"
     :columns="columns"
     @create="createZone"
@@ -27,7 +27,7 @@ export default {
   components: { BaseTable, ZoneDetails },
   apollo: {
     zones: {
-      query: api.dns.GET_ZONES,
+      query: api.dns.zones.LIST_ZONES,
       update: data => data.dnsZones
     }
   },
@@ -55,11 +55,11 @@ export default {
         })
         .onOk(() => {
           this.$apollo.mutate({
-            mutation: api.dns.DELETE_ZONE,
+            mutation: api.dns.zones.DELETE_ZONE,
             variables: { nodeId: zone.nodeId },
             refetchQueries: [
-              { query: api.dns.GET_ZONES },
-              { query: api.dns.GET_RULES }
+              { query: api.dns.zones.LIST_ZONES },
+              { query: api.dns.rules.LIST_RULES }
             ]
           });
         });

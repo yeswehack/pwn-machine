@@ -1,6 +1,0 @@
-#import "./RouterFragment.graphql"
-query GetRouters {
-  traefikRouters {
-    ...RouterFragment
-  }
-}

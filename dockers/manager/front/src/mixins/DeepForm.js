@@ -11,6 +11,34 @@ function isDeepForm(obj) {
   return "formDefinition" in obj;
 }
 
+export function mapGetter(...names) {
+  const getters = {};
+  for (const name of names) {
+    const parts = name.split(".");
+    const fullName = name.replace(/\./g, "_");
+    getters[fullName] = function() {
+      return parts.reduce(
+        (target, part) => target && target[part],
+        this.form ?? {}
+      );
+    };
+  }
+  return getters;
+}
+
+function instanciateComponent(comp, props = {}) {
+  const ComponentClass = Vue.extend(comp);
+  const instance = new ComponentClass({
+    propsData: props
+  });
+  instance.$mount();
+  return instance;
+}
+
+function isBasicType(obj) {
+  return obj === null || ["number", "string", "boolean"].includes(typeof obj);
+}
+
 export default {
   props: {
     value: { default: null }
@@ -39,20 +67,14 @@ export default {
       this.$emit("submit", this.form);
     },
     instanciateSubForm(sub, value) {
-      const ComponentClass = Vue.extend(sub);
-      const instance = new ComponentClass({
-        propsData: { value: value }
-      });
-      instance.$mount();
-      return instance;
+      return instanciateComponent(sub, { value });
     },
     buildOriginalForm() {
       const definition = this.$options.formDefinition;
-      
-      if (definition === null || ['number', 'string', 'boolean'].includes(typeof definition)){
-        this.originalForm = this.value ?? definition 
-      }
-      else if (Array.isArray(definition)) {
+
+      if (isBasicType(definition)) {
+        this.originalForm = this.value ?? definition;
+      } else if (Array.isArray(definition)) {
         this.originalForm = this.value ? [...this.value] : [...definition];
       } else {
         const originalForm = {};

@@ -118,7 +118,6 @@ class PowerdnsHTTPApi:
         try:
             return await self.get(f"/api/v1/servers/localhost/zones/{zone_id}")
         except Exception as e:
-            print("ERROR", e)
             return None
 
     async def get_zones(self):

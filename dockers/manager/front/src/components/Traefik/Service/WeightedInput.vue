@@ -72,12 +72,13 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <label class="row text-negative" v-if="errorMsg">{{ errorMsg }}</label>
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import api from 'src/api';
+import api from "src/api";
 
 export default {
   mixins: [DeepForm],
@@ -88,7 +89,7 @@ export default {
   formDefinition: [],
   apollo: {
     services: {
-      query: api.traefik.GET_SERVICES,
+      query: api.traefik.services.LIST_SERVICES,
       variables() {
         return { protocols: [this.protocol] };
       },
@@ -101,15 +102,24 @@ export default {
     }
   },
   data() {
-    return { model: { name: "", weight: "" } };
+    return { model: { name: "", weight: "" }, errorMsg: "" };
   },
   methods: {
     addEntry() {
+      if (!this.name || [null, undefined, ""].includes(this.weight)) return;
       this.form.unshift(this.model);
       this.model = { name: null, weight: null };
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);
+    },
+    validate() {
+      this.errorMsg = "";
+      if (!Array.isArray(this.form) || this.form.length == 0) {
+        this.errorMsg = "You must choose at least one service";
+        return false;
+      }
+      return true;
     }
   }
 };

@@ -24,7 +24,6 @@ def parseType(name, options, value, depth=0):
 
 
 for k, v in kv:
-    # print(k, v)
     if not k.startswith("traefik/http/middlewares/"):
         continue
     name, *options = k.split("/")[4:]

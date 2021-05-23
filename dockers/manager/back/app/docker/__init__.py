@@ -8,6 +8,10 @@ class KeyValue(NamedTuple):
     value: str = None
 
 
+def kv_to_dict(kv):
+    return {entry["key"]: entry["value"] for entry in kv}
+
+
 def formatTime(time):
     return str(datetime.fromisoformat(time[:19]))
 

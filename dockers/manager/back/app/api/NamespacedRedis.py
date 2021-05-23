@@ -17,7 +17,6 @@ class NamespacedRedis:
         f = getattr(self.client, name)
 
         def basic(key, *args, **kwargs):
-            print(name, self._ns(key))
             return f(self._ns(key), *args, **kwargs)
 
         return basic

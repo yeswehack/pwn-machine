@@ -2,28 +2,31 @@
   <q-form @submit="submit">
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
-        <q-input v-model="form.name" required label="Name" :rule="[nonEmpty]" />
+        <q-input
+          v-model="form.name"
+          ref="name"
+          :rules="[validateName]"
+          label="Name"
+        />
         <q-select
           v-model="form.protocol"
-          required
           label="Protocol"
           :options="Object.keys(availableTypes)"
         />
         <q-select
           :disable="!form.protocol"
           v-model="form.type"
-          required
           label="Type"
           :options="availableTypes[form.protocol]"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
-        <component :is="createComponent" v-model="form.extra" />
+        <component ref="create" :is="createComponent" v-model="form.extra" />
       </q-tab-panel>
     </q-tab-panels>
     <q-card-section>
       <reset-and-save
-        :steps="['chooseType', 'enterSettings']"
+        :steps="steps"
         :step.sync="panel"
         :modified="modified"
         @reset="reset"
@@ -90,7 +93,22 @@ export default {
       tcp: ["loadBalancer", "weighted"],
       udp: ["loadBalancer", "weighted"]
     };
-    return { loading: false, availableTypes, panel: "chooseType" };
+
+    const steps = [
+      {
+        name: "chooseType",
+        validate: () => {
+          return this.$refs.name.validate();
+        }
+      },
+      {
+        name: "enterSettings",
+        validate: () => {
+          return this.$refs.create.validate();
+        }
+      }
+    ];
+    return { loading: false, availableTypes, panel: "chooseType", steps };
   },
   watch: {
     currentProtocol(proto, oldProto) {
@@ -102,7 +120,7 @@ export default {
         availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
     },
     currentType(v, old) {
-      if (!old) return
+      if (!old) return;
       const instance = this.instanciateSubForm(
         getCreateComponent(this.form),
         this.form
@@ -140,21 +158,16 @@ export default {
         this.$emit("cancel");
       }
     },
-    nonEmpty(val) {
-      if (val === null || val === undefined) {
-        return "You must make a selection.";
-      }
-    },
-    nonEmptyArray(val) {
-      if (val === null || val === undefined || val.length == 0) {
-        return "You must make a selection.";
+    validateName(val) {
+      if (!val) {
+        return "You must enter a name.";
       }
     },
     async createService() {
       this.loading = true;
       const protocol = this.form.protocol;
       const type = this.form.type;
-      const mutation = api.traefik.CREATE_SERVICE[protocol][type];
+      const mutation = api.traefik.service.CREATE_SERVICE[protocol][type];
       const input = {
         name: this.form.name,
         [type]: { ...this.form.extra, __typename: undefined }
@@ -163,7 +176,7 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: api.traefik.GET_SERVICES }]
+          refetchQueries: [{ query: api.traefik.service.LIST_SERVICES }]
         })
         .then(r => {
           this.$emit("ok");
@@ -171,7 +184,7 @@ export default {
     },
     async updateService() {
       const type = this.form.type;
-      const mutation = api.traefik.UPDATE_SERVICE[type];
+      const mutation = api.traefik.service.UPDATE_SERVICE[type];
       const variables = {
         nodeId: this.service.nodeId,
         patch: { ...this.form.extra, __typename: undefined }
@@ -180,7 +193,7 @@ export default {
         .mutate({
           mutation,
           variables,
-          refetchQueries: [{ query: api.traefik.GET_SERVICES }]
+          refetchQueries: [{ query: api.traefik.service.LIST_SERVICES }]
         })
         .then(r => {
           this.$emit("ok");

@@ -79,8 +79,8 @@ def resolve_image_environment(image, _):
     return [KeyValue(*var.partition("=")[::2]) for var in image.attrs["Config"]["Env"]]
 
 
-@DockerImage.field("usingContainers")
-def resolve_image_using_containers(image, _, onlyRunning):
+@DockerImage.field("usedBy")
+def resolve_image_used_by(image, _, onlyRunning):
     return docker_client.containers.list(
         all=not onlyRunning, filters={"ancestor": image.id}
     )

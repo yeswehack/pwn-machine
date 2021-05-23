@@ -1,15 +1,37 @@
 <template>
-  <div class="q-gutter-md">
-    <component :is="formChildren.servers" object-key="url" v-model="form.servers" label="Servers url"/>
-    <q-toggle  v-model="form.passHostHeader" label="Pass Host header" />
-    <q-input
-      
-      v-model="form.responseForwarding.flushInterval"
-      label="Flush interval"
-    />
-    <q-input  v-model="form.serversTransport" label="Server transport" />
-    <component :is="formChildren.sticky" v-model="form.sticky"/>
-    <component :is="formChildren.healthCheck" v-model="form.healthCheck" />
+  <div class="column q-gutter-md">
+    <div class="col">
+      <component
+        ref="servers"
+        :is="formChildren.servers"
+        object-key="url"
+        :rules="[validateServers]"
+        v-model="form.servers"
+        label="Servers url"
+      />
+    </div>
+    <div class="col">
+      <div class="row q-gutter-xl items-end">
+        <div class="col">
+          <q-input
+            v-model="form.responseForwarding.flushInterval"
+            label="Flush interval"
+          />
+        </div>
+        <div class="col-auto">
+          <q-toggle
+            v-model="form.passHostHeader"
+            left-label
+            label="Pass Host header"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- <q-input  v-model="form.serversTransport" label="Server transport" /> -->
+    <q-list bordered separator class="rounded-borders">
+      <component :is="formChildren.sticky" v-model="form.sticky" />
+      <component :is="formChildren.healthCheck" v-model="form.healthCheck" />
+    </q-list>
   </div>
 </template>
 
@@ -24,9 +46,21 @@ export default {
     servers: ListInput,
     sticky: StickyInput,
     healthCheck: HealthCheckInput,
-    responseForwarding: {},
+    responseForwarding: {
+      flushInterval: "100ms"
+    },
     passHostHeader: true,
     serversTransport: null
+  },
+  methods: {
+    validateServers(v){
+      if (!Array.isArray(v) || v.length == 0){
+        return "You must choose at least one server"
+      }
+    },
+    validate() {
+      return this.$refs.servers.validate()
+    }
   }
 };
 </script>

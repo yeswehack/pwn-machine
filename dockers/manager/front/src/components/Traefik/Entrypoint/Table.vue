@@ -3,7 +3,7 @@
     ref="table"
     name="entrypoint"
     row-key="name"
-    :loading="$apollo.queries.entrypoints.loading"
+    :query="$apollo.queries.entrypoints"
     :data="entrypoints"
     :columns="columns"
     v-on:delete="deleteService"

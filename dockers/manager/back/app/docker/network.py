@@ -1,9 +1,10 @@
 from app.utils import registerQuery, registerMutation, createType
-from . import docker_client, KeyValue, formatTime
+from . import docker_client, KeyValue, formatTime, kv_to_dict
 from docker.errors import APIError, NotFound
 from docker.types import IPAMConfig, IPAMPool
 
 DockerNetwork = createType("DockerNetwork")
+DockerNetworkConnection = createType("DockerNetworkConnection")
 
 
 @registerQuery("dockerNetworks")
@@ -11,47 +12,10 @@ def resolve_networks(*_):
     return docker_client.networks.list(greedy=True)
 
 
-def resolve_create_network(
-    *,
-    name,
-    labels: list[KeyValue],
-    ipv6,
-    driver,
-    internal,
-    ipam: dict[str, str] = None,
-):
-    try:
-        return docker_client.networks.create(
-            name,
-            check_duplicate=True,
-            labels=dict(labels),
-            enable_ipv6=ipv6,
-            driver=driver,
-            internal=internal,
-            ipam=IPAMConfig(
-                pool_configs=[
-                    IPAMPool(
-                        ipam.get("subnet"),
-                        ipam.get("ipRange"),
-                        ipam.get("gateway"),
-                    )
-                ]
-            )
-            if ipam is not None
-            else None,
-        )
-    except APIError:
-        return None
-
-
-@registerMutation("dockerCreateNetwork")
-def resolve_form_create_network(*_, input):
-    return resolve_create_network(**input)
-
-
 @DockerNetwork.field("labels")
 def resolve_network_labels(network, _):
-    return [KeyValue(*label) for label in network.attrs["Labels"].items()]
+    for label in network.attrs["Labels"].items():
+        yield KeyValue(*label)
 
 
 @DockerNetwork.field("created")
@@ -81,32 +45,76 @@ def resolve_network_internal(network, _):
 
 @DockerNetwork.field("ipams")
 def resolve_network_ipams(network, _):
-    return [
-        {
+    for ipam in network.attrs["IPAM"]["Config"]:
+        yield {
             "subnet": ipam.get("Subnet"),
             "ipRange": ipam.get("IPRange"),
             "gateway": ipam.get("Gateway"),
         }
-        for ipam in network.attrs["IPAM"]["Config"]
-    ]
 
 
-@DockerNetwork.field("connections")
+@DockerNetwork.field("usedBy")
 def resolve_network_connections(network, _):
-    return [
-        {
+    for id, endpoint in network.attrs["Containers"].items():
+        yield {
             "ipv4Address": endpoint["IPv4Address"].rpartition("/")[0] or None,
             "ipv6Address": endpoint["IPv6Address"] or None,
             "container": docker_client.containers.get(id),
         }
-        for id, endpoint in network.attrs["Containers"].items()
-    ]
 
 
-@registerMutation("dockerConnectContainerToNetwork")
-def resolve_connect_container(*_, connection):
-    network = docker_client.networks.get(connection["networkId"])
-    container = docker_client.containers.get(connection["containerId"])
+def resolve_network_using_containers(network, _):
+    return network.attrs["Containers"].values()
+
+
+@registerMutation("createDockerNetwork")
+def resolve_create_network(*_, input):
+    name = input.get("name")
+    labels = kv_to_dict(input.get("labels"))
+    enable_ipv6 = input.get("ipv6")
+    internal = input.get("internal")
+    pool_configs = []
+    ipams = input.get("ipams", [])
+    ipam = None
+    if ipams:
+        pool_configs = []
+        for entry in ipams:
+            pool_configs.append(
+                IPAMPool(
+                    entry.get("subnet", None),
+                    entry.get("ipRange", None),
+                    entry.get("gateway", None),
+                )
+            )
+        ipam = IPAMConfig(pool_configs)
+    return docker_client.networks.create(
+        name,
+        check_duplicate=True,
+        labels=labels,
+        enable_ipv6=enable_ipv6,
+        driver="bridge",
+        internal=internal,
+        ipam=ipam,
+    )
+
+
+@registerMutation("deleteDockerNetwork")
+def mutation_delete_network(*_, id):
+    try:
+        network = docker_client.networks.get(id)
+    except APIError:
+        raise ValueError("Invalid network ID")
+    try:
+        network.remove()
+    except APIError as e:
+        raise ValueError(e.explanation)
+    return True
+
+
+@registerMutation("connectDockerContainer")
+def resolve_connect_container(*_, input):
+    network = docker_client.networks.get(input["networkId"])
+    container = docker_client.containers.get(input["containerId"])
     try:
         network.connect(container)
     except APIError:
@@ -114,10 +122,10 @@ def resolve_connect_container(*_, connection):
     return True
 
 
-@registerMutation("dockerDisconnectContainerFromNetwork")
-def resolve_connect_container(*_, connection):
-    network = docker_client.networks.get(connection["networkId"])
-    container = docker_client.containers.get(connection["containerId"])
+@registerMutation("disconnectDockerContainer")
+def resolve_disconnect_container(*_, input):
+    network = docker_client.networks.get(input["networkId"])
+    container = docker_client.containers.get(input["containerId"])
     try:
         network.disconnect(container)
     except APIError:
@@ -125,7 +133,7 @@ def resolve_connect_container(*_, connection):
     return True
 
 
-@registerMutation("dockerRemoveNetwork")
+@registerMutation("deleteDockerNetwork")
 def resolve_remove_network(*_, id):
     try:
         docker_client.api.remove_network(id)
@@ -134,10 +142,10 @@ def resolve_remove_network(*_, id):
     return True
 
 
-@registerMutation("dockerPruneNetworks")
+@registerMutation("pruneDockerNetworks")
 def resolve_prune_networks(*_):
-    try:
-        docker_client.api.prune_networks()
-    except APIError:
-        return False
-    return True
+    pruned = docker_client.networks.prune()
+    return {
+        "deleted": pruned["NetworksDeleted"] or [],
+        "spaceReclaimed": 0,
+    }

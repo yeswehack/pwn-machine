@@ -129,6 +129,6 @@ async def resolve_middlewares(*_):
     return await traefik_http().get_middlewares()
 
 
-@registerMutation("traefikDeleteMiddleware")
+@registerMutation("deleteTraefikMiddleware")
 async def resolve_delete(*_, nodeId):
-    return {"ok": traefik_redis().delete_middleware(nodeId)}
+    return await traefik_redis().delete_middleware(nodeId)

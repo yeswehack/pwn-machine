@@ -25,14 +25,14 @@ def resolve_volume_mountpoint(volume, _):
     return volume.attrs["Mountpoint"]
 
 
-@DockerVolume.field("usingContainers")
-def resolve_volume_using_containers(volume, _, onlyRunning):
+@DockerVolume.field("usedBy")
+def resolve_volume_used_by(volume, _, onlyRunning):
     return docker_client.containers.list(
         all=not onlyRunning, filters={"volume": volume.attrs["Name"]}
     )
 
 
-@registerMutation("dockerCreateVolume")
+@registerMutation("createDockerVolume")
 def resolve_create_volume(*_, input):
     try:
         return docker_client.volumes.create(
@@ -42,7 +42,7 @@ def resolve_create_volume(*_, input):
         return None
 
 
-@registerMutation("dockerRemoveVolume")
+@registerMutation("deleteDockerVolume")
 def resolve_remove_volume(*_, name, force):
     try:
         docker_client.api.remove_volume(name, force=force)
@@ -51,9 +51,10 @@ def resolve_remove_volume(*_, name, force):
     return True
 
 
-@registerMutation("dockerPruneVolumes")
+@registerMutation("pruneDockerVolumes")
 def resolve_prune_volumes(*_):
-    try:
-        return docker_client.api.prune_volumes()["SpaceReclaimed"]
-    except APIError:
-        return None
+    pruned = docker_client.volumes.prune()
+    return {
+        "deleted": pruned["VolumesDeleted"],
+        "spaceReclaimed": pruned["SpaceReclaimed"],
+    }

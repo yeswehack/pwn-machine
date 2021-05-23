@@ -109,7 +109,7 @@ export default {
   },
   apollo: {
     zones: {
-      query: api.dns.GET_ZONES,
+      query: api.dns.zones.LIST_ZONES,
       update: data => data.dnsZones
     }
   },
@@ -147,9 +147,9 @@ export default {
 
       this.$apollo
         .mutate({
-          mutation: api.dns.CREATE_RULE,
+          mutation: api.dns.rules.CREATE_RULE,
           variables: { input },
-          refetchQueries: [{ query: api.dns.GET_RULES }]
+          refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
         })
         .then(() => {
           this.$emit("ok");

@@ -29,7 +29,7 @@ export default {
   formDefinition: null,
   apollo: {
     images: {
-      query: api.docker.GET_IMAGES,
+      query: api.docker.image.LIST_IMAGES,
       update: data => data.dockerImages
     }
   },

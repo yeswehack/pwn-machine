@@ -1,6 +1,7 @@
 <template>
-  <q-card-section class="column q-col-gutter-sm">
+  <div class="column q-col-gutter-sm">
     <q-input
+      ref="rule"
       v-model="form.rule"
       debounce="100"
       :rules="[validateRule]"
@@ -13,17 +14,19 @@
       protocol="tcp"
     />
     <component
+      ref="service"
       :is="formChildren.service"
       v-model="form.service"
       protocol="tcp"
     />
-  </q-card-section>
+  </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import EntrypointInput from "./EntrypointInput.vue";
 import ServiceInput from "./ServiceInput.vue";
+import { isValidRule } from "src/traefik";
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -34,9 +37,16 @@ export default {
   },
   methods: {
     validateRule(rule) {
-      if (!this.$api.traefik.isValidRule(rule)) {
+      if (!isValidRule(rule)) {
         return `Syntax error`;
       }
+    },
+    validate() {
+      const validators = [
+        this.$refs.rule.validate(),
+        this.$refs.service.validate()
+      ];
+      return validators.every(x => x);
     }
   }
 };

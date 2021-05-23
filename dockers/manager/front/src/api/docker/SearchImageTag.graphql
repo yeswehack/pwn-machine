@@ -1,7 +1,0 @@
-query dockerSearchImageTag($repoName: String!, $imageName: String!) {
-  dockerSearchImageTag(repoName: $repoName, imageName: $imageName) {
-    name
-    size
-    lastUpdated
-  }
-}

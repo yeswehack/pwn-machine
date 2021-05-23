@@ -71,6 +71,7 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <label class="row text-negative" v-if="errorMsg">{{ errorMsg }}</label>
   </div>
 </template>
 
@@ -84,17 +85,28 @@ export default {
     label: { type: String, default: null }
   },
   data() {
-    return { name: null, percent: null };
+    return { name: null, percent: null, errorMsg: "" };
   },
   formDefinition: [],
   methods: {
     addEntry() {
-      this.form.unshift({name: this.name, percent: this.percent});
-      this.name = null
-      this.percent = null
+      if (!this.name || [null, undefined, ""].includes(this.percent)) return
+      this.form.unshift({ name: this.name, percent: this.percent });
+      this.name = null;
+      this.percent = null;
+      this.validate();
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);
+      this.validate();
+    },
+    validate() {
+      this.errorMsg = "";
+      if (!Array.isArray(this.form) || this.form.length == 0) {
+        this.errorMsg = "You must choose at least one service";
+        return false;
+      }
+      return true;
     }
   }
 };

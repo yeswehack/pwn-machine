@@ -1,4 +1,4 @@
-import { IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import { IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
 import introspectionQueryResultData from "../../refs/fragmentTypes.json";
 
 export default async function(/* { app, router, store, ssrContext, urlPath, redirect } */) {
@@ -25,7 +25,7 @@ export default async function(/* { app, router, store, ssrContext, urlPath, redi
 
       // additional config for apollo client
       // https://github.com/apollographql/apollo-client/blob/version-2.6/docs/source/api/apollo-client.mdx#optional-fields
-      additionalConfig: {}
+      additionalConfig: { }
     },
 
     // you can add more options or override the default config for a specific

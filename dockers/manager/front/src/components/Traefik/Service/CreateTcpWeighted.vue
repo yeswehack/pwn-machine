@@ -1,6 +1,11 @@
 <template>
   <div class="q-gutter-md">
-    <component :is="formChildren.services" v-model="form.services"  protocol="tcp"/>
+    <component
+      ref="service"
+      :is="formChildren.services"
+      v-model="form.services"
+      protocol="tcp"
+    />
   </div>
 </template>
 
@@ -11,6 +16,11 @@ export default {
   mixins: [DeepForm],
   formDefinition: {
     services: WeightedInput
+  },
+  methods: {
+    validate() {
+      this.$refs.service.validate();
+    }
   }
 };
 </script>

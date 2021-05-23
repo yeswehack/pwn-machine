@@ -3,13 +3,22 @@
     ref="table"
     name="network"
     row-key="name"
-    :loading="$apollo.loading"
+    :query="$apollo.queries.networks"
     :data="networks"
     :columns="columns"
     @create="createNetwork"
     @clone="cloneNetwork"
     @delete="deleteNetwork"
   >
+    <template #header-button>
+      <q-btn
+        rounded
+        label="Prune"
+        color="negative"
+        icon="eva-trash-outline"
+        @click="pruneNetworks"
+      />
+    </template>
     <template #body-cell-name="{value, row}">
       <span
         style="text-decoration:underline;text-decoration-style:dotted"
@@ -28,12 +37,12 @@
       <q-badge color="negative" label="no" v-else />
     </template>
 
-    <template #body-cell-containers="{row}">
+    <template #body-cell-usedBy="{row}">
       <div class="row q-gutter-sm">
         <container-link
           :name="connection.container.name"
           :key="idx"
-          v-for="(connection, idx) of row.connections"
+          v-for="(connection, idx) of row.usedBy"
         >
           <q-tooltip
             v-if="row.name == 'host'"
@@ -74,7 +83,7 @@ export default {
   },
   apollo: {
     networks: {
-      query: api.docker.GET_NETWORKS,
+      query: api.docker.network.LIST_NETWORKS,
       update: ({ dockerNetworks }) => dockerNetworks
     }
   },
@@ -98,11 +107,39 @@ export default {
         classes: "text-mono",
         field: ({ ipams }) => ipams[0]?.subnet
       }),
-      col("containers", { label: "Connected containers" })
+      col("usedBy", { label: "Connected containers" })
     ];
     return { columns };
   },
   methods: {
+    pruneNetworks() {
+      this.$q
+        .dialog({
+          title: "Prune networks ?",
+          message:
+            "This will remove all networks not used by at least one container.",
+          color: "negative",
+          type: "confirm",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: api.docker.network.PRUNE_NETWORKS,
+              refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+            })
+            .then(({ data }) => {
+              const deleted = data.pruneDockerNetworks.deleted;
+              const message = deleted.length
+                ? `${deleted.length} network(s) deleted: ${deleted.join(", ")}`
+                : `No network deleted.`;
+              this.$q.notify({
+                message,
+                type: "positive"
+              });
+            });
+        });
+    },
     getDriverColor(driver) {
       switch (driver) {
         case "host":
@@ -135,7 +172,20 @@ export default {
           color: "negative",
           cancel: true
         })
-        .onOk(() => {});
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: api.docker.network.DELETE_NETWORK,
+              variables: { id: network.id },
+              refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+            })
+            .catch(e => {
+              this.$q.notify({
+                message: e.message,
+                type: "negative"
+              });
+            });
+        });
     }
   }
 };

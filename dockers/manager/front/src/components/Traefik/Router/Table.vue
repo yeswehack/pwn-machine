@@ -3,12 +3,12 @@
     ref="table"
     name="router"
     row-key="name"
+    :query="$apollo.queries.routers"
+    :data="routers"
+    :columns="columns"
     @create="createRouter"
     @delete="deleteRouter"
     @clone="cloneRouter"
-    :loading="$apollo.queries.routers.loading"
-    :data="routers"
-    :columns="columns"
   >
     <template #body-cell-type="{row}">
       <protocol-badge :protocol="row.protocol" />
@@ -67,7 +67,7 @@ export default {
   },
   apollo: {
     routers: {
-      query: api.traefik.GET_ROUTERS,
+      query: api.traefik.routers.LIST_ROUTERS,
       update: data => data.traefikRouters
     }
   },
@@ -133,9 +133,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.traefik.DELETE_ROUTER,
+              mutation: api.traefik.routers.DELETE_ROUTER,
               variables: { id: router.nodeId },
-              refetchQueries: [{ query: api.traefik.GET_ROUTERS }]
+              refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
             })
             .then(response => {
               this.$q.notify({

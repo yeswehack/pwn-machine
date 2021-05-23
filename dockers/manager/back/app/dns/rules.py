@@ -103,7 +103,6 @@ async def create_dns_rule_mutation(*_, input):
         record = input["records"][0]
         escaped_content = escape_lua(record['content'])
         formated = f'{type} "{escaped_content}"'
-        print(formated)
         records = [{"content": formated, "enabled": record["enabled"]}]
         type = "LUA"
 
@@ -114,9 +113,7 @@ async def create_dns_rule_mutation(*_, input):
 async def update_dns_zone_mutation(*_, nodeId, patch):
     ttl = patch["ttl"]
     records = patch["records"]
-    r = await dns_http().update_rule(nodeId, ttl, records)
-    print(r)
-    return r
+    return await dns_http().update_rule(nodeId, ttl, records)
 
 
 @registerMutation("deleteDnsRule")

@@ -11,7 +11,7 @@
           <container-list-input
             @add="connectContainer"
             @remove="disconnectContainer"
-            :value="network.connections.map(c=>c.container)"
+            :value="network.usedBy.map(c=>c.container)"
             title="Connected containers"
           />
         </q-card-section>
@@ -34,23 +34,20 @@ export default {
     ContainerListInput
   },
   methods: {
-    refresh() {
-      this.$apollo.queries.network.refetch();
-    },
     connectContainer(containerId) {
       const input = { networkId: this.network.id, containerId };
       this.$apollo.mutate({
-        mutation: api.docker.CONNECT_TO_NETWORK,
+        mutation: api.docker.network.CONNECT_TO_NETWORK,
         variables: { input },
-        refetchQueries: [{ query: api.docker.GET_NETWORKS }]
+        refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
       });
     },
     disconnectContainer(containerId) {
       const input = { networkId: this.network.id, containerId };
       this.$apollo.mutate({
-        mutation: api.docker.DISCONNECT_FROM_NETWORK,
+        mutation: api.docker.network.DISCONNECT_FROM_NETWORK,
         variables: { input },
-        refetchQueries: [{ query: api.docker.GET_NETWORKS }]
+        refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
       });
     }
   }

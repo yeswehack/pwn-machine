@@ -20,7 +20,6 @@ def resolve_router_type(router, *_):
         "tcp": "TraefikTCPRouter",
         "udp": "TraefikUDPRouter",
     }
-    print(router)
     return mapping[router["protocol"]]
 
 

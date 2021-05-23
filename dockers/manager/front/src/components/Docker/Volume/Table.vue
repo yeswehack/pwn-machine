@@ -3,20 +3,30 @@
     name="volume"
     row-key="name"
     :expendable="true"
-    :loading="$apollo.queries.volumes.loading"
+    :query="$apollo.queries.volumes"
     :data="volumes"
     :columns="columns"
     no-details
     @create="createVolume"
     @clone="cloneVolume"
     @delete="deleteVolume"
+    @refresh="$apollo.queries.volumes.refetch"
   >
-    <template #body-cell-usingContainers="{row}">
+    <template #header-button>
+      <q-btn
+        rounded
+        label="Prune"
+        color="negative"
+        icon="eva-trash-outline"
+        @click="pruneVolumes"
+      />
+    </template>
+    <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row">
         <container-link
           :name="name"
           :key="name"
-          v-for="{ name } of row.usingContainers"
+          v-for="{ name } of row.usedBy"
         />
       </div>
     </template>
@@ -28,16 +38,50 @@ import BaseTable from "src/components/BaseTable.vue";
 import ContainerDialog from "./Dialog.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
+import { format } from "quasar";
+const { humanStorageSize } = format;
 
 export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     volumes: {
-      query: api.docker.GET_VOLUMES,
+      query: api.docker.volume.LIST_VOLUMES,
       update: data => data.dockerVolumes
     }
   },
   methods: {
+    pruneVolumes() {
+      this.$q
+        .dialog({
+          title: "Prune volumes ?",
+          message:
+            "This will remove all volumes not used by at least one container.",
+          color: "negative",
+          type: "confirm",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: api.docker.volume.PRUNE_VOLUMES,
+              refetchQueries: [{ query: api.docker.volume.LIST_VOLUMES }]
+            })
+            .then(({ data }) => {
+              const deleted = data.pruneDockerVolumes.deleted;
+              const reclaimed = humanStorageSize(
+                data.pruneDockerVolumes.spaceReclaimed
+              );
+              const message = deleted.length
+                ? `${deleted.length} volume(s) deleted: ${deleted.join(", ")} (${reclaimed})`
+                : `No volume deleted.`;
+
+              this.$q.notify({
+                message,
+                type: "positive"
+              });
+            });
+        });
+    },
     createVolume() {
       this.$q.dialog({
         component: ContainerDialog,
@@ -51,7 +95,35 @@ export default {
         volume
       });
     },
-    deleteVolume(volume) {}
+    deleteVolume(volume) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: `Are you sure you want to delete ${volume.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(() => {
+          this.$apollo
+            .mutate({
+              mutation: api.docker.volume.DELETE_VOLUME,
+              variables: { name: volume.name },
+              refetchQueries: [{ query: api.docker.volume.LIST_VOLUMES }]
+            })
+            .catch(e => {
+              this.$q.notify({
+                message: e.message,
+                type: "negative"
+              });
+            })
+            .then(() => {
+              this.$q.notify({
+                message: `Volume ${volume.name} deleted.`,
+                type: "positive"
+              });
+            });
+        });
+    }
   },
   data() {
     const col = (name, opts = {}) => ({
@@ -65,9 +137,9 @@ export default {
     const columns = [
       col("name"),
       col("path", { field: "mountpoint" }),
-      col("usingContainers", {
+      col("usedBy", {
         label: "used by",
-        field: "usingContainers"
+        field: "usedBy"
       })
     ];
     return { columns };

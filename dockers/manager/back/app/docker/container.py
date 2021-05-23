@@ -6,14 +6,15 @@ from typing import NamedTuple
 
 DockerContainer = createType("DockerContainer")
 DockerContainerMount = createType("DockerContainerMount")
+DockerContainerConnection = createType("DockerContainerConnection")
 
 
 class ContainerMount(NamedTuple):
     type: str
-    target: str
     source: str = None
-    volume: str = None
+    target: str = None
     readonly: bool = False
+    volume: str = None
 
 
 class ContainerPort(NamedTuple):
@@ -87,6 +88,15 @@ def resolve_form_create_container(*_, input):
     return resolve_create_container(**input)
 
 
+@registerQuery("dockerContainerByName")
+@registerQuery("dockerContainerById")
+def resolve_container_by_name(*_, name=None, id=None):
+    try:
+        return docker_client.containers.get(name or id)
+    except:
+        return None
+
+
 @DockerContainer.field("labels")
 def resolve_container_labels(container, _):
     return [KeyValue(*label) for label in container.labels.items()]
@@ -114,15 +124,47 @@ def resolve_container_privileged(container, _):
     return container.attrs["HostConfig"]["Privileged"]
 
 
+@DockerContainer.field("ps")
+def resolve_container_ps(container, _):
+    if not container.attrs["State"]["Running"]:
+        return None
+    titles = [
+        "user",
+        "pid",
+        "cpu",
+        "mem",
+        "vsz",
+        "rss",
+        "tty",
+        "stat",
+        "start",
+        "time",
+        "command",
+    ]
+    top = container.top(ps_args="-aux")
+    processes = []
+    for ps in top["Processes"]:
+        process = {}
+        for title, value in zip(titles, ps):
+            process[title] = value
+        processes.append(process)
+    return processes
+
+
+@DockerContainerConnection.field("ipAddress")
+def resolve_connection_ip_address(connection, *_):
+    return connection.get("IPAddress", None) or None
+
+
 @DockerContainer.field("mounts")
 def resolve_container_mounts(container, _):
     return [
         ContainerMount(
-            mount["Type"].upper(),
-            mount.get("Name"),
-            mount.get("Source"),
-            mount["Destination"],
-            not mount["RW"],
+            type=mount["Type"].upper(),
+            source=mount.get("Source"),
+            target=mount.get("Destination"),
+            readonly=not mount["RW"],
+            volume=mount.get("Name"),
         )
         for mount in container.attrs["Mounts"]
     ]
@@ -130,7 +172,9 @@ def resolve_container_mounts(container, _):
 
 @DockerContainerMount.field("volume")
 def resolve_container_mount_volume(mount: ContainerMount, _):
-    return docker_client.volumes.get(name) if (name := mount.volume) else None
+    if mount.type == "VOLUME":
+        return docker_client.volumes.get(mount.volume)
+    return None
 
 
 @DockerContainer.field("connections")
@@ -141,7 +185,7 @@ def resolve_container_connections(container, _):
             "ipAddress": endpoint["IPAddress"] or None,
             "network": docker_client.networks.get(name),
         }
-        for name, endpoint in container.attrs["NetworkSettings"]["Networks"]
+        for name, endpoint in container.attrs["NetworkSettings"]["Networks"].items()
     ]
 
 
@@ -239,9 +283,10 @@ def resolve_remove_container(*_, id, force, pruneVolumes):
     return True
 
 
-@registerMutation("dockerPruneContainers")
+@registerMutation("pruneDockerContainers")
 def resolve_prune_containers(*_):
-    try:
-        return docker_client.api.prune_containers()["SpaceReclaimed"]
-    except APIError:
-        return None
+    pruned = docker_client.containers.prune()
+    return {
+        "deleted": pruned["ContainersDeleted"] or [],
+        "spaceReclaimed": 0,
+    }

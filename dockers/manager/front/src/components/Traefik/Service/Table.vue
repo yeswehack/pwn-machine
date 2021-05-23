@@ -4,7 +4,7 @@
     ref="table"
     name="service"
     row-key="name"
-    :loading="$apollo.queries.services.loading"
+    :query="$apollo.queries.services"
     :data="services"
     :columns="columns"
     @create="createService"
@@ -58,7 +58,7 @@ export default {
   },
   apollo: {
     services: {
-      query: api.traefik.GET_SERVICES,
+      query: api.traefik.services.LIST_SERVICES,
       update: data => data.traefikServices
     }
   },
@@ -110,9 +110,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.traefik.DELETE_SERVICE,
+              mutation: api.traefik.services.DELETE_SERVICE,
               variables: { nodeId: service.nodeId },
-              refetchQueries: [{ query: api.traefik.GET_SERVICES }]
+              refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
             })
             .then(() => {
               this.$q.notify({
