@@ -1,18 +1,18 @@
 filebeat.inputs:
-# - type: container
-#   paths: 
-#     - '/var/lib/docker/containers/*/*.log'
-#   fields:
-#     type: "docker"
-# 
-#   processors:
-#     - add_docker_metadata:
-#         host: "unix:///var/run/docker.sock"
-#     - decode_json_fields:
-#         fields: ["message"]
-#         target: "json"
-#         overwrite_keys: true
-# 
+- type: container
+  paths: 
+    - '/var/lib/docker/containers/*/*.log'
+  fields:
+    type: "docker"
+
+  processors:
+    - add_docker_metadata:
+        host: "unix:///var/run/docker.sock"
+    - decode_json_fields:
+        fields: ["message"]
+        target: "json"
+        overwrite_keys: true
+
 
 - type: log
   paths:
