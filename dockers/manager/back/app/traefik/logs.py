@@ -44,7 +44,7 @@ async def resolve_traefik_logs(*_, filter={}, cursor={}):
     return response
 
 
-@TraefikLog.field("time")
+@TraefikLog.field("date")
 def resolve_time(log, _):
     return log["StartUTC"]
 

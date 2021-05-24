@@ -147,7 +147,7 @@ export default {
     let columns = [];
     if (this.short) {
       columns = [
-        field("time", {
+        field("date", {
           format: v => date.formatDate(v, "YYYY-MM-DD HH:mm:ss")
         }),
         field("origin"),
@@ -158,7 +158,7 @@ export default {
       ];
     } else {
       columns = [
-        field("time", {
+        field("date", {
           format: v => date.formatDate(v, "YYYY-MM-DD HH:mm:ss")
         }),
         field("entrypointName", { label: "Entrypoint" }),

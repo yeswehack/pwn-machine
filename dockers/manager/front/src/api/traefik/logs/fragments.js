@@ -13,6 +13,6 @@ export const LOG_FRAGMENT = gql`
     routerName
     entrypointName
     serviceName
-    time
+    date
   }
 `;

@@ -14,6 +14,7 @@
               hide-title
             />
           </q-card-section>
+
           <q-card-section>
             <reset-and-save
               :modified="modified"

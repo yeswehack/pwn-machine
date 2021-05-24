@@ -20,6 +20,7 @@
               v-model="form.extra"
             />
           </q-card-section>
+    {{form}}
           <q-card-section>
             <reset-and-save
               :modified="modified"
