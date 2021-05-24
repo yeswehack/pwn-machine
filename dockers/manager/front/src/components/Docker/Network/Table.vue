@@ -83,7 +83,7 @@ export default {
   },
   apollo: {
     networks: {
-      query: api.docker.network.LIST_NETWORKS,
+      query: api.docker.networks.LIST_NETWORKS,
       update: ({ dockerNetworks }) => dockerNetworks
     }
   },
@@ -125,8 +125,8 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.docker.network.PRUNE_NETWORKS,
-              refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+              mutation: api.docker.networks.PRUNE_NETWORKS,
+              refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
             })
             .then(({ data }) => {
               const deleted = data.pruneDockerNetworks.deleted;
@@ -175,9 +175,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.docker.network.DELETE_NETWORK,
+              mutation: api.docker.networks.DELETE_NETWORK,
               variables: { id: network.id },
-              refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+              refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
             })
             .catch(e => {
               this.$q.notify({

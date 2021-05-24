@@ -185,37 +185,37 @@ export default {
     },
     pauseContainer() {
       this.$apollo.mutate({
-        mutation: api.docker.container.PAUSE_CONTAINER,
+        mutation: api.docker.containers.PAUSE_CONTAINER,
         variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
       });
     },
     async unpauseContainer() {
       this.$apollo.mutate({
-        mutation: api.docker.container.UNPAUSE_CONTAINER,
+        mutation: api.docker.containers.UNPAUSE_CONTAINER,
         variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
       });
     },
     async startContainer() {
       this.$apollo.mutate({
-        mutation: api.docker.container.START_CONTAINER,
+        mutation: api.docker.containers.START_CONTAINER,
         variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
       });
     },
     async stopContainer() {
       this.$apollo.mutate({
-        mutation: api.docker.container.STOP_CONTAINER,
+        mutation: api.docker.containers.STOP_CONTAINER,
         variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
       });
     },
     async restartContainer() {
       this.$apollo.mutate({
-        mutation: api.docker.container.RESTART_CONTAINER,
+        mutation: api.docker.containers.RESTART_CONTAINER,
         variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
       });
     }
   }

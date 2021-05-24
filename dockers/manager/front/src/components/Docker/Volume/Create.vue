@@ -30,9 +30,9 @@ export default {
     async submit(done) {
       this.$apollo
         .mutate({
-          mutation: api.docker.volume.CREATE_VOLUME,
+          mutation: api.docker.volumes.CREATE_VOLUME,
           variables: { input: this.form },
-          refetchQueries: [{ query: api.docker.volume.LIST_VOLUMES }]
+          refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
         })
         .then(() => {
           done();

@@ -164,7 +164,7 @@ export default {
       query: api.dns.rules.LIST_RULES
     },
     container: {
-      query: api.docker.container.GET_CONTAINER_BY_ID,
+      query: api.docker.containers.GET_CONTAINER_BY_ID,
       variables() {
         return { id: this.containerId };
       },

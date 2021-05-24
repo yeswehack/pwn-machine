@@ -86,7 +86,7 @@ export default {
   },
   apollo: {
     traefikContainer: {
-      query: api.docker.container.GET_CONTAINER_BY_NAME,
+      query: api.docker.containers.GET_CONTAINER_BY_NAME,
       variables: { name: "traefik" },
       update: data => data.dockerContainerByName
     }
@@ -105,11 +105,11 @@ export default {
         networkId: this.connectTo.value
       };
       this.$apollo.mutate({
-        mutation: api.docker.network.CONNECT_TO_NETWORK,
+        mutation: api.docker.networks.CONNECT_TO_NETWORK,
         variables: { input },
         refetchQueries: [
           {
-            query: api.docker.container.GET_CONTAINER_BY_ID,
+            query: api.docker.containers.GET_CONTAINER_BY_ID,
             variables: { id: this.container.id }
           }
         ]
@@ -128,7 +128,7 @@ export default {
         })
         .onOk(name => {
           this.$apollo.mutate({
-            mutation: api.docker.network.CREATE_NETWORK,
+            mutation: api.docker.networks.CREATE_NETWORK,
             variables: { name }
           });
         });

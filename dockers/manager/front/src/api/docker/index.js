@@ -1,15 +1,17 @@
 import GET_CONTAINER_SHELLS from "./GetContainerShells.graphql";
 import SPAWN_CONTAINER_SHELL from "./SpawnContainerShell.graphql";
-import volume from "./volume";
-import network from "./network";
-import container from "./container";
-import image from "./image";
+import volumes from "./volumes";
+import networks from "./networks";
+import containers from "./containers";
+import images from "./images";
+import logs from "./logs";
 
 export default {
-  volume,
-  network,
-  image,
-  container,
+  volumes,
+  networks,
+  images,
+  containers,
+  logs,
   GET_CONTAINER_SHELLS,
   SPAWN_CONTAINER_SHELL
 };

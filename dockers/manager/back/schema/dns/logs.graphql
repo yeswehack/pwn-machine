@@ -1,10 +1,4 @@
 
-type DnsLogResponse {
-    name: String!
-    rdata: String!
-    type: DnsRuleType!
-}
-
 type DnsLog implements Node {
 
     nodeId: ID!

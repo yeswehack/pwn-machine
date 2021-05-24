@@ -37,17 +37,17 @@ export default {
     connectContainer(containerId) {
       const input = { networkId: this.network.id, containerId };
       this.$apollo.mutate({
-        mutation: api.docker.network.CONNECT_TO_NETWORK,
+        mutation: api.docker.networks.CONNECT_TO_NETWORK,
         variables: { input },
-        refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
       });
     },
     disconnectContainer(containerId) {
       const input = { networkId: this.network.id, containerId };
       this.$apollo.mutate({
-        mutation: api.docker.network.DISCONNECT_FROM_NETWORK,
+        mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
         variables: { input },
-        refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
       });
     }
   }

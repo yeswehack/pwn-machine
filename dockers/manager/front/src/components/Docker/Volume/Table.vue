@@ -45,7 +45,7 @@ export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     volumes: {
-      query: api.docker.volume.LIST_VOLUMES,
+      query: api.docker.volumes.LIST_VOLUMES,
       update: data => data.dockerVolumes
     }
   },
@@ -63,8 +63,8 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.docker.volume.PRUNE_VOLUMES,
-              refetchQueries: [{ query: api.docker.volume.LIST_VOLUMES }]
+              mutation: api.docker.volumes.PRUNE_VOLUMES,
+              refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
             })
             .then(({ data }) => {
               const deleted = data.pruneDockerVolumes.deleted;
@@ -106,9 +106,9 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.docker.volume.DELETE_VOLUME,
+              mutation: api.docker.volumes.DELETE_VOLUME,
               variables: { name: volume.name },
-              refetchQueries: [{ query: api.docker.volume.LIST_VOLUMES }]
+              refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
             })
             .catch(e => {
               this.$q.notify({

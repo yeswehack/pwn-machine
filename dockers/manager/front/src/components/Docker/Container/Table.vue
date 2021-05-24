@@ -105,7 +105,7 @@ export default {
   },
   apollo: {
     containers: {
-      query: api.docker.container.LIST_CONTAINERS,
+      query: api.docker.containers.LIST_CONTAINERS,
       update: ({ dockerContainers }) => dockerContainers
     }
   },
@@ -141,8 +141,8 @@ export default {
         .onOk(() => {
           this.$apollo
             .mutate({
-              mutation: api.docker.container.PRUNE_CONTAINERS,
-              refetchQueries: [{ query: api.docker.container.LIST_CONTAINERS }]
+              mutation: api.docker.containers.PRUNE_CONTAINERS,
+              refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
             })
             .then(({ data }) => {
               const deleted = data.pruneDockerContainers.deleted;

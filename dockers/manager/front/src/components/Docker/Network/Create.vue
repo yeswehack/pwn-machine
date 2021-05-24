@@ -71,9 +71,9 @@ export default {
     async submit() {
       this.$apollo
         .mutate({
-          mutation: api.docker.network.CREATE_NETWORK,
+          mutation: api.docker.networks.CREATE_NETWORK,
           variables: { input: this.form },
-          refetchQueries: [{ query: api.docker.network.LIST_NETWORKS }]
+          refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
         })
         .then(() => {
           this.$q.notify({

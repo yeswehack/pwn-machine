@@ -118,6 +118,11 @@ const dockerRoute = {
       name: "dockerVolumes",
       component: () => import("components/Docker/Volume/Table.vue")
     },
+    {
+      path: "logs",
+      name: "dockerLogs",
+      component: () => import("components/Docker/Log/Table.vue")
+    },
 
   ]
 

@@ -32,7 +32,7 @@ export default {
   components: { BaseTable, ContainerLink },
   apollo: {
     images: {
-      query: api.docker.image.LIST_IMAGES,
+      query: api.docker.images.LIST_IMAGES,
       variables: { onlyFinal: true },
       update: ({ dockerImages }) => dockerImages
     }

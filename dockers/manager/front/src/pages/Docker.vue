@@ -25,6 +25,11 @@
       label="Volumes"
       icon="eva-hard-drive"
     />
+    <q-route-tab
+      :to="{ name: 'dockerLogs' }"
+      label="Logs"
+      icon="eva-list"
+    />
   </tab-page>
 </template>
 
