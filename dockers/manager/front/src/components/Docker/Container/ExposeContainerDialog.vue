@@ -161,7 +161,7 @@ export default {
   },
   apollo: {
     dnsRules: {
-      query: api.dns.GET_RULES
+      query: api.dns.rules.LIST_RULES
     },
     container: {
       query: api.docker.container.GET_CONTAINER_BY_ID,
