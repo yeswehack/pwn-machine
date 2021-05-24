@@ -48,13 +48,14 @@ export default {
   props: {
     domain: { type: String, default: "*" },
     type: { type: String, default: "*" },
-    rowsPerPage: { type: Number, default: 10 }
+    rowsPerPage: { type: Number, default: 10 },
+    short: { type: Boolean, default: false }
   },
   apollo: {
     dnsLogs: {
       query: api.dns.GET_LOGS,
       variables() {
-        const { page, rowsPerPage } = this.pagination
+        const { page, rowsPerPage } = this.pagination;
         return {
           filter: { query: this.domain, type: this.type },
           cursor: { from: (page - 1) * rowsPerPage, size: rowsPerPage }
@@ -91,12 +92,20 @@ export default {
       }),
       field("origin"),
       field("type", { align: "center" }),
-      field("query"),
+      field("query")
     ];
     return {
       pagination,
       columns
     };
+  },
+  mounted() {
+    if (!this.short) {
+      const rowHeight = 28;
+      const padding = 72 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
+      const height = this.$parent.$el.getBoundingClientRect().height;
+      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
+    }
   },
   watch: {
     dnsLogs(dnsLogs) {
@@ -115,7 +124,7 @@ export default {
     },
     size() {
       return this.pagination.rowsPerPage;
-    },
+    }
   }
 };
 </script>

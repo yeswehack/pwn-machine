@@ -1,32 +1,34 @@
 <template>
-  <div class="full-width column">
-    <div class="row q-gutter-md items-center q-mb-md">
-      <div class="col">
-        <q-input filled v-model="domain" label="Domain" />
-      </div>
-      <div class="col col-auto">
-        <q-input filled v-model="type" label="Type" />
-      </div>
-      <div class="col col-auto">
-        <q-btn
-          icon="eva-cloud-download-outline"
-          title="Download all matching log as json"
-          round
-          size="md"
-          color="primary"
-        />
-      </div>
-      <div class="col col-auto">
-        <q-btn
-          icon="eva-trash"
-          title="Delete all matching log"
-          round
-          size="md"
-          color="negative"
-        />
+  <div class="full-width column q-gutter-md">
+    <div class="col col-auto full-width">
+      <div class="row q-gutter-sm items-center">
+        <div class="col">
+          <q-input filled v-model="domain" label="Domain" />
+        </div>
+        <div class="col col-auto">
+          <q-input filled v-model="type" label="Type" />
+        </div>
+        <div class="col col-auto">
+          <q-btn
+            icon="eva-cloud-download-outline"
+            title="Download all matching log as json"
+            round
+            size="md"
+            color="primary"
+          />
+        </div>
+        <div class="col col-auto">
+          <q-btn
+            icon="eva-trash"
+            title="Delete all matching log"
+            round
+            size="md"
+            color="negative"
+          />
+        </div>
       </div>
     </div>
-    <div class="row">
+    <div class="col full-width">
       <log-list
         bordered
         flat

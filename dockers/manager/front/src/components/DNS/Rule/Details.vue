@@ -43,7 +43,7 @@
           <div class="text-h6">Logs</div>
         </q-card-section>
         <q-card-section>
-          <log-list flat :domain="value.name.slice(0, -1)" :type="logType" />
+          <log-list short flat :domain="value.name.slice(0, -1)" :type="logType" />
         </q-card-section>
       </q-card>
     </div>
