@@ -1,5 +1,5 @@
 <template>
-  <PMLink path="/traefik/services" :name="service.name" />
+  <PMLink path="/traefik/services" :name="name" />
 </template>
 
 <script>
@@ -7,7 +7,7 @@ import PMLink from "src/components/PMLink.vue";
 export default {
   components: { PMLink },
   props: {
-    service: { type: Object, required: true }
+    name: { type: String, required: true }
   }
 };
 </script>

@@ -44,26 +44,34 @@ async def query_dns_logs(*_, filter={}, cursor={}):
     }
 
     r = await es.search(
-        index="powerdns-logs",
-        sort="date:desc",
+        index="filebeat-pdns",
+        sort="@timestamp:desc",
         body=body,
         from_=from_,
         size=size,
     )
+
     hits = r["hits"]
     total = hits["total"]["value"]
     next_from = from_ + len(hits["hits"])
     response = {
         "total": hits["total"]["value"],
-        "result": [log_from_es_to_gql(h) for h in hits["hits"]],
+        "result": [{**h["_source"], "nodeId": h["_id"]} for h in hits["hits"]],
         "next": None,
         "prev": None,
     }
-    if next_from < total:
-        response["next"] = {"from": next_from, "size": size}
-    if from_ > 0:
-        response["prev"] = {"from": max(from_ - size, 0), "size": size}
     return response
+
+
+@DnsLog.field("date")
+def resolve_date(log, _):
+    return log["@timestamp"]
+
+
+@DnsLog.field("nodeId")
+def resolve_date(log, _):
+    print(log)
+    return log["nodeId"]
 
 
 @registerSubscription("dnsLogs")

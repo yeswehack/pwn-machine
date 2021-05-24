@@ -25,6 +25,7 @@
       label="Services"
       icon="eva-flash"
     />
+    <q-route-tab :to="{ name: 'traefikLogs' }" label="Logs" icon="eva-list" />
   </tab-page>
 </template>
 

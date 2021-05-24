@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-gutter-md q-py-md">
+  <div class="row q-col-gutter-md q-py-md">
     <div class="col-12" v-if="errors">
       <traefik-error :errors="errors" />
     </div>

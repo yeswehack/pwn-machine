@@ -15,12 +15,6 @@ query getDnsLogs($filter: DnsLogFilter, $cursor: CursorInput!) {
       date
       query
       type
-      error
-      responses {
-        name
-        rdata
-        type
-      }
     }
   }
 }

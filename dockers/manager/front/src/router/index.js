@@ -9,7 +9,8 @@ Vue.mixin({
   methods: {
     async refresh() {
       const queries = Object.values(this.$apollo.queries)
-      return queries.forEach(q => q.refetch());
+      queries.forEach(q => q.refetch());
+      this.$children.forEach(c => c.refresh())
     }
   }
 });

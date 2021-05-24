@@ -74,6 +74,7 @@ export default {
 }
 .view {
   top: 0;
+  height: 100%;
 }
 .relative {
   position: relative;

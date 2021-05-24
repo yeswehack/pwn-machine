@@ -23,7 +23,7 @@
       </div>
     </template>
     <template #body-cell-service="{row}">
-      <service-link :service="row.service" />
+      <service-link :name="row.service.name" />
     </template>
     <template #body-cell-middlewares="{row}">
       <div class="q-gutter-xs">

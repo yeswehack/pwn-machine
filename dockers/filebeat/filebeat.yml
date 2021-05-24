@@ -1,0 +1,54 @@
+filebeat.inputs:
+# - type: container
+#   paths: 
+#     - '/var/lib/docker/containers/*/*.log'
+#   fields:
+#     type: "docker"
+# 
+#   processors:
+#     - add_docker_metadata:
+#         host: "unix:///var/run/docker.sock"
+#     - decode_json_fields:
+#         fields: ["message"]
+#         target: "json"
+#         overwrite_keys: true
+# 
+
+- type: log
+  paths:
+    - '/logs/pdns/pdns.log'
+    
+  fields:
+    type: "pdns"
+
+  processors:
+    - script:
+        lang: javascript
+        id: pdns_parser
+        file: /root/pdns_parser.js
+        
+- type: log
+  paths:
+    - '/logs/traefik/traefik.json'
+  json.keys_under_root: false
+  json.add_error_key: true
+  fields:
+    type: "traefik"
+
+        
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  indices:
+    - index: "filebeat-docker-%{+yyyy.MM.dd}"
+      when.equals:
+        fields.type: "docker"
+    - index: "filebeat-pdns-%{+yyyy.MM.dd}"
+      when.equals:
+        fields.type: "pdns"
+    - index: "filebeat-traefik-%{+yyyy.MM.dd}"
+      when.equals:
+        fields.type: "traefik"
+
+logging.json: true
+logging.level: warning
+logging.metrics.enabled: false

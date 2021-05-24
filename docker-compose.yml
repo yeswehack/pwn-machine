@@ -21,12 +21,19 @@ services:
     ports:
       - "53:53"
       - "53:53/udp"
+    environment:
+      MYSQL_HOST: "powerdns-db"
+      MYSQL_PASSWORD: "pdns"
+      MYSQL_USER: "root"
+      MYSQL_DATABASE: "pdns"
     depends_on:
       - powerdns-db
       - elasticsearch
     networks:
       - dns-net
       - elasticsearch-net
+    volumes:
+      - powerdns-logs:/logs/pdns
 
   ##
   # TRAEFIK
@@ -51,6 +58,7 @@ services:
       - "1337:1337"
     volumes:
       - traefik-data:/data:rw
+      - traefik-logs:/logs/traefik
     environment:
       TRAEFIK_PROVIDERS_REDIS_ENDPOINTS: "redis:6379"
       TRAEFIK_PROVIDERS_REDIS_ROOTKEY: "traefik"
@@ -71,6 +79,8 @@ services:
   ##
   elasticsearch:
     image: elasticsearch:7.12.1
+    ports:
+      - 9200:9200
     networks:
       - elasticsearch-net
     environment:
@@ -79,6 +89,20 @@ services:
 
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+  
+  filebeat:
+    build:
+      context: ./dockers/filebeat
+    user: root
+    depends_on:
+      - elasticsearch
+    networks:
+      - elasticsearch-net
+    volumes:
+        - /var/lib/docker:/var/lib/docker:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - powerdns-logs:/logs/pdns
+        - traefik-logs:/logs/traefik
 
 ##
 # Manager
@@ -110,10 +134,12 @@ services:
 
 volumes:
   elasticsearch-data:
+  powerdns-logs:
   powerdns-db:
     name: powerdns-db
   redis-data:
   traefik-data:
+  traefik-logs:
 
 networks:
   redis-net:

@@ -12,8 +12,6 @@ type DnsLog implements Node {
     date: DateTime!
     query: String!
     type: DnsRuleType!
-    error: String
-    responses: [DnsLogResponse!]!
 }
 input DnsLogFilter {
     query: String

@@ -59,7 +59,7 @@ export default {
     const columns = [
       col("name"),
       col("type"),
-      { ...col("usedBy"), label: "Connected Routers" },
+      { ...col("usedBy"), label: "Used by" },
       { ...col("enabled"), label: "Status" }
     ];
 

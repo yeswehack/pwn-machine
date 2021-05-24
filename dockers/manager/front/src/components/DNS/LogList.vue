@@ -21,11 +21,6 @@
         {{ value }}
       </q-td>
     </template>
-    <template #body-cell-error="{value}">
-      <q-td auto-width>
-        <q-badge color="negative" :label="value" v-if="value" />
-      </q-td>
-    </template>
     <template #body-cell-origin="{value}">
       <q-td auto-width>
         <a :href="`https://ip-api.com/${value}`" target="_blank">{{ value }}</a>
@@ -53,7 +48,6 @@ export default {
   props: {
     domain: { type: String, default: "*" },
     type: { type: String, default: "*" },
-    hideTitle: { type: Boolean, default: false },
     rowsPerPage: { type: Number, default: 10 }
   },
   apollo: {
@@ -93,15 +87,11 @@ export default {
     });
     const columns = [
       field("date", {
-        format: v => date.formatDate(v * 1000, "YYYY-MM-DD HH:mm:ss")
+        format: v => date.formatDate(v, "YYYY-MM-DD HH:mm:ss")
       }),
       field("origin"),
       field("type", { align: "center" }),
       field("query"),
-      field("responses", {
-        field: row => row.responses.map(r => r.rdata).join(", ")
-      }),
-      field("error")
     ];
     return {
       pagination,
@@ -126,13 +116,6 @@ export default {
     size() {
       return this.pagination.rowsPerPage;
     },
-    title() {
-      if (this.hideTitle) return false;
-      if (this.type == "*") {
-        return `DNS logs for ${this.domain}`;
-      }
-      return `DNS logs for ${this.domain} of type ${this.type}`;
-    }
   }
 };
 </script>

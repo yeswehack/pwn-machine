@@ -1,0 +1,33 @@
+type TraefikLog implements Node  {
+    nodeId: ID!
+    origin: String!
+    time: DateTime!
+    status: Int!
+    host: String!
+    method: String!
+    path: String!
+    port: Int!
+    protocol: String!
+    scheme: String!
+    routerName: String
+    entrypointName: String
+    serviceName: String
+}
+type TraefikLogResult implements Paginated {
+    next: Cursor
+    prev: Cursor
+    total: Int!
+    result: [TraefikLog!]
+}
+
+
+input TreaefikLogFilterInput{
+    skipInternal: Boolean
+    entrypoint: String
+    router: String
+    service: String
+}
+
+extend type Query {
+    traefikLogs(filter: TreaefikLogFilterInput, cursor: CursorInput!): TraefikLogResult!
+}

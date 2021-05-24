@@ -18,6 +18,9 @@
   rootkey = "traefik"
 [log]
   level = "DEBUG"
+[accessLog]
+  filePath = "/logs/traefik/traefik.json"
+  format = "json"
 
 [api]
   insecure = true

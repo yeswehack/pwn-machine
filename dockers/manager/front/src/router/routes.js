@@ -49,7 +49,12 @@ const traefikRoute = {
       path: "services",
       name: "traefikServices",
       component: () => import("components/Traefik/Service/Table.vue")
-    }
+    },
+    {
+      path: "logs",
+      name: "traefikLogs",
+      component: () => import("components/Traefik/Log/Table.vue")
+    },
   ]
 };
 
