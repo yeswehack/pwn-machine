@@ -19,9 +19,7 @@ export const PROCESS_FRAGMENT = gql`
 export const MOUNT_FRAGMENT = gql`
   fragment MountFragment on DockerContainerMount {
     type
-    volume {
-      name
-    }
+    name
     source
     target
     readonly

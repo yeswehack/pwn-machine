@@ -1,68 +1,47 @@
 <template>
-  <div class="list-inputq-mb-md">
-    <q-input
-      v-bind="$attrs"
-      flat
-      v-model="model"
-      @keypress.enter.prevent="addEntry"
-      :label="label"
-    >
-      <template #append>
-        <q-btn
-          dense
-          flat
-          size="md"
-          icon="eva-plus"
-          color="positive"
-          @click="addEntry"
-        />
-      </template>
-    </q-input>
-    <q-list separator dense padding>
-      <q-item :key="idx" v-for="(entry, idx) of form">
-        <q-item-section v-if="objectKey">
-          {{ entry[objectKey] }}
-          <q-popup-edit v-model="form[idx][objectKey]">
-            <q-input v-model="form[idx][objectKey]" dense autofocus />
-          </q-popup-edit>
-        </q-item-section>
-        <q-item-section v-else>
-          {{ entry }}
-          <q-popup-edit v-model="form[idx]">
-            <q-input v-model="form[idx]" dense autofocus />
-          </q-popup-edit>
-        </q-item-section>
-        <q-item-section avatar>
-          <q-btn
-            flat
-            dense
-            icon="eva-close"
-            color="negative"
-            size="sm"
-            @click="removeEntry(idx)"
-          />
-        </q-item-section>
-      </q-item>
-      <q-item v-if="form.length == 0">
-        <q-item-section>...</q-item-section>
-      </q-item>
-    </q-list>
-    <label class="row text-negative" v-if="errorMsg">{{ errorMsg }}</label>
-  </div>
+  <base-grid-input
+    :readonly="readonly"
+    :titles="[label]"
+    gridFormat="1fr"
+    :entries="form"
+    @addEntry="addEntry"
+    @removeEntry="removeEntry"
+    :error="errorMsg"
+  >
+    <template #inputs>
+      <q-input
+        v-bind="$attrs"
+        flat
+        v-model="model"
+        @keypress.enter.prevent="addEntry"
+        :label="label"
+      />
+    </template>
+    <template #entry="props">
+      <div class="ellipsis">
+        {{ props.entry }}
+        <q-popup-edit v-model="props.entry">
+          <q-input v-model="props.entry" dense autofocus />
+        </q-popup-edit>
+      </div>
+    </template>
+  </base-grid-input>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+import BaseGridInput from "src/components/BaseGridInput.vue";
 
 export default {
+  components: { BaseGridInput },
   mixins: [DeepForm],
   props: {
     rules: { type: Array, default: () => [] },
-    objectKey: { type: String, default: null },
+    readonly: { type: Boolean, default: false },
     label: { type: String, default: null }
   },
   data() {
-    return { model: "", errorMsg: "" };
+    return { model: "", errorMsg: null };
   },
   formDefinition: [],
   methods: {
@@ -70,11 +49,7 @@ export default {
       if (!this.model) {
         return;
       }
-      if (this.objectKey) {
-        this.form.unshift({ [this.objectKey]: this.model });
-      } else {
-        this.form.unshift(this.model);
-      }
+      this.form.unshift(this.model);
       this.model = null;
       this.validate();
     },

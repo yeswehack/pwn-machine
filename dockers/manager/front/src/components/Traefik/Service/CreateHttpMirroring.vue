@@ -29,7 +29,7 @@ export default {
   mixins: [DeepForm],
   apollo: {
     services: {
-      query: api.traefik.services.GET_SERVICES,
+      query: api.traefik.services.LIST_SERVICES,
       update: data => data.traefikServices
     }
   },

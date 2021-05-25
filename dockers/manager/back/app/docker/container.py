@@ -15,6 +15,7 @@ class ContainerMount(NamedTuple):
     target: str = None
     readonly: bool = False
     volume: str = None
+    name: str = None
 
 
 class ContainerPort(NamedTuple):
@@ -44,13 +45,13 @@ def resolve_create_container(
     onExit: str = None,
 ):
     return docker_client.containers.create(
-        imageId, #
-        name=name,#
-        labels=dict(labels),#
-        command=command,#
-        user=user,#
+        imageId,  #
+        name=name,  #
+        labels=dict(labels),  #
+        command=command,  #
+        user=user,  #
         working_dir=workdir,
-        environment=dict(environment),#
+        environment=dict(environment),  #
         privileged=privileged,
         read_only=readonly,
         mounts=[
@@ -58,7 +59,7 @@ def resolve_create_container(
             for type, target, source, _, readonly in (
                 ContainerMount(**mount) for mount in mounts
             )
-        ], #
+        ],  #
         ports={
             f"{containerPort}/{protocol}": [
                 (*binding.values(),) for binding in hostBindings
@@ -160,11 +161,12 @@ def resolve_connection_ip_address(connection, *_):
 def resolve_container_mounts(container, _):
     return [
         ContainerMount(
-            type=mount["Type"].upper(),
+            type=mount["Type"],
             source=mount.get("Source"),
             target=mount.get("Destination"),
             readonly=not mount["RW"],
             volume=mount.get("Name"),
+            name=mount.get("Name")
         )
         for mount in container.attrs["Mounts"]
     ]

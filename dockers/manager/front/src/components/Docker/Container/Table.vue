@@ -2,7 +2,7 @@
   <base-table
     ref="table"
     name="container"
-    row-key="id"
+    row-key="name"
     :query="$apollo.queries.containers"
     :data="containers"
     :columns="columns"

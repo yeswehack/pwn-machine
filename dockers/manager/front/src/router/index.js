@@ -40,12 +40,6 @@ function AuthMiddleware(store) {
 
 export default function({ store }) {
   const Router = new VueRouter({
-    scrollBehavior: (to, from) => {
-      if (to.path != from.path) {
-        return { x: 0, y: 0 };
-      }
-      return false;
-    },
     routes,
 
     // Leave these as they are and change in quasar.conf.js instead!

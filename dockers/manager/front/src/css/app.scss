@@ -1,4 +1,7 @@
 // app global css in SCSS form
+html {
+  scroll-behavior: smooth;
+}
 
 .bg-grey-10 {
   background: #2d2d2d !important;
@@ -33,7 +36,6 @@ a:hover {
   width: auto;
   height: auto;
 }
-
 
 .thin-scrollbar * {
   scrollbar-width: thin;

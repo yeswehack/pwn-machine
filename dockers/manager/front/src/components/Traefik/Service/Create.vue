@@ -21,7 +21,12 @@
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
-        <component ref="create" :is="createComponent" v-model="form.extra" />
+        <component
+          ref="create"
+          :is="createComponent"
+          v-model="form.extra"
+          @updateSubtitle="t => $emit('updateSubtitle', t)"
+        />
       </q-tab-panel>
     </q-tab-panels>
     <q-card-section>
@@ -118,6 +123,7 @@ export default {
       const availableTypes = this.availableTypes[proto];
       this.form.type =
         availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
+      this.changeSubtitle()
     },
     currentType(v, old) {
       if (!old) return;
@@ -126,6 +132,7 @@ export default {
         this.form
       );
       this.form.extra = instance.originalForm;
+      this.changeSubtitle()
     }
   },
   computed: {
@@ -146,6 +153,9 @@ export default {
     }
   },
   methods: {
+    changeSubtitle() {
+      this.$emit("updateSubtitle", `${this.form.protocol.toUpperCase()} ${this.form.type}`);
+    },
     okBtnClick() {
       if (this.panel == "chooseType") {
         this.panel = "enterSettings";

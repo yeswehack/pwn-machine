@@ -70,6 +70,7 @@ input DockerContainerInput {
 type DockerContainerMount {
   type: DockerContainerMountType!
   volume: DockerVolume
+  name: String
   source: String
   target: String!
   readonly: Boolean!
@@ -83,10 +84,9 @@ input DockerContainerMountInput {
 }
 
 enum DockerContainerMountType {
-  BIND
-  VOLUME
-  TMPFS
-  NPIPE
+  bind
+  volume
+  tmpfs
 }
 
 type DockerContainerConnection {

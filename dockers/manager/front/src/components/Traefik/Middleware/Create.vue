@@ -85,12 +85,13 @@ export default {
     },
   },
   watch: {
-    currentType() {
+    currentType(type) {
       const instance = this.instanciateSubForm(
         getCreateComponent(this.form),
         this.form
       );
       this.form.extra = instance.originalForm;
+      this.$emit("updateSubtitle", type);
     }
   },
   methods: {

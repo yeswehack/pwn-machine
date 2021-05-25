@@ -48,6 +48,7 @@
       </template>
       <template #body="props">
         <q-tr
+          class="base-row"
           :props="props"
           :name="props.row[rowKey]"
           @click="toggleRow(props.row)"
@@ -127,7 +128,6 @@ export default {
   },
   data() {
     return {
-      popupVisible: false,
       row: null,
       filter: "",
       pagination: {
@@ -150,6 +150,19 @@ export default {
       return this.columns.map(k => `body-cell-${k.name}`);
     }
   },
+  mounted() {
+    if (this.$route.hash) {
+      const expanded = this.$route.hash.slice(1).split(",");
+      if (!expanded.length) return;
+      this.expanded = expanded;
+      const last = this.expanded[this.expanded.length - 1];
+      window.setTimeout(() => {
+        const el = document.querySelector(`.base-row[name='${last}']`);
+        if (!el) return;
+        el.scrollIntoView(true, {behavior: "smooth"});
+      }, 500);
+    }
+  },
   methods: {
     toggleRow(row) {
       const name = row[this.rowKey];
@@ -159,6 +172,7 @@ export default {
       } else {
         this.expanded.splice(idx, 1);
       }
+      this.$router.replace({ hash: this.expanded.join(",") });
       this.$refs.table.setExpanded(this.expanded);
     }
   }

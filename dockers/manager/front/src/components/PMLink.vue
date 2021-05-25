@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="to">
+  <router-link :to="to"  @click.native="$event.stopImmediatePropagation()">
     <q-badge class="col-auto" :color="color">
       {{ shortName }}
     </q-badge>

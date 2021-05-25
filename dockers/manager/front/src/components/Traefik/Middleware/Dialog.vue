@@ -1,7 +1,17 @@
 <template>
-  <base-dialog ref="dialog" title="Create a new middleware" size="600">
+  <base-dialog
+    ref="dialog"
+    title="Create a new middleware"
+    size="600"
+    :subtitle="subtitle"
+  >
     <template #default="{ok, cancel}">
-      <create-middleware :value="middleware" @ok="ok" @cancel="cancel" />
+      <create-middleware
+        :value="middleware"
+        @ok="ok"
+        @cancel="cancel"
+        @updateSubtitle="updateSubtitle"
+      />
     </template>
   </base-dialog>
 </template>
@@ -15,9 +25,12 @@ export default {
     middleware: { type: Object, default: null }
   },
   data() {
-    return { form: {} };
+    return { form: {}, subtitle: null };
   },
   methods: {
+    updateSubtitle(t) {
+      this.subtitle = t;
+    },
     show() {
       this.$refs.dialog.show();
     },

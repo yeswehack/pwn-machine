@@ -2,9 +2,12 @@
   <q-dialog ref="dialog" class="base-dialog" @hide="onCancel">
     <q-card bordered :style="style">
       <q-card-section>
-        <div class="row items-center q-gutter-sm">
-          <div class="col text-h6 title q-pt-none" :data-subtitle="subtitle">
-            {{ title }}
+        <div class="row q-gutter-sm items-center">
+          <div class="col col-auto title text-h6  ">
+            {{ title }} {{subtitle ? ':': ''}}
+          </div>
+          <div class="col col-auto text-h6 subtitle">
+            {{ subtitle }}
           </div>
           <q-space />
           <help-link :href="help" v-if="help" />
@@ -55,20 +58,15 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
-.base-dialog .title {
-  position: relative;
-  &[data-subtitle] {
-    margin-top: -10px;
-  }
-  &::after {
-    content: attr(data-subtitle);
-    position: absolute;
-    top: 1em;
-    margin-top: 8px;
-    left: 0px;
-    opacity: 0.7;
-    font-size: 0.8em;
-  }
+.title {
+  align-self: baseline;
+}
+.subtitle {
+  align-self: baseline;
+  font-size: 1em;
+  margin-left: 20px;
+  opacity: 0.8;
 }
 </style>

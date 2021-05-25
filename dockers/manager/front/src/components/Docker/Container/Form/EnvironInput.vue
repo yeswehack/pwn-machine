@@ -4,82 +4,58 @@
     label="Environment"
     :caption="`${form.length} variable(s)`"
   >
+    <q-separator />
     <q-card>
-      <q-separator />
       <q-card-section>
-        <div class="row" v-if="!readonly">
-          <q-input
-            class="col"
-            flat
-            v-model="model.key"
-            @keypress.enter.prevent="addEntry"
-            label="Name"
-          />
-          <q-input
-            class="col"
-            flat
-            v-model="model.value"
-            @keypress.enter.prevent="addEntry"
-            label="Value"
-          >
-            <template #append>
-              <q-btn
-                dense
-                flat
-                size="md"
-                icon="eva-plus"
-                color="positive"
-                @click="addEntry"
-              />
-            </template>
-          </q-input>
-        </div>
-
-        <q-list separator dense padding>
-          <q-item v-if="readonly">
-            <q-item-section>
-              <div class="row q-col-gutter-sm">
-                <div class="col col-6 text-bold">Name</div>
-                <div class="col col-6 text-bold">Value</div>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item :key="idx" v-for="(entry, idx) of form">
-            <q-item-section>
-              <div class="row q-col-gutter-sm">
-                <div class="col col-6 ellipsis">
-                  {{ entry.key }}
-                  <q-popup-edit v-model="form[idx].key" v-if="!readonly">
-                    <q-input v-model.number="form[idx].key" dense autofocus />
-                  </q-popup-edit>
-                </div>
-                <div class="col ellipsis">
-                  {{ entry.value }}
-
-                  <q-popup-edit v-model="form[idx].value" v-if="!readonly">
-                    <q-input v-model.number="form[idx].value" dense autofocus />
-                  </q-popup-edit>
-                </div>
-                <div class="col col-auto">
-                  <q-btn
-                    v-if="!readonly"
-                    flat
-                    dense
-                    icon="eva-close"
-                    color="negative"
-                    size="sm"
-                    @click="removeEntry(idx)"
-                  />
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item v-if="form.length == 0">
-            <q-item-section>
-              ...
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <base-grid-input
+          :readonly="readonly"
+          :titles="['Name', 'Value']"
+          gridFormat="1fr 1fr"
+          :entries="form"
+          @addEntry="addEntry"
+          @removeEntry="removeEntry"
+        >
+          <template #inputs>
+            <q-input
+              class="col"
+              flat
+              v-model="model.key"
+              @keypress.enter.prevent="addEntry"
+              label="Name"
+            />
+            <q-input
+              class="col"
+              flat
+              v-model="model.value"
+              @keypress.enter.prevent="addEntry"
+              label="Value"
+            />
+          </template>
+          <template #entry="{entry}">
+            <div class="ellipsis">
+              {{ entry.key }}
+              <q-popup-edit v-model="entry.key">
+                <q-input
+                  :readonly="readonly"
+                  v-model.number="entry.key"
+                  dense
+                  autofocus
+                />
+              </q-popup-edit>
+            </div>
+            <div class="ellipsis">
+              {{ entry.value }}
+              <q-popup-edit v-model="entry.value">
+                <q-input
+                  :readonly="readonly"
+                  v-model.number="entry.value"
+                  dense
+                  autofocus
+                />
+              </q-popup-edit>
+            </div>
+          </template>
+        </base-grid-input>
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -87,8 +63,10 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+import BaseGridInput from "src/components/BaseGridInput.vue";
 
 export default {
+  components: { BaseGridInput },
   mixins: [DeepForm],
   formDefinition: [],
   props: {

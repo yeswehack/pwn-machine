@@ -11,7 +11,7 @@
         <component :readonly="readonly" :is="formChildren.extra" v-model="form.extra" />
         <component :readonly="readonly" :is="formChildren.environment" v-model="form.environment" />
         <component :readonly="readonly" :is="formChildren.labels" v-model="form.labels" />
-        <component :readonly="readonly" :is="formChildren.volumes" v-model="form.volumes" />
+        <component :readonly="readonly" :is="formChildren.mounts" v-model="form.mounts" />
       </q-list>
     </q-card-section>
     <q-card-actions align="right" class="q-pa-md q-gutter-md" v-if="!readonly">
@@ -31,7 +31,7 @@
         {{ form.start ? "Start" : "Create" }}
       </q-btn>
     </q-card-actions>
-    <q-card-actions v-if="false">
+    <q-card-actions v-if="true">
       <pre>{{ JSON.stringify(form, null, 2) }}</pre>
     </q-card-actions>
   </q-form>
@@ -40,7 +40,7 @@
 <script>
 import ImageSelect from "./Form/ImageSelect.vue";
 import ExtraConfig from "./Form/ExtraConfig.vue";
-import VolumeSettings from "./Form/VolumeSettings.vue";
+import MountsInput from "./Form/MountsInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import EnvironInput from "./Form/EnvironInput.vue";
 import LabelInputVue from "../LabelInput.vue";
@@ -55,7 +55,7 @@ export default {
     labels: LabelInputVue,
     environment: EnvironInput,
     extra: ExtraConfig,
-    volumes: VolumeSettings
+    mounts: MountsInput
   },
   components: {
     ImageSelect,

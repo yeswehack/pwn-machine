@@ -2,7 +2,7 @@
   <base-table
     ref="table"
     name="image"
-    row-key="id"
+    row-key="name"
     :query="$apollo.queries.images"
     :data="images"
     :columns="columns"
@@ -20,7 +20,7 @@
     </template>
     <template #body-cell-images="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
-        <image-link :name="name" :key="name" v-for="{ name } of row.usedBy" />
+        <container-link :name="name" :key="name" v-for="{ name } of row.usedBy" />
       </div>
     </template>
 
@@ -31,12 +31,12 @@
 <script>
 import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
-import ImageLink from "src/components/Docker/Image/Link.vue";
+import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ImageLink },
+  components: { BaseTable, ContainerLink },
   apollo: {
     images: {
       query: api.docker.images.LIST_IMAGES,
