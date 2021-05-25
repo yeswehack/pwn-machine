@@ -180,7 +180,7 @@ export default {
       const mutation = api.traefik.service.CREATE_SERVICE[protocol][type];
       const input = {
         name: this.form.name,
-        [type]: { ...this.form.extra, __typename: undefined }
+        [type]: this.form.extra
       };
       await this.$apollo
         .mutate({
@@ -197,7 +197,7 @@ export default {
       const mutation = api.traefik.service.UPDATE_SERVICE[type];
       const variables = {
         nodeId: this.service.nodeId,
-        patch: { ...this.form.extra, __typename: undefined }
+        patch: this.form.extra
       };
       await this.$apollo
         .mutate({

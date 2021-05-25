@@ -1,6 +1,11 @@
 import Vue from "vue";
 import _ from "lodash";
 
+function cleanTypename(o) {
+  const cleaner = (key, value) => (key === "__typename" ? undefined : value);
+  return JSON.parse(JSON.stringify(o), cleaner);
+}
+
 function isDeepForm(obj) {
   if (obj === null) {
     return false;
@@ -71,25 +76,25 @@ export default {
     },
     buildOriginalForm() {
       const definition = this.$options.formDefinition;
-
+      const value = this.value
       if (isBasicType(definition)) {
-        this.originalForm = this.value ?? definition;
+        this.originalForm = value ?? definition;
       } else if (Array.isArray(definition)) {
-        this.originalForm = this.value ? [...this.value] : [...definition];
+        this.originalForm = cleanTypename(value ? [...value] : [...definition]);
       } else {
         const originalForm = {};
         for (let [name, defaultValue] of Object.entries(definition)) {
           if (typeof defaultValue == "function") {
-            defaultValue = defaultValue(this.value);
+            defaultValue = defaultValue(value);
           }
           if (isDeepForm(defaultValue)) {
             this.formChildren[name] = defaultValue;
             originalForm[name] = this.instanciateSubForm(
               defaultValue,
-              this.value?.[name]
+              value?.[name]
             ).originalForm;
           } else {
-            originalForm[name] = this.value?.[name] ?? defaultValue;
+            originalForm[name] = cleanTypename(value?.[name] ?? defaultValue);
           }
         }
         this.originalForm = originalForm;

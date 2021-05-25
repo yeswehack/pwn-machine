@@ -111,7 +111,7 @@ export default {
       const mutation = api.traefik.middlewares.CREATE_MIDDLEWARE[type];
       const input = {
         name: this.form.name,
-        [type]: { ...this.form.extra, __typename: undefined }
+        [type]: this.form.extra
       };
       await this.$apollo
         .mutate({
@@ -128,7 +128,7 @@ export default {
       const mutation = api.traefik.middlewares.UPDATE_MIDDLEWARE[type];
       const variables = {
         nodeId: this.middleware.nodeId,
-        patch: { ...this.form.extra, __typename: undefined }
+        patch: this.form.extra
       };
       await this.$apollo
         .mutate({
