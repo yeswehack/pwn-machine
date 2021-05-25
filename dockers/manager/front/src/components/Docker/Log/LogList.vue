@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     onLoad(index, done) {
-      console.log(index);
       this.$apollo.queries.dockerLogs.fetchMore({
         variables: {
           filter: { containerName: this.containers },
