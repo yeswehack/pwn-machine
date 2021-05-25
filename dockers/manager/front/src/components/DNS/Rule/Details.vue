@@ -1,5 +1,5 @@
 <template>
-  <div class=" row q-gutter-md q-py-md">
+  <div class=" row q-gutter-md q-py-md ">
     <div class="col">
       <q-card>
         <q-card-section>
@@ -37,7 +37,7 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="col">
+    <div class="col" >
       <q-card>
         <q-card-section>
           <div class="text-h6">Logs</div>

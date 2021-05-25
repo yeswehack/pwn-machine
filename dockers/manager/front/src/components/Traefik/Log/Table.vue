@@ -1,47 +1,46 @@
 <template>
-  <div class="full-width column q-col-gutter-md">
-    <div class="col col-auto">
-      <div class="row q-gutter-sm items-center">
-        <div class="col">
-          <q-select
-            clearable
-            filled
-            :options="entrypointOptions"
-            v-model="entrypoint"
-            label="Entrypoint"
-          />
-        </div>
-        <div class="col">
-          <q-select
-            clearable
-            filled
-            :options="routerOptions"
-            v-model="router"
-            label="Router"
-          />
-        </div>
-        <div class="col">
-          <q-select
-            clearable
-            filled
-            :options="serviceOptions"
-            v-model="service"
-            label="Service"
-          />
-        </div>
+  <div class="full-width traefik-log-table">
+    <div class="row q-col-gutter-sm items-center">
+      <div class="col">
+        <q-select
+          multiple
+          clearable
+          filled
+          :options="entrypointOptions"
+          v-model="entrypoint"
+          label="Entrypoint"
+        />
+      </div>
+      <div class="col">
+        <q-select
+          multiple
+          clearable
+          filled
+          :options="routerOptions"
+          v-model="router"
+          label="Router"
+        />
+      </div>
+      <div class="col">
+        <q-select
+          multiple
+          clearable
+          filled
+          :options="serviceOptions"
+          v-model="service"
+          label="Service"
+        />
       </div>
     </div>
-    <div class="col full-width">
-      <log-list
-        bordered
-        flat
-        :rows-per-page="20"
-        hide-title
-        :entrypoint="entrypoint"
-        :service="service"
-        :router="router"
-      />
-    </div>
+    <log-list
+      bordered
+      flat
+      :rows-per-page="20"
+      hide-title
+      :entrypoint="entrypoint"
+      :service="service"
+      :router="router"
+    />
   </div>
 </template>
 
@@ -63,9 +62,9 @@ export default {
   },
   data() {
     return {
-      entrypoint: null,
-      router: null,
-      service: null
+      entrypoint: [],
+      router: [],
+      service: []
     };
   },
   computed: {
@@ -82,4 +81,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scope>
+.traefik-log-table {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 10px;
+}
+</style>

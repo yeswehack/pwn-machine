@@ -20,7 +20,6 @@
               v-model="form.extra"
             />
           </q-card-section>
-    {{form}}
           <q-card-section>
             <reset-and-save
               :modified="modified"
@@ -33,12 +32,12 @@
       </div>
 
       <div class="col col-6">
-        <q-card>
+        <q-card style="height:100%">
           <q-card-section>
             <div class="text-h6">Logs</div>
           </q-card-section>
-          <q-card-section>
-            <log-list flat :router="value.name" short />
+          <q-card-section style="height: calc(100% - 64px)">
+            <log-list flat :router="[value.name]" short />
           </q-card-section>
         </q-card>
       </div>

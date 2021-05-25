@@ -98,13 +98,11 @@
           <q-card>
             <q-card-section>
               <div class="text-h6">
-                Networks
+                Logs
               </div>
             </q-card-section>
             <q-card-section>
-              <div class="text-h6">
-                yop
-              </div>
+              <log-list :containers="[container.name]"/>
             </q-card-section>
           </q-card>
         </div>
@@ -142,6 +140,7 @@ import LabelInput from "../LabelInput.vue";
 import DetailsProcess from "./DetailsProcess.vue";
 import api from "src/api";
 import ShellDialog from "src/components/Shell/Dialog.vue";
+import LogList from 'src/components/Docker/LogList.vue';
 
 export default {
   components: {
@@ -149,7 +148,8 @@ export default {
     DetailsProcess,
     //MountsInfo,
     ImageLink,
-    ContainerStatus
+    ContainerStatus,
+    LogList
   },
   props: {
     container: { type: Object, required: true }

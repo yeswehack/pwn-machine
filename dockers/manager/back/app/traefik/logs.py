@@ -17,11 +17,11 @@ async def resolve_traefik_logs(*_, filter={}, cursor={}):
     if filter.get("skipInternal", False):
         must_not.append({"match": {"json.entryPointName": "traefik"}})
     if entrypointName := filter.get("entrypoint"):
-        must.append({"term": {"json.entryPointName.keyword": entrypointName}})
+        must.append({"terms": {"json.entryPointName.keyword": entrypointName}})
     if routerName := filter.get("router"):
-        must.append({"term": {"json.RouterName.keyword": routerName}})
+        must.append({"terms": {"json.RouterName.keyword": routerName}})
     if serviceName := filter.get("service"):
-        must.append({"term": {"json.ServiceName.keyword": serviceName}})
+        must.append({"terms": {"json.ServiceName.keyword": serviceName}})
 
     body = {"query": {"bool": {"must": must, "must_not": must_not}}}
 

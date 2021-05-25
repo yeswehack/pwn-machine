@@ -80,9 +80,9 @@ export default {
   components: { RouterLink, ServiceLink, EntrypointLink },
   props: {
     short: { type: Boolean, default: false },
-    entrypoint: { type: String, default: null },
-    router: { type: String, default: null },
-    service: { type: String, default: null },
+    entrypoint: { type: Array, default: () => [] },
+    router: { type: Array, default: () => [] },
+    service: { type: Array, default: () => [] },
     rowsPerPage: { type: Number, default: 10 }
   },
   apollo: {
@@ -124,12 +124,14 @@ export default {
     }
   },
   mounted() {
-    if (!this.short) {
+      const parent = this.$parent.$el
       const rowHeight = 28;
-      const padding = 72 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
-      const height = this.$parent.$el.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
-    }
+      console.log(parent.firstElementChild.getBoundingClientRect())
+      const headerHeight = parent.firstElementChild ? parent.firstElementChild.getBoundingClientRect().height : 0
+      console.log(parent.getBoundingClientRect().height, headerHeight)
+      const padding = headerHeight + rowHeight + (rowHeight + 5); // search + header + lastrow in px
+      const height = parent.getBoundingClientRect().height;
+      this.pagination.rowsPerPage = Math.floor((height - padding) / rowHeight);
   },
   data() {
     const pagination = {

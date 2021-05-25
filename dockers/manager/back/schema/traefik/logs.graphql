@@ -23,9 +23,9 @@ type TraefikLogResult implements Paginated {
 
 input TreaefikLogFilterInput{
     skipInternal: Boolean
-    entrypoint: String
-    router: String
-    service: String
+    entrypoint: [String!]
+    router: [String!]
+    service: [String!]
 }
 
 extend type Query {

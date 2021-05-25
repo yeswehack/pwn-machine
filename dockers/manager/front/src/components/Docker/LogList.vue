@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll" style="max-height: calc(100vh - 286px);">
+  <div class="scroll thin-scrollbar" style="max-height: calc(100vh - 286px);">
     <q-infinite-scroll
       style="max-width: 0px"
       :offset="200"
@@ -45,7 +45,7 @@ const ansiColorConverter = new ansiToHtml();
 export default {
   props: {
     containers: { type: Array, default: () => [] },
-    rowsPerPage: { type: Number, default: 100 },
+    rowsPerPage: { type: Number, default: 50 },
     short: { type: Boolean, default: false }
   },
   apollo: {
@@ -65,9 +65,10 @@ export default {
   },
   methods: {
     onLoad(index, done) {
+      console.log(index);
       this.$apollo.queries.dockerLogs.fetchMore({
         variables: {
-            filter: { containerName: this.containers },
+          filter: { containerName: this.containers },
           cursor: {
             from: (index - 1) * this.rowsPerPage,
             size: this.rowsPerPage
@@ -90,12 +91,15 @@ export default {
       }
       const r = ansiColorConverter.toHtml(s, { newLine: true, stream: true });
       return r;
+    },
+    refresh() {
+      this.items.splice(0, this.items.length);
+      this.onLoad(1, x => x);
     }
   },
   watch: {
     containers(v) {
-      this.items.splice(0, this.items.length);
-      this.onLoad(1, x => x);
+      this.refresh();
     }
   },
   data() {
@@ -123,5 +127,20 @@ export default {
   display: grid;
   grid-template-columns: auto auto 1fr;
   column-gap: 10px;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $primary; /* color of the scroll thumb */
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-corner {
+    background: inherit; /* color of the tracking area */
+  }
 }
 </style>
