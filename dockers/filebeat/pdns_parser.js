@@ -6,7 +6,7 @@ function unescape(s) {
 }
 
 function process(event) {
-  var queryRegex = /Remote (\d+\.\d+\.\d+\.\d+) wants '(.+?)\|([A-Z]+)', /;
+  var queryRegex = /.*?Remote (\d+\.\d+\.\d+\.\d+) wants '(.+?)\|([A-Z]+)', /;
   var line = event.Get("message");
   var date = Date.parse(line.slice(0, 15));
   var message = line.slice(15).split(":").slice(1).join(":").trim();

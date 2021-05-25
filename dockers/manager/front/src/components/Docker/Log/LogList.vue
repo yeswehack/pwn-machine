@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll thin-scrollbar" style="max-height: calc(100vh - 286px);">
+  <div class="scroll thin-scrollbar" >
     <q-infinite-scroll
       style="max-width: 0px"
       :offset="200"
@@ -107,12 +107,12 @@ export default {
     return { items: [], colorHash };
   },
   mounted() {
-    if (!this.short && false) {
+      const parent = this.$parent.$el
       const rowHeight = 28;
-      const padding = 72 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
-      const height = this.$parent.$el.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
-    }
+      const headerHeight = parent.firstElementChild ? parent.firstElementChild.getBoundingClientRect().height : 0
+      const padding = headerHeight + rowHeight + rowHeight + 10; // search + header + lastrow in px
+      const height = parent.getBoundingClientRect().height;
+      this.pagination.rowsPerPage = Math.floor((height - padding) / rowHeight);
   },
   computed: {
     logs() {
@@ -125,22 +125,7 @@ export default {
 <style lang="scss">
 .docker-log-list {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto  auto 1fr;
   column-gap: 10px;
-}
-
-.thin-scrollbar {
-  scrollbar-width: thin;
-  &::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: $primary; /* color of the scroll thumb */
-    border-radius: 8px;
-  }
-  &::-webkit-scrollbar-corner {
-    background: inherit; /* color of the tracking area */
-  }
 }
 </style>

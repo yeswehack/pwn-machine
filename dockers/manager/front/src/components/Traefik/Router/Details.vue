@@ -32,14 +32,9 @@
       </div>
 
       <div class="col col-6">
-        <q-card style="height:100%">
-          <q-card-section>
-            <div class="text-h6">Logs</div>
-          </q-card-section>
-          <q-card-section style="height: calc(100% - 64px)">
-            <log-list flat :router="[value.name]" short />
-          </q-card-section>
-        </q-card>
+        <log-card>
+          <log-list flat :router="[value.name]" short />
+        </log-card>
       </div>
       <div class="col col-6">
         <middleware-list :middlewares.sync="form.middlewares" v-if="0" />
@@ -55,11 +50,19 @@ import DeepForm from "src/mixins/DeepForm";
 import { getCreateComponent } from "./Create.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import ProtocolBadge from "../ProtocolBadge.vue";
-import LogList from "src/components/Traefik/LogList.vue";
+import LogList from "src/components/Traefik/Log/LogList.vue";
 import api from "src/api";
+import LogCard from "src/components/LogCard.vue";
 
 export default {
-  components: { MiddlewareList, ProtocolBadge, BaseDetails, ResetAndSave, LogList },
+  components: {
+    MiddlewareList,
+    ProtocolBadge,
+    BaseDetails,
+    ResetAndSave,
+    LogList,
+    LogCard
+  },
   mixins: [DeepForm],
   formDefinition: {
     extra(value) {

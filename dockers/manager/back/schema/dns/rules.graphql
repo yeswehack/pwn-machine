@@ -4,6 +4,7 @@ enum DnsRuleType {
   AFSDB
   ALIAS
   APL
+  ANY
   CAA
   CERT
   CDNSKEY

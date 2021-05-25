@@ -33,3 +33,19 @@ a:hover {
   width: auto;
   height: auto;
 }
+
+
+.thin-scrollbar * {
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $primary;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-corner {
+    background: inherit;
+  }
+}

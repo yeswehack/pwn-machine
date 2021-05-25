@@ -1,6 +1,6 @@
 <template>
   <q-table
-    class="full-width"
+    class="full-width scroll thin-scrollbar"
     v-bind="$attrs"
     :columns="columns"
     dense
@@ -123,16 +123,6 @@ export default {
       this.$apollo.queries.traefikLogs.refetch();
     }
   },
-  mounted() {
-      const parent = this.$parent.$el
-      const rowHeight = 28;
-      console.log(parent.firstElementChild.getBoundingClientRect())
-      const headerHeight = parent.firstElementChild ? parent.firstElementChild.getBoundingClientRect().height : 0
-      console.log(parent.getBoundingClientRect().height, headerHeight)
-      const padding = headerHeight + rowHeight + (rowHeight + 5); // search + header + lastrow in px
-      const height = parent.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / rowHeight);
-  },
   data() {
     const pagination = {
       page: 1,
@@ -179,6 +169,14 @@ export default {
       columns
     };
   },
+  mounted() {
+    if (!this.short) {
+      const rowHeight = 28;
+      const padding = 80 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
+      const height = this.$parent.$el.getBoundingClientRect().height;
+      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
+    }
+  },
   watch: {
     traefikLogs(traefikLogs) {
       this.pagination.rowsNumber = traefikLogs.total;
@@ -201,4 +199,3 @@ export default {
 };
 </script>
 
-<style></style>

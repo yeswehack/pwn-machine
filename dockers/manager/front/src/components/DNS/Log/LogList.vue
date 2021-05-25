@@ -1,6 +1,6 @@
 <template>
   <q-table
-    class="full-width"
+    class="full-width scroll"
     v-bind="$attrs"
     :columns="columns"
     dense
@@ -102,7 +102,7 @@ export default {
   mounted() {
     if (!this.short) {
       const rowHeight = 28;
-      const padding = 72 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
+      const padding = 80 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
       const height = this.$parent.$el.getBoundingClientRect().height;
       this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
     }

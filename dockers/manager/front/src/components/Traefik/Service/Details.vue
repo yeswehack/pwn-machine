@@ -31,15 +31,11 @@
 
   
 
+
       <div class="col col-6">
-        <q-card style="height:100%">
-          <q-card-section>
-            <div class="text-h6">Logs</div>
-          </q-card-section>
-          <q-card-section style="height: calc(100% - 61px)">
-            <log-list flat :router="[value.name]" short />
-          </q-card-section>
-        </q-card>
+        <log-card>
+          <log-list flat :service="[value.name]" short />
+        </log-card>
       </div>
     </template>
   </base-details>
@@ -51,7 +47,8 @@ import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import ProtocolBadge from "../ProtocolBadge.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import LogList from "src/components/Traefik/LogList.vue";
+import LogList from "src/components/Traefik/Log/LogList.vue";
+import LogCard from 'src/components/LogCard.vue';
 
 export default {
   mixins: [DeepForm],
@@ -59,7 +56,8 @@ export default {
     BaseDetails,
     ProtocolBadge,
     ResetAndSave,
-    LogList
+    LogList,
+    LogCard
   },
   formDefinition: {
     extra(value) {

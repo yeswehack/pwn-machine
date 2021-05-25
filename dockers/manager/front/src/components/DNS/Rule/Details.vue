@@ -1,67 +1,75 @@
 <template>
-  <div class=" row q-gutter-md q-py-md ">
-    <div class="col">
-      <q-card>
-        <q-card-section>
-          <div class="row items-center q-gutter-md">
-            <div class="text-h6">{{ value.name }}</div>
-            <q-space />
-            <div title="Rule type" class="text-mono">
-              {{ value.type }}
-              <q-badge rounded label="LUA" class="q-ml-sm" v-if="value.isLua" />
+  <div class="q-gutter-md q-py-sm">
+    <div class="row ">
+      <div class="col q-mr-md">
+        <q-card>
+          <q-card-section>
+            <div class="row items-center q-gutter-md">
+              <div class="text-h6">{{ value.name }}</div>
+              <q-space />
+              <div title="Rule type" class="text-mono">
+                {{ value.type }}
+                <q-badge
+                  rounded
+                  label="LUA"
+                  class="q-ml-sm"
+                  v-if="value.isLua"
+                />
+              </div>
+              <help-link
+                href="https://doc.powerdns.com/authoritative/http-api/zone.html"
+              />
             </div>
-            <help-link
-              href="https://doc.powerdns.com/authoritative/http-api/zone.html"
+          </q-card-section>
+          <q-card-section class="q-gutter-md">
+            <q-input v-model.number="form.ttl" type="number" label="TTL" />
+            <lua-editor v-model="form.records[0].content" v-if="value.isLua" />
+            <component
+              v-else
+              :is="formChildren.records"
+              v-model="form.records"
+              object-key="content"
+              label="Records"
             />
-          </div>
-        </q-card-section>
-        <q-card-section class="q-gutter-md">
-          <q-input v-model.number="form.ttl" type="number" label="TTL" />
-          <lua-editor v-model="form.records[0].content" v-if="value.isLua" />
-          <component
-            v-else
-            :is="formChildren.records"
-            v-model="form.records"
-            object-key="content"
-            label="Records"
+          </q-card-section>
+          <q-card-section>
+            <reset-and-save
+              size="sm"
+              padding="sm"
+              :modified="modified"
+              @reset="reset"
+              @save="submit"
+            />
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col">
+        <log-card>
+          <log-list
+            short
+            flat
+            :domain="value.name.slice(0, -1)"
+            :type="logType"
           />
-        </q-card-section>
-        <q-card-section>
-          <reset-and-save
-            size="sm"
-            padding="sm"
-            :modified="modified"
-            @reset="reset"
-            @save="submit"
-          />
-        </q-card-section>
-      </q-card>
-    </div>
-    <div class="col" >
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Logs</div>
-        </q-card-section>
-        <q-card-section>
-          <log-list short flat :domain="value.name.slice(0, -1)" :type="logType" />
-        </q-card-section>
-      </q-card>
+        </log-card>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import HelpLink from "src/components/HelpLink.vue";
-import LogList from "src/components/DNS/LogList.vue";
+import LogList from "src/components/DNS/Log/LogList.vue";
 import RecordInput from "./RecordInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
 import LuaEditor from "./LuaEditor.vue";
+import LogCard from "src/components/LogCard.vue";
 
 export default {
   mixins: [DeepForm],
-  components: { ResetAndSave, HelpLink, LogList, LuaEditor },
+  components: { ResetAndSave, HelpLink, LogList, LuaEditor, LogCard },
   formDefinition: {
     records: RecordInput,
     ttl: 3600

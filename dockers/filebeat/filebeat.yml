@@ -2,8 +2,6 @@ filebeat.inputs:
 - type: container
   paths: 
     - '/var/lib/docker/containers/*/*.log'
-  fields:
-    type: "docker"
 
   processors:
     - add_docker_metadata:
@@ -12,42 +10,37 @@ filebeat.inputs:
         fields: ["message"]
         target: "json"
         overwrite_keys: true
+  index: "filebeat-docker-%{+yyyy.MM.dd}"
 
 
 - type: log
+  tail_files: true
+  scan_frequency: "1s"
   paths:
     - '/logs/pdns/pdns.log'
     
-  fields:
-    type: "pdns"
-
+    
   processors:
     - script:
         lang: javascript
         id: pdns_parser
         file: /root/pdns_parser.js
+  index: "filebeat-pdns-%{+yyyy.MM.dd}"
         
 - type: log
+  tail_files: true
+  scan_frequency: "1s"
   paths:
     - '/logs/traefik/traefik.json'
   json.keys_under_root: false
   json.add_error_key: true
-  fields:
-    type: "traefik"
-
+  json,ignore_decoding_error: true
+  index: "filebeat-traefik-%{+yyyy.MM.dd}"
         
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   indices:
-    - index: "filebeat-docker-%{+yyyy.MM.dd}"
-      when.equals:
-        fields.type: "docker"
-    - index: "filebeat-pdns-%{+yyyy.MM.dd}"
-      when.equals:
-        fields.type: "pdns"
-    - index: "filebeat-traefik-%{+yyyy.MM.dd}"
-      when.equals:
-        fields.type: "traefik"
+    - index: "filebeat-%{+yyyy.MM.dd}"
 
 logging.json: true
 logging.level: warning

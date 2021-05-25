@@ -19,6 +19,7 @@ from app.api import NamespacedRedis, PowerdnsHTTPApi, TraefikHTTPApi, TraefikRed
 from app import config
 from . import dns, docker, traefik
 from .api.shell import handle_shell
+from app.api import es
 from .auth import auth_middleware
 from .redis import client as redis_client
 from .utils.registration import (
@@ -90,6 +91,13 @@ async def on_startup():
         headers={"X-Api-Key": config.PM_POWERDNS_HTTP_API_KEY}
     )
     PowerdnsHTTPApi.create(config.PM_POWERDNS_HTTP_API, sessions["powerdns"])
+
+
+    ## init ES
+
+    await es.indices.put_alias(index='filebeat-docker-*', name='filebeat-docker')
+    await es.indices.put_alias(index='filebeat-traefik-*', name='filebeat-traefik')
+    await es.indices.put_alias(index='filebeat-pdns-*', name='filebeat-pdns')
 
 
 async def on_shutdown():

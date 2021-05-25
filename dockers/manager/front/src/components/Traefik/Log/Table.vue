@@ -1,6 +1,6 @@
 <template>
-  <div class="full-width traefik-log-table">
-    <div class="row q-col-gutter-sm items-center">
+  <div class="traefik-log-table">
+    <div class="row q-gutter-sm items-center">
       <div class="col">
         <q-select
           multiple
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import LogList from "src/components/Traefik/LogList.vue";
+import LogList from "src/components/Traefik/Log/LogList.vue";
 import api from "src/api";
 export default {
   components: { LogList },
@@ -83,8 +83,10 @@ export default {
 
 <style lang="scss" scope>
 .traefik-log-table {
+  width: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
-  row-gap: 10px;
+  row-gap: 14px;
+  height: calc(100vh - 214px);
 }
 </style>
