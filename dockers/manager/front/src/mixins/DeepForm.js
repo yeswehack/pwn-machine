@@ -80,7 +80,7 @@ export default {
       if (isBasicType(definition)) {
         this.originalForm = value ?? definition;
       } else if (Array.isArray(definition)) {
-        this.originalForm = cleanTypename(value ? [...value] : [...definition]);
+        this.originalForm = value ? [...value] : [...definition];
       } else {
         const originalForm = {};
         for (let [name, defaultValue] of Object.entries(definition)) {
@@ -94,10 +94,10 @@ export default {
               value?.[name]
             ).originalForm;
           } else {
-            originalForm[name] = cleanTypename(value?.[name] ?? defaultValue);
+            originalForm[name] = value?.[name] ?? defaultValue;
           }
         }
-        this.originalForm = originalForm;
+        this.originalForm = cleanTypename(originalForm);
       }
     }
   },
