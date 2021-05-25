@@ -49,6 +49,7 @@ def create_type(name, fields):
     graphql += f"  nodeId: ID!\n"
     graphql += f"  name: String!\n"
     graphql += f"  provider: String!\n"
+    graphql += f"  error: [String!]\n"
     graphql += f"  type: String!\n"
     graphql += f"  enabled: Boolean\n"
     graphql += f"  usedBy: [TraefikRouter!]!\n"
@@ -75,6 +76,7 @@ def generate_base_schema():
             nodeId: ID!
             name: String!
             provider: String!
+            error: [String!]
             type: String!
             enabled: Boolean
             usedBy: [TraefikRouter!]!

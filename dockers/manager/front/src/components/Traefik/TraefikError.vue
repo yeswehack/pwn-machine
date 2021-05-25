@@ -1,10 +1,10 @@
 <template>
   <q-card class="bg-red-9 border-negative">
     <q-card-section>
-      <div class="text-h6">
+      <div class="text-h6 q-pl-sm">
         {{ errors.length > 1 ? "Errors" : "Error" }}
       </div>
-      <ul>
+      <ul class="error-list">
         <li :key="idx" v-for="[idx, error] in errors.entries()">
           {{ error }}
         </li>
@@ -20,5 +20,8 @@ export default {
   }
 };
 </script>
-
-<style></style>
+<style lang="scss" scoped>
+.error-list {
+  padding-left: 20px;
+}
+</style>

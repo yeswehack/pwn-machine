@@ -276,6 +276,7 @@ export const MIDDLEWARE_FRAGMENT = gql`
   fragment MiddlewareFragment on TraefikMiddleware {
     nodeId
     name
+    error
     type
     enabled
     usedBy {

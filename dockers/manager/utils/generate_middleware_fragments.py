@@ -53,6 +53,7 @@ def generate_fragments_from_types(types):
     header += f"  nodeId\n"
     header += f"  name\n"
     header += f"  type\n"
+    header += f"  error\n"
     header += f"  enabled\n"
     header += f"  usedBy {{\n"
     header += f"    nodeId \n"
