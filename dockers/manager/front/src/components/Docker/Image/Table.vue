@@ -6,34 +6,43 @@
     :query="$apollo.queries.images"
     :data="images"
     :columns="columns"
-    v-on:delete="deleteContainer"
+    @delete="deleteImage"
   >
-    <template #body-cell-containers="{row}">
+    <template #header-button>
+      <q-btn
+        rounded
+        label="Prune"
+        color="negative"
+        icon="eva-trash-outline"
+        @click="pruneImages"
+      />
+      <q-checkbox label="Show intermediate images" v-model="showIntermediate" />
+    </template>
+    <template #body-cell-images="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
-        <container-link
-          :name="name"
-          :key="name"
-          v-for="{ name } of row.usingContainers"
-        />
+        <image-link :name="name" :key="name" v-for="{ name } of row.usedBy" />
       </div>
     </template>
 
-    <template #details> </template>
+    <template #details> </template>sed
   </base-table>
 </template>
 
 <script>
 import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
-import ContainerLink from "src/components/Docker/Container/Link.vue";
+import ImageLink from "src/components/Docker/Image/Link.vue";
 import api from "src/api";
+const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ContainerLink },
+  components: { BaseTable, ImageLink },
   apollo: {
     images: {
       query: api.docker.images.LIST_IMAGES,
-      variables: { onlyFinal: true },
+      variables() {
+        return { onlyFinal: !this.showIntermediate };
+      },
       update: ({ dockerImages }) => dockerImages
     }
   },
@@ -50,28 +59,65 @@ export default {
       col("name"),
       col("created"),
       col("size", { format: v => format.humanStorageSize(v) }),
-      col("containers", { label: "used by" })
+      col("images", { label: "used by" })
     ];
-    return { columns };
+    return { columns, showIntermediate: false };
   },
   methods: {
-    format_time(s) {
-      if (!s) return "";
-      const dtFormat = new Intl.DateTimeFormat("default", {
-        dateStyle: "short",
-        timeStyle: "medium",
-        hour12: false
-      });
+    deleteImage(image) {
+      this.$api.docker.deleteImage(name.split("@")[0]);
+      this.$emit("refetch");
+    },
+    pruneImages() {
+      this.$q
+        .dialog({
+          title: "Prune images ?",
+          message: "This will remove all dangling images.",
+          color: "negative",
+          options: {
+            model: [],
+            items: [
+              {
+                label:
+                  "Also remove images without at least one container associated to them.",
+                value: "full",
 
-      return dtFormat.format(new Date(s));
-    },
-    containerCreated() {
-      this.$emit("refetch");
-      this.$refs.table.closePopup();
-    },
-    deleteContainer(name) {
-      this.$api.docker.deleteContainer(name.split("@")[0]);
-      this.$emit("refetch");
+                color: "primary"
+              }
+            ],
+            type: "toggle"
+          },
+          type: "confirm",
+          cancel: true
+        })
+        .onOk(result => {
+          const onlyDangling = !result.includes("full");
+          const plural = (w, q) => (q > 1 ? w + "s" : s);
+          this.$apollo
+            .mutate({
+              mutation: api.docker.images.PRUNE_IMAGES,
+              variables: { onlyDangling },
+              refetchQueries: [{ query: api.docker.images.LIST_IMAGES }]
+            })
+            .then(({ data }) => {
+              const deleted = data.pruneDockerImages.deleted;
+              const reclaimed = humanStorageSize(
+                data.pruneDockerImages.spaceReclaimed
+              );
+              let message = `No image deleted.`;
+              if (deleted.length) {
+                message = `${deleted.length} ${plural(
+                  "image",
+                  deleted.length
+                )} deleted (${reclaimed})`;
+              }
+
+              this.$q.notify({
+                message,
+                type: "positive"
+              });
+            });
+        });
     }
   }
 };

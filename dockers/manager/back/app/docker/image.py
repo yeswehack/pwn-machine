@@ -144,10 +144,13 @@ def resolve_remove_image(*_, id, force, pruneParents):
     return True
 
 
-@registerMutation("dockerPruneImages")
+@registerMutation("pruneDockerImages")
 def resolve_prune_images(*_, onlyDangling):
-    try:
-        filters = {"dangling": onlyDangling}
-        return docker_client.api.prune_images(filters)["SpaceReclaimed"]
-    except APIError:
-        return None
+    pruned = docker_client.images.prune(filters={"dangling": onlyDangling})
+    deleted = []
+    if deletedImages := pruned.get("ImagesDeleted", None):
+        deleted = [next(iter(x.values())) for x in deletedImages]
+    return {
+        "deleted": deleted,
+        "spaceReclaimed": pruned.get("SpaceReclaimed", None),
+    }
