@@ -5,7 +5,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  dockerCreateContainer(input: DockerContainerInput!): DockerContainer
+  createDockerContainer(input: DockerContainerInput!): DockerContainer
   startDockerContainer(id: ID!): DockerContainer
   restartDockerContainer(id: ID!): DockerContainer
   pauseDockerContainer(id: ID!): DockerContainer

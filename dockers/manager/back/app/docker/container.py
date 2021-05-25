@@ -83,7 +83,7 @@ def resolve_create_container(
     )
 
 
-@registerMutation("dockerCreateContainer")
+@registerMutation("createDockerContainer")
 def resolve_form_create_container(*_, input):
     return resolve_create_container(**input)
 
