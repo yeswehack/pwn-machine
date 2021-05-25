@@ -6,14 +6,14 @@ extend type Query {
 
 extend type Mutation {
   dockerCreateContainer(input: DockerContainerInput!): DockerContainer
-  dockerStartContainer(id: ID!): DockerContainer
-  dockerRestartContainer(id: ID!): DockerContainer
-  dockerPauseContainer(id: ID!): DockerContainer
-  dockerUnpauseContainer(id: ID!): DockerContainer
-  dockerStopContainer(id: ID!): DockerContainer
-  dockerKillContainer(id: ID!): DockerContainer
-  dockerRenameContainer(id: ID!, name: String!): DockerContainer
-  dockerRemoveContainer(
+  startDockerContainer(id: ID!): DockerContainer
+  restartDockerContainer(id: ID!): DockerContainer
+  pauseDockerContainer(id: ID!): DockerContainer
+  unpauseDockerContainer(id: ID!): DockerContainer
+  stopDockerContainer(id: ID!): DockerContainer
+  killDockerContainer(id: ID!): DockerContainer
+  renameDockerContainer(id: ID!, name: String!): DockerContainer
+  deleteDockerContainer(
     id: ID!
     force: Boolean! = false
     pruneVolumes: Boolean! = false

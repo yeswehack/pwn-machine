@@ -44,13 +44,13 @@ def resolve_create_container(
     onExit: str = None,
 ):
     return docker_client.containers.create(
-        imageId,
-        name=name,
-        labels=dict(labels),
-        command=command,
-        user=user,
+        imageId, #
+        name=name,#
+        labels=dict(labels),#
+        command=command,#
+        user=user,#
         working_dir=workdir,
-        environment=dict(environment),
+        environment=dict(environment),#
         privileged=privileged,
         read_only=readonly,
         mounts=[
@@ -58,7 +58,7 @@ def resolve_create_container(
             for type, target, source, _, readonly in (
                 ContainerMount(**mount) for mount in mounts
             )
-        ],
+        ], #
         ports={
             f"{containerPort}/{protocol}": [
                 (*binding.values(),) for binding in hostBindings
@@ -211,7 +211,7 @@ def resolve_container_status(container, _):
     return container.status.upper()
 
 
-@registerMutation("dockerStartContainer")
+@registerMutation("startDockerContainer")
 def resolve_start_container(*_, id):
     try:
         docker_client.api.start(id)
@@ -220,7 +220,7 @@ def resolve_start_container(*_, id):
         return None
 
 
-@registerMutation("dockerRestartContainer")
+@registerMutation("restartDockerContainer")
 def resolve_restart_container(*_, id):
     try:
         docker_client.api.restart(id)
@@ -229,7 +229,7 @@ def resolve_restart_container(*_, id):
         return None
 
 
-@registerMutation("dockerPauseContainer")
+@registerMutation("pauseDockerContainer")
 def resolve_pause_container(*_, id):
     try:
         docker_client.api.pause(id)
@@ -238,7 +238,7 @@ def resolve_pause_container(*_, id):
         return None
 
 
-@registerMutation("dockerUnpauseContainer")
+@registerMutation("unpauseDockerContainer")
 def resolve_unpause_container(*_, id):
     try:
         docker_client.api.unpause(id)
@@ -247,7 +247,7 @@ def resolve_unpause_container(*_, id):
         return None
 
 
-@registerMutation("dockerStopContainer")
+@registerMutation("stopDockerContainer")
 def resolve_stop_container(*_, id):
     try:
         docker_client.api.stop(id)
@@ -256,7 +256,7 @@ def resolve_stop_container(*_, id):
         return None
 
 
-@registerMutation("dockerKillContainer")
+@registerMutation("killDockerContainer")
 def resolve_kill_container(*_, id):
     try:
         docker_client.api.kill(id)
@@ -265,7 +265,7 @@ def resolve_kill_container(*_, id):
         return None
 
 
-@registerMutation("dockerRenameContainer")
+@registerMutation("renameDockerContainer")
 def resolve_rename_container(*_, id, name):
     try:
         docker_client.api.rename(id, name=name)
@@ -274,7 +274,7 @@ def resolve_rename_container(*_, id, name):
         return None
 
 
-@registerMutation("dockerRemoveContainer")
+@registerMutation("deleteDockerContainer")
 def resolve_remove_container(*_, id, force, pruneVolumes):
     try:
         docker_client.api.remove_container(id, v=pruneVolumes, force=force)

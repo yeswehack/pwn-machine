@@ -3,7 +3,7 @@ import { CONTAINER_FRAGMENT } from "./fragments";
 
 export const START_CONTAINER = gql`
   mutation startContainer($id: ID!) {
-    dockerStartContainer(id: $id) {
+    startDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
@@ -12,7 +12,7 @@ export const START_CONTAINER = gql`
 
 export const RESTART_CONTAINER = gql`
   mutation restartContainer($id: ID!) {
-    dockerRestartContainer(id: $id) {
+    restartDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
@@ -21,7 +21,7 @@ export const RESTART_CONTAINER = gql`
 
 export const PAUSE_CONTAINER = gql`
   mutation pauseContainer($id: ID!) {
-    dockerPauseContainer(id: $id) {
+    pauseDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
@@ -30,7 +30,7 @@ export const PAUSE_CONTAINER = gql`
 
 export const UNPAUSE_CONTAINER = gql`
   mutation unpauseContainer($id: ID!) {
-    dockerUnpauseContainer(id: $id) {
+    unpauseDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
@@ -39,7 +39,7 @@ export const UNPAUSE_CONTAINER = gql`
 
 export const STOP_CONTAINER = gql`
   mutation stopContainer($id: ID!) {
-    dockerStopContainer(id: $id) {
+    stopDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
@@ -48,7 +48,7 @@ export const STOP_CONTAINER = gql`
 
 export const KILL_CONTAINER = gql`
   mutation killContainer($id: ID!) {
-    dockerKillContainer(id: $id) {
+    killDockerContainer(id: $id) {
       ...ContainerFragment
     }
   }
