@@ -79,8 +79,6 @@ services:
   ##
   elasticsearch:
     image: elasticsearch:7.12.1
-    ports:
-      - 9200:9200
     networks:
       - elasticsearch-net
     environment:
