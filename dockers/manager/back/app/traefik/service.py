@@ -102,7 +102,6 @@ def resolve_loadbalancer_servers(loadbalancer, *_):
 @registerMutation("createTraefikHTTPServiceLoadBalancer")
 async def create_http_loadbalancer(*_, input):
     name = input["name"]
-    print(input)
     return await traefik_redis().create_service(
         name, "http", "loadBalancer", input["loadBalancer"]
     )
