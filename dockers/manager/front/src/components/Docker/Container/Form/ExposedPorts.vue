@@ -1,63 +1,124 @@
 <template>
-  <EditTable
-    title="Exposed Ports"
-    :disable="disable"
-    dense
-    :columns="columns"
-    :createDefault="createPort"
-    v-model="formData"
+  <q-expansion-item
+    icon="cable"
+    label="Exposed ports"
+    :caption="`${form.length} port(s)`"
   >
-    <template #body-cell-protocol="props">
-      <q-td :props="props">
-        <q-select
-          :readonly="props.readonly"
-          :disable="props.disable"
-          :options="protocolOptions"
-          v-model="props.row.protocol"
-          dense
-        />
-      </q-td>
-    </template>
-  </EditTable>
+    <q-separator />
+    <q-card>
+      <q-card-section>
+        <base-grid-input
+          :readonly="readonly"
+          :titles="['Container port', 'Protocol', 'Targets']"
+          gridFormat="3fr 2fr  6fr"
+          :entries="form"
+          @addEntry="addEntry"
+          @removeEntry="removeEntry"
+        >
+          <template #inputs>
+            <q-input
+              label="Container port"
+              @keypress.enter.prevent="addEntry"
+              v-model.number="model.containerPort"
+              @input="addPort"
+            />
+            <q-select
+              label="Protocol"
+              :options="['tcp', 'udp']"
+              v-model="model.protocol"
+            />
+            <q-select
+              use-chips
+              new-value-mode="add"
+              use-input
+              hide-dropdown-icon
+              multiple
+              label="Targets"
+              v-model="model.targets"
+            />
+          </template>
+          <template #entry="{entry}">
+            <div class="ellipsis">
+              {{ entry.containerPort }}
+
+              <q-popup-edit v-model="entry.containerPort">
+                <q-input
+                  :readonly="readonly"
+                  label="Container port"
+                  v-model.number="entry.containerPort"
+                />
+              </q-popup-edit>
+            </div>
+            <div class="ellipsis">
+              {{ entry.protocol }}
+              <q-popup-edit v-model="entry.protocol">
+                <q-select
+                  :readonly="readonly"
+                  label="Protocol"
+                  :options="['tcp', 'udp']"
+                  v-model="entry.protocol"
+                />
+              </q-popup-edit>
+            </div>
+            <div class="ellipsis">
+              {{entry.targets ? entry.targets.join(", ") : "Not forwarded"}}
+
+              <q-popup-edit v-model="entry.targets">
+                <q-select
+                  :readonly="readonly"
+                  use-chips
+                  new-value-mode="add"
+                  use-input
+                  hide-dropdown-icon
+                  multiple
+                  label="Targets"
+                  v-model="entry.targets"
+                />
+              </q-popup-edit>
+            </div>
+          </template>
+        </base-grid-input>
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
 </template>
 
 <script>
-import EditTable from "src/components/EditTable.vue";
 import DeepForm from "src/mixins/DeepForm.js";
+import api from "src/api";
+import VolumeLink from "../../Volume/Link.vue";
+import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
-  components: { EditTable },
-  mixins: [DeepForm],
+  components: { BaseGridInput },
   props: {
-    value: Array,
-    disable: Boolean
+    readonly: { type: Boolean, default: false },
+    container: { type: Object, default: null }
   },
+  mixins: [DeepForm],
+  formDefinition: [],
   data() {
-    const columns = [
-      {
-        name: "host",
-        align: "left",
-        label: "Host port",
-        field: "host"
-      },
-      {
-        name: "container",
-        align: "left",
-        label: "Container port",
-        field: "container"
-      },
-      {
-        name: "protocol",
-        align: "left",
-        label: "Protocol",
-        field: "proto"
-      }
-    ];
-    const protocolOptions = ["TCP", "UDP", "SCTP"];
-    return { columns, protocolOptions };
+    const model = this.getDefaultModel();
+    return {
+      model
+    };
   },
   methods: {
-    createPort() {
-      return { protocol: "TCP" };
+    addPort(port) {
+      this.model.targets = [`0.0.0.0:${port}`];
+    },
+    removeEntry(idx) {
+      this.form.splice(idx, 1);
+    },
+    getDefaultModel() {
+      return {
+        containerPort: null,
+        protocol: "tcp",
+        targets: []
+      };
+    },
+    addEntry() {
+      this.form.unshift(this.model);
+      this.model = this.getDefaultModel();
     }
   }
 };

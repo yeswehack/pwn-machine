@@ -118,7 +118,7 @@
           </template>
         </base-grid-input>
       </q-card-section>
-      <q-card-section>
+      <q-card-section v-if='!readonly'>
         <div class="row justify-end">
           <q-btn
             dense
@@ -139,7 +139,7 @@ import VolumeLink from "../../Volume/Link.vue";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   props: {
-    readonly: { type: Boolean, default: true }
+    readonly: { type: Boolean, default: false }
   },
   mixins: [DeepForm],
   formDefinition: [

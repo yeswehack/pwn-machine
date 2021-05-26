@@ -36,7 +36,6 @@ function instanciateComponent(comp, props = {}) {
   const instance = new ComponentClass({
     propsData: props
   });
-  instance.$mount();
   return instance;
 }
 

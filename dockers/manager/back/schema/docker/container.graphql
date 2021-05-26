@@ -98,19 +98,15 @@ type DockerContainerConnection {
 type DockerContainerPort {
   protocol: DockerContainerPortProtocol!
   containerPort: Int!
-  hostBindings: [DockerContainerPortHostBinding!]!
+  targets: [String!]
 }
 
 input DockerContainerPortInput {
   protocol: DockerContainerPortProtocol! = TCP
   containerPort: Int!
-  hostBindings: [DockerContainerPortHostBindingInput!]! = []
+  targets: [String!]
 }
 
-type DockerContainerPortHostBinding {
-  ip: String!
-  port: Int!
-}
 
 input DockerContainerPortHostBindingInput {
   ip: String! = "localhost"
@@ -118,9 +114,9 @@ input DockerContainerPortHostBindingInput {
 }
 
 enum DockerContainerPortProtocol {
-  TCP
-  UDP
-  SCTP
+  tcp
+  udp
+  sctp
 }
 
 enum DockerContainerStatus {

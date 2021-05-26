@@ -46,7 +46,7 @@
         <volume-link
           :name="name"
           :key="name"
-          v-for="{ volume: { name } } of row.mounts.filter(n => n.volume)"
+          v-for="{ name } of row.mounts.filter(n => n.type == 'volume')"
         />
       </div>
     </template>
@@ -86,7 +86,7 @@ import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ContainerDialog from "src/components/Docker/Container/Dialog.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import VolumeLink from "src/components/Docker/Volume/Link.vue";
-import PortList from "src/components/Docker/Container/PortList.vue"
+import PortList from "src/components/Docker/Container/PortList.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
 import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
 import api from "src/api";
@@ -150,7 +150,9 @@ export default {
                 data.pruneDockerContainers.spaceReclaimed
               );
               const message = deleted.length
-                ? `${deleted.length} container${deleted.length > 1 ? 's' : ''} deleted (${reclaimed})`
+                ? `${deleted.length} container${
+                    deleted.length > 1 ? "s" : ""
+                  } deleted (${reclaimed})`
                 : `No container deleted.`;
               this.$q.notify({
                 message,
@@ -177,7 +179,7 @@ export default {
       this.$q.dialog({
         component: ExposeContainerDialog,
         parent: this,
-        containerId: container.id,
+        containerId: container.id
       });
     }
   }

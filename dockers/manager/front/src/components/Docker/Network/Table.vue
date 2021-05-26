@@ -52,11 +52,11 @@
             Host
           </q-tooltip>
           <q-tooltip
-            v-else-if="connection.ipv4Address || connection.ipv6Address"
+            v-else-if="connection.ipAddress"
             anchor="top middle"
             self="bottom middle"
           >
-            {{ connection.ipv4Address }} {{ connection.ipv6Address }}
+            {{ connection.ipv4Address }} {{ connection.ipAddress }}
           </q-tooltip>
         </container-link>
       </div>

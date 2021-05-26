@@ -11,6 +11,7 @@
         <component :readonly="readonly" :is="formChildren.extra" v-model="form.extra" />
         <component :readonly="readonly" :is="formChildren.environment" v-model="form.environment" />
         <component :readonly="readonly" :is="formChildren.labels" v-model="form.labels" />
+        <component :readonly="readonly" :is="formChildren.ports" v-model="form.ports" />
         <component :readonly="readonly" :is="formChildren.mounts" v-model="form.mounts" />
       </q-list>
     </q-card-section>
@@ -44,6 +45,7 @@ import MountsInput from "./Form/MountsInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import EnvironInput from "./Form/EnvironInput.vue";
 import LabelInputVue from "../LabelInput.vue";
+import ExposedPorts from './Form/ExposedPorts.vue';
 export default {
   props: {
     readonly: { type: Boolean, default: false }
@@ -55,7 +57,8 @@ export default {
     labels: LabelInputVue,
     environment: EnvironInput,
     extra: ExtraConfig,
-    mounts: MountsInput
+    mounts: MountsInput,
+    ports: ExposedPorts
   },
   components: {
     ImageSelect,

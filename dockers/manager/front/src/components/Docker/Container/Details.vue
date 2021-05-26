@@ -100,7 +100,7 @@
       </div>
     </div>
 
-    <details-process :processes="container.ps" />
+    <details-process :processes="container.ps" v-if="container.ps" />
   </div>
 </template>
 

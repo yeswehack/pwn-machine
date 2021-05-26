@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-gutter-sm">
+  <div class="row">
     <div class="col ">
       <q-select
         clearable

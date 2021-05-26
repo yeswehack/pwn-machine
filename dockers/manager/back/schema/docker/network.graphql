@@ -20,7 +20,6 @@ type DockerNetwork {
   name: String!
   labels: [KeyValue!]!
   created: DateTime!
-  ipv6: Boolean!
   driver: String!
   builtin: Boolean!
   internal: Boolean!
@@ -31,7 +30,6 @@ type DockerNetwork {
 input DockerNetworkInput {
   name: String!
   labels: [KeyValueInput!]! = []
-  ipv6: Boolean! = false
   driver: String! = "bridge"
   internal: Boolean! = false
   ipams: [DockerNetworkIpamInput!]! = []
@@ -52,12 +50,14 @@ input DockerNetworkIpamInput {
 
 
 type DockerNetworkConnection {
-  ipv4Address: String
-  ipv6Address: String
+  ipAddress: String
+  aliases: [String!]
+  containerName: String!
   container: DockerContainer!
 }
 
 input DockerNetworkConnectionInput {
   networkId: ID!
   containerId: ID!
+  aliases: [String!]
 }

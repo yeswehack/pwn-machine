@@ -2,8 +2,8 @@ import gql from "graphql-tag";
 
 export const CONNECTION_FRAGMENT = gql`
   fragment ConnectionFragment on DockerNetworkConnection {
-    ipv4Address
-    ipv6Address
+    ipAddress
+    aliases
     container {
       name
       id
@@ -28,7 +28,6 @@ export const NETWORK_FRAGMENT = gql`
     }
     builtin
     created
-    ipv6
     driver
     internal
     ipams {

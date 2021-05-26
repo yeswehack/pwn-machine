@@ -1,22 +1,14 @@
 <template>
-  <div class="full-width scroll thin-scrollbar" >
-    <q-infinite-scroll
-      :offset="200"
-      @load="onLoad"
-      reverse
-    >
+  <div class="full-width scroll thin-scrollbar">
+    <q-infinite-scroll :offset="200" @load="onLoad" reverse>
       <div class="docker-log-list">
         <template v-for="(log, idx) of items">
-          <div class="text-mono text-no-wrap" :key="`${idx}-date`">
-            {{ formatDate(log.date) }}
-          </div>
+          <div class="text-mono text-no-wrap" :key="`${idx}-date`">{{ formatDate(log.date) }}</div>
           <div
             class="text-mono text-no-wrap"
             :key="`${idx}-name`"
             :style="{ color: colorHash.hex(log.containerName) }"
-          >
-            {{ log.containerName }}
-          </div>
+          >{{ log.containerName }}</div>
           <div
             :key="`${idx}-msg`"
             class="text-mono text-no-wrap"
@@ -39,7 +31,11 @@ import { date } from "quasar";
 import ansiToHtml from "ansi-to-html";
 import ColorHash from "color-hash";
 
-const ansiColorConverter = new ansiToHtml();
+const ansiColorConverter = new ansiToHtml({
+  newLine: true,
+  stream: false,
+  escapeXML: true
+});
 
 export default {
   props: {
@@ -87,8 +83,7 @@ export default {
       if (s.includes("\x07")) {
         s = s.split("\x07")[1];
       }
-      const r = ansiColorConverter.toHtml(s, { newLine: true, stream: true });
-      return r;
+      return ansiColorConverter.toHtml(s);
     },
     refresh() {
       this.items.splice(0, this.items.length);
@@ -104,14 +99,6 @@ export default {
     const colorHash = new ColorHash({ lightness: 0.7, saturation: 1 });
     return { items: [], colorHash };
   },
-  mounted() {
-      const parent = this.$parent.$el
-      const rowHeight = 28;
-      const headerHeight = parent.firstElementChild ? parent.firstElementChild.getBoundingClientRect().height : 0
-      const padding = headerHeight + rowHeight + rowHeight + 10; // search + header + lastrow in px
-      const height = parent.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / rowHeight);
-  },
   computed: {
     logs() {
       return this.dockerLogs ?? [];
@@ -123,7 +110,7 @@ export default {
 <style lang="scss">
 .docker-log-list {
   display: grid;
-  grid-template-columns: auto  auto 1fr;
+  grid-template-columns: auto auto 1fr;
   column-gap: 10px;
 }
 </style>

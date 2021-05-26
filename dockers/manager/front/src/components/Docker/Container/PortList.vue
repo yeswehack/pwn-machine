@@ -1,23 +1,23 @@
 <template>
   <div class="q-gutter-xs">
     <q-badge
-      :color="hostBindings.length ? 'negative' : 'primary'"
+      :color="targets ? 'negative' : 'grey-9'"
       :key="idx"
-      v-for="({ hostBindings, containerPort, protocol }, idx) of ports"
+      v-for="({ targets, containerPort, protocol }, idx) of ports"
     >
       {{ containerPort }}/{{ protocol.toLowerCase() }}
       <q-tooltip
-        v-if="hostBindings.length"
+        v-if="targets"
         anchor="top middle"
         self="bottom middle"
       >
         <div class="column ">
           <div
             class="col text-right"
-            v-for="({ ip, port }, idx) of hostBindings"
+            v-for="(target, idx) of targets"
             :key="idx"
           >
-            {{ `${ip}:${port}` }}
+            {{ `${target}` }}
           </div>
         </div>
       </q-tooltip>

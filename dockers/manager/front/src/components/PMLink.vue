@@ -11,8 +11,8 @@
 import { shortName } from "src/utils";
 export default {
   props: {
-    path: String,
-    name: String,
+    path: {type: String, required: true},
+    name:  {type: String, required: true},
     color: { type: String, default: "primary" }
   },
   computed: {

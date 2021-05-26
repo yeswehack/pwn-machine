@@ -23,11 +23,6 @@ def resolve_network_created(network, _):
     return formatTime(network.attrs["Created"])
 
 
-@DockerNetwork.field("ipv6")
-def resolve_network_ipv6(network, _):
-    return network.attrs["EnableIPv6"]
-
-
 @DockerNetwork.field("driver")
 def resolve_network_driver(network, _):
     return network.attrs["Driver"]
@@ -55,11 +50,20 @@ def resolve_network_ipams(network, _):
 
 @DockerNetwork.field("usedBy")
 def resolve_network_connections(network, _):
-    for id, endpoint in network.attrs["Containers"].items():
+    network_name = network.name
+    containers = docker_client.containers.list(
+        all=True, filters={"network": network_name}
+    )
+    get_not_empty = lambda d, k: d.get(k, None) or None
+    for container in containers:
+        con = container.attrs["NetworkSettings"]["Networks"][network_name]
+        ip_address = con.get("IPAddress") or None
+        aliases = con.get("Aliases", [])
         yield {
-            "ipv4Address": endpoint["IPv4Address"].rpartition("/")[0] or None,
-            "ipv6Address": endpoint["IPv6Address"] or None,
-            "container": docker_client.containers.get(id),
+            "ipAddress": ip_address,
+            "aliases": aliases,
+            "container": container,
+            "containerName": container.name,
         }
 
 
@@ -71,7 +75,6 @@ def resolve_network_using_containers(network, _):
 def resolve_create_network(*_, input):
     name = input.get("name")
     labels = kv_to_dict(input.get("labels"))
-    enable_ipv6 = input.get("ipv6")
     internal = input.get("internal")
     pool_configs = []
     ipams = input.get("ipams", [])
@@ -91,7 +94,6 @@ def resolve_create_network(*_, input):
         name,
         check_duplicate=True,
         labels=labels,
-        enable_ipv6=enable_ipv6,
         driver="bridge",
         internal=internal,
         ipam=ipam,
@@ -115,9 +117,11 @@ def mutation_delete_network(*_, id):
 def resolve_connect_container(*_, input):
     network = docker_client.networks.get(input["networkId"])
     container = docker_client.containers.get(input["containerId"])
+    aliases = input.get("aliases") or []
     try:
-        network.connect(container)
-    except APIError:
+        network.connect(container, aliases=aliases)
+    except APIError as e:
+        print(e)
         return False
     return True
 

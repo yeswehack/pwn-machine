@@ -18,14 +18,6 @@
             v-model="form.internal"
           />
         </div>
-        <div class="col col-auto">
-          <q-checkbox
-            :disable="readonly"
-            left-label
-            label="enable IPv6"
-            v-model="form.ipv6"
-          />
-        </div>
       </div>
     </q-card-section>
     <q-card-section class="q-gutter-sm">
@@ -62,7 +54,6 @@ export default {
   components: { ResetAndSave, LabelInput },
   formDefinition: {
     internal: false,
-    ipv6: false,
     name: null,
     ipams: IpamsInput,
     labels: LabelInput

@@ -88,9 +88,9 @@ export default {
         for (const port of container.ports) {
           let forwards = [];
 
-          for (const binding of port.hostBindings) {
+          for (const target of port.targets) {
             forwards.push(
-              `${binding.ip}:${binding.port}->${port.containerPort}`
+              `${target}->${port.containerPort}`
             );
           }
           if (forwards.length) {

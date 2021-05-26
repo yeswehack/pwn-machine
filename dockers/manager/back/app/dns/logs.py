@@ -70,7 +70,6 @@ def resolve_date(log, _):
 
 @DnsLog.field("nodeId")
 def resolve_date(log, _):
-    print(log)
     return log["nodeId"]
 
 

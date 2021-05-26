@@ -30,10 +30,7 @@ export const EXPOSED_PORTS_FRAGMENT = gql`
   fragment ExposedPortFragment on DockerContainerPort {
     protocol
     containerPort
-    hostBindings {
-      ip
-      port
-    }
+    targets
   }
 `;
 

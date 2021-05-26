@@ -7,13 +7,11 @@
     </div>
     <div class="col">
       <q-card>
+        <q-card-section class="q-pb-none">
+          <div class="text-h6">Connect a container</div>
+        </q-card-section>
         <q-card-section>
-          <container-list-input
-            @add="connectContainer"
-            @remove="disconnectContainer"
-            :value="network.usedBy.map(c=>c.container)"
-            title="Connected containers"
-          />
+          <connect-container-input :network="network" />
         </q-card-section>
       </q-card>
     </div>
@@ -22,8 +20,7 @@
 
 <script>
 import CreateNetwork from "./Create.vue";
-import ContainerListInput from "../ContainerListInput.vue";
-import api from "src/api";
+import ConnectContainerInput from "../ConnectContainerInput.vue";
 
 export default {
   props: {
@@ -31,25 +28,8 @@ export default {
   },
   components: {
     CreateNetwork,
-    ContainerListInput
+    ConnectContainerInput
   },
-  methods: {
-    connectContainer(containerId) {
-      const input = { networkId: this.network.id, containerId };
-      this.$apollo.mutate({
-        mutation: api.docker.networks.CONNECT_TO_NETWORK,
-        variables: { input },
-        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-      });
-    },
-    disconnectContainer(containerId) {
-      const input = { networkId: this.network.id, containerId };
-      this.$apollo.mutate({
-        mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
-        variables: { input },
-        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-      });
-    }
-  }
+  methods: {}
 };
 </script>

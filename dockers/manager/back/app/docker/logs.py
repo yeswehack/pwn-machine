@@ -11,7 +11,7 @@ async def resolve_docker_logs(*_, filter={}, cursor={}):
 
     skip_internal = filter.get("skipInternal", False)
 
-    must = []
+    must = [{"term": {"stream": "stdout"}}]
     must_not = []
 
     if containerName := filter.get("containerName"):
@@ -24,7 +24,7 @@ async def resolve_docker_logs(*_, filter={}, cursor={}):
 
     r = await es.search(
         index="filebeat-docker-*",
-        sort="@timestamp:desc",
+        sort="@timestamp:desc,log.offset:desc",
         body=body,
         from_=from_,
         size=size,
@@ -52,6 +52,7 @@ def resolve_container_id(log, _):
 
 @dockerLog.field("message")
 def resolve_container_id(log, _):
+    print(log)
     return log["message"]
 
 
