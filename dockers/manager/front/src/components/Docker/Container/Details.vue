@@ -106,8 +106,6 @@
 
 <script>
 import CreateContainer from "./Create.vue";
-import NetworksInfo from "src/components/Docker/Container/NetworksInfo.vue";
-import MountsInfo from "src/components/Docker/Container/MountsInfo.vue";
 import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import DetailsProcess from "./DetailsProcess.vue";
@@ -121,7 +119,6 @@ export default {
     CreateContainer,
     DetailsProcess,
     LogCard,
-    //MountsInfo,
     ImageLink,
     ContainerStatus,
     LogList
