@@ -10,7 +10,7 @@
         v-if="hostBindings.length"
         anchor="top middle"
         self="bottom middle"
-       >
+      >
         <div class="column ">
           <div
             class="col text-right"
@@ -29,7 +29,7 @@
 <script>
 export default {
   props: {
-    ports: Array,
+    ports: { type: Array, default: () => [] },
     host: { type: Boolean, default: false }
   }
 };

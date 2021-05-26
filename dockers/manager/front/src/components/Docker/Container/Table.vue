@@ -69,6 +69,9 @@
     <template #body-cell-status="{row}">
       <container-status :status="row.status" />
     </template>
+    <template #body-cell-ports="{row}">
+      <port-list :ports="row.ports" />
+    </template>
 
     <template #details="{ row }" auto-width>
       <container-details :container="row" />
@@ -83,6 +86,7 @@ import ContainerStatus from "src/components/Docker/Container/Status.vue";
 import ContainerDialog from "src/components/Docker/Container/Dialog.vue";
 import ImageLink from "src/components/Docker/Image/Link.vue";
 import VolumeLink from "src/components/Docker/Volume/Link.vue";
+import PortList from "src/components/Docker/Container/PortList.vue"
 import NetworkLink from "src/components/Docker/Network/Link.vue";
 import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
 import api from "src/api";
@@ -94,6 +98,7 @@ export default {
     ContainerDetails,
     BaseTable,
     ContainerStatus,
+    PortList,
     ImageLink,
     VolumeLink,
     NetworkLink
