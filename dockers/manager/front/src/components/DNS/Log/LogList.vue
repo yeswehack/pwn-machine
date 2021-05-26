@@ -1,6 +1,6 @@
 <template>
   <q-table
-    class="full-width scroll"
+    class="full-width scroll thin-scrollbar"
     v-bind="$attrs"
     :columns="columns"
     dense
@@ -10,6 +10,7 @@
     :pagination.sync="pagination"
     no-data-label="No logs available."
     table-header-style="text-transform: capitalize"
+    ref="table"
   >
     <template #body-cell-date="{value}">
       <q-td auto-width>
@@ -43,6 +44,7 @@
 <script>
 import api from "src/api";
 import { date } from "quasar";
+import _ from "lodash";
 
 export default {
   props: {
@@ -87,9 +89,7 @@ export default {
       ...opt
     });
     const columns = [
-      field("date", {
-        format: v => date.formatDate(v, "YYYY-MM-DD HH:mm:ss")
-      }),
+      field("date"),
       field("origin"),
       field("type", { align: "center" }),
       field("query")
@@ -100,12 +100,11 @@ export default {
     };
   },
   mounted() {
-    if (!this.short) {
-      const rowHeight = 28;
-      const padding = 80 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
-      const height = this.$parent.$el.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
-    }
+    const rowHeight = 28.5;
+    const table = this.$refs.table.$el;
+    const inner = table.querySelector(".q-table__middle");
+    const height = inner.getBoundingClientRect().height;
+    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
   },
   watch: {
     dnsLogs(dnsLogs) {
@@ -117,7 +116,7 @@ export default {
       return this.logs?.total ?? 0;
     },
     logs() {
-      return this.dnsLogs?.result ?? [];
+      return _.orderBy(this.dnsLogs?.result ?? [], "date", "desc");
     },
     from() {
       return 0;

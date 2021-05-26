@@ -75,6 +75,8 @@ class StaticFilesFallback(StaticFiles):
 sessions = {}
 
 
+
+
 async def on_startup():
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
 
@@ -93,11 +95,6 @@ async def on_startup():
     PowerdnsHTTPApi.create(config.PM_POWERDNS_HTTP_API, sessions["powerdns"])
 
 
-    ## init ES
-
-    await es.indices.put_alias(index='filebeat-docker-*', name='filebeat-docker')
-    await es.indices.put_alias(index='filebeat-traefik-*', name='filebeat-traefik')
-    await es.indices.put_alias(index='filebeat-pdns-*', name='filebeat-pdns')
 
 
 async def on_shutdown():

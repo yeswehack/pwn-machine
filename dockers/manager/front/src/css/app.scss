@@ -37,7 +37,7 @@ a:hover {
   height: auto;
 }
 
-.thin-scrollbar * {
+.thin-scrollbar, .thin-scrollbar *  {
   scrollbar-width: thin;
   &::-webkit-scrollbar {
     width: 6px;

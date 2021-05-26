@@ -8,7 +8,7 @@ filebeat.inputs:
         host: "unix:///var/run/docker.sock"
   index: "filebeat-docker-%{+yyyy.MM.dd}"
 
-
+  
 - type: log
   tail_files: true
   scan_frequency: "1s"
@@ -39,5 +39,5 @@ output.elasticsearch:
     - index: "filebeat-%{+yyyy.MM.dd}"
 
 logging.json: true
-logging.level: warning
+logging.level: info
 logging.metrics.enabled: false

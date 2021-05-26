@@ -93,7 +93,12 @@ services:
 
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-  
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   filebeat:
     build:
       context: ./dockers/filebeat

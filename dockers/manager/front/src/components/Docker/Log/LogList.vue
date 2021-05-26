@@ -1,7 +1,6 @@
 <template>
-  <div class="scroll thin-scrollbar" >
+  <div class="full-width scroll thin-scrollbar" >
     <q-infinite-scroll
-      style="max-width: 0px"
       :offset="200"
       @load="onLoad"
       reverse

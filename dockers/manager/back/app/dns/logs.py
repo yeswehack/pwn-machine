@@ -44,7 +44,7 @@ async def query_dns_logs(*_, filter={}, cursor={}):
     }
 
     r = await es.search(
-        index="filebeat-pdns",
+        index="filebeat-pdns-*",
         sort="@timestamp:desc",
         body=body,
         from_=from_,
@@ -65,7 +65,7 @@ async def query_dns_logs(*_, filter={}, cursor={}):
 
 @DnsLog.field("date")
 def resolve_date(log, _):
-    return log["@timestamp"]
+    return log["date"]
 
 
 @DnsLog.field("nodeId")

@@ -10,6 +10,7 @@
     :pagination.sync="pagination"
     no-data-label="No logs available."
     table-header-style="text-transform: capitalize"
+    ref="table"
   >
     <template #body-cell="props">
       <q-td auto-width :props="props">
@@ -170,12 +171,11 @@ export default {
     };
   },
   mounted() {
-    if (!this.short) {
-      const rowHeight = 28;
-      const padding = 80 + rowHeight + (rowHeight + 5); // search + header + lastrow in px
-      const height = this.$parent.$el.getBoundingClientRect().height;
-      this.pagination.rowsPerPage = Math.floor((height - padding) / 28);
-    }
+    const rowHeight = 28.5;
+    const table = this.$refs.table.$el;
+    const inner = table.querySelector(".q-table__middle");
+    const height = inner.getBoundingClientRect().height;
+    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
   },
   watch: {
     traefikLogs(traefikLogs) {

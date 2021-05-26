@@ -26,7 +26,7 @@ async def resolve_traefik_logs(*_, filter={}, cursor={}):
     body = {"query": {"bool": {"must": must, "must_not": must_not}}}
 
     r = await es.search(
-        index="filebeat-traefik",
+        index="filebeat-traefik-*",
         sort="@timestamp:desc",
         body=body,
         from_=from_,
@@ -115,14 +115,3 @@ def resolve_service(log, _):
 def resolve_origin(log, _):
     return log.get("ClientHost")
 
-
-"""  time: DateTime!
-    status: Int!
-    host: String!
-    method: String!
-    path: String!
-    port: Int!
-    protocol: String!
-    scheme: String!
-    router: String!
-    entrypoint: String! """

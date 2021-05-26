@@ -23,7 +23,7 @@ async def resolve_docker_logs(*_, filter={}, cursor={}):
     body = {"query": {"bool": {"must": must, "must_not": must_not}}}
 
     r = await es.search(
-        index="filebeat-docker",
+        index="filebeat-docker-*",
         sort="@timestamp:desc",
         body=body,
         from_=from_,

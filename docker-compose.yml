@@ -86,10 +86,8 @@ services:
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-  
   filebeat:
     build:
       context: ./dockers/filebeat
