@@ -28,12 +28,13 @@ export default {
   props: {
     title: { type: String, required: true },
     subtitle: { type: String, default: null },
+    width: {type: Number, default: 700},
     help: { type: String, default: null }
   },
   data() {
     // get the count of base-dialog on screen and use it as dialog depth
     const depth = document.querySelectorAll(".base-dialog:not(:empty)").length;
-    const size = 700 - depth * 50;
+    const size = this.width - depth * 50;
     const style = { width: `${size}px`, "max-width": "80vw" };
     return { style };
   },

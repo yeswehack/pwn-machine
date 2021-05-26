@@ -10,7 +10,7 @@
         <base-grid-input
           :readonly="readonly"
           :titles="['Type', 'Name/Source', 'Target', 'Read Only']"
-          gridFormat="100px 1fr 1fr 80px"
+          gridFormat="85px 1fr 1fr auto"
           :entries="form"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
@@ -117,6 +117,16 @@
             </div>
           </template>
         </base-grid-input>
+      </q-card-section>
+      <q-card-section>
+        <div class="row justify-end">
+          <q-btn
+            dense
+            color="positive"
+            icon="eva-plus"
+            label="Create a new volume"
+          />
+        </div>
       </q-card-section>
     </q-card>
   </q-expansion-item>
