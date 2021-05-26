@@ -36,15 +36,11 @@
           <log-list flat :router="[value.name]" short />
         </log-card>
       </div>
-      <div class="col col-6">
-        <middleware-list :middlewares.sync="form.middlewares" v-if="0" />
-      </div>
     </template>
   </base-details>
 </template>
 
 <script>
-import MiddlewareList from "src/components/Traefik/Router/MiddlewareList.vue";
 import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import DeepForm from "src/mixins/DeepForm";
 import { getCreateComponent } from "./Create.vue";
@@ -56,7 +52,6 @@ import LogCard from "src/components/LogCard.vue";
 
 export default {
   components: {
-    MiddlewareList,
     ProtocolBadge,
     BaseDetails,
     ResetAndSave,
