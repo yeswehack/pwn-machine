@@ -43,14 +43,17 @@ async def resolve_docker_logs(*_, filter={}, cursor={}):
 
 @dockerLog.field("containerName")
 def resolve_container_name(log, _):
-    import json
-    print(json.dumps(log, indent=2))
     return log["container"]["name"]
 
 
 @dockerLog.field("containerId")
 def resolve_container_id(log, _):
     return log["container"]["id"]
+
+@dockerLog.field("message")
+def resolve_container_id(log, _):
+    print(type(log["message"]))
+    return log["message"]
 
 
 @dockerLog.field("date")
