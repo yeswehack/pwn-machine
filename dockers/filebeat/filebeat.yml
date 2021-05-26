@@ -39,5 +39,5 @@ output.elasticsearch:
     - index: "filebeat-%{+yyyy.MM.dd}"
 
 logging.json: true
-logging.level: warn
+logging.level: warning
 logging.metrics.enabled: false
