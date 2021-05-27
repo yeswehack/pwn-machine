@@ -87,7 +87,7 @@ export default {
           }
         });
         this.$store.commit("setToken", login);
-        this.$router.push({ name: "index" });
+        this.$router.push({ name: "configIndex" });
       } catch ({ graphQLErrors }) {
         graphQLErrors.forEach(({ message }) => {
           this.$q.notify({
