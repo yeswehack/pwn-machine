@@ -9,7 +9,7 @@ enum SetupStepNeeded {
 }
 
 extend type Mutation {
-  createAuthToken(password: String!, otp: Int!, expire: Int): AuthToken
+  createAuthToken(password: String!, totp: Int!, expire: Int): AuthToken
   refreshAuthToken(token: String!, expire: Int): AuthToken
   updateAuthPassword(password: String!): Boolean!
   updateAuthTotp(uri: String!, totp: Int!): Boolean!

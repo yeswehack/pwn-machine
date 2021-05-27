@@ -35,7 +35,7 @@ async def resolve_totp_uri(*_):
     return pyotp.totp.utils.build_uri(secret, ISSUER)
 
 
-async def make_jwt_auth(expire=None):
+async def make_jwt_token(expire=None):
     now = int(time.time())
     payload = {"iss": ISSUER, "iat": now}
     if expire is not None:
@@ -51,11 +51,11 @@ async def resolve_create_token(*_, password, totp, expire=None):
         try:
             hasher.verify(await db.password_hash, password)
         except argon2.exceptions.VerificationError:
-            return False
+            return None
         if not (await db.totp_client).verify(totp):
-            return False
+            return None
 
-    return make_jwt_auth(expire)
+    return make_jwt_token(expire)
 
 
 @auth_mutation("refreshAuthToken")
@@ -66,17 +66,17 @@ async def resolve_resfresh_token(*_, token, expire=None):
         except jwt.exceptions.InvalidTokenError:
             return None
 
-    return make_jwt_auth(expire)
+    return make_jwt_token(expire)
 
 
 @auth_mutation("updateAuthPassword")
-async def resolve_set_password(*_, password):
+async def resolve_update_password(*_, password):
     await db.save_password_hash(hasher.hash(password))
     return True
 
 
 @auth_mutation("updateAuthTotp")
-async def resolve_set_totp(*_, uri, totp):
+async def resolve_update_totp(*_, uri, totp):
     totp_client = pyotp.parse_uri(uri)
     if not totp_client.verify(totp):
         return False
