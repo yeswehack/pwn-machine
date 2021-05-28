@@ -28,7 +28,6 @@ export default {
 
 <style lang="scss" scoped>
 .pm-link{
-
   border: 1px solid transparent;
   transition: border-color .125s;
 }

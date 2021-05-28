@@ -50,9 +50,8 @@ export default {
         variables() {
           return { id: this.pull.id };
         },
-        result({ data }, loading) {
+        result({ data }) {
           const log = data.pullImageProgress;
-          console.log("log", log, loading)
           if (!log) {
             this.done = true;
             this.pull.done?.()  

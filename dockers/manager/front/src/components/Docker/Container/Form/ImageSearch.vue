@@ -1,14 +1,14 @@
 <template>
   <base-dialog ref="dialog" title="Search image" class="searchImage">
     <q-card-section>
-          <q-input
-            filled
-            clearable
-            label="Search"
-            class="full-width"
-            v-model="search"
-            @input="doSearch"
-          />
+      <q-input
+        filled
+        clearable
+        label="Search"
+        class="full-width"
+        v-model="search"
+        @input="doSearch"
+      />
     </q-card-section>
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="image">
@@ -18,7 +18,6 @@
           :columns="imageColumns"
           :data="imageSearchResults || []"
           :loading="$apollo.loading"
-          virtual-scroll
           row-key="name"
           :rows-per-page-options="[0]"
           @row-click="selectImage"
@@ -78,27 +77,26 @@
           :columns="tagColumns"
           :data="tagsSeachResults || []"
           :loading="$apollo.loading"
-          virtual-scroll
           row-key="name"
           :rows-per-page-options="[0]"
         >
           <template #body-cell-pull="{row}">
             <q-td align="right">
-              <div v-if="isAvailable(row)">
+              <div v-if="chooseImage">
                 <q-btn
-                  label="update"
+                  label="select"
                   class="q-px-sm"
-                  color="positive"
+                  :color="isAvailable(row) ? 'positive' : 'primary'"
                   :loading="!!loadings[row.name]"
                   dense
-                  @click="pullImage(row.name)"
+                  @click="pullImage(row.name, true)"
                 />
               </div>
               <div v-else>
                 <q-btn
-                  label="pull"
+                  :label="isAvailable(row) ? 'update' : 'pull'"
                   class="q-px-sm"
-                  color="primary"
+                  :color="isAvailable(row) ? 'positive' : 'primary'"
                   :loading="!!loadings[row.name]"
                   dense
                   @click="pullImage(row.name)"
@@ -119,6 +117,10 @@ import { PullImageBus } from "src/eventBus.js";
 import { format } from "quasar";
 import Vue from "vue";
 export default {
+  props: {
+    chooseImage: { type: Boolean, default: false },
+    input: { type: String, default: null }
+  },
   components: { BaseDialog },
   apollo: {
     imageSearchResults: {
@@ -180,7 +182,7 @@ export default {
     return {
       imageColumns,
       tagColumns,
-      search: null,
+      search: this.input,
       selected: [],
       panel: "image",
       loadings: {}
@@ -201,14 +203,19 @@ export default {
       this.$apollo.queries.tagsSeachResults.skip = false;
       this.panel = "tag";
     },
-    pullImage(name) {
+    pullImage(name, close = false) {
       Vue.set(this.loadings, name, true);
-      console.log("fire", { name });
+      if (close) {
+        this.$emit("ok", name)
+        this.$refs.dialog.hide()
+      }
       PullImageBus.$emit("pullImage", {
         name,
         done: () => {
           Vue.set(this.loadings, name, false);
           this.$apollo.queries.dockerImages.refetch();
+          if (this.chooseImage) {
+          }
         }
       });
     },

@@ -35,7 +35,7 @@ export default {
     // get the count of base-dialog on screen and use it as dialog depth
     const depth = document.querySelectorAll(".base-dialog:not(:empty)").length;
     const size = this.width - depth * 50;
-    const style = { width: `${size}px`, "max-width": "80vw" };
+    const style = { "min-width": `${size}px`, "max-width": "100vw" };
     return { style };
   },
   methods: {
@@ -52,8 +52,8 @@ export default {
       this.$emit("hide");
       this.hide();
     },
-    onOk() {
-      this.$emit("ok");
+    onOk(data) {
+      this.$emit("ok", data);
       this.hide();
     }
   }
