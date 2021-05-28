@@ -21,19 +21,21 @@
     </q-header>
 
     <q-page-container>
-        <router-view />
+      <router-view />
     </q-page-container>
     <Downloader />
     <Uploader />
+    <image-puller />
   </q-layout>
 </template>
 
 <script>
 import Downloader from "src/components/Downloader.vue";
 import Uploader from "src/components/Uploader.vue";
+import ImagePuller from "src/components/Docker/ImagePuller.vue";
 export default {
   name: "MainLayout",
-  components: { Downloader, Uploader },
+  components: { Downloader, Uploader, ImagePuller },
   computed: {
     showMenu() {
       return this.$route.name != "login";

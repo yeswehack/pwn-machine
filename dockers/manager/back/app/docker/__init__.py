@@ -22,3 +22,4 @@ from . import network
 from . import volume
 from . import shell
 from . import logs
+from . import image_pull

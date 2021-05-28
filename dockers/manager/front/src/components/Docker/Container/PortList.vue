@@ -14,7 +14,7 @@
         <div class="column ">
           <div
             class="col text-right"
-            v-for="(target, idx) of targets"
+            v-for="(target, idx) of (targets || [])"
             :key="idx"
           >
             {{ `${target}` }}

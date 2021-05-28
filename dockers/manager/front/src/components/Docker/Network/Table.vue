@@ -98,7 +98,7 @@ export default {
     });
     const columns = [
       col("name"),
-      col("internal"),
+      col("internal", { autoWidth: true }),
       col("gateway", {
         classes: "text-mono",
         field: ({ ipams }) => ipams[0]?.gateway

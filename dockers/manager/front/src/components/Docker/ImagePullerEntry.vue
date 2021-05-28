@@ -1,0 +1,74 @@
+<template>
+  <div class="q-gutter-xs">
+    <div class="row q-gutter-md items-center">
+      <div class="col col-auto text-h6">Pulling {{ pull.name }}</div>
+      <div class="col">
+        <q-badge
+          :label="done ? 'done' : 'running'"
+          :color="done ? 'positive' : 'warning'"
+        />
+      </div>
+    </div>
+    <div class="row q-gutter-sm items-center" :key="id" v-for="id of logIds">
+      <div class="col col-auto" v-if="!id.startsWith('info-')">
+        <span class="text-mono">{{ id }}</span>
+      </div>
+      <div
+        class="col"
+        v-if="lastLogs[id].progressDetail && lastLogs[id].progressDetail.total"
+      >
+        <q-linear-progress
+          rounded
+          size="4px"
+          :value="
+            lastLogs[id].progressDetail.current /
+              lastLogs[id].progressDetail.total
+          "
+        />
+      </div>
+      <div class="col ellipsis" style="max-width: 600px; overflow: hidden" v-else>
+        <span class="text-mono">{{ lastLogs[id].status }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from "src/api";
+import Vue from "vue";
+export default {
+  props: {
+    pull: { type: Object, required: true },
+  },
+  data() {
+    return { logIds: [], lastLogs: {}, done: false };
+  },
+  apollo: {
+    $subscribe: {
+      pullImageProgress: {
+        query: api.docker.images.PULL_IMAGE_SUBSCRIBE,
+        variables() {
+          return { id: this.pull.id };
+        },
+        result({ data }, loading) {
+          const log = data.pullImageProgress;
+          console.log("log", log, loading)
+          if (!log) {
+            this.done = true;
+            this.pull.done?.()  
+            return;
+          }
+          const id = log.id ?? "info-" + Math.random().toString();
+          if (!this.logIds.includes(id)) {
+            this.logIds.push(id);
+          }
+          Vue.set(this.lastLogs, id, log);
+        }
+      }
+    }
+  },
+  methods: {}
+};
+</script>
+
+<style></style>

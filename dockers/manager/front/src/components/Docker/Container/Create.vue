@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import ImageSelect from "./Form/ImageSelect.vue";
 import ExtraConfig from "./Form/ExtraConfig.vue";
 import MountsInput from "./Form/MountsInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
@@ -61,9 +60,6 @@ export default {
     ports: ExposedPorts
   },
   components: {
-    ImageSelect,
-    EnvironInput,
-    ExtraConfig
   },
   methods: {
     submit() {

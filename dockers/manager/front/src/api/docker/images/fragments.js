@@ -3,11 +3,9 @@ import gql from "graphql-tag";
 export const IMAGE_FRAGMENT = gql`
   fragment ImageFragment on DockerImage {
     id
+    shortId
     name
-    tags {
-      repository
-      tag
-    }
+    tags
     labels {
       key
       value

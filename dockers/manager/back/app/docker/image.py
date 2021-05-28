@@ -1,8 +1,10 @@
-from app.utils import registerQuery, registerMutation, createType
+from app.utils import registerQuery, registerMutation, createType, registerSubscription
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError, ImageNotFound
 from typing import NamedTuple
 import aiohttp
+from uuid import uuid4
+import asyncio
 import re
 
 DockerImage = createType("DockerImage")
@@ -12,9 +14,6 @@ DockerImage = createType("DockerImage")
 TAG_REG = re.compile(r"^[a-z0-9_][a-z0-9_\.\-]{0,127}$", re.IGNORECASE)
 
 
-class RepoTag(NamedTuple):
-    repository: str
-    tag: str = "latest"
 
 
 @registerQuery("dockerImages")
@@ -22,26 +21,23 @@ def resolve_images(*_, onlyFinal):
     return docker_client.images.list(all=not onlyFinal)
 
 
-@registerMutation("dockerPullImage")
-def resolve_pull_image(*_, tag: RepoTag):
-    try:
-        return docker_client.images.pull(**tag)
-    except APIError:
-        return None
-
-
 @DockerImage.field("name")
 def resolve_image_name(image, *_):
-    if image.attrs["RepoTags"]:
-        return image.attrs["RepoTags"][0]
+    if image.tags:
+        return image.tags[0]
     if image.attrs["RepoDigests"]:
         return image.attrs["RepoDigests"][0].rpartition("@")[0]
-    return image.attrs["Id"].partition(":")[2][:12]
+    return image.id.partition(":")[2][:12]
+
+
+@DockerImage.field("shortId")
+def resolve_image_shortId(image, *_):
+    return image.id.partition(":")[2][:12]
 
 
 @DockerImage.field("tags")
 def resolve_image_tags(image, _):
-    return [RepoTag(*ref.partition(":")[::2]) for ref in image.tags]
+    return image.tags
 
 
 @DockerImage.field("labels")
@@ -87,7 +83,8 @@ def resolve_image_used_by(image, _, onlyRunning):
 
 
 @registerMutation("dockerTagImage")
-def resolve_tag_image(*_, id, tag: RepoTag, force):
+def resolve_tag_image(*_, id, tag, force):
+    raise NotImplementedError()# need fix
     try:
         docker_client.api.tag(id, **tag, force=force)
         return docker_client.images.get(id)
@@ -124,15 +121,19 @@ async def resolve_search_tag(*_, repoName, imageName):
         raise ValueError(f"Invalid repoName, must match {TAG_REG.pattern}")
     if not TAG_REG.match(imageName):
         raise ValueError(f"Invalid imageName, must match {TAG_REG.pattern}")
-
-    return [
-        {
-            "name": f"{repoName}/{imageName}:{tag['name']}",
-            "size": tag["full_size"],
-            "lastUpdated": formatTime(tag["last_updated"]),
-        }
-        for tag in await get_tags_for_image(repoName, imageName)
-    ]
+    tags = []
+    for tag in await get_tags_for_image(repoName, imageName):
+        name = f"{imageName}:{tag['name']}"
+        if repoName != "library":
+            name = f"{repoName}/{name}"
+        tags.append(
+            {
+                "name": name,
+                "size": tag["full_size"],
+                "lastUpdated": formatTime(tag["last_updated"]),
+            }
+        )
+    return tags
 
 
 @registerMutation("dockerRemoveImage")

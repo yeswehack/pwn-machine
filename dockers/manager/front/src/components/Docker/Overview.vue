@@ -5,12 +5,11 @@
 <script>
 import ColorHash from "color-hash";
 import cytoscape from "cytoscape";
-import fcose from 'cytoscape-fcose';
+import fcose from "cytoscape-fcose";
 import api from "src/api";
 import BaseOverview from "../BaseOverview.vue";
 
-
-cytoscape.use( fcose );
+cytoscape.use(fcose);
 export default {
   components: { BaseOverview },
   apollo: {
@@ -88,17 +87,15 @@ export default {
         for (const port of container.ports) {
           let forwards = [];
 
-          for (const target of port.targets) {
-            forwards.push(
-              `${target}->${port.containerPort}`
-            );
+          for (const target of port.targets ?? []) {
+            forwards.push(`${target}->${port.containerPort}`);
           }
           if (forwards.length) {
             elements.push(internetEdge(container, forwards.join(", ")));
           }
         }
         for (const connection of container.connections) {
-          const network = connection.network
+          const network = connection.network;
           if (network.name == "host") {
             elements.push(hostEdge(container));
             continue;
@@ -162,7 +159,7 @@ export default {
           name: "fcose",
           randomize: true,
           fit: true,
-          animate: false,
+          animate: false
         }
       });
       cy.on("mouseover", "edge", function(event) {

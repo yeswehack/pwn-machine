@@ -59,6 +59,7 @@ export const CONTAINER_FRAGMENT = gql`
     }
     image {
       id
+      shortId
       name
     }
     environment {

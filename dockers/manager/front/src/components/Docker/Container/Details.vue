@@ -8,7 +8,7 @@
               <div class="text-h6">{{ container.name }}</div>
             </div>
             <div class="col-auto q-mx-md">
-              <image-link :name="container.image.name" />
+              <image-link :image="container.image" />
             </div>
             <div class="col-auto q-mx-md">
               <container-status :status="container.status" />

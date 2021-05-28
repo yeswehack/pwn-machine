@@ -1,5 +1,5 @@
 <template>
-  <pm-link path="/docker/networks" :name="name" :color="color">
+  <pm-link path="/docker/networks" :hash="name" :label="name" :color="color">
     <slot />
   </pm-link>
 </template>

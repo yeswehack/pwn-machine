@@ -28,7 +28,7 @@
       </q-item>
     </template>
     <template #body-cell-image="{row}">
-      <image-link :name="row.image.name" />
+      <image-link :image="row.image" />
     </template>
     <template #body-cell-name="{value, row}">
       {{ value }}

@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  dockerPullImage(tag: DockerImageTagInput!): DockerImage
+  pullDockerImage(name: String!): DockerImagePull!
   dockerRemoveImage(
     id: ID!
     force: Boolean! = false
@@ -14,8 +14,9 @@ extend type Mutation {
 
 type DockerImage {
   id: ID!
+  shortId: String!
   name: String!
-  tags: [DockerImageTag!]!
+  tags: [String!]!
   labels: [KeyValue!]!
   parent: ID!
   created: DateTime!
@@ -32,11 +33,6 @@ extend type Mutation {
     tag: DockerImageTagInput!
     force: Boolean! = false
   ): DockerImage
-}
-
-type DockerImageTag {
-  repository: String!
-  tag: String!
 }
 
 input DockerImageTagInput {
@@ -67,4 +63,29 @@ type DockerSearchImageTagResult {
   name: String!
   size: Float!
   lastUpdated: DateTime!
+}
+
+type DockerImagePullProgressDetail {
+  current: Int
+  total: Int
+}
+
+type DockerImagePullLogEntry {
+  status: String!
+  id: String
+  progressDetail: DockerImagePullProgressDetail
+  progress: String
+}
+
+type DockerImagePull {
+  id: ID!
+  name: String
+}
+
+extend type Query {
+  dockerImagePulls: [DockerImagePull!]!
+}
+
+extend type Subscription {
+  pullImageProgress(id: ID!): DockerImagePullLogEntry
 }

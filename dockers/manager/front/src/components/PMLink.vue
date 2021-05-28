@@ -1,30 +1,27 @@
 <template>
-  <router-link :to="to"  @click.native="$event.stopImmediatePropagation()">
+  <router-link :to="to" @click.native="$event.stopImmediatePropagation()">
     <q-badge class="col-auto" :color="color">
-      {{ shortName }}
+      {{ label }}
     </q-badge>
     <slot />
   </router-link>
 </template>
 
 <script>
-import { shortName } from "src/utils";
 export default {
   props: {
-    path: {type: String, required: true},
-    name:  {type: String, required: true},
+    path: { type: String, required: true },
+    label: { type: String, required: true },
+    hash: { type: String, default: null },
     color: { type: String, default: "primary" }
   },
   computed: {
     to() {
       return {
         path: this.path,
-        hash: this.name
+        hash: this.hash 
       };
     },
-    shortName() {
-      return shortName(this.name);
-    }
   }
 };
 </script>

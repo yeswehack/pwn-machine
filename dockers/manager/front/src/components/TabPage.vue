@@ -7,9 +7,8 @@
       shadow
       ref="tabs"
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
-      active-color="primary"
+      indicator-color="primary"
       align="left"
-      narrow-indicator
     >
       <slot name="default"></slot>
     </q-tabs>

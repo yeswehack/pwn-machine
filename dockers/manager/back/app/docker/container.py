@@ -95,7 +95,6 @@ def resolve_container_by_name(*_, name=None, id=None):
     except:
         return None
 
-
 @DockerContainer.field("labels")
 def resolve_container_labels(container, _):
     return [KeyValue(*label) for label in container.labels.items()]

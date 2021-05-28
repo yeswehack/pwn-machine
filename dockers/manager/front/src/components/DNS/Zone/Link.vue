@@ -1,11 +1,11 @@
 <template>
-  <PMLink path="/dns/zones" :name="name" />
+  <pm-link path="/dns/zones" :hash="name" :label="name" />
 </template>
 
 <script>
-import PMLink from "src/components/PMLink.vue";
+import PmLink from "src/components/PMLink.vue";
 export default {
-  components: { PMLink },
+  components: { PmLink },
   props: { name: String }
 };
 </script>

@@ -2,10 +2,11 @@
   <base-table
     ref="table"
     name="image"
-    row-key="name"
+    row-key="shortId"
     :query="$apollo.queries.images"
     :data="images"
     :columns="columns"
+    @create="createImage"
     @delete="deleteImage"
   >
     <template #header-button>
@@ -18,9 +19,34 @@
       />
       <q-checkbox label="Show intermediate images" v-model="showIntermediate" />
     </template>
-    <template #body-cell-images="{row}">
+    <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
-        <container-link :name="name" :key="name" v-for="{ name } of row.usedBy" />
+        <container-link
+          :name="name"
+          :key="name"
+          v-for="{ name } of row.usedBy"
+        />
+      </div>
+    </template>
+    <template #body-cell-shortId="{row}">
+      <div class="text-mono">{{ row.shortId }}</div>
+    </template>
+    <template #body-cell-tags="{row}">
+      <div class="row q-gutter-sm">
+        <div
+          class="col col-auto"
+          :key="`${row.shortId}-${tag}`"
+          v-for="tag of row.tags"
+        >
+          <q-badge
+            dense
+            class="q-px-sm"
+            outline
+            style="border-color:var(--q-color-primary)"
+          >
+            {{ tag }}
+          </q-badge>
+        </div>
       </div>
     </template>
 
@@ -33,6 +59,7 @@ import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
+import ImageSearchVue from "../Container/Form/ImageSearch.vue";
 const { humanStorageSize } = format;
 
 export default {
@@ -56,10 +83,11 @@ export default {
       ...opts
     });
     const columns = [
-      col("name"),
-      col("created"),
-      col("size", { format: v => format.humanStorageSize(v) }),
-      col("images", { label: "used by" })
+      col("shortId", { label: "Id", autoWidth: true }),
+      col("tags"),
+      col("usedBy", { label: "used by" }),
+      col("created", { autoWidth: true }),
+      col("size", { format: v => format.humanStorageSize(v), autoWidth: true })
     ];
     return { columns, showIntermediate: false };
   },
@@ -67,6 +95,17 @@ export default {
     deleteImage(image) {
       this.$api.docker.deleteImage(name.split("@")[0]);
       this.$emit("refetch");
+    },
+    createImage() {
+      this.$q
+        .dialog({
+          component: ImageSearchVue,
+          parent: this
+        })
+        .onOk(tag => {
+          this.$refs.select.add(tag);
+          this.form = tag;
+        });
     },
     pruneImages() {
       this.$q

@@ -1,16 +1,11 @@
 <template>
-  <PMLink path="/docker/images" :name="fullName" />
+  <pm-link path="/docker/images" :hash="image.shortId" :label="image.name" />
 </template>
 
 <script>
-import PMLink from "src/components/PMLink.vue";
+import PmLink from "src/components/PMLink.vue";
 export default {
-  components: { PMLink },
-  props: { name: String },
-  computed: {
-    fullName(){
-      return this.name.includes(":") ? this.name : `${this.name}:latest`
-    }
-  }
+  components: { PmLink },
+  props: { image: { type: Object, required: true } },
 };
 </script>

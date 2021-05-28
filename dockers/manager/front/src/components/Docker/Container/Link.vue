@@ -1,5 +1,5 @@
 <template>
-  <pm-link path="/docker/containers" :name="name"><slot/></pm-link>
+  <pm-link path="/docker/containers" :hash="name" :label="name"><slot/></pm-link>
 </template>
 
 <script>

@@ -1,11 +1,11 @@
 <template>
-  <PMLink path="/traefik/routers" :name="name" />
+  <pm-link path="/traefik/routers" :hash="name" :label="name" />
 </template>
 
 <script>
-import PMLink from "src/components/PMLink.vue";
+import PmLink from "src/components/PMLink.vue";
 export default {
-  components: { PMLink },
+  components: { PmLink },
   props: { name: String }
 };
 </script>

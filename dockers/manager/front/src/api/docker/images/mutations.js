@@ -8,3 +8,11 @@ export const PRUNE_IMAGES = gql`
     }
   }
 `;
+export const PULL_IMAGE = gql`
+  mutation pullDockerImage($name: String!) {
+    pullDockerImage(name: $name) {
+      id
+      name
+    }
+  }
+`;
