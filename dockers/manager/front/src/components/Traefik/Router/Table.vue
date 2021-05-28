@@ -35,7 +35,9 @@
       </div>
     </template>
     <template #body-cell-enabled="{row}">
-      <status-badge :status="row.enabled" />
+      <div>
+        <status-badge :status="row.enabled" />
+      </div>
     </template>
 
     <template #details="{ row }">
@@ -72,17 +74,19 @@ export default {
     }
   },
   data() {
-    const col = name => ({
+    const col = (name, x = {}) => ({
       name,
       align: "left",
       field: name,
       label: name,
-      sortable: true
+      sortable: true,
+      autoWidth: true,
+      ...x
     });
     const columns = [
       col("name"),
       col("type"),
-      col("rule"),
+      col("rule", { autoWidth: false }),
       col("entryPoints"),
       col("middlewares"),
       col("service"),

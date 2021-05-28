@@ -1,7 +1,9 @@
 <template>
-  <q-badge :color="status ? 'positive' : 'negative'" class="q-ml-sm text-mono">
-    {{ status ? "OK" : "ERROR" }}
-  </q-badge>
+  <q-badge
+    :label="status ? 'OK' : 'ERROR'"
+    :color="status ? 'positive' : 'negative'"
+    class="q-ml-sm text-mono"
+  />
 </template>
 
 <script>

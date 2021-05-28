@@ -63,19 +63,21 @@ export default {
     }
   },
   data() {
-    const col = name => ({
+    const col = (name, x = {}) => ({
       name,
       align: "left",
       field: name,
       label: name,
-      sortable: true
+      sortable: true,
+      autoWidth: true,
+      ...x
     });
     const columns = [
       col("name"),
       col("protocol"),
       col("type"),
-      { ...col("usedBy"), label: "Connected Routers" },
-      { ...col("enabled"), label: "Status" }
+      col("usedBy", { label: "Connected Routers",  autoWidth: false  }),
+      col("enabled", { label: "Status" })
     ];
 
     return {
