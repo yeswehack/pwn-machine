@@ -1,6 +1,6 @@
 <template>
   <router-link :to="to" @click.native="$event.stopImmediatePropagation()">
-    <q-badge class="col-auto" :color="color">
+    <q-badge class="col-auto pm-link" :color="color">
       {{ label }}
     </q-badge>
     <slot />
@@ -26,4 +26,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.pm-link{
+
+  border: 1px solid transparent;
+  transition: border-color .125s;
+}
+.pm-link:hover{
+  border-color: white;
+}
+</style>

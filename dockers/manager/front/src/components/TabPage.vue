@@ -21,24 +21,11 @@
         </transition>
       </div>
     </div>
-    <q-page-sticky class="refresh-btn" position="top-right" :offset="[16, 16]">
-      <q-btn
-        round
-        color="primary"
-        dense
-        icon="refresh"
-        @click="refresh"
-        :loading="loading"
-      />
-    </q-page-sticky>
   </q-page>
 </template>
 
 <script>
 export default {
-  data() {
-    return { loading: false };
-  },
   watch: {
     $route(to, from) {
       const links = Array.from(this.$refs.tabs.$el.querySelectorAll(".q-tab"));
@@ -49,13 +36,6 @@ export default {
       const newIdx = findPos(to);
       const direction = newIdx < oldIdx ? 1 : -1;
       this.$refs.page.$el.style.setProperty("--direction", direction);
-    }
-  },
-  methods: {
-    async refresh() {
-      this.loading = true;
-      window.setTimeout(() => (this.loading = false), 1000);
-      await this.$refs.view.refresh();
     }
   }
 };
@@ -113,9 +93,5 @@ export default {
 <style>
 .tabs a {
   text-decoration: none;
-}
-.slide-enter-active .refresh-btn,
-.slide-leave-active .refresh-btn {
-  display: none;
 }
 </style>

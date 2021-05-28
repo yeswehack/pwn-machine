@@ -16,7 +16,7 @@
         <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
         <q-route-tab :to="{ name: 'shellIndex' }" label="Shell" />
         <q-space />
-        <q-route-tab :to="{ name: 'index' }" label="Config" />
+        <q-route-tab :to="{ name: 'index' }" label="Config" v-if="0" />
       </q-tabs>
     </q-header>
 
@@ -26,6 +26,16 @@
     <Downloader />
     <Uploader />
     <image-puller />
+    <q-page-sticky class="refresh-btn" position="top-right" :offset="[16, 16]">
+      <q-btn
+        round
+        color="primary"
+        dense
+        icon="refresh"
+        @click="refresh_"
+        :loading="loading"
+      />
+    </q-page-sticky>
   </q-layout>
 </template>
 
@@ -42,6 +52,16 @@ export default {
     },
     requireLogin() {
       return false;
+    }
+  },
+  data(){
+    return {loading: false}
+  },
+  methods: {
+    async refresh_() {
+      this.loading = true;
+      window.setTimeout(() => (this.loading = false), 1000);
+      this.refresh();
     }
   },
   watch: {
