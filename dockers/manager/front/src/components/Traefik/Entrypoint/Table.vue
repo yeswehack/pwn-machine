@@ -45,23 +45,25 @@ export default {
     }
   },
   data() {
-    const col = name => ({
-      name,
+    const col = (name, opt = {}) => ({
+      name: name,
       align: "left",
-      field: name,
       label: name,
-      sortable: true
+      field: name,
+      autoWidth: true,
+      sortable: true,
+      ...opt
     });
     const columns = [
-      col("name"),
       col("protocol"),
-      {
-        ...col("ipport"),
+      col("name", {autoWidth: false}),
+      col("ipport", {
+        autoWidth: false,
         label: "Listening on",
         classes: "text-mono",
         field: row => `${row.ip}:${row.port}`
-      },
-      col("usedBy")
+      }),
+      col("usedBy", {autoWidth: false})
     ];
 
     return {
