@@ -11,7 +11,7 @@ const shellRoute = {
       component: () => import("components/Shell/CreatePage.vue")
     },
     {
-      path: ":uuid",
+      path: ":id",
       props: true,
       name: "shellId",
       component: () => import("components/Shell/ContainerShell.vue")

@@ -2,7 +2,7 @@
 from .traefik import TraefikHTTPApi , TraefikRedisApi
 from .powerdns import PowerdnsHTTPApi
 from .elasticsearch import es
-from .shell import ShellManager
+from .shell import create_shell
 from .docker import docker_client 
 from .NamespacedRedis import NamespacedRedis
 

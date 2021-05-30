@@ -1,8 +1,9 @@
 <template>
   <div>
     <q-card-section>
-      <div class="column q-gutter-md">
+      <div class="column q-gutter-sm">
         <component
+          ref="containerName"
           :is="formChildren.containerName"
           v-model="form.containerName"
         />
@@ -38,7 +39,12 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <reset-and-save :modified="modified" @save="submit" @reset="reset" />
+      <reset-and-save
+        :modified="modified"
+        @save="submit"
+        :validate="validate"
+        @reset="reset"
+      />
     </q-card-section>
   </div>
 </template>
@@ -64,14 +70,17 @@ export default {
     submit() {
       this.$apollo
         .mutate({
-          mutation: api.docker.SPAWN_CONTAINER_SHELL,
+          mutation: api.docker.shells.SPAWN_SHELL,
           variables: { input: this.form },
-          refetchQueries: [{ query: api.docker.GET_CONTAINER_SHELLS }]
+          refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
         })
         .then(({ data }) => {
-          const uuid = data.dockerSpawnContainerShell.nodeId;
-          this.$router.push({ name: "shellId", params: { uuid } });
+          const id = data.spawnDockerContainerShell.nodeId;
+          this.$router.push({ name: "shellId", params: { id } });
         });
+    },
+    validate() {
+      return this.$refs.containerName.validate();
     }
   }
 };

@@ -1,12 +1,8 @@
 import asyncio
-import fcntl
 import os
 import pty
 import select
-import signal
 import struct
-import subprocess
-import termios
 import tty
 from uuid import uuid4
 
@@ -15,163 +11,144 @@ import psutil
 from .docker import docker_client
 
 BUFF_SIZE = 1024
-MAX_DATA_SIZE = 1024 * 1024 * 2 # 2Mo
-
-def create_pty(cmd):
-    pid, fd = pty.fork()
-    if pid == 0:
-        subprocess.run(cmd)
-        os._exit(0)
-    return pid, fd
+MAX_DATA_SIZE = 1024 * 1024 * 2  # 2Mo
 
 
-class ShellManager:
-    shells = {}
-
-    def __init__(self):
-        raise NotImplemented()
-
-    @classmethod
-    def spawn(
-        cls,
+async def create_shell(
+    container_name, cmd, *, privileged=None, environment=None, workdir=None, user=None
+):
+    exec_id = docker_client.api.exec_create(
         container_name,
         cmd,
-        *,
-        privileged=None,
-        environment=None,
-        workdir=None,
-        user=None,
-    ):
-        uuid = str(uuid4())
-
-        full_cmd = ["docker", "exec"]
-
-        if privileged:
-            full_cmd += ["--privileged"]
-        if environment:
-            for k, v in environment.items():
-                full_cmd += ["--env", f"{k}={v}"]
-        if workdir:
-            full_cmd += ["-workdir", workdir]
-        if user:
-            full_cmd += ["--user", user]
-
-        full_cmd += ["-it", container_name, *cmd]
-        pid, fd = create_pty(full_cmd)
-
-        meta = {
-            "nodeId": uuid,
-            "containerName": container_name,
-            "cmd": cmd,
-            "fullCmd": full_cmd,
-            "pid": pid,
-            "fd": fd,
-            "running": True
-        }
-
-        shell = ContainerShell(fd, meta)
-        cls.shells[uuid] = shell
-        return shell
-
-    @classmethod
-    def get(cls, uuid):
-        return cls.shells.get(uuid, None)
+        stdin=True,
+        tty=True,
+        privileged=privileged,
+        user=user,
+        environment=environment,
+        workdir=workdir,
+    )["Id"]
+    meta = {
+        "nodeId": exec_id,
+        "containerName": container_name,
+        "cmd": cmd,
+        "running": True,
+    }
+    socket = docker_client.api.exec_start(exec_id, socket=True)._sock
+    reader, writer = await asyncio.open_connection(sock=socket)
+    return Shell(container_name, exec_id, reader, writer)
 
 
-    @classmethod
-    def remove(cls, uuid):
-        del cls.shells[uuid]
-
-    @classmethod
-    def all(cls):
-        return tuple(cls.shells.values())
+from contextlib import contextmanager
 
 
-class ContainerShell:
-    def __init__(self, fd, meta):
-        self.meta = meta
-        self.fd = fd
+class Shell:
+    def __init__(self, container_name, id, reader, writer):
+        self.id = id
+        self.containerName = container_name
+        self.writer = writer
         self.logs = b""
+        self.subscribers = set()
+        self.exitCode = None
+        self.running = True
+        asyncio.create_task(self.monitor(reader))
 
     @property
-    def running(self):
-        return psutil.pid_exist(self.pid)
-
-    def __getattr__(self, name):
-        if name in self.meta:
-            return self.meta[name]
-        return super().__getattr__(name)
+    def nodeId(self):
+        return self.id
 
     def resize(self, rows, cols):
-        winsize = struct.pack("HHHH", rows, cols, 0, 0)
-        fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsize)
+        if self.running:
+            docker_client.api.exec_resize(self.id, rows, cols)
 
     def write(self, data):
-        return os.write(self.fd, data.encode())
+        self.writer.write(data)
+
+    async def monitor(self, reader):
+        while True:
+            try:
+                info = await reader.readexactly(8)
+                fd, *_, size = struct.unpack(">bbbbi", info)
+                data = await reader.readexactly(size)
+            except asyncio.IncompleteReadError:
+                break
+
+            self.logs = (self.logs + data)[-MAX_DATA_SIZE:]
+            for sub in self.subscribers:
+                sub.put_nowait(data)
+        status = docker_client.api.exec_inspect(self.id)
+        self.exitCode = status["ExitCode"]
+        self.running = False
+        for sub in self.subscribers:
+            sub.put_nowait(None)
+
+    def disconnect(self, con):
+        con.stop()
+        self.subscribers.remove(con.shell_queue)
 
     async def connect(self, ws):
-        loop = asyncio.get_running_loop()
-        await ws.send_json({"stdout": self.logs.decode()})
-        quit_queue = asyncio.Queue()
-        stdout_queue = asyncio.Queue()
+        con = ShellConnection(self, ws)
+        self.subscribers.add(con.shell_queue)
+        return con
 
-        def on_stdout_ready():
-            try:
-                data = os.read(self.fd, BUFF_SIZE)
-                self.logs  = (self.logs + data)[-MAX_DATA_SIZE:]
-                stdout_queue.put_nowait(data)
-            except OSError as e:
-                loop.remove_reader(self.fd)
-                quit_queue.put_nowait(True)
 
-        stdout_reader = loop.add_reader(self.fd, on_stdout_ready)
+class ShellConnection:
+    def __init__(self, shell, ws):
+        self.shell = shell
+        self.ws = ws
+        self.shell_queue = asyncio.Queue()
+        self.quit_queue = asyncio.Queue()
 
-        create_ws_task = lambda: asyncio.create_task(ws.receive_json())
-        create_stdout_task = lambda: asyncio.create_task(stdout_queue.get())
-        create_quit_task = lambda: asyncio.create_task(quit_queue.get())
+    def write(self, data):
+        self.shell.write(data)
+
+    async def send(self, **kwargs):
+        if "stdout" in kwargs:
+            kwargs["stdout"] = kwargs["stdout"].decode()
+        await self.ws.send_json(kwargs)
+
+    def stop(self):
+        self.quit_queue.put_nowait(True)
+
+    async def start(self):
+        await self.send(stdout=self.shell.logs)
+        if (not self.shell.running):
+            await self.send(exit=self.shell.exitCode)
+            return
+
+        create_ws_task = lambda: asyncio.create_task(self.ws.receive_json())
+        create_shell_task = lambda: asyncio.create_task(self.shell_queue.get())
+        create_quit_task = lambda: asyncio.create_task(self.quit_queue.get())
 
         ws_task = create_ws_task()
         quit_task = create_quit_task()
-        stdout_task = create_stdout_task()
+        shell_task = create_shell_task()
 
         while True:
             await asyncio.wait(
-                (ws_task, stdout_task, quit_task),
+                (ws_task, shell_task, quit_task),
                 return_when=asyncio.FIRST_COMPLETED,
             )
             if quit_task.done():
-                stdout_task.cancel()
+                shell_task.cancel()
                 ws_task.cancel()
-                ShellManager.remove(self.meta["nodeId"])
                 break
 
-            if stdout_task.done():
-                data = stdout_task.result().decode()
-                asyncio.create_task(ws.send_json({"stdout": data}))
-                stdout_task = create_stdout_task()
+            if shell_task.done():
+                data = shell_task.result()
+                if data is None:
+                    await self.send(exit=self.shell.exitCode)
+                    quit_task.cancel()
+                    ws_task.cancel()
+                    break
+                    
+                await self.send(stdout=data)
+                shell_task = create_shell_task()
 
             if ws_task.done():
                 msg = ws_task.result()
                 if "stdin" in msg:
-                    self.write(msg["stdin"])
+                    data = msg["stdin"].encode()
+                    self.write(data)
                 if "resize" in msg:
-                    self.resize(msg["resize"]["rows"], msg["resize"]["cols"])
-                if "exit" in msg:
-                    await quit_queue.put(True)
-                    os.kill(self.meta["pid"], signal.SIGKILL)
+                    self.shell.resize(msg["resize"]["rows"], msg["resize"]["cols"])
                 ws_task = create_ws_task()
-
-
-async def handle_shell(ws):
-    uuid = ws.path_params.get("uuid")
-    shell = ShellManager.get(uuid)
-    if shell is None:
-        await ws.close()
-        return
-
-    try:
-        await ws.accept()
-        await shell.connect(ws)
-        await ws.send_json({"exit": True})
-    finally:
-        await ws.close()

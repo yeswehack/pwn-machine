@@ -2,12 +2,11 @@ type DockerContainerShell {
   nodeId: ID!
   containerName: String!
   running: Boolean!
-  cmd: [String!]!
 }
 
 extend type Query {
   dockerContainerShells: [DockerContainerShell!]!
-  dockerContainerShell(id: ID): DockerContainerShell
+  dockerContainerShellById(id: ID): DockerContainerShell
 }
 
 input SpawnContainerShellInput {
@@ -20,5 +19,6 @@ input SpawnContainerShellInput {
 }
 
 extend type Mutation {
-  dockerSpawnContainerShell(input: SpawnContainerShellInput!): DockerContainerShell
+  spawnDockerContainerShell(input: SpawnContainerShellInput!): DockerContainerShell
+  deleteDockerContainerShell(id: ID!): Boolean
 }

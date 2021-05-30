@@ -1,6 +1,0 @@
-mutation spawnContainerShell($input: SpawnContainerShellInput!) {
-  dockerSpawnContainerShell(input: $input) {
-    nodeId
-    containerName
-  }
-}

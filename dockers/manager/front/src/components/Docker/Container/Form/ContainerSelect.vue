@@ -1,5 +1,5 @@
 <template>
-  <q-select :options="options" v-model="form" label="Container" clearable />
+  <q-select ref="select" :options="options" :rules="[notEmpty]" v-model="form" label="Container" clearable />
 </template>
 
 <script>
@@ -21,6 +21,16 @@ export default {
   computed: {
     options() {
       return (this.containers ?? []).map(c => c.name);
+    }
+  },
+  methods:{
+    notEmpty(v){
+      if (!v){
+        return "Please choose a container"
+      }
+    },
+    validate(){
+      return this.$refs.select.validate()
     }
   }
 };

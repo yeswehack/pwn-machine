@@ -6,7 +6,7 @@
       class="bg-positive text-white"
     />
     <q-route-tab
-      :to="{ name: 'shellId', params: { uuid: nodeId } }"
+      :to="{ name: 'shellId', params: { id: nodeId } }"
       :name="nodeId"
       :key="nodeId"
       :label="containerName"
@@ -23,7 +23,7 @@ export default {
   components: { TabPage },
   apollo: {
     shells: {
-      query: api.docker.GET_CONTAINER_SHELLS,
+      query: api.docker.shells.LIST_SHELLS,
       update: data => data.dockerContainerShells
     }
   }

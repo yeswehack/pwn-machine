@@ -4,23 +4,27 @@
       <q-resize-observer @resize="onResize" :debounce="300" />
     </div>
     <q-btn
-      v-if="started"
+      v-if="!connected"
       class="poweroff"
       round
-      icon="power_settings_new"
+      icon="eva-trash"
       size="sm"
+      title="Remove"
       color="negative"
-      @click="exit"
+      @click="remove"
     />
   </div>
 </template>
 
 <script>
+import api from "src/api";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
 
-const WS_URL = `${window.location.protocol == "https:" ? "wss": "ws"}://${window.location.host}/ws/shell`;
+const WS_URL = `${window.location.protocol == "https:" ? "wss" : "ws"}://${
+  window.location.host
+}/ws/shell`;
 
 function openWS(url) {
   return new Promise((resolve, reject) => {
@@ -46,7 +50,8 @@ async function closeSocket(ws) {
 
 class Shell {
   constructor() {
-    this.started = false;
+    this.connected = false;
+    this.exitCode = null;
     this.fitAddon = new FitAddon();
     this.webLinksAddon = new WebLinksAddon();
     this.term = new Terminal({
@@ -56,6 +61,10 @@ class Shell {
     this.term.loadAddon(this.fitAddon);
     this.term.loadAddon(this.webLinksAddon);
     this.term.onData(data => this.onLocalData(data));
+  }
+
+  get running() {
+    return this.exitCode === null;
   }
 
   async start(el, url) {
@@ -68,12 +77,12 @@ class Shell {
           });
           this.ws.addEventListener("close", () => {
             this.term.blur();
-            this.started = false;
+            this.connected = false;
             resolve();
           });
           this.term.open(el);
           this.term.focus();
-          this.started = true;
+          this.connected = true;
           this.fit();
         })
         .catch(e => {
@@ -102,7 +111,8 @@ class Shell {
     if ("stdout" in msg) {
       this.term.write(msg.stdout);
     }
-    if ("exit" in msg) {
+    if ("status" in msg) {
+      this.exitCode = msg["exitCode"];
       this.ws.close();
     }
   }
@@ -111,16 +121,12 @@ class Shell {
     this.ws.send(JSON.stringify(data));
   }
 
-  onLocalData(data) {
-    this.send({ stdin: data });
-  }
-
-  exit() {
-    this.send({ exit: true });
+  onLocalData(stdin) {
+    this.send({ stdin });
   }
 
   fit() {
-    if (!this.started) return;
+    if (!this.connected) return;
     this.fitAddon.fit();
     const resize = {
       cols: this.term.cols,
@@ -132,31 +138,40 @@ class Shell {
 
 export default {
   props: {
-    uuid: { type: String, required: true }
+    id: { type: String, required: true }
   },
   data() {
     const shell = new Shell();
-    return { shell };
+    return { shell, disconnecting: false };
   },
   methods: {
     onResize(size) {
       this.shell.fit();
     },
-    exit() {
-      this.shell.exit();
+
+    remove() {
+      this.$apollo.mutate({
+        mutation: api.docker.shells.DELETE_SHELL,
+        variables: { id: this.id },
+        refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
+      }).then(() => {
+        this.$router.push({name: "shellNew"})
+      });
     },
     disconnect() {
+      this.disconnecting = true;
       return this.shell.stop();
     },
     connect() {
       this.shell
-        .start(this.$refs.terminal, WS_URL + "/" + this.uuid)
+        .start(this.$refs.terminal, WS_URL + "/" + this.id)
         .then(() => {
-          this.$q.notify({
-            message: "Connection closed",
-            color: "negative",
-            position: "top"
-          });
+          if (!this.disconnecting)
+            this.$q.notify({
+              message: "Connection closed",
+              color: "negative",
+              position: "top"
+            });
         })
         .catch(e => {
           this.$router.push({ name: "shellNew" });
@@ -164,12 +179,15 @@ export default {
     }
   },
   computed: {
-    started() {
-      return this.shell?.started ?? false;
+    connected() {
+      return this.shell?.connected ?? false;
     }
   },
   mounted() {
     this.connect();
+  },
+  beforeDestroy() {
+    this.disconnect();
   },
   watch: {
     $route: {

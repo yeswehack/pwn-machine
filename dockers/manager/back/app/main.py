@@ -18,7 +18,7 @@ from starlette_context.middleware import RawContextMiddleware
 from app.api import NamespacedRedis, PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
 from app import config
 from . import dns, docker, traefik
-from .api.shell import handle_shell
+from .docker.shell import handle_shell
 from app.api import es
 from .auth import auth_middleware
 from .redis import client as redis_client

@@ -1,7 +1,7 @@
 <template>
-  <div class="row justify-center">
+  <div class="row justify-center full-width">
     <div class="col col-auto" style="width: 600px">
-      <q-card bordered>
+      <q-card bordered flat>
         <q-card-section>
           <div class="text-h6">Open a new shell</div>
         </q-card-section>
