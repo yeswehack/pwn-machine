@@ -149,11 +149,7 @@ export default {
         component: ShellDialog,
         parent: this,
         container: this.container
-      }); /* 
-      const uuid = await this.$api.shell.createContainerShell(
-        this.container.Name
-      );
-      this.$router.push({ name: "shell", params: { tab: uuid } }); */
+      });
     },
     pauseContainer() {
       this.$apollo.mutate({
