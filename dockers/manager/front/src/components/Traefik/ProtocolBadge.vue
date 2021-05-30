@@ -1,5 +1,5 @@
 <template>
-  <q-badge :color="color">{{ protocol }} </q-badge>
+  <q-badge outline  class="text-white" :style="{'border-color': color}">{{ protocol }} </q-badge>
 </template>
 
 <script>
@@ -11,17 +11,21 @@ export default {
     color() {
       switch (this.protocol) {
         case "http":
-          return "primary";
+          return "var(--q-color-primary)";
         case "tcp":
-          return "secondary";
+          return "var(--q-color-secondary)";
         case "udp":
-          return "accent";
+          return "var(--q-color-accent)";
         default:
-          return "negative";
+          return "var(--q-color-negative)";
       }
     }
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.status {
+  color: white ;
+}
+</style>
