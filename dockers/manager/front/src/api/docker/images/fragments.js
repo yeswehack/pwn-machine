@@ -10,6 +10,10 @@ export const IMAGE_FRAGMENT = gql`
       key
       value
     }
+    history {
+      operation
+      argument
+    }
     parent
     created
     size

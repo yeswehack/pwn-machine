@@ -12,6 +12,15 @@ extend type Mutation {
   pruneDockerImages(onlyDangling: Boolean! = true): PruneResponse!
 }
 
+type DockerImageHistoryEntry {
+  operation: String !
+  argument: String !
+  comment: String!
+  tags: [String!]!
+  date: DateTime
+  size: Int!
+}
+
 type DockerImage {
   id: ID!
   shortId: String!
@@ -24,6 +33,7 @@ type DockerImage {
   entrypoint: [String!]
   command: [String!]
   environment: [KeyValue!]!
+  history: [DockerImageHistoryEntry!]!
   usedBy(onlyRunning: Boolean! = true): [DockerContainer!]!
 }
 

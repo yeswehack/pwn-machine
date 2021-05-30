@@ -50,7 +50,9 @@
       </div>
     </template>
 
-    <template #details> </template>sed
+    <template #details="{row}">
+      <image-details :image="row" />
+    </template>
   </base-table>
 </template>
 
@@ -60,10 +62,11 @@ import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 import ImageSearchVue from "../Container/Form/ImageSearch.vue";
+import ImageDetails from "./Details.vue";
 const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ContainerLink },
+  components: { BaseTable, ContainerLink, ImageDetails },
   apollo: {
     images: {
       query: api.docker.images.LIST_IMAGES,

@@ -1,8 +1,10 @@
 from app.utils import registerQuery, registerMutation, createType, registerSubscription
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError, ImageNotFound
+import docker
 from typing import NamedTuple
 import aiohttp
+from dataclasses import dataclass
 from uuid import uuid4
 import asyncio
 import re
@@ -14,6 +16,14 @@ DockerImage = createType("DockerImage")
 TAG_REG = re.compile(r"^[a-z0-9_][a-z0-9_\.\-]{0,127}$", re.IGNORECASE)
 
 
+@dataclass
+class HistoryEntry:
+    operation: str
+    argument: str
+    comment: str
+    tags: list[str]
+    date: int
+    size: int
 
 
 @registerQuery("dockerImages")
@@ -82,9 +92,42 @@ def resolve_image_used_by(image, _, onlyRunning):
     )
 
 
+OP_RE = re.compile(r"^([A-Z]+)\s+(.*)")
+
+
+def parse_created_by(s):
+    print("\n\n")
+    print(s)
+    if "#(nop)" in s:
+        return parse_created_by(s.split("#(nop)", 1)[1].strip())
+    if s.startswith("RUN |") or s.startswith("/bin/sh -c"):
+        return parse_created_by(s.split("sh -c", 1)[1].strip())
+    if match := OP_RE.match(s):
+        return match.group(1), match.group(2)
+    return "RUN", s
+
+
+@DockerImage.field("history")
+def resolve_image_history(image, _):
+    for entry in image.history()[::-1]:
+        operation, argument = parse_created_by(entry["CreatedBy"])
+        size = entry["Size"]
+        comment = entry["Comment"]
+        date = entry["Created"]
+        tags = entry["Tags"] or []
+        yield HistoryEntry(
+            operation=operation,
+            argument=argument,
+            tags=tags,
+            comment=comment,
+            date=date,
+            size=size,
+        )
+
+
 @registerMutation("dockerTagImage")
 def resolve_tag_image(*_, id, tag, force):
-    raise NotImplementedError()# need fix
+    raise NotImplementedError()  # need fix
     try:
         docker_client.api.tag(id, **tag, force=force)
         return docker_client.images.get(id)
