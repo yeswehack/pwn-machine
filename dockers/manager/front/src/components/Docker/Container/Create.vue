@@ -102,7 +102,6 @@ export default {
     },
     extra: {
       get() {
-        console.log(this.form.capAdd);
         return {
           command: this.form.command,
           user: this.form.user,
@@ -118,7 +117,6 @@ export default {
   },
   methods: {
     validate() {
-      console.log('validate', this.$refs.image.validate())
       return this.$refs.image.validate();
     },
     submit() {

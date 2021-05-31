@@ -202,9 +202,6 @@ export default {
               variables: { id: container.id, force, pruneVolumes },
               refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
             })
-            .then(e => {
-              console.log("ok", e);
-            })
             .catch(e => {
               this.$q.notify({
                 message: e.message,
