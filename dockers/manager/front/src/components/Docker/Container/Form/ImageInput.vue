@@ -7,6 +7,9 @@
     input-debounce="0"
     label="Image"
     use-input
+    emit-value
+    :rules="[notEmpty]"
+    map-options
     @filter="filterFn"
     :readonly="readonly"
     clearable
@@ -43,10 +46,9 @@ export default {
   },
   computed: {
     imageOptions() {
-      return (this.images ?? []).map(image => ({
-        label: image.name,
-        value: image.id
-      })).filter(i => i.label.toLowerCase().includes(this.filter ?? ""));
+      return (this.images ?? [])
+        .map(image => image.name)
+        .filter(i => i.toLowerCase().includes(this.filter ?? ""));
     }
   },
   methods: {
@@ -54,8 +56,16 @@ export default {
       this.filter = val.toLowerCase();
       update();
     },
+    notEmpty(v) {
+      if (!v) {
+        return "Image is required";
+      }
+    },
     update(v) {
       this.$emit("input", v?.value ?? null);
+    },
+    validate() {
+      return this.$refs.select.validate();
     },
     searchImage() {
       this.$q

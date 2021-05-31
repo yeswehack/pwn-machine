@@ -3,11 +3,12 @@
     <q-separator />
     <q-card>
       <q-card-section>
-        <div class="column q-gutter-sm ">
-          <q-input :readonly="readonly" v-model="form.cmd" label="Command" />
+        <div class="q-gutter-sm ">
+          <q-input :readonly="readonly" v-model="form.command" label="Command" />
           <q-input :readonly="readonly" v-model="form.user" label="User" />
-          <restart-policy :readonly="readonly" v-model="form.restartPolicy" />
-          <capabilities :readonly="readonly" v-model="form.capabilities" />
+          <restart-policy :readonly="readonly" v-model="form.restartPolicy"/>
+          <component :is="formChildren.capAdd" :readonly="readonly" v-model="form.capAdd" />
+          <component :is="formChildren.capDrop" :readonly="readonly" v-model="form.capDrop" />
         </div>
       </q-card-section>
     </q-card>
@@ -16,7 +17,8 @@
 
 <script>
 import RestartPolicy from "./RestartPolicy.vue";
-import Capabilities from "./Capabilities.vue";
+import CapabilitiesAddInput from "./CapabilitiesAddInput.vue";
+import CapabilitiesDropInput from "./CapabilitiesDropInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 export default {
   props: {
@@ -24,12 +26,13 @@ export default {
   },
   mixins: [DeepForm],
   formDefinition: {
-    cmd: null,
+    command: null,
     user: null,
     restartPolicy: null,
-    capabilities: null
+    capAdd: CapabilitiesAddInput,
+    capDrop: CapabilitiesDropInput
   },
-  components: { RestartPolicy, Capabilities }
+  components: { RestartPolicy }
 };
 </script>
 

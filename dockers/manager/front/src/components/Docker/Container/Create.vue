@@ -2,12 +2,12 @@
   <q-form @submit="submit">
     <q-card-section class="q-gutter-md">
       <q-input v-model="form.name" label="name" v-if="!readonly" />
-      <image-input v-model="form.image" v-if="!readonly" />
+      <image-input ref="image" v-model="image" v-if="!readonly" />
       <q-list separator class="rounded-borders" bordered>
         <component
           :readonly="readonly"
           :is="formChildren.extra"
-          v-model="form.extra"
+          v-model="extra"
         />
         <component
           :readonly="readonly"
@@ -31,24 +31,24 @@
         />
       </q-list>
     </q-card-section>
-    <q-card-actions align="right" class="q-pa-md q-gutter-md" v-if="!readonly">
-      <q-toggle
-        color="negative"
-        v-model="form.rm"
-        label="Delete on stop"
-        left-label
+    <q-card-section class="row q-gutter-md" v-if="!readonly">
+      <div class="col col-auto">
+        <q-toggle
+          color="positive"
+          v-model="form.start"
+          label="Start the container"
+        />
+      </div>
+    </q-card-section>
+    <q-card-section>
+      <reset-and-save
+        :modified="modified"
+        :validate="validate"
+        @save="submit"
+        @reset="reset"
       />
-      <q-toggle
-        color="positive"
-        v-model="form.start"
-        label="Start the container"
-        left-label
-      />
-      <q-btn color="positive" type="submit" class="q-py-xs q-px-md col-2">
-        {{ form.start ? "Start" : "Create" }}
-      </q-btn>
-    </q-card-actions>
-    <q-card-actions v-if="false">
+    </q-card-section>
+    <q-card-actions v-if="true">
       <pre>{{ JSON.stringify(form, null, 2) }}</pre>
     </q-card-actions>
   </q-form>
@@ -62,28 +62,77 @@ import EnvironInput from "./Form/EnvironInput.vue";
 import LabelInputVue from "../LabelInput.vue";
 import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
+import api from "src/api";
+import ResetAndSave from "src/components/ResetAndSave.vue";
 export default {
   props: {
     readonly: { type: Boolean, default: false }
   },
   mixins: [DeepForm],
   formDefinition: {
+    start: true,
     name: null,
     image: null,
     labels: LabelInputVue,
     environment: EnvironInput,
     extra: ExtraConfig,
+    ports: null,
+    capAdd: null,
+    capDrop: null,
+    restartPolicy: null,
+    user: null,
+    command: null,
     mounts: MountsInput,
     ports: ExposedPorts
   },
   components: {
     EnvironInput,
     ExtraConfig,
-    ImageInput
+    ImageInput,
+    ResetAndSave
+  },
+  computed: {
+    image: {
+      get() {
+        return this.value?.image?.name ?? null;
+      },
+      set(v) {
+        this.form.image = v;
+      }
+    },
+    extra: {
+      get() {
+        console.log(this.form.capAdd);
+        return {
+          command: this.form.command,
+          user: this.form.user,
+          restartPolicy: this.form.restartPolicy,
+          capAdd: this.form.capAdd,
+          capDrop: this.form.capDrop
+        };
+      },
+      set(v) {
+        this.form = Object.assign({}, this.form, v);
+      }
+    }
   },
   methods: {
+    validate() {
+      console.log('validate', this.$refs.image.validate())
+      return this.$refs.image.validate();
+    },
     submit() {
-      this.$emit("submit", this.form);
+      const input = Object.assign({}, this.form);
+      delete input["extra"];
+      this.$apollo
+        .mutate({
+          mutation: api.docker.containers.CREATE_CONTAINER,
+          variables: { input },
+          refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
+        })
+        .then(r => {
+          this.$emit("ok", r);
+        });
     }
   }
 };

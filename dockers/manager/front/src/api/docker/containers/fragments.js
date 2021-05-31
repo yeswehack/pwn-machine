@@ -51,8 +51,13 @@ export const CONTAINER_FRAGMENT = gql`
     name
     status
     command
+    capAdd
+    capDrop
     privileged
-
+    restartPolicy{
+      name
+      maximumRetryCount
+    }
     labels {
       key
       value

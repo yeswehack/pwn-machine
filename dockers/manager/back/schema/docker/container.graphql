@@ -6,13 +6,13 @@ extend type Query {
 
 extend type Mutation {
   createDockerContainer(input: DockerContainerInput!): DockerContainer
-  startDockerContainer(id: ID!): DockerContainer
-  restartDockerContainer(id: ID!): DockerContainer
-  pauseDockerContainer(id: ID!): DockerContainer
-  unpauseDockerContainer(id: ID!): DockerContainer
-  stopDockerContainer(id: ID!): DockerContainer
-  killDockerContainer(id: ID!): DockerContainer
-  renameDockerContainer(id: ID!, name: String!): DockerContainer
+  startDockerContainer(id: ID!): Boolean!
+  restartDockerContainer(id: ID!): Boolean!
+  pauseDockerContainer(id: ID!): Boolean!
+  unpauseDockerContainer(id: ID!): Boolean!
+  stopDockerContainer(id: ID!): Boolean!
+  killDockerContainer(id: ID!): Boolean!
+  renameDockerContainer(id: ID!, name: String!): Boolean!
   deleteDockerContainer(
     id: ID!
     force: Boolean! = false
@@ -20,7 +20,6 @@ extend type Mutation {
   ): Boolean!
   pruneDockerContainers: PruneResponse!
 }
-
 
 type DockerContainerProcess {
   user: String!
@@ -36,13 +35,59 @@ type DockerContainerProcess {
   command: String!
 }
 
+enum DockerCapability {
+  AUDIT_WRITE
+  CHOWN
+  DAC_OVERRIDE
+  FOWNER
+  FSETID
+  KILL
+  MKNOD
+  NET_BIND_SERVICE
+  NET_RAW
+  SETFCAP
+  SETGID
+  SETPCAP
+  SETUID
+  SYS_CHROOT
+  AUDIT_CONTROL
+  AUDIT_READ
+  BLOCK_SUSPEND
+  BPF
+  CHECKPOINT_RESTORE
+  DAC_READ_SEARCH
+  IPC_LOCK
+  IPC_OWNER
+  LEASE
+  LINUX_IMMUTABLE
+  MAC_ADMIN
+  MAC_OVERRIDE
+  NET_ADMIN
+  NET_BROADCAST
+  PERFMON
+  SYS_ADMIN
+  SYS_BOOT
+  SYS_MODULE
+  SYS_NICE
+  SYS_PACCT
+  SYS_PTRACE
+  SYS_RAWIO
+  SYS_RESOURCE
+  SYS_TIME
+  SYS_TTY_CONFIG
+  SYSLOG
+  WAKE_ALARM
+}
+
 type DockerContainer {
   id: ID!
   name: String!
   labels: [KeyValue!]!
   image: DockerImage!
   created: DateTime!
-  command: [String!]!
+  command: String!
+  capAdd: [DockerCapability!]!
+  capDrop: [DockerCapability!]!
   environment: [KeyValue!]!
   mounts: [DockerContainerMount!]!
   connections: [DockerContainerConnection!]!
@@ -50,22 +95,38 @@ type DockerContainer {
   status: DockerContainerStatus!
   privileged: Boolean!
   ps: [DockerContainerProcess]
+  restartPolicy: DockerRestartPolicy
 }
 
 input DockerContainerInput {
   name: String
+  start: Boolean! = false
+  rm: Boolean! = false
+  image: String!
   labels: [KeyValueInput!]! = []
-  imageId: String!
   command: String
-  user: String! = "root"
-  workdir: String! = "/"
+  user: String
+  workdir: String
+  capAdd: [DockerCapability!]! = []
+  capDrop: [DockerCapability!]! = []
   environment: [KeyValueInput!]! = []
   privileged: Boolean! = false
   readonly: Boolean! = false
   mounts: [DockerContainerMountInput!]! = []
   ports: [DockerContainerPortInput!]! = []
-  onExit: DockerContainerOnExit
+  restartPolicy: DockerRestartPolicyInput
 }
+
+type DockerRestartPolicy{
+  name: String!
+  maximumRetryCount: Int
+}
+
+input DockerRestartPolicyInput{
+  name: String!
+  maximumRetryCount: Int
+}
+
 
 type DockerContainerMount {
   type: DockerContainerMountType!
@@ -77,10 +138,11 @@ type DockerContainerMount {
 }
 
 input DockerContainerMountInput {
-  type: DockerContainerMountType! = VOLUME
+  type: DockerContainerMountType!
+  name: String
   source: String
   target: String!
-  readonly: Boolean! = false
+  readonly: Boolean!
 }
 
 enum DockerContainerMountType {
@@ -107,7 +169,6 @@ input DockerContainerPortInput {
   targets: [String!]
 }
 
-
 input DockerContainerPortHostBindingInput {
   ip: String! = "localhost"
   port: Int
@@ -129,9 +190,9 @@ enum DockerContainerStatus {
   DEAD
 }
 
-enum DockerContainerOnExit {
-  RESTART_ON_FAILURE
-  RESTART_UNLESS_STOPPED
-  RESTART_ALWAYS
-  REMOVE
+enum DockerRestartPolicyEnum {
+  NO
+  ON_FAILURE
+  UNLESS_STOPPED
+  ALWAYS
 }

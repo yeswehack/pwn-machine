@@ -29,14 +29,14 @@ export default async function(/* { app, router, store, ssrContext, urlPath, redi
         defaultOptions: {
           watchQuery: {
             fetchPolicy: "cache-and-network",
-            errorPolicy: "all"
+            errorPolicy: "none"
           },
           query: {
             fetchPolicy: "cache-and-network",
-            errorPolicy: "all"
+            errorPolicy: "none"
           },
           mutate: {
-            errorPolicy: "all"
+            errorPolicy: "none"
           }
         }
       }

@@ -85,8 +85,6 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import api from "src/api";
-import VolumeLink from "../../Volume/Link.vue";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   components: { BaseGridInput },

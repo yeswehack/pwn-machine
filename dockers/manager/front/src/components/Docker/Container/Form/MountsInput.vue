@@ -142,10 +142,7 @@ export default {
     readonly: { type: Boolean, default: false }
   },
   mixins: [DeepForm],
-  formDefinition: [
-    { type: "volume", name: "pm_elasticsearch-data", target: "/data" },
-    { type: "volume", name: "pm_elasticsearch-data2", target: "/data2" }
-  ],
+  formDefinition: [],
   components: { VolumeLink, BaseGridInput },
   apollo: {
     dockerVolumes: {

@@ -21,60 +21,67 @@
                   color="grey"
                   icon="navigate_next"
                   title="Open a shell in the container"
-                  @click="openShell()"
+                  @click="openShell"
                 />
                 <q-btn
+                  :loading="btnLoad.pause"
                   round
                   color="primary"
                   icon="pause"
                   title="Pause the container"
-                  @click="pauseContainer()"
+                  @click="pressButton('pause')"
                 />
                 <q-btn
+                  :loading="btnLoad.restart"
                   round
                   color="orange"
                   icon="replay"
                   title="Restart the container"
-                  @click="restartContainer()"
+                  @click="pressButton('restart')"
                 />
                 <q-btn
+                  :loading="btnLoad.stop"
                   round
                   color="negative"
                   icon="stop"
                   title="Stop the container"
-                  @click="stopContainer()"
+                  @click="pressButton('stop')"
                 />
               </template>
               <template v-else-if="status == 'paused'">
                 <q-btn
+                  :loading="btnLoad.unpause"
                   round
                   color="primary"
                   icon="play_arrow"
                   title="Unpause the container"
-                  @click="unpauseContainer()"
+                  @click="pressButton('unpause')"
                 />
                 <q-btn
+                  :loading="btnLoad.restart"
                   round
                   color="orange"
                   icon="replay"
                   title="restart the container"
-                  @click="restartContainer()"
+                  @click="pressButton('restart')"
                 />
                 <q-btn
+                  :loading="btnLoad.stop"
                   round
                   color="negative"
                   icon="stop"
                   title="Stop the container"
-                  @click="stopContainer()"
+                  @click="pressButton('stop')"
                 />
               </template>
               <template v-else>
                 <q-btn
+                  :loading="btnLoad.start"
                   round
                   color="positive"
                   icon="play_arrow"
                   title="Start the container"
-                  @click="startContainer()"
+                  @click="pressButton('start')"
                 />
               </template>
             </div>
@@ -126,6 +133,16 @@ export default {
   props: {
     container: { type: Object, required: true }
   },
+  data() {
+    const btnLoad = {
+      start: false,
+      restart: false,
+      stop: false,
+      pause: false,
+      unpause: false
+    };
+    return { btnLoad };
+  },
   computed: {
     status() {
       switch (this.container.status.toLowerCase()) {
@@ -151,41 +168,31 @@ export default {
         container: this.container
       });
     },
-    pauseContainer() {
-      this.$apollo.mutate({
-        mutation: api.docker.containers.PAUSE_CONTAINER,
-        variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-      });
+    pressButton(name) {
+      const mutations = {
+        start: api.docker.containers.START_CONTAINER,
+        restart: api.docker.containers.RESTART_CONTAINER,
+        stop: api.docker.containers.STOP_CONTAINER,
+        pause: api.docker.containers.PAUSE_CONTAINER,
+        unpause: api.docker.containers.UNPAUSE_CONTAINER
+      };
+      this.btnLoad[name] = true;
+      this.$apollo
+        .mutate({
+          mutation: mutations[name],
+          variables: { id: this.container.id },
+          refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
+        })
+        .catch(e => {
+          this.$q.notify({
+            message: e.message,
+            type: "negative"
+          });
+        })
+        .finally(() => {
+          this.btnLoad[name] = false;
+        });
     },
-    async unpauseContainer() {
-      this.$apollo.mutate({
-        mutation: api.docker.containers.UNPAUSE_CONTAINER,
-        variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-      });
-    },
-    async startContainer() {
-      this.$apollo.mutate({
-        mutation: api.docker.containers.START_CONTAINER,
-        variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-      });
-    },
-    async stopContainer() {
-      this.$apollo.mutate({
-        mutation: api.docker.containers.STOP_CONTAINER,
-        variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-      });
-    },
-    async restartContainer() {
-      this.$apollo.mutate({
-        mutation: api.docker.containers.RESTART_CONTAINER,
-        variables: { id: this.container.id },
-        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-      });
-    }
   }
 };
 </script>

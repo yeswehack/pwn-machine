@@ -167,7 +167,52 @@ export default {
         parent: this
       });
     },
-    deleteContainer(container) {},
+    deleteContainer(container) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          options: {
+            model: [],
+            items: [
+              {
+                label: "Force the removal (uses SIGKILL)",
+                value: "force",
+
+                color: "primary"
+              },
+              {
+                label: "Remove associated anonymous volumes ",
+                value: "pruneVolumes",
+
+                color: "primary"
+              }
+            ],
+            type: "toggle"
+          },
+          message: `Are you sure you want to delete ${container.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(result => {
+          const force = result.includes("force");
+          const pruneVolumes = result.includes("pruneVolumes");
+          this.$apollo
+            .mutate({
+              mutation: api.docker.containers.DELETE_CONTAINER,
+              variables: { id: container.id, force, pruneVolumes },
+              refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
+            })
+            .then(e => {
+              console.log("ok", e);
+            })
+            .catch(e => {
+              this.$q.notify({
+                message: e.message,
+                type: "negative"
+              });
+            });
+        });
+    },
     cloneContainer(container) {
       this.$q.dialog({
         component: ContainerDialog,

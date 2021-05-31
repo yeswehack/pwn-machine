@@ -13,9 +13,10 @@ export default {
     color() {
       switch (this.status.toLowerCase()) {
         case "running":
+          return "positive";
         case "created":
         case "restarting":
-          return "positive";
+          return "primary";
         case "paused":
           return "orange";
         case "removing":
