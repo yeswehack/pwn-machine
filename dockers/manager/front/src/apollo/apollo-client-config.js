@@ -16,7 +16,7 @@ export default async function(/* { app, router, store, ssrContext, urlPath, redi
         // `GRAPHQL_URI=https://dev.example.com/graphql quasar dev`
         uri: process.env.GRAPHQL_URI || "/api"
       },
-
+      
       // 'apollo-cache-inmemory' config
       // https://www.apollographql.com/docs/react/caching/cache-configuration/#configuring-the-cache
       cacheConfig: {
@@ -25,7 +25,21 @@ export default async function(/* { app, router, store, ssrContext, urlPath, redi
 
       // additional config for apollo client
       // https://github.com/apollographql/apollo-client/blob/version-2.6/docs/source/api/apollo-client.mdx#optional-fields
-      additionalConfig: {}
+      additionalConfig: {
+        defaultOptions: {
+          watchQuery: {
+            fetchPolicy: "cache-and-network",
+            errorPolicy: "all"
+          },
+          query: {
+            fetchPolicy: "cache-and-network",
+            errorPolicy: "all"
+          },
+          mutate: {
+            errorPolicy: "all"
+          }
+        }
+      }
     },
 
     // you can add more options or override the default config for a specific
