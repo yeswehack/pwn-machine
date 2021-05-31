@@ -9,7 +9,7 @@ export const LIST_LOGS = gql`
     traefikLogs(filter: $filter, cursor: $cursor) {
       total
       result {
-        ...LogFragment
+        ...TraefikLogFragment
       }
     }
   }

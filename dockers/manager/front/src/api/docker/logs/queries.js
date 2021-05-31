@@ -6,7 +6,7 @@ export const LIST_LOGS = gql`
     dockerLogs(filter: $filter, cursor: $cursor) {
       total
       result {
-        ...LogFragment
+        ...DockerLogFragment
       }
     }
   }

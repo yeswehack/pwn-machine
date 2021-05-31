@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const LOG_FRAGMENT = gql`
-  fragment LogFragment on TraefikLog {
+  fragment TraefikLogFragment on TraefikLog {
     host
     origin
     status

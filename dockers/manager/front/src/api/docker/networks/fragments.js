@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const CONNECTION_FRAGMENT = gql`
-  fragment ConnectionFragment on DockerNetworkConnection {
+  fragment NetworkConnectionFragment on DockerNetworkConnection {
     ipAddress
     aliases
     container {
@@ -34,7 +34,7 @@ export const NETWORK_FRAGMENT = gql`
       ...IpamFragment
     }
     usedBy {
-      ...ConnectionFragment
+      ...NetworkConnectionFragment
     }
   }
   ${IPAM_FRAGMENT}

@@ -35,7 +35,7 @@ export const EXPOSED_PORTS_FRAGMENT = gql`
 `;
 
 export const CONNECTION_FRAGMENT = gql`
-  fragment ConnectionFragment on DockerContainerConnection {
+  fragment ContainerConnectionFragment on DockerContainerConnection {
     aliases
     ipAddress
     network {
@@ -75,7 +75,7 @@ export const CONTAINER_FRAGMENT = gql`
       ...MountFragment
     }
     connections {
-      ...ConnectionFragment
+      ...ContainerConnectionFragment
     }
     ports {
       ...ExposedPortFragment

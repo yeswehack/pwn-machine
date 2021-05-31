@@ -9,12 +9,3 @@ export const LIST_VOLUMES = gql`
   }
   ${VOLUME_FRAGMENT}
 `;
-
-export const GET_VOLUME_BY_NAME = gql`
-  query getVolume($name: String!) {
-    getDockerVolumeByName(name: $name) {
-      ...VolumeFragment
-    }
-  }
-  ${VOLUME_FRAGMENT}
-`;
