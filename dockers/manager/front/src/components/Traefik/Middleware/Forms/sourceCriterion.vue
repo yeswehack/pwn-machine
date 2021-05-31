@@ -11,9 +11,6 @@
       <q-toggle label="Request host" v-model="form.requestHost" />
 </div>
         </q-card-section>
-        <q-card-section v-if="0">
-          <pre>{{form}}</pre>
-        </q-card-section>
       </q-card>
     </q-expansion-item>
   </q-list>

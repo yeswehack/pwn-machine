@@ -15,9 +15,6 @@
       <q-toggle label="Serial number" v-model="form.serialNumber" />
 </div>
         </q-card-section>
-        <q-card-section v-if="0">
-          <pre>{{form}}</pre>
-        </q-card-section>
       </q-card>
     </q-expansion-item>
   </q-list>

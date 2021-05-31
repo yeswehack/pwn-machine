@@ -15,8 +15,6 @@
         <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
         <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
         <q-route-tab :to="{ name: 'shellIndex' }" label="Shell" />
-        <q-space />
-        <q-route-tab :to="{ name: 'index' }" label="Config" v-if="0" />
       </q-tabs>
     </q-header>
 
