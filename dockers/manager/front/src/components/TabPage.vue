@@ -7,7 +7,8 @@
       shadow
       ref="tabs"
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
-      indicator-color="primary"
+      :indicator-color="indicatorColor"
+      v-bind="$attrs"
       align="left"
     >
       <slot name="default"></slot>
@@ -26,6 +27,9 @@
 
 <script>
 export default {
+  props: {
+    indicatorColor: { type: String, default: "primary" }
+  },
   watch: {
     $route(to, from) {
       const links = Array.from(this.$refs.tabs.$el.querySelectorAll(".q-tab"));

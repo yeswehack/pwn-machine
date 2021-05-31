@@ -1,5 +1,5 @@
 <template>
-  <tab-page>
+  <tab-page :indicator-color="color" narrow-indicator>
     <q-route-tab
       :to="{ name: 'shellNew' }"
       icon="add"
@@ -25,6 +25,11 @@ export default {
     shells: {
       query: api.docker.shells.LIST_SHELLS,
       update: data => data.dockerContainerShells
+    }
+  },
+  computed: {
+    color() {
+      return this.$route.name == "shellNew" ? "white" : "primary";
     }
   }
 };
