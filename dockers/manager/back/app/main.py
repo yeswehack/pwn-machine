@@ -102,10 +102,12 @@ async def on_shutdown():
     await sessions["powerdns"].close()
 
 
+graphql_route = GraphQL(schema, middleware=[auth_middleware])
 app = Starlette(
     routes=[
         WebSocketRoute("/ws/shell/{uuid:str}", handle_shell),
-        Route("/api", GraphQL(schema, middleware=[auth_middleware])),
+        Route("/api", graphql_route),
+        Route("/api/", graphql_route),
         WebSocketRoute("/api", GraphQL(schema=schema)),
         Mount("/", StaticFilesFallback(directory="static", html=True)),
     ],
