@@ -173,7 +173,7 @@ def resolve_container_ps(container, _):
     except:
         return
     processes = []
-    for ps in top["Processes"]:
+    for ps in (top["Processes"] or []):
         process = {}
         for title, value in zip(titles, ps):
             process[title] = value
