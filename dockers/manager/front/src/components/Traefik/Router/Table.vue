@@ -85,7 +85,7 @@ export default {
     });
     const columns = [
       col("name"),
-      col("type"),
+      col("type", {label: "protocol"}),
       col("rule", { autoWidth: false }),
       col("entryPoints"),
       col("middlewares"),
