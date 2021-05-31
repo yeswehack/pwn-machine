@@ -1,4 +1,4 @@
-from . import auth_query, auth_mutation, auth_operations
+from . import USERNAME, ISSUER, auth_query, auth_mutation, auth_operations
 from .database import Database
 
 import os
@@ -11,8 +11,6 @@ import pyotp
 import jwt
 
 
-ISSUER = "PwnMachine"
-
 AUTH_DISABLED_ENVVAR = "PM_DISABLE_AUTH"
 if AUTH_DISABLED := bool(os.environ.get(AUTH_DISABLED_ENVVAR)):
     warn(f"Never set {AUTH_DISABLED_ENVVAR} in production")
@@ -21,8 +19,8 @@ hasher = argon2.PasswordHasher()
 db = Database()
 
 
-@auth_query("authNeedsSetup")
-async def resolve_needs_setup(*_):
+@auth_query("authSetupNeeded")
+async def resolve_setup_needed(*_):
     if await db.password_hash is None:
         return "PASSWORD"
     if await db.totp_client is None:
@@ -32,7 +30,7 @@ async def resolve_needs_setup(*_):
 @auth_query("authTotpUri")
 async def resolve_totp_uri(*_):
     secret = pyotp.random_base32()
-    return pyotp.totp.utils.build_uri(secret, ISSUER)
+    return pyotp.totp.utils.build_uri(secret, USERNAME, issuer=ISSUER)
 
 
 async def make_jwt_token(expire=None):
@@ -69,13 +67,13 @@ async def resolve_resfresh_token(*_, token, expire=None):
     return make_jwt_token(expire)
 
 
-@auth_mutation("updateAuthPassword")
+@auth_mutation("updateAuthPassword", skip_auth=resolve_setup_needed)
 async def resolve_update_password(*_, password):
     await db.save_password_hash(hasher.hash(password))
     return True
 
 
-@auth_mutation("updateAuthTotp")
+@auth_mutation("updateAuthTotp", skip_auth=resolve_setup_needed)
 async def resolve_update_totp(*_, uri, totp):
     totp_client = pyotp.parse_uri(uri)
     if not totp_client.verify(totp):
@@ -86,6 +84,12 @@ async def resolve_update_totp(*_, uri, totp):
 
 
 async def auth_middleware(resolver, obj, info, **args):
+    skip_auth = auth_operations.get(info.field_name)
+    if callable(skip_auth):
+        skip_auth = skip_auth()
+    if isawaitable(skip_auth):
+        skip_auth = await skip_auth
+
     if (
         AUTH_DISABLED is False
         # Check auth only for root fields
@@ -93,13 +97,13 @@ async def auth_middleware(resolver, obj, info, **args):
         # except for introspection queries
         and not info.field_name.startswith("__")
         # except for auth operations
-        and info.field_name not in auth_operations
+        and not skip_auth
     ):
         try:
             headers = info.context["request"].headers
             token = headers["Authorization"].split()[-1]
             jwt.decode(token, await db.jwt_secret, ["HS256"], issuer=ISSUER)
-        except jwt.exceptions.InvalidTokenError:
+        except (KeyError, jwt.exceptions.InvalidTokenError):
             raise Exception("Unauthorized")
 
     res = resolver(obj, info, **args)

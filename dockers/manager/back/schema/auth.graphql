@@ -1,9 +1,9 @@
 extend type Query {
-  authNeedsSetup: SetupStepNeeded
+  authSetupNeeded: SetupStep
   authTotpUri: String!
 }
 
-enum SetupStepNeeded {
+enum SetupStep {
   PASSWORD
   TOTP
 }

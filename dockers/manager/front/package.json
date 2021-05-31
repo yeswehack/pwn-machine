@@ -25,6 +25,7 @@
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-fcose": "^2.0.0",
     "lodash": "^4.17.21",
+    "qrcode.vue": "^1.7.0",
     "quasar": "^1.15.16",
     "subscriptions-transport-ws": "^0.9.18",
     "vue-apollo": "^3.0.7",
