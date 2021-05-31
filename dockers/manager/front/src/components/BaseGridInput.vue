@@ -25,6 +25,14 @@
         </div>
       </template>
       <div class="spacing" v-if="!readonly"></div>
+      <div v-if="readonly && entries.length==0" style="display: contents">
+        <div
+          :key="`title-${idx}`"
+          v-for="(title, idx) of titles"
+        >
+          -
+        </div>
+      </div>
       <div :key="idx" v-for="(entry, idx) of entries" style="display: contents">
         <div class="separator" v-if="idx > 0"></div>
         <slot name="entry" :entry="entry" />
