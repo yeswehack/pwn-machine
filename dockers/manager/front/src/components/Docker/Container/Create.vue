@@ -48,7 +48,7 @@
         @reset="reset"
       />
     </q-card-section>
-    <q-card-actions v-if="true">
+    <q-card-actions v-if="false">
       <pre>{{ JSON.stringify(form, null, 2) }}</pre>
     </q-card-actions>
   </q-form>
