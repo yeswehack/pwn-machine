@@ -126,8 +126,8 @@ export default {
           {
             selector: ".network",
             style: {
-              width: 10,
-              height: 10,
+              width: 2,
+              height: 2,
               shape: "ellipse",
               "background-color": "#1d1d1d",
               "border-width": 1
