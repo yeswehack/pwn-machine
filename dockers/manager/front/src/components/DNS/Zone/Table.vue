@@ -2,7 +2,7 @@
   <base-table
     ref="table"
     name="zone"
-    row-key="nodeId"
+    row-key="name"
     :query="$apollo.queries.zones"
     :data="zones"
     :columns="columns"
