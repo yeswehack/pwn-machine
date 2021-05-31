@@ -38,11 +38,6 @@
         @save="submit"
       />
     </q-card-section>
-    <q-card-section v-if="0">
-      <pre>
-      {{ form }}
-      </pre>
-    </q-card-section>
   </q-form>
 </template>
 
