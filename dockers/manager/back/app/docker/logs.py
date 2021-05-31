@@ -52,7 +52,6 @@ def resolve_container_id(log, _):
 
 @dockerLog.field("message")
 def resolve_container_id(log, _):
-    print(log)
     return log["message"]
 
 

@@ -75,7 +75,6 @@ def mutation_pull_image(*_, name):
 
 @registerSubscription("pullImageProgress")
 async def subscribe_to_pull(*_, id):
-    print("GET", id, ImagePuller.runners)
     if not ImagePuller.has(id):
         return
     async for message in ImagePuller.follow(id):

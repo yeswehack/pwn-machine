@@ -96,8 +96,6 @@ OP_RE = re.compile(r"^([A-Z]+)\s+(.*)")
 
 
 def parse_created_by(s):
-    print("\n\n")
-    print(s)
     if "#(nop)" in s:
         return parse_created_by(s.split("#(nop)", 1)[1].strip())
     if s.startswith("RUN |") or s.startswith("/bin/sh -c"):

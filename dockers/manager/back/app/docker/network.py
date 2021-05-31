@@ -121,7 +121,6 @@ def resolve_connect_container(*_, input):
     try:
         network.connect(container, aliases=aliases)
     except APIError as e:
-        print(e)
         return False
     return True
 
