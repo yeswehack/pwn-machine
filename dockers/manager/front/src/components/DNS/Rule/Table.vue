@@ -38,6 +38,7 @@ import BaseTable from "src/components/BaseTable.vue";
 import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
 import ZoneDialog from "src/components/DNS/Rule/Dialog.vue";
+import { notify } from "src/utils";
 
 export default {
   components: { BaseTable, ZoneLink, RuleDetails },
@@ -104,11 +105,13 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo.mutate({
-            mutation: api.dns.rules.DELETE_RULE,
-            variables: { nodeId: rule.nodeId },
-            refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
-          });
+          this.$apollo
+            .mutate({
+              mutation: api.dns.rules.DELETE_RULE,
+              variables: { nodeId: rule.nodeId },
+              refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
+            })
+            .then(notify(`(${rule.type}) ${rule.name} deleted`));
         });
     },
     isEnabled(r) {

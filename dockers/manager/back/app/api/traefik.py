@@ -13,13 +13,7 @@ entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
 )
 
-logger = logging.getLogger("uvicorn")
-
 ROOT = "http://127.0.0.1:8080/api"
-
-
-def log(msg):
-    logger.info(f"[{__name__}] {msg}")
 
 
 def settings_to_kv(settings, prefix=""):
@@ -36,22 +30,31 @@ def settings_to_kv(settings, prefix=""):
             yield f"{prefix}/{k}", v
 
 
+async def create_from_object(client, obj, prefix=""):
+    async with client.pipeline(transaction=True) as pipe:
+        for k, v in settings_to_kv(obj, prefix):
+            pipe = pipe.set(k, v)
+        await pipe.execute()
+
+
 async def delete_pattern(client, pattern):
-    for key in await client.keys(pattern):
-        log(f"REDIS delete key: {key}")
-        await client.delete(key)
+    async with client.pipeline(transaction=True) as pipe:
+        for key in await client.keys(pattern):
+            pipe = pipe.delete(key)
+        await pipe.execute()
 
 
 class TraefikRedisApi:
     _instance = None
 
-    def __init__(self, client, http_api):
+    def __init__(self, root, client, http_api):
+        self.root = root
         self.client = client
         self.http_api = http_api
 
     @classmethod
-    def create(cls, client, http_api):
-        cls._instance = cls(client, http_api)
+    def create(cls, root, client, http_api):
+        cls._instance = cls(root, client, http_api)
         return cls._instance
 
     @classmethod
@@ -61,95 +64,97 @@ class TraefikRedisApi:
     async def delete_pattern(self, pattern):
         return await delete_pattern(self.client, pattern)
 
+    async def create_from_object(self, settings, prefix=""):
+        return await create_from_object(self.client, settings, prefix)
+
     # Service
     async def create_service(self, name, protocol, type, settings):
         redis_name = name.split("@")[0] if "@" in name else name
-        prefix = f"/{protocol}/services/{redis_name}/{type}"
-        for k, v in settings_to_kv(settings, prefix):
-            await self.client.set(k, v)
-        service = await self.http_api.wait(f"/{protocol}/services/{redis_name}@redis")
-        service["protocol"] = protocol
-        return service
+        prefix = f"{self.root}/{protocol}/services/{redis_name}/{type}"
+        await self.create_from_object(settings, prefix)
+        await asyncio.sleep(1)
+        return {"success": True}
 
     async def delete_service(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_SERVICE")
         service = await self.http_api.get_service(protocol, name)
         if service["provider"] != "redis":
-            raise ValueError("You can't delete this service")
+            return {"error": "You can't delete this service", "success": False}
         redis_name = name.split("@")[0] if "@" in name else name
-        await self.delete_pattern(f"/{protocol}/services/{redis_name}/*")
-        return await self.http_api.wait_delete(f"/{protocol}/services/{name}")
+        await self.delete_pattern(f"{self.root}/{protocol}/services/{redis_name}/*")
+        await asyncio.sleep(1)
+        return {"success": True}
 
     # Middleware
     async def delete_middleware(self, nodeId):
-        name = validate_node_id(nodeId, "TRAEFIK_MW")[0]
+        (name,) = validate_node_id(nodeId, "TRAEFIK_MW")
+        middleware = await self.http_api.get_middleware(name)
+        if middleware["provider"] != "redis":
+            return {"error": "You can't delete this middleware", "success": False}
         redis_name = name.split("@")[0] if "@" in name else name
-        await self.delete_pattern(f"/http/middlewares/{redis_name}/*")
-        return await self.http_api.wait_delete(f"/http/middlewares/{name}")
+        await self.delete_pattern(f"{self.root}/http/middlewares/{redis_name}/*")
+        await asyncio.sleep(1)
+        return {"success": True}
 
     async def create_middleware(self, name, type, settings):
         redis_name = name.split("@")[0] if "@" in name else name
-        prefix = f"/http/middlewares/{redis_name}/{type}"
-        for k, v in settings_to_kv(settings, prefix):
-            await self.client.set(k, v)
-        return await self.http_api.wait(f"/http/middlewares/{redis_name}@redis")
+        prefix = f"{self.root}/http/middlewares/{redis_name}/{type}"
+        await self.create_from_object(settings, prefix)
+        await asyncio.sleep(1)
+        return {"success": True}
 
     async def update_middleware(self, nodeId, type_name, patch):
         (name,) = validate_node_id(nodeId, "TRAEFIK_MW")
         middleware = await self.http_api.get_middleware(name)
         if middleware["provider"] != "redis":
-            raise ValueError("You can't edit this middleware")
+            return {"error": "You can't edit this middleware", "success": False}
 
-        root = f"/http/middlewares/{middleware['name'].split('@')[0]}/{type_name}"
+        prefix = f"{self.root}/http/middlewares/{middleware['name'].split('@')[0]}/{type_name}"
 
         for key, option in patch.items():
-            await self.delete_pattern(f"{root}/{key}/*")
-            for key, value in settings_to_kv({key: option}):
-                await self.client.set(root + key, value)
+            await self.delete_pattern(f"{prefix}/{key}/*")
+            await self.create_from_object({key: option}, prefix)
         await asyncio.sleep(1)
-        with no_cache():
-            return await self.http_api.get_middleware(name)
+        return {"success": True}
 
     # Router
     async def create_router(self, protocol, settings):
         name = settings.pop("name")
         redis_name = name.split("@")[0] if "@" in name else name
-        prefix = f"/{protocol}/routers/{redis_name}"
-        for k, v in settings_to_kv(settings, prefix):
-            await self.client.set(k, v)
+        prefix = f"{self.root}/{protocol}/routers/{redis_name}"
 
-        with no_cache():
-            router = await self.http_api.wait(f"/{protocol}/routers/{redis_name}@redis")
-            router["protocol"] = protocol
-            return router
+        await self.create_from_object(settings, prefix)
+
+        await asyncio.sleep(1)
+        return {"success": True}
 
     async def delete_router(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
         router = await self.http_api.get_router(protocol, name)
         if router["provider"] != "redis":
-            raise ValueError("You can't delete this router")
+            return {"error": "You can't delete this router", "success": False}
 
         redis_name = name.split("@")[0]
-        await self.delete_pattern(f"/{protocol}/routers/{redis_name}/*")
+        await self.delete_pattern(f"{self.root}/{protocol}/routers/{redis_name}/*")
 
-        with no_cache():
-            return await self.http_api.wait_delete(f"/{protocol}/routers/{name}")
+        await asyncio.sleep(1)
+        return {"success": True}
 
     async def update_router(self, nodeId, patch):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
         router = await self.http_api.get_router(protocol, name)
         if router["provider"] != "redis":
-            raise ValueError("You can't edit this router")
+            return {"error": "You can't edit this router", "success": False}
 
-        root = f"/{router['protocol']}/routers/{router['name'].split('@')[0]}"
+        prefix = (
+            f"{self.root}/{router['protocol']}/routers/{router['name'].split('@')[0]}"
+        )
 
         for key, option in patch.items():
-            await self.delete_pattern(f"{root}/{key}/*")
-            for key, value in settings_to_kv({key: option}):
-                await self.client.set(root + key, value)
+            await self.delete_pattern(f"{prefix}/{key}/*")
+            await self.create_from_object({key: option}, prefix)
         await asyncio.sleep(1)
-        with no_cache():
-            return await self.http_api.get_router(protocol, name)
+        return {"success": True}
 
 
 class TraefikHTTPApi:
@@ -169,7 +174,6 @@ class TraefikHTTPApi:
 
     @cacheMethodForQuery
     async def get(self, path):
-        log(f"API GET {path}")
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"
         async with self.session.get(full_path) as response:
             return await response.json()

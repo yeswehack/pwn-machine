@@ -12,24 +12,23 @@ from app.utils import (
 
 
 def escape_lua(lua):
-    lua = lua.replace("\\", '\\x5c')
-    lua = lua.replace('"', '\\x22')
-    lua = lua.replace("'", '\\x27')
-    lua = lua.replace("\n", '\\x0a')
+    lua = lua.replace("\\", "\\x5c")
+    lua = lua.replace('"', "\\x22")
+    lua = lua.replace("'", "\\x27")
+    lua = lua.replace("\n", "\\x0a")
     return f";return loadstring('{lua}')()"
     return lua
-
 
 
 def unescape_lua(lua):
     if not lua.startswith(";return loadstring("):
         return lua
-    
+
     lua = lua[20:-4]
-    lua = lua.replace('\\x5c', "\\")
-    lua = lua.replace('\\x22', '"')
-    lua = lua.replace('\\x27', "'")
-    lua = lua.replace("\\x0a", '\n')
+    lua = lua.replace("\\x5c", "\\")
+    lua = lua.replace("\\x22", '"')
+    lua = lua.replace("\\x27", "'")
+    lua = lua.replace("\\x0a", "\n")
     return lua
 
 
@@ -55,6 +54,7 @@ def resolve_name(rule, *_):
 @DnsRule.field("isLua")
 def resolve_islua(rule, *_):
     return rule["type"] == "LUA"
+
 
 @DnsRule.field("type")
 def resolve_islua(rule, *_):
@@ -101,26 +101,46 @@ async def create_dns_rule_mutation(*_, input):
 
     if input["isLua"]:
         record = input["records"][0]
-        escaped_content = escape_lua(record['content'])
+        escaped_content = escape_lua(record["content"])
         formated = f'{type} "{escaped_content}"'
         records = [{"content": formated, "enabled": record["enabled"]}]
         type = "LUA"
 
-    return await dns_http().create_rule(zone, name, type, ttl, records)
+    try:
+        await dns_http().create_rule(zone, name, type, ttl, records)
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+    return {"success": True}
 
 
 @registerMutation("updateDnsRule")
 async def update_dns_zone_mutation(*_, nodeId, patch):
     ttl = patch["ttl"]
     records = patch["records"]
-    return await dns_http().update_rule(nodeId, ttl, records)
+    try:
+        await dns_http().update_rule(nodeId, ttl, records)
+    except:
+        return {"error": "Unknow error", "success": False}
+
+    return {"success": True}
 
 
 @registerMutation("deleteDnsRule")
 async def delete_dns_rule_mutation(*_, nodeId):
-    return await dns_http().delete_rule(nodeId)
+    try:
+        await dns_http().delete_rule(nodeId)
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+    return {"success": True}
 
 
 @registerMutation("enableDnsRule")
-async def delete_dns_rule_mutation(*_, nodeId, enabled):
-    return await dns_http().enable_rule(nodeId, enabled)
+async def enable_dns_rule_mutation(*_, nodeId, enabled):
+    try:
+        await dns_http().enable_rule(nodeId, enabled)
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+    return {"success": True}

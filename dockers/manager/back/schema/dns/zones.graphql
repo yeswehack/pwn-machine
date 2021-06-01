@@ -44,7 +44,7 @@ extend type Query {
 
 
 extend type Mutation {
-  createDnsZone(input: CreateDnsZoneInput!): DnsZone
-  updateDnsZone(nodeId: ID!, patch: UpdateDnsZoneInput!): DnsZone
-  deleteDnsZone(nodeId: ID!): Boolean
+  createDnsZone(input: CreateDnsZoneInput!): BasicMutationResponse!
+  updateDnsZone(nodeId: ID!, patch: UpdateDnsZoneInput!): BasicMutationResponse!
+  deleteDnsZone(nodeId: ID!): BasicMutationResponse!
 }

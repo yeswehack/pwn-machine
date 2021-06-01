@@ -1,34 +1,37 @@
 import gql from "graphql-tag";
-import { RULE_FRAGMENT } from "./fragments";
+import { BASIC_MUTATION_FRAGMENT } from "src/api/common/fragments";
 
 export const CREATE_RULE = gql`
   mutation createDnsRule($input: CreateDnsRuleInput!) {
     createDnsRule(input: $input) {
-      ...RuleFragment
+      ...BasicMutationFragment
     }
   }
-  ${RULE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 export const DELETE_RULE = gql`
   mutation deleteDnsRule($nodeId: ID!) {
-    deleteDnsRule(nodeId: $nodeId)
+    deleteDnsRule(nodeId: $nodeId) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const UPDATE_RULE = gql`
   mutation updateDnsRule($nodeId: ID!, $patch: UpdateDnsRuleInput!) {
     updateDnsRule(nodeId: $nodeId, patch: $patch) {
-      ...RuleFragment
+      ...BasicMutationFragment
     }
   }
-  ${RULE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const ENABLE_RULE = gql`
   mutation enableDnsRule($nodeId: ID!, $enabled: Boolean!) {
-    enableDnsRule(nodeId: $nodeId, enabled: $enabled) {
-      ...RuleFragment
+    enableDnsRule(nodeId: $nodeId, enabled: $enabled)  {
+      ...BasicMutationFragment
     }
   }
-  ${RULE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;

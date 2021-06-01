@@ -75,8 +75,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createDnsRule(input: CreateDnsRuleInput!): DnsRule
-  enableDnsRule(nodeId: ID!, enabled: Boolean!): DnsRule
-  updateDnsRule(nodeId: ID!, patch: UpdateDnsRuleInput!): DnsRule
-  deleteDnsRule(nodeId: ID!): Boolean
+  createDnsRule(input: CreateDnsRuleInput!): BasicMutationResponse!
+  enableDnsRule(nodeId: ID!, enabled: Boolean!): BasicMutationResponse!
+  updateDnsRule(nodeId: ID!, patch: UpdateDnsRuleInput!): BasicMutationResponse!
+  deleteDnsRule(nodeId: ID!): BasicMutationResponse!
 }

@@ -7,6 +7,20 @@ interface TraefikMiddleware {
   enabled: Boolean
   usedBy: [TraefikRouter!]!
 }
+
+type InvalidMiddlewareInfo implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+}
+
+extend type Mutation {
+  deleteTraefikMiddleware(nodeId: ID): BasicMutationResponse!
+}
 type TraefikMiddlewareAddPrefixInfo {
   prefix: String
 }
@@ -34,11 +48,11 @@ input TraefikMiddlewareAddPrefixInput {
 extend type Mutation {
   createTraefikMiddlewareAddPrefix(
     input: TraefikMiddlewareAddPrefixInput!
-  ): TraefikMiddlewareAddPrefix!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareAddPrefix(
     nodeId: ID!
     patch: TraefikMiddlewareAddPrefixInfoInput!
-  ): TraefikMiddlewareAddPrefix!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareBasicAuthInfo {
@@ -76,11 +90,11 @@ input TraefikMiddlewareBasicAuthInput {
 extend type Mutation {
   createTraefikMiddlewareBasicAuth(
     input: TraefikMiddlewareBasicAuthInput!
-  ): TraefikMiddlewareBasicAuth!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareBasicAuth(
     nodeId: ID!
     patch: TraefikMiddlewareBasicAuthInfoInput!
-  ): TraefikMiddlewareBasicAuth!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareBufferingInfo {
@@ -118,11 +132,11 @@ input TraefikMiddlewareBufferingInput {
 extend type Mutation {
   createTraefikMiddlewareBuffering(
     input: TraefikMiddlewareBufferingInput!
-  ): TraefikMiddlewareBuffering!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareBuffering(
     nodeId: ID!
     patch: TraefikMiddlewareBufferingInfoInput!
-  ): TraefikMiddlewareBuffering!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareChainInfo {
@@ -152,11 +166,11 @@ input TraefikMiddlewareChainInput {
 extend type Mutation {
   createTraefikMiddlewareChain(
     input: TraefikMiddlewareChainInput!
-  ): TraefikMiddlewareChain!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareChain(
     nodeId: ID!
     patch: TraefikMiddlewareChainInfoInput!
-  ): TraefikMiddlewareChain!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareCircuitBreakerInfo {
@@ -186,11 +200,11 @@ input TraefikMiddlewareCircuitBreakerInput {
 extend type Mutation {
   createTraefikMiddlewareCircuitBreaker(
     input: TraefikMiddlewareCircuitBreakerInput!
-  ): TraefikMiddlewareCircuitBreaker!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareCircuitBreaker(
     nodeId: ID!
     patch: TraefikMiddlewareCircuitBreakerInfoInput!
-  ): TraefikMiddlewareCircuitBreaker!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareCompressInfo {
@@ -220,11 +234,11 @@ input TraefikMiddlewareCompressInput {
 extend type Mutation {
   createTraefikMiddlewareCompress(
     input: TraefikMiddlewareCompressInput!
-  ): TraefikMiddlewareCompress!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareCompress(
     nodeId: ID!
     patch: TraefikMiddlewareCompressInfoInput!
-  ): TraefikMiddlewareCompress!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareContentTypeInfo {
@@ -254,11 +268,11 @@ input TraefikMiddlewareContentTypeInput {
 extend type Mutation {
   createTraefikMiddlewareContentType(
     input: TraefikMiddlewareContentTypeInput!
-  ): TraefikMiddlewareContentType!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareContentType(
     nodeId: ID!
     patch: TraefikMiddlewareContentTypeInfoInput!
-  ): TraefikMiddlewareContentType!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareDigestAuthInfo {
@@ -296,11 +310,11 @@ input TraefikMiddlewareDigestAuthInput {
 extend type Mutation {
   createTraefikMiddlewareDigestAuth(
     input: TraefikMiddlewareDigestAuthInput!
-  ): TraefikMiddlewareDigestAuth!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareDigestAuth(
     nodeId: ID!
     patch: TraefikMiddlewareDigestAuthInfoInput!
-  ): TraefikMiddlewareDigestAuth!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareErrorsInfo {
@@ -334,11 +348,11 @@ input TraefikMiddlewareErrorsInput {
 extend type Mutation {
   createTraefikMiddlewareErrors(
     input: TraefikMiddlewareErrorsInput!
-  ): TraefikMiddlewareErrors!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareErrors(
     nodeId: ID!
     patch: TraefikMiddlewareErrorsInfoInput!
-  ): TraefikMiddlewareErrors!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareTlsInfo {
@@ -394,11 +408,11 @@ input TraefikMiddlewareForwardAuthInput {
 extend type Mutation {
   createTraefikMiddlewareForwardAuth(
     input: TraefikMiddlewareForwardAuthInput!
-  ): TraefikMiddlewareForwardAuth!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareForwardAuth(
     nodeId: ID!
     patch: TraefikMiddlewareForwardAuthInfoInput!
-  ): TraefikMiddlewareForwardAuth!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareHeadersInfo {
@@ -490,11 +504,11 @@ input TraefikMiddlewareHeadersInput {
 extend type Mutation {
   createTraefikMiddlewareHeaders(
     input: TraefikMiddlewareHeadersInput!
-  ): TraefikMiddlewareHeaders!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareHeaders(
     nodeId: ID!
     patch: TraefikMiddlewareHeadersInfoInput!
-  ): TraefikMiddlewareHeaders!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareIpStrategyInfo {
@@ -536,11 +550,11 @@ input TraefikMiddlewareIpWhiteListInput {
 extend type Mutation {
   createTraefikMiddlewareIpWhiteList(
     input: TraefikMiddlewareIpWhiteListInput!
-  ): TraefikMiddlewareIpWhiteList!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareIpWhiteList(
     nodeId: ID!
     patch: TraefikMiddlewareIpWhiteListInfoInput!
-  ): TraefikMiddlewareIpWhiteList!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareSourceCriterionInfo {
@@ -584,11 +598,11 @@ input TraefikMiddlewareInFlightReqInput {
 extend type Mutation {
   createTraefikMiddlewareInFlightReq(
     input: TraefikMiddlewareInFlightReqInput!
-  ): TraefikMiddlewareInFlightReq!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareInFlightReq(
     nodeId: ID!
     patch: TraefikMiddlewareInFlightReqInfoInput!
-  ): TraefikMiddlewareInFlightReq!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareIssuerInfo {
@@ -678,11 +692,11 @@ input TraefikMiddlewarePassTLSClientCertInput {
 extend type Mutation {
   createTraefikMiddlewarePassTLSClientCert(
     input: TraefikMiddlewarePassTLSClientCertInput!
-  ): TraefikMiddlewarePassTLSClientCert!
+  ): BasicMutationResponse!
   updateTraefikMiddlewarePassTLSClientCert(
     nodeId: ID!
     patch: TraefikMiddlewarePassTLSClientCertInfoInput!
-  ): TraefikMiddlewarePassTLSClientCert!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareRateLimitInfo {
@@ -718,11 +732,11 @@ input TraefikMiddlewareRateLimitInput {
 extend type Mutation {
   createTraefikMiddlewareRateLimit(
     input: TraefikMiddlewareRateLimitInput!
-  ): TraefikMiddlewareRateLimit!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareRateLimit(
     nodeId: ID!
     patch: TraefikMiddlewareRateLimitInfoInput!
-  ): TraefikMiddlewareRateLimit!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareRedirectRegexInfo {
@@ -756,11 +770,11 @@ input TraefikMiddlewareRedirectRegexInput {
 extend type Mutation {
   createTraefikMiddlewareRedirectRegex(
     input: TraefikMiddlewareRedirectRegexInput!
-  ): TraefikMiddlewareRedirectRegex!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareRedirectRegex(
     nodeId: ID!
     patch: TraefikMiddlewareRedirectRegexInfoInput!
-  ): TraefikMiddlewareRedirectRegex!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareRedirectSchemeInfo {
@@ -794,11 +808,11 @@ input TraefikMiddlewareRedirectSchemeInput {
 extend type Mutation {
   createTraefikMiddlewareRedirectScheme(
     input: TraefikMiddlewareRedirectSchemeInput!
-  ): TraefikMiddlewareRedirectScheme!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareRedirectScheme(
     nodeId: ID!
     patch: TraefikMiddlewareRedirectSchemeInfoInput!
-  ): TraefikMiddlewareRedirectScheme!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareReplacePathInfo {
@@ -828,11 +842,11 @@ input TraefikMiddlewareReplacePathInput {
 extend type Mutation {
   createTraefikMiddlewareReplacePath(
     input: TraefikMiddlewareReplacePathInput!
-  ): TraefikMiddlewareReplacePath!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareReplacePath(
     nodeId: ID!
     patch: TraefikMiddlewareReplacePathInfoInput!
-  ): TraefikMiddlewareReplacePath!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareReplacePathRegexInfo {
@@ -864,11 +878,11 @@ input TraefikMiddlewareReplacePathRegexInput {
 extend type Mutation {
   createTraefikMiddlewareReplacePathRegex(
     input: TraefikMiddlewareReplacePathRegexInput!
-  ): TraefikMiddlewareReplacePathRegex!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareReplacePathRegex(
     nodeId: ID!
     patch: TraefikMiddlewareReplacePathRegexInfoInput!
-  ): TraefikMiddlewareReplacePathRegex!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareRetryInfo {
@@ -900,11 +914,11 @@ input TraefikMiddlewareRetryInput {
 extend type Mutation {
   createTraefikMiddlewareRetry(
     input: TraefikMiddlewareRetryInput!
-  ): TraefikMiddlewareRetry!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareRetry(
     nodeId: ID!
     patch: TraefikMiddlewareRetryInfoInput!
-  ): TraefikMiddlewareRetry!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareStripPrefixInfo {
@@ -936,11 +950,11 @@ input TraefikMiddlewareStripPrefixInput {
 extend type Mutation {
   createTraefikMiddlewareStripPrefix(
     input: TraefikMiddlewareStripPrefixInput!
-  ): TraefikMiddlewareStripPrefix!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareStripPrefix(
     nodeId: ID!
     patch: TraefikMiddlewareStripPrefixInfoInput!
-  ): TraefikMiddlewareStripPrefix!
+  ): BasicMutationResponse!
 }
 
 type TraefikMiddlewareStripPrefixRegexInfo {
@@ -970,9 +984,9 @@ input TraefikMiddlewareStripPrefixRegexInput {
 extend type Mutation {
   createTraefikMiddlewareStripPrefixRegex(
     input: TraefikMiddlewareStripPrefixRegexInput!
-  ): TraefikMiddlewareStripPrefixRegex!
+  ): BasicMutationResponse!
   updateTraefikMiddlewareStripPrefixRegex(
     nodeId: ID!
     patch: TraefikMiddlewareStripPrefixRegexInfoInput!
-  ): TraefikMiddlewareStripPrefixRegex!
+  ): BasicMutationResponse!
 }

@@ -22,6 +22,7 @@ import ZoneDialog from "src/components/DNS/Zone/Dialog.vue";
 import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
 import api from "src/api";
+import { notify } from "src/utils";
 
 export default {
   components: { BaseTable, ZoneDetails },
@@ -54,14 +55,15 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo.mutate({
-            mutation: api.dns.zones.DELETE_ZONE,
-            variables: { nodeId: zone.nodeId },
-            refetchQueries: [
-              { query: api.dns.zones.LIST_ZONES },
-              { query: api.dns.rules.LIST_RULES }
-            ]
-          });
+          this.$apollo
+            .mutate({
+              mutation: api.dns.zones.DELETE_ZONE,
+              variables: { nodeId: zone.nodeId },
+              refetchQueries: [
+                { query: api.dns.zones.LIST_ZONES },
+              ]
+            })
+            .then(notify(`${zone.name} deleted`));
         });
     }
   },
@@ -79,9 +81,9 @@ export default {
     const soaField = (name, opt = {}) =>
       field(name, { field: r => r.soa[name], ...opt });
     const columns = [
-      field("name", {autoWidth: false}),
-      soaField("nameserver", {autoWidth: false}),
-      soaField("postmaster", {autoWidth: false}),
+      field("name", { autoWidth: false }),
+      soaField("nameserver", { autoWidth: false }),
+      soaField("postmaster", { autoWidth: false }),
       field("serial"),
       soaField("refresh"),
       soaField("retry"),

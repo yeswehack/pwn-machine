@@ -27,11 +27,10 @@
     </template>
     <template #body-cell-middlewares="{row}">
       <div class="q-gutter-xs">
-        <middleware-link
-          :name="middleware.name"
-          :key="idx"
-          v-for="(middleware, idx) of row.middlewares"
-        />
+        <template v-for="(middleware, idx) of row.middlewares">
+          <q-badge :key="idx"  color="negative" :label="middleware.name"  v-if="middleware.type == 'invalid'" />
+          <middleware-link :name="middleware.name" :key="idx" v-else />
+        </template>
       </div>
     </template>
     <template #body-cell-enabled="{row}">
@@ -85,7 +84,7 @@ export default {
     });
     const columns = [
       col("name"),
-      col("type", {label: "protocol"}),
+      col("type", { label: "protocol" }),
       col("rule", { autoWidth: false }),
       col("entryPoints"),
       col("middlewares"),

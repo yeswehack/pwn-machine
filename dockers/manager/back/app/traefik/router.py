@@ -37,12 +37,11 @@ def resolve_traefik_enabled(obj, *_):
 async def resolve_traefik_enabled(router, *_):
     if "entryPoints" not in router:
         return []
-    return [
-        entrypoint
-        for entrypoint in await traefik_http().get_entrypoints()
-        if entrypoint["name"] in router["entryPoints"]
-    ]
-
+    entrypoints = {e['name']: e for e in await traefik_http().get_entrypoints()}
+    results = []
+    for name in router["entryPoints"]:
+        results.append(entrypoints[name])
+    return results
 
 TraefikHTTPRouter = createType("TraefikHTTPRouter")
 
@@ -60,11 +59,14 @@ def resolve_traefikrouter_name(router, *_):
 async def middlewares(router, *_):
     if "middlewares" not in router:
         return []
-    return [
-        middleware
-        for middleware in await traefik_http().get_middlewares()
-        if middleware["name"] in router["middlewares"]
-    ]
+    middlewares = {m["name"]: m for m in await traefik_http().get_middlewares()}
+    results = []
+    for name in router["middlewares"]:
+        if name in middlewares:
+            results.append(middlewares[name])
+        else:
+            results.append({"name":name, "type": "invalid"})
+    return results
 
 
 @TraefikRouter.field("nodeId")

@@ -1,10 +1,12 @@
 import gql from "graphql-tag";
-import { MIDDLEWARE_FRAGMENT } from "./fragments.js";
-
+import { BASIC_MUTATION_FRAGMENT } from "src/api/common/fragments";
 export const DELETE_MIDDLEWARE = gql`
   mutation deleteMiddleware($nodeId: ID!) {
-    deleteTraefikMiddleware(nodeId: $nodeId)
+    deleteTraefikMiddleware(nodeId: $nodeId) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const CREATE_MIDDLEWARE = {
@@ -13,220 +15,220 @@ export const CREATE_MIDDLEWARE = {
       $input: TraefikMiddlewareAddPrefixInput!
     ) {
       createTraefikMiddlewareAddPrefix(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   basicAuth: gql`
     mutation createTraefikMiddlewareBasicAuth(
       $input: TraefikMiddlewareBasicAuthInput!
     ) {
       createTraefikMiddlewareBasicAuth(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   buffering: gql`
     mutation createTraefikMiddlewareBuffering(
       $input: TraefikMiddlewareBufferingInput!
     ) {
       createTraefikMiddlewareBuffering(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   chain: gql`
     mutation createTraefikMiddlewareChain(
       $input: TraefikMiddlewareChainInput!
     ) {
       createTraefikMiddlewareChain(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   circuitBreaker: gql`
     mutation createTraefikMiddlewareCircuitBreaker(
       $input: TraefikMiddlewareCircuitBreakerInput!
     ) {
       createTraefikMiddlewareCircuitBreaker(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   compress: gql`
     mutation createTraefikMiddlewareCompress(
       $input: TraefikMiddlewareCompressInput!
     ) {
       createTraefikMiddlewareCompress(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   contentType: gql`
     mutation createTraefikMiddlewareContentType(
       $input: TraefikMiddlewareContentTypeInput!
     ) {
       createTraefikMiddlewareContentType(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   digestAuth: gql`
     mutation createTraefikMiddlewareDigestAuth(
       $input: TraefikMiddlewareDigestAuthInput!
     ) {
       createTraefikMiddlewareDigestAuth(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   errors: gql`
     mutation createTraefikMiddlewareErrors(
       $input: TraefikMiddlewareErrorsInput!
     ) {
       createTraefikMiddlewareErrors(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   forwardAuth: gql`
     mutation createTraefikMiddlewareForwardAuth(
       $input: TraefikMiddlewareForwardAuthInput!
     ) {
       createTraefikMiddlewareForwardAuth(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   headers: gql`
     mutation createTraefikMiddlewareHeaders(
       $input: TraefikMiddlewareHeadersInput!
     ) {
       createTraefikMiddlewareHeaders(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   ipWhiteList: gql`
     mutation createTraefikMiddlewareIpWhiteList(
       $input: TraefikMiddlewareIpWhiteListInput!
     ) {
       createTraefikMiddlewareIpWhiteList(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   inFlightReq: gql`
     mutation createTraefikMiddlewareInFlightReq(
       $input: TraefikMiddlewareInFlightReqInput!
     ) {
       createTraefikMiddlewareInFlightReq(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   passTLSClientCert: gql`
     mutation createTraefikMiddlewarePassTLSClientCert(
       $input: TraefikMiddlewarePassTLSClientCertInput!
     ) {
       createTraefikMiddlewarePassTLSClientCert(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   rateLimit: gql`
     mutation createTraefikMiddlewareRateLimit(
       $input: TraefikMiddlewareRateLimitInput!
     ) {
       createTraefikMiddlewareRateLimit(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   redirectRegex: gql`
     mutation createTraefikMiddlewareRedirectRegex(
       $input: TraefikMiddlewareRedirectRegexInput!
     ) {
       createTraefikMiddlewareRedirectRegex(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   redirectScheme: gql`
     mutation createTraefikMiddlewareRedirectScheme(
       $input: TraefikMiddlewareRedirectSchemeInput!
     ) {
       createTraefikMiddlewareRedirectScheme(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   replacePath: gql`
     mutation createTraefikMiddlewareReplacePath(
       $input: TraefikMiddlewareReplacePathInput!
     ) {
       createTraefikMiddlewareReplacePath(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   replacePathRegex: gql`
     mutation createTraefikMiddlewareReplacePathRegex(
       $input: TraefikMiddlewareReplacePathRegexInput!
     ) {
       createTraefikMiddlewareReplacePathRegex(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   retry: gql`
     mutation createTraefikMiddlewareRetry(
       $input: TraefikMiddlewareRetryInput!
     ) {
       createTraefikMiddlewareRetry(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   stripPrefix: gql`
     mutation createTraefikMiddlewareStripPrefix(
       $input: TraefikMiddlewareStripPrefixInput!
     ) {
       createTraefikMiddlewareStripPrefix(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   stripPrefixRegex: gql`
     mutation createTraefikMiddlewareStripPrefixRegex(
       $input: TraefikMiddlewareStripPrefixRegexInput!
     ) {
       createTraefikMiddlewareStripPrefixRegex(input: $input) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `
 };
 export const UPDATE_MIDDLEWARE = {
@@ -236,10 +238,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareAddPrefixInfoInput!
     ) {
       updateTraefikMiddlewareAddPrefix(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   basicAuth: gql`
     mutation updateTraefikMiddlewareBasicAuth(
@@ -247,10 +249,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareBasicAuthInfoInput!
     ) {
       updateTraefikMiddlewareBasicAuth(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   buffering: gql`
     mutation updateTraefikMiddlewareBuffering(
@@ -258,10 +260,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareBufferingInfoInput!
     ) {
       updateTraefikMiddlewareBuffering(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   chain: gql`
     mutation updateTraefikMiddlewareChain(
@@ -269,10 +271,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareChainInfoInput!
     ) {
       updateTraefikMiddlewareChain(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   circuitBreaker: gql`
     mutation updateTraefikMiddlewareCircuitBreaker(
@@ -280,10 +282,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareCircuitBreakerInfoInput!
     ) {
       updateTraefikMiddlewareCircuitBreaker(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   compress: gql`
     mutation updateTraefikMiddlewareCompress(
@@ -291,10 +293,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareCompressInfoInput!
     ) {
       updateTraefikMiddlewareCompress(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   contentType: gql`
     mutation updateTraefikMiddlewareContentType(
@@ -302,10 +304,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareContentTypeInfoInput!
     ) {
       updateTraefikMiddlewareContentType(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   digestAuth: gql`
     mutation updateTraefikMiddlewareDigestAuth(
@@ -313,10 +315,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareDigestAuthInfoInput!
     ) {
       updateTraefikMiddlewareDigestAuth(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   errors: gql`
     mutation updateTraefikMiddlewareErrors(
@@ -324,10 +326,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareErrorsInfoInput!
     ) {
       updateTraefikMiddlewareErrors(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   forwardAuth: gql`
     mutation updateTraefikMiddlewareForwardAuth(
@@ -335,10 +337,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareForwardAuthInfoInput!
     ) {
       updateTraefikMiddlewareForwardAuth(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   headers: gql`
     mutation updateTraefikMiddlewareHeaders(
@@ -346,10 +348,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareHeadersInfoInput!
     ) {
       updateTraefikMiddlewareHeaders(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   ipWhiteList: gql`
     mutation updateTraefikMiddlewareIpWhiteList(
@@ -357,10 +359,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareIpWhiteListInfoInput!
     ) {
       updateTraefikMiddlewareIpWhiteList(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   inFlightReq: gql`
     mutation updateTraefikMiddlewareInFlightReq(
@@ -368,10 +370,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareInFlightReqInfoInput!
     ) {
       updateTraefikMiddlewareInFlightReq(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   passTLSClientCert: gql`
     mutation updateTraefikMiddlewarePassTLSClientCert(
@@ -379,10 +381,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewarePassTLSClientCertInfoInput!
     ) {
       updateTraefikMiddlewarePassTLSClientCert(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   rateLimit: gql`
     mutation updateTraefikMiddlewareRateLimit(
@@ -390,10 +392,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareRateLimitInfoInput!
     ) {
       updateTraefikMiddlewareRateLimit(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   redirectRegex: gql`
     mutation updateTraefikMiddlewareRedirectRegex(
@@ -401,10 +403,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareRedirectRegexInfoInput!
     ) {
       updateTraefikMiddlewareRedirectRegex(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   redirectScheme: gql`
     mutation updateTraefikMiddlewareRedirectScheme(
@@ -412,10 +414,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareRedirectSchemeInfoInput!
     ) {
       updateTraefikMiddlewareRedirectScheme(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   replacePath: gql`
     mutation updateTraefikMiddlewareReplacePath(
@@ -423,10 +425,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareReplacePathInfoInput!
     ) {
       updateTraefikMiddlewareReplacePath(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   replacePathRegex: gql`
     mutation updateTraefikMiddlewareReplacePathRegex(
@@ -434,10 +436,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareReplacePathRegexInfoInput!
     ) {
       updateTraefikMiddlewareReplacePathRegex(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   retry: gql`
     mutation updateTraefikMiddlewareRetry(
@@ -445,10 +447,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareRetryInfoInput!
     ) {
       updateTraefikMiddlewareRetry(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   stripPrefix: gql`
     mutation updateTraefikMiddlewareStripPrefix(
@@ -456,10 +458,10 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareStripPrefixInfoInput!
     ) {
       updateTraefikMiddlewareStripPrefix(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `,
   stripPrefixRegex: gql`
     mutation updateTraefikMiddlewareStripPrefixRegex(
@@ -467,9 +469,9 @@ export const UPDATE_MIDDLEWARE = {
       $patch: TraefikMiddlewareStripPrefixRegexInfoInput!
     ) {
       updateTraefikMiddlewareStripPrefixRegex(nodeId: $nodeId, patch: $patch) {
-        ...MiddlewareFragment
+        ...BasicMutationFragment
       }
     }
-    ${MIDDLEWARE_FRAGMENT}
+    ${BASIC_MUTATION_FRAGMENT}
   `
 };

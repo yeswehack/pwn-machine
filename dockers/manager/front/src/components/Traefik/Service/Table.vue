@@ -29,7 +29,6 @@
         {{ row }}
       </div>
     </template>
-
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
@@ -47,6 +46,7 @@ import RouterLink from "src/components/Traefik/Router/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
+import { notify } from "src/utils";
 
 export default {
   components: {
@@ -76,7 +76,7 @@ export default {
       col("name"),
       col("protocol"),
       col("type"),
-      col("usedBy", { label: "Connected Routers",  autoWidth: false  }),
+      col("usedBy", { label: "Connected Routers", autoWidth: false }),
       col("enabled", { label: "Status" })
     ];
 
@@ -116,18 +116,7 @@ export default {
               variables: { nodeId: service.nodeId },
               refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
             })
-            .then(() => {
-              this.$q.notify({
-                message: `${service.name} deleted.`,
-                type: "positive"
-              });
-            })
-            .catch(error => {
-              this.$q.notify({
-                message: error.message,
-                type: "negative"
-              });
-            });
+            .then(notify(`${service.name} deleted.`));
         });
     }
   }

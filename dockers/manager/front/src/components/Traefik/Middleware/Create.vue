@@ -33,7 +33,8 @@ import api from "src/api";
 import { extend } from "quasar";
 import forms from "./Forms";
 import DeepForm from "src/mixins/DeepForm";
-import ResetAndSave from 'src/components/ResetAndSave.vue';
+import ResetAndSave from "src/components/ResetAndSave.vue";
+import { notify } from 'src/utils';
 
 export function getCreateComponent(value) {
   return forms[value?.type] ?? null;
@@ -48,7 +49,7 @@ export default {
       return getCreateComponent(value);
     }
   },
-  components: {ResetAndSave},
+  components: { ResetAndSave },
   props: {
     edit: { type: Boolean, default: false },
     middleware: { type: Object, default: null }
@@ -82,7 +83,7 @@ export default {
     },
     createComponent() {
       return getCreateComponent(this.form);
-    },
+    }
   },
   watch: {
     currentType(type) {
@@ -119,8 +120,9 @@ export default {
           variables: { input },
           refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
         })
+        .then(notify(`${this.form.name} created.`))
         .then(r => {
-          this.$emit("ok");
+          if (r.success) this.$emit("ok");
         });
     },
     async updateMiddleware() {
@@ -136,15 +138,10 @@ export default {
           variables,
           refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
         })
+        .then(notify(`${this.middleware.name} updated.`))
         .then(r => {
-          this.$emit("ok");
+          if (r.success) this.$emit("ok");
         })
-        .catch(r => {
-          this.$q.notify({
-            message: `Unable to update ${this.middleware.name}.`,
-            type: "negative"
-          });
-        });
     },
     async submit() {
       this.loading = true;

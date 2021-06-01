@@ -63,16 +63,16 @@ def create_type(name, fields):
 
 
     graphql += "extend type Mutation {\n"
-    graphql += f"  create{type_name(name)}(input: {input_name(name)}!): {type_name(name)}!\n"
-    graphql += f"  update{type_name(name)}(nodeId: ID!, patch: {info_input_name(name)}!): {type_name(name)}!\n"
+    graphql += f"  create{type_name(name)}(input: {input_name(name)}!): BasicMutationResponse!\n"
+    graphql += f"  update{type_name(name)}(nodeId: ID!, patch: {info_input_name(name)}!): BasicMutationResponse!\n"
     graphql += "}\n\n\n"
 
     return graphql
 
 
 def generate_base_schema():
-    graphql = f""" 
-        interface TraefikMiddleware {{
+    graphql = """ 
+        interface TraefikMiddleware {
             nodeId: ID!
             name: String!
             provider: String!
@@ -80,7 +80,21 @@ def generate_base_schema():
             type: String!
             enabled: Boolean
             usedBy: [TraefikRouter!]!
-        }}
+        }
+
+        type InvalidMiddlewareInfo implements TraefikMiddleware {
+            nodeId: ID!
+            name: String!
+            provider: String!
+            error: [String!]
+            type: String!
+            enabled: Boolean
+            usedBy: [TraefikRouter!]!
+        }
+
+        extend type Mutation {
+            deleteTraefikMiddleware(nodeId: ID) : BasicMutationResponse!
+        }
         """
     return textwrap.dedent(graphql)
 

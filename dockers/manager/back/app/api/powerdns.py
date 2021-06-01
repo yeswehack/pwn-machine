@@ -89,7 +89,7 @@ class PowerdnsHTTPApi:
     async def post(self, path, data):
         log(f"API POST {path}")
         full_path = f"{self.root.rstrip('/')}/{path.lstrip('/')}"
-        await self.session.post(full_path, json=data)
+        return await self.session.post(full_path, json=data)
 
     async def patch(self, path, data):
         log(f"API PATCH {path}")
@@ -163,6 +163,7 @@ class PowerdnsHTTPApi:
     async def create_zone(self, name, soa):
         zone_info = await self.get_zone(name)
         if zone_info is not None:
+            print(zone_info)
             raise Exception("A zone with this name already exists.")
 
         content = soa_to_string(soa)
@@ -181,8 +182,9 @@ class PowerdnsHTTPApi:
             "soa_edit_api": "INCEPTION-EPOCH",
         }
         r = await self.post("/api/v1/servers/localhost/zones", data)
-        with no_cache():
-            return await self.get_zone(name)
+        zone = await r.json()
+        if "error" in zone:
+            raise ValueError(zone['error'])
 
     async def update_zone(self, nodeId, soa):
         zone_name = validate_node_id(nodeId, "DNS_ZONE")[0]

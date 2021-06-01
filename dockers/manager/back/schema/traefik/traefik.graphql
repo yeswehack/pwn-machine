@@ -7,7 +7,3 @@ enum TraefikProtocol {
   tcp
   http
 }
-
-extend type Mutation {
-  deleteTraefikMiddleware(nodeId: ID) : Boolean!
-}

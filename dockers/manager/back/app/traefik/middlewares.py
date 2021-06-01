@@ -122,7 +122,7 @@ def resolve_middleware_type(obj, *_):
     for graphql_name, type_name in middlewares.items():
         if type_name.lower() == obj["type"]:
             return graphql_name
-
+    return "InvalidMiddlewareInfo"
 
 @registerQuery("traefikMiddlewares")
 async def resolve_middlewares(*_):

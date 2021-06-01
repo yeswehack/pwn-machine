@@ -15,7 +15,7 @@ from starlette.websockets import WebSocket
 from starlette_context import context
 from starlette_context.middleware import RawContextMiddleware
 
-from app.api import NamespacedRedis, PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
+from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
 from app import config
 from . import dns, docker, traefik
 from .docker.shell import handle_shell
@@ -75,8 +75,6 @@ class StaticFilesFallback(StaticFiles):
 sessions = {}
 
 
-
-
 async def on_startup():
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
 
@@ -85,16 +83,13 @@ async def on_startup():
     traefik_http = TraefikHTTPApi.create(
         config.PM_TRAEFIK_HTTP_API, sessions["traefik"]
     )
-    ns_traefik_redis = NamespacedRedis(config.PM_TRAEFIK_REDIS_ROOT, redis_client)
-    TraefikRedisApi.create(ns_traefik_redis, traefik_http)
+    TraefikRedisApi.create(config.PM_TRAEFIK_REDIS_ROOT, redis_client, traefik_http)
 
     ## PowerDNS
     sessions["powerdns"] = aiohttp.ClientSession(
         headers={"X-Api-Key": config.PM_POWERDNS_HTTP_API_KEY}
     )
     PowerdnsHTTPApi.create(config.PM_POWERDNS_HTTP_API, sessions["powerdns"])
-
-
 
 
 async def on_shutdown():

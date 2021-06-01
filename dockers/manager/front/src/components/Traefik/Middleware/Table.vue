@@ -23,7 +23,7 @@
       <status-badge :status="row.enabled" />
     </template>
     <template #details="{ row }">
-      <middleware-details :value="extraForm(row)"/>
+      <middleware-details :value="extraForm(row)" />
     </template>
   </base-table>
 </template>
@@ -35,6 +35,7 @@ import MiddlewareDialog from "src/components/Traefik/Middleware/Dialog.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
+import { notify } from "src/utils";
 export default {
   components: {
     MiddlewareDetails,
@@ -68,8 +69,8 @@ export default {
     };
   },
   methods: {
-    extraForm(f){
-      return {...f, extra: f[f.type]} 
+    extraForm(f) {
+      return { ...f, extra: f[f.type] };
     },
     createMiddleware() {
       this.$q.dialog({
@@ -97,22 +98,11 @@ export default {
             .mutate({
               mutation: api.traefik.middlewares.DELETE_MIDDLEWARE,
               variables: { nodeId: middleware.nodeId },
-              refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
+              refetchQueries: [
+                { query: api.traefik.middlewares.LIST_MIDDLEWARES }
+              ]
             })
-            .then(response => {
-              const deleted = response.data.traefikDeleteMiddleware.ok;
-              if (deleted) {
-                this.$q.notify({
-                  message: `${middleware.name} deleted.`,
-                  type: "positive"
-                });
-              } else {
-                this.$q.notify({
-                  message: `Unable to delete ${middleware.name}.`,
-                  type: "negative"
-                });
-              }
-            });
+            .then(notify(`${middleware.name} deleted.`));
         });
     }
   }

@@ -62,7 +62,8 @@ import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import LuaEditor from "./LuaEditor.vue";
-import RecordInput from './RecordInput.vue';
+import RecordInput from "./RecordInput.vue";
+import { notify } from "src/utils";
 
 const types = [
   "A",
@@ -122,7 +123,7 @@ export default {
     ttl: 3600
   },
   data() {
-    return { types};
+    return { types };
   },
   computed: {
     zoneNames() {
@@ -139,7 +140,7 @@ export default {
         return `Name must ends with ${this.form.zone}`;
       }
     },
-    submit() {
+    submit(done) {
       const input = {
         ...this.form,
         records: this.form.records.map(r => ({ content: r.content }))
@@ -151,9 +152,11 @@ export default {
           variables: { input },
           refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
         })
-        .then(() => {
-          this.$emit("ok");
-        });
+        .then(notify(`${this.form.name} created`))
+        .then(r => {
+          if (r.success) this.$emit("ok");
+        })
+        .finally(() => done());
     }
   },
   watch: {
@@ -165,4 +168,3 @@ export default {
   }
 };
 </script>
-

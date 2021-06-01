@@ -4,7 +4,6 @@ from app.utils import registerQuery, registerMutation, createType, create_node_i
 from app.api import get_powerdns_http_api as dns_http
 
 
-
 @registerQuery("dnsZones")
 async def get_dns_zones(*_):
     return await dns_http().get_zones()
@@ -15,11 +14,13 @@ DnsZone = createType("DnsZone")
 
 @DnsZone.field("nodeId")
 def resolve_nodeid(zone, *_):
-    return create_node_id("DNS_ZONE", zone['id'])
+    return create_node_id("DNS_ZONE", zone["id"])
+
 
 @DnsZone.field("name")
 def resolve_name(zone, *_):
-    return zone['name']
+    return zone["name"]
+
 
 @DnsZone.field("soa")
 def resolve_soa(zone, *_):
@@ -31,18 +32,28 @@ def resolve_rules(zone, *_):
     return dns_http().get_rules_for_zone(zone["id"])
 
 
-
-
 @registerMutation("createDnsZone")
 async def create_dns_zone_mutation(*_, input):
-    return await dns_http().create_zone(input['name'], input['soa'])
-    
+    try:
+        await dns_http().create_zone(input["name"], input["soa"])
+    except Exception as e:
+        return {"error": str(e), "success": False}
+    return {"success": True}
+
 
 @registerMutation("updateDnsZone")
 async def update_dns_zone_mutation(*_, nodeId, patch):
-    return await dns_http().update_zone(nodeId, patch['soa'])
-    
+    try:
+        await dns_http().update_zone(nodeId, patch["soa"])
+    except Exception as e:
+        return {"error": str(e), "success": False}
+    return {"success": True}
+
 
 @registerMutation("deleteDnsZone")
 async def delete_dns_zone_mutation(*_, nodeId):
-    return await dns_http().delete_zone(nodeId)
+    try:
+        await dns_http().delete_zone(nodeId)
+    except Exception as e:
+        return {"error": str(e), "success": False}
+    return {"success": True}
