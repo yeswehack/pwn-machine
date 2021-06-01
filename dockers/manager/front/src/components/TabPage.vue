@@ -33,8 +33,10 @@ export default {
   watch: {
     $route(to, from) {
       const links = Array.from(this.$refs.tabs.$el.querySelectorAll(".q-tab"));
-      const findPos = route =>
-        links.findIndex(l => l.attributes.href.value == route.path);
+      const findPos = route => {
+        const idx = links.findIndex(l => l.attributes.href.value == route.path);
+        return idx > -1 ? idx : Infinity;
+      };
 
       const oldIdx = findPos(from);
       const newIdx = findPos(to);

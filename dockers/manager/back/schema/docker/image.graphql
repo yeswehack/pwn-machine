@@ -8,7 +8,7 @@ extend type Mutation {
     id: ID!
     force: Boolean! = false
     pruneParents: Boolean! = true
-  ): Boolean!
+  ): BasicMutationResponse!
   pruneDockerImages(onlyDangling: Boolean! = true): PruneResponse!
 }
 

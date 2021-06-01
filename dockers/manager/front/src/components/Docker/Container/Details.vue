@@ -120,6 +120,7 @@ import api from "src/api";
 import ShellDialog from "src/components/Shell/Dialog.vue";
 import LogList from "src/components/Docker/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
+import { notify } from 'src/utils';
 
 export default {
   components: {
@@ -176,6 +177,13 @@ export default {
         pause: api.docker.containers.PAUSE_CONTAINER,
         unpause: api.docker.containers.UNPAUSE_CONTAINER
       };
+      const message = {
+        start: `${this.container.name} started`,
+        restart: `${this.container.name} restarted`,
+        stop: `${this.container.name} stopped`,
+        pause: `${this.container.name} paused`,
+        unpause: `${this.container.name} unpaused`
+      };
       this.btnLoad[name] = true;
       this.$apollo
         .mutate({
@@ -183,16 +191,11 @@ export default {
           variables: { id: this.container.id },
           refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
         })
-        .catch(e => {
-          this.$q.notify({
-            message: e.message,
-            type: "negative"
-          });
-        })
+        .then(notify(message[name]))
         .finally(() => {
           this.btnLoad[name] = false;
         });
-    },
+    }
   }
 };
 </script>

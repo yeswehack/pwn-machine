@@ -1,8 +1,8 @@
 <template>
   <q-form @submit="submit">
     <q-card-section class="q-gutter-md">
-      <q-input v-model="form.name" label="name" v-if="!readonly" />
       <image-input ref="image" v-model="image" v-if="!readonly" />
+      <q-input v-model="form.name" label="name" v-if="!readonly" />
       <q-list separator class="rounded-borders" bordered>
         <component
           :readonly="readonly"
@@ -64,6 +64,7 @@ import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
 import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import { notify } from 'src/utils';
 export default {
   props: {
     readonly: { type: Boolean, default: false }
@@ -128,9 +129,7 @@ export default {
           variables: { input },
           refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
         })
-        .then(r => {
-          this.$emit("ok", r);
-        });
+        .then(notify(`Container created`));
     }
   }
 };

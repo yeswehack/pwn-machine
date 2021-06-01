@@ -181,9 +181,9 @@ async def resolve_search_tag(*_, repoName, imageName):
 def resolve_remove_image(*_, id, force, pruneParents):
     try:
         docker_client.api.remove_image(id, force=force, noprune=not pruneParents)
-    except APIError:
-        return False
-    return True
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("pruneDockerImages")

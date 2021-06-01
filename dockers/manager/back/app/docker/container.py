@@ -81,7 +81,7 @@ def resolve_create_container(
         f = docker_client.containers.run
     else:
         f = docker_client.containers.create
-    return f(
+    f(
         image,
         detach=True,
         name=name or None,
@@ -98,7 +98,11 @@ def resolve_create_container(
 
 @registerMutation("createDockerContainer")
 def resolve_form_create_container(*_, input):
-    return resolve_create_container(**input)
+    try:
+        resolve_create_container(**input)
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerQuery("dockerContainerByName")
@@ -249,52 +253,60 @@ def resilve_restart_policy(container, _):
     return {"name": name, "maximumRetryCount": maximumRetryCount}
 
 
+def basic_docker_operation(name, id):
+    op = getattr(docker_client.api, name)
+    try:
+        op(id)
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
+
 @registerMutation("startDockerContainer")
 def resolve_start_container(*_, id):
-    docker_client.api.start(id)
-    return True
+    return basic_docker_operation("start", id)
 
 
 @registerMutation("restartDockerContainer")
 def resolve_restart_container(*_, id):
-    docker_client.api.restart(id)
-    return True
+    return basic_docker_operation("restart", id)
 
 
 @registerMutation("pauseDockerContainer")
 def resolve_pause_container(*_, id):
-    docker_client.api.pause(id)
-    return True
+    return basic_docker_operation("pause", id)
 
 
 @registerMutation("unpauseDockerContainer")
 def resolve_unpause_container(*_, id):
-    docker_client.api.unpause(id)
-    return True
+    return basic_docker_operation("unpause", id)
 
 
 @registerMutation("stopDockerContainer")
 def resolve_stop_container(*_, id):
-    docker_client.api.stop(id)
-    return True
+    return basic_docker_operation("stop", id)
 
 
 @registerMutation("killDockerContainer")
 def resolve_kill_container(*_, id):
-    docker_client.api.kill(id)
-    return True
+    return basic_docker_operation("kill", id)
 
 
 @registerMutation("renameDockerContainer")
 def resolve_rename_container(*_, id, name):
-    docker_client.api.rename(id, name=name)
-    return True
+    try:
+        docker_client.api.rename(id, name=name)
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("deleteDockerContainer")
 def resolve_remove_container(*_, id, force, pruneVolumes):
-    docker_client.api.remove_container(id, v=pruneVolumes, force=force)
-    return True
+    try:
+        docker_client.api.remove_container(id, v=pruneVolumes, force=force)
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("pruneDockerContainers")

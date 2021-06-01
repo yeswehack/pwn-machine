@@ -1,10 +1,12 @@
 <template>
   <q-form @submit="submit">
     <q-card-section>
-      <div class="row q-gutter-md items-end">
+      <div class="row q-gutter-md items-center">
         <div class="col">
           <q-input
+            ref="name"
             :readonly="readonly"
+            :rules="[required('Name is required')]"
             v-model="form.name"
             required
             label="Name"
@@ -36,7 +38,12 @@
     </q-card-section>
 
     <q-card-section v-if="!readonly">
-      <reset-and-save :modified="modified" @save="submit" @reset="reset" />
+      <reset-and-save
+        :modified="modified"
+        @save="submit"
+        :validate="validate"
+        @reset="reset"
+      />
     </q-card-section>
   </q-form>
 </template>
@@ -47,6 +54,8 @@ import LabelInput from "../LabelInput.vue";
 import IpamsInput from "./IpamsInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
+import { notify } from "src/utils";
+import { required } from "src/utils/validators";
 
 export default {
   props: { readonly: { type: Boolean, default: false } },
@@ -58,7 +67,13 @@ export default {
     ipams: IpamsInput,
     labels: LabelInput
   },
+  data() {
+    return { required };
+  },
   methods: {
+    validate() {
+      return this.$refs.name.validate();
+    },
     async submit() {
       this.$apollo
         .mutate({
@@ -66,13 +81,12 @@ export default {
           variables: { input: this.form },
           refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
         })
-        .then(() => {
-          this.$q.notify({
-            message: `Network ${this.form.name} created.`,
-            type: "positive"
-          });
-          this.$emit("ok");
-          this.$emit("created", this.form.name);
+        .then(notify(`Network ${this.form.name} created.`))
+        .then(r => {
+          if (r.success) {
+            this.$emit("ok");
+            this.$emit("created", this.form.name);
+          }
         });
     }
   }

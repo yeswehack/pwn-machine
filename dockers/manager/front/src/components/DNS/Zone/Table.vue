@@ -72,15 +72,16 @@ export default {
       label: name,
       field: name,
       sortable: true,
+      autoWidth: true,
       ...opt
     });
 
     const soaField = (name, opt = {}) =>
       field(name, { field: r => r.soa[name], ...opt });
     const columns = [
-      field("name"),
-      soaField("nameserver"),
-      soaField("postmaster"),
+      field("name", {autoWidth: false}),
+      soaField("nameserver", {autoWidth: false}),
+      soaField("postmaster", {autoWidth: false}),
       field("serial"),
       soaField("refresh"),
       soaField("retry"),

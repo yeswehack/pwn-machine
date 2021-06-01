@@ -9,3 +9,13 @@ input KeyValueInput {
 }
 
 scalar DateTime
+
+
+interface IMutationResponse {
+    error: String
+}
+
+type BasicMutationResponse implements IMutationResponse {
+    error: String
+    success: Boolean!
+}

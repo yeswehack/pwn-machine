@@ -18,6 +18,7 @@ import LabelInput from "../LabelInput.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
+import { notify } from "src/utils";
 
 export default {
   components: { ResetAndSave },
@@ -28,20 +29,20 @@ export default {
   },
   methods: {
     async submit(done) {
+      const name = this.form.name ?? "<unnamed>"
       this.$apollo
         .mutate({
           mutation: api.docker.volumes.CREATE_VOLUME,
           variables: { input: this.form },
           refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
         })
-        .then(() => {
-          done();
-          this.$q.notify({
-            message: `Volume ${this.form.name} created.`,
-            type: "positive"
-          });
-          this.$emit("ok");
-          this.$emit("created", this.form.name);
+        .then(notify(`Volume ${name} created.`))
+        .then(r => {
+          if (r.success) {
+            done();
+            this.$emit("ok");
+            this.$emit("created", this.form.name);
+          }
         });
     }
   }

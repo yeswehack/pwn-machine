@@ -90,27 +90,32 @@ def resolve_create_network(*_, input):
                 )
             )
         ipam = IPAMConfig(pool_configs)
-    return docker_client.networks.create(
-        name,
-        check_duplicate=True,
-        labels=labels,
-        driver="bridge",
-        internal=internal,
-        ipam=ipam,
-    )
+
+    try:
+        docker_client.networks.create(
+            name,
+            check_duplicate=True,
+            labels=labels,
+            driver="bridge",
+            internal=internal,
+            ipam=ipam,
+        )
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("deleteDockerNetwork")
 def mutation_delete_network(*_, id):
     try:
         network = docker_client.networks.get(id)
-    except APIError:
-        raise ValueError("Invalid network ID")
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
     try:
         network.remove()
     except APIError as e:
-        raise ValueError(e.explanation)
-    return True
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("connectDockerContainer")
@@ -121,8 +126,8 @@ def resolve_connect_container(*_, input):
     try:
         network.connect(container, aliases=aliases)
     except APIError as e:
-        return False
-    return True
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("disconnectDockerContainer")
@@ -131,18 +136,18 @@ def resolve_disconnect_container(*_, input):
     container = docker_client.containers.get(input["containerId"])
     try:
         network.disconnect(container)
-    except APIError:
-        return False
-    return True
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("deleteDockerNetwork")
 def resolve_remove_network(*_, id):
     try:
         docker_client.api.remove_network(id)
-    except (NotFound, APIError):
-        return False
-    return True
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("pruneDockerNetworks")

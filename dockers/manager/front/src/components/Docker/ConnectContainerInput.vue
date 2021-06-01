@@ -32,7 +32,7 @@
         <container-link :name="entry.container.name" class="q-mr-md" />
       </div>
       <div class="ellipsis">
-        {{ entry.aliases ? entry.aliases.join(", ") : '-' }}
+        {{ entry.aliases ? entry.aliases.join(", ") : "-" }}
       </div>
       <div class="ellipsis text-right">
         {{ entry.ipAddress || "Off-line" }}
@@ -45,6 +45,7 @@
 import api from "src/api";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
+import { notify } from "src/utils";
 export default {
   components: { BaseGridInput, ContainerLink },
   props: {
@@ -53,7 +54,7 @@ export default {
     container: { type: Object, default: null }
   },
   data() {
-    return { model: {container: null, aliases: []}, loading: false };
+    return { model: { container: null, aliases: [] }, loading: false };
   },
   apollo: {
     containers: {
@@ -73,40 +74,47 @@ export default {
     }
   },
   methods: {
-    fillAliases({value:container}){
-        const aliases = [container.name] 
+    fillAliases({ value: container }) {
+      const aliases = [container.name];
 
-        const serviceName = container.labels.find(l => l.key == 'com.docker.compose.service')?.value 
-        if (serviceName && serviceName != container.name){
-          aliases.push(serviceName)
-        }
-        this.model.aliases = aliases
+      const serviceName = container.labels.find(
+        l => l.key == "com.docker.compose.service"
+      )?.value;
+      if (serviceName && serviceName != container.name) {
+        aliases.push(serviceName);
+      }
+      this.model.aliases = aliases;
     },
     connectContainer() {
       const containerId = this.model.container.value.id;
-      const aliases = this.model.aliases
+      const aliases = this.model.aliases;
       const input = { networkId: this.network.id, containerId, aliases };
-      this.loading = true;
       this.$apollo
         .mutate({
           mutation: api.docker.networks.CONNECT_TO_NETWORK,
           variables: { input },
           refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
         })
+        .then(
+          notify(`${this.model.container.value.name} connected to ${this.network.name}`)
+        )
         .then(() => {
-          this.loading = false;
           this.model.container = null;
-          this.model.aliases = []
+          this.model.aliases = [];
         });
     },
     disconnectContainer(id) {
-      const containerId = this.network.usedBy[id].container.id;
-      const input = { networkId: this.network.id, containerId };
-      this.$apollo.mutate({
-        mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
-        variables: { input },
-        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-      });
+      const container = this.network.usedBy[id].container;
+      const input = { networkId: this.network.id, containerId: container.id };
+      this.$apollo
+        .mutate({
+          mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
+          variables: { input },
+          refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
+        })
+        .then(
+          notify(`${container.name} disconnected from ${this.network.name}`)
+        );
     }
   }
 };

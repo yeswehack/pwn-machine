@@ -57,6 +57,7 @@ export default {
       label: name,
       field: name,
       sortable: true,
+      autoWidth: true,
       ...opt
     });
 
@@ -66,7 +67,8 @@ export default {
       field("type"),
       field("ttl", { label: "TTL" }),
       field("records", {
-        format: r => r.map(r => r.content).join(", ")
+        format: r => r.map(r => r.content).join(", "),
+        autoWidth: false
       }),
       field("enabled", { field: r => this.isEnabled(r) })
     ];

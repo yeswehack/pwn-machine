@@ -1,49 +1,67 @@
 import gql from "graphql-tag";
-import { CONTAINER_FRAGMENT } from "./fragments";
+import { BASIC_MUTATION_FRAGMENT } from "src/api/common/fragments";
 
 export const CREATE_CONTAINER = gql`
   mutation createContainer($input: DockerContainerInput!) {
     createDockerContainer(input: $input) {
-      ...ContainerFragment
+      ...BasicMutationFragment
     }
   }
-  ${CONTAINER_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const START_CONTAINER = gql`
   mutation startContainer($id: ID!) {
-    startDockerContainer(id: $id)
+    startDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const RESTART_CONTAINER = gql`
   mutation restartContainer($id: ID!) {
-    restartDockerContainer(id: $id)
+    restartDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const PAUSE_CONTAINER = gql`
   mutation pauseContainer($id: ID!) {
-    pauseDockerContainer(id: $id)
+    pauseDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const UNPAUSE_CONTAINER = gql`
   mutation unpauseContainer($id: ID!) {
-    unpauseDockerContainer(id: $id)
+    unpauseDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const STOP_CONTAINER = gql`
   mutation stopContainer($id: ID!) {
-    stopDockerContainer(id: $id)
+    stopDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const KILL_CONTAINER = gql`
   mutation killContainer($id: ID!) {
-    killDockerContainer(id: $id)
+    killDockerContainer(id: $id) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const DELETE_CONTAINER = gql`
@@ -52,8 +70,11 @@ export const DELETE_CONTAINER = gql`
     $force: Boolean
     $pruneVolumes: Boolean
   ) {
-    deleteDockerContainer(id: $id, force: $force, pruneVolumes: $pruneVolumes)
+    deleteDockerContainer(id: $id, force: $force, pruneVolumes: $pruneVolumes) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const PRUNE_CONTAINERS = gql`

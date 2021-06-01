@@ -74,6 +74,7 @@ import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
+import { notify } from 'src/utils';
 
 export default {
   components: {
@@ -179,12 +180,7 @@ export default {
               variables: { id: network.id },
               refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
             })
-            .catch(e => {
-              this.$q.notify({
-                message: e.message,
-                type: "negative"
-              });
-            });
+            .then(notify(`${network.name} deleted.`))
         });
     }
   }

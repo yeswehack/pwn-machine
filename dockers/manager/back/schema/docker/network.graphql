@@ -3,15 +3,15 @@ extend type Query {
 }
 
 extend type Mutation {
-  createDockerNetwork(input: DockerNetworkInput!): DockerNetwork
-  deleteDockerNetwork(id: ID!): Boolean!
+  createDockerNetwork(input: DockerNetworkInput!): BasicMutationResponse!
+  deleteDockerNetwork(id: ID!): BasicMutationResponse!
   pruneDockerNetworks: PruneResponse!
   connectDockerContainer(
     input: DockerNetworkConnectionInput
-  ): Boolean!
+  ): BasicMutationResponse!
   disconnectDockerContainer(
     input: DockerNetworkConnectionInput
-  ): Boolean!
+  ): BasicMutationResponse!
 }
 
 

@@ -5,21 +5,22 @@ extend type Query {
 }
 
 extend type Mutation {
-  createDockerContainer(input: DockerContainerInput!): DockerContainer
-  startDockerContainer(id: ID!): Boolean!
-  restartDockerContainer(id: ID!): Boolean!
-  pauseDockerContainer(id: ID!): Boolean!
-  unpauseDockerContainer(id: ID!): Boolean!
-  stopDockerContainer(id: ID!): Boolean!
-  killDockerContainer(id: ID!): Boolean!
-  renameDockerContainer(id: ID!, name: String!): Boolean!
+  createDockerContainer(input: DockerContainerInput!): BasicMutationResponse!
+  startDockerContainer(id: ID!): BasicMutationResponse!
+  restartDockerContainer(id: ID!): BasicMutationResponse!
+  pauseDockerContainer(id: ID!): BasicMutationResponse!
+  unpauseDockerContainer(id: ID!): BasicMutationResponse!
+  stopDockerContainer(id: ID!): BasicMutationResponse!
+  killDockerContainer(id: ID!): BasicMutationResponse!
+  renameDockerContainer(id: ID!, name: String!): BasicMutationResponse!
   deleteDockerContainer(
     id: ID!
     force: Boolean! = false
     pruneVolumes: Boolean! = false
-  ): Boolean!
+  ): BasicMutationResponse!
   pruneDockerContainers: PruneResponse!
 }
+
 
 type DockerContainerProcess {
   user: String!

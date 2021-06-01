@@ -91,6 +91,7 @@ import NetworkLink from "src/components/Docker/Network/Link.vue";
 import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
 import api from "src/api";
 import { format } from "quasar";
+import { notify } from 'src/utils';
 const { humanStorageSize } = format;
 
 export default {
@@ -119,12 +120,12 @@ export default {
       ...opts
     });
     const columns = [
-      col("name"),
+      col("name", { autoWidth: true }),
       col("image"),
       col("volumes"),
       col("networks"),
       col("ports", { label: "exposed ports" }),
-      col("status")
+      col("status", { autoWidth: true })
     ];
     return { columns };
   },
@@ -202,12 +203,7 @@ export default {
               variables: { id: container.id, force, pruneVolumes },
               refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
             })
-            .catch(e => {
-              this.$q.notify({
-                message: e.message,
-                type: "negative"
-              });
-            });
+            .then(notify(`${container.name} deleted.`))
         });
     },
     cloneContainer(container) {

@@ -3,8 +3,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createDockerVolume(input: DockerVolumeInput! = {}): DockerVolume
-  deleteDockerVolume(name: String!, force: Boolean! = false): Boolean!
+  createDockerVolume(input: DockerVolumeInput! = {}): BasicMutationResponse!
+  deleteDockerVolume(name: String!, force: Boolean! = false): BasicMutationResponse!
   pruneDockerVolumes: PruneResponse!
 }
 

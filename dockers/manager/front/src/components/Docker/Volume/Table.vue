@@ -39,6 +39,7 @@ import ContainerDialog from "./Dialog.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 import { format } from "quasar";
+import { notify } from "src/utils";
 const { humanStorageSize } = format;
 
 export default {
@@ -72,7 +73,9 @@ export default {
                 data.pruneDockerVolumes.spaceReclaimed
               );
               const message = deleted.length
-                ? `${deleted.length} volume(s) deleted: ${deleted.join(", ")} (${reclaimed})`
+                ? `${deleted.length} volume(s) deleted: ${deleted.join(
+                    ", "
+                  )} (${reclaimed})`
                 : `No volume deleted.`;
 
               this.$q.notify({
@@ -110,18 +113,7 @@ export default {
               variables: { name: volume.name },
               refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
             })
-            .catch(e => {
-              this.$q.notify({
-                message: e.message,
-                type: "negative"
-              });
-            })
-            .then(() => {
-              this.$q.notify({
-                message: `Volume ${volume.name} deleted.`,
-                type: "positive"
-              });
-            });
+            .then(notify(`Volume ${volume.name} deleted.`));
         });
     }
   },

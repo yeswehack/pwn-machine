@@ -35,20 +35,21 @@ def resolve_volume_used_by(volume, _, onlyRunning):
 @registerMutation("createDockerVolume")
 def resolve_create_volume(*_, input):
     try:
-        return docker_client.volumes.create(
+        docker_client.volumes.create(
             input.get("name"), labels=dict(input["labels"])
         )
-    except APIError:
-        return None
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("deleteDockerVolume")
 def resolve_remove_volume(*_, name, force):
     try:
         docker_client.api.remove_volume(name, force=force)
-    except APIError:
-        return False
-    return True
+    except APIError as e:
+        return {"error": e.explanation, "success": False}
+    return {"success": True}
 
 
 @registerMutation("pruneDockerVolumes")
