@@ -2,7 +2,7 @@
   <q-select
     ref="select"
     :options="options"
-    :rules="[requiredArray('Please choose a container')]"
+    :rules="[required('Please choose a container')]"
     v-model="form"
     label="Container"
     clearable
@@ -12,13 +12,13 @@
 <script>
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
-import { requiredArray } from "src/utils/validators.js";
+import { required } from "src/utils/validators.js";
 
 export default {
   mixins: [DeepForm],
   formDefinition: null,
   data() {
-    return { requiredArray };
+    return { required };
   },
   apollo: {
     containers: {
