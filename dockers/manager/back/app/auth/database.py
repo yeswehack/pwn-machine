@@ -43,6 +43,6 @@ class Database:
             return self._jwt_secret
         self._jwt_secret = await redis_client.get(JWT_SECRET_KEY)
         if not self._jwt_secret:
-            self._jwt_secret = os.urandom(32)
+            self._jwt_secret = os.urandom(32).hex()
             await redis_client.set(JWT_SECRET_KEY, self._jwt_secret)
         return self._jwt_secret
