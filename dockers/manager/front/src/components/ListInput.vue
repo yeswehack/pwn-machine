@@ -18,7 +18,13 @@
       />
     </template>
     <template #entry="props">
-      <div class="ellipsis">
+      <div class="ellipsis" v-if="objectKey">
+        {{ props.entry[objectKey] }}
+        <q-popup-edit v-model="props.entry[objectKey]">
+          <q-input v-model="props.entry[objectKey]" dense autofocus />
+        </q-popup-edit>
+      </div>
+      <div class="ellipsis" v-else>
         {{ props.entry }}
         <q-popup-edit v-model="props.entry">
           <q-input v-model="props.entry" dense autofocus />
@@ -36,6 +42,7 @@ export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
   props: {
+    objectKey: { type: String, default: null },
     rules: { type: Array, default: () => [] },
     readonly: { type: Boolean, default: false },
     label: { type: String, default: null }
@@ -49,7 +56,11 @@ export default {
       if (!this.model) {
         return;
       }
-      this.form.unshift(this.model);
+      if (this.objectKey) {
+        this.form.unshift({[this.objectKey] : this.model});
+      } else {
+        this.form.unshift(this.model);
+      }
       this.model = null;
       this.validate();
     },

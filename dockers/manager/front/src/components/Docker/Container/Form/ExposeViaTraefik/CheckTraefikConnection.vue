@@ -102,7 +102,8 @@ export default {
     connectToNetwork() {
       const input = {
         containerId: this.container.id,
-        networkId: this.connectTo.value
+        networkId: this.connectTo.value,
+        aliases: [this.container.name]
       };
       this.$apollo.mutate({
         mutation: api.docker.networks.CONNECT_TO_NETWORK,

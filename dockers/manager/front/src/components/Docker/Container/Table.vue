@@ -94,7 +94,7 @@ import ImageLink from "src/components/Docker/Image/Link.vue";
 import VolumeLink from "src/components/Docker/Volume/Link.vue";
 import PortList from "src/components/Docker/Container/PortList.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
-import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
+import ExposeContainerDialog from "src/components/Docker/Container/Form/ExposeViaTraefik/Dialog.vue";
 import ShellDialog from "src/components/Shell/Dialog.vue";
 import api from "src/api";
 import { format } from "quasar";

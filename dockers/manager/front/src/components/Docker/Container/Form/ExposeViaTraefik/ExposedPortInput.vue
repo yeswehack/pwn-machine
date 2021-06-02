@@ -41,18 +41,18 @@ export default {
   mixins: [DeepForm],
   formDefinition: {
     port: null,
-    protocol: "HTTP"
+    protocol: "http"
   },
   props: {
     container: { type: Object, required: false }
   },
   data() {
-    return { protocolOptions: ["HTTP", "TCP", "UDP"] };
+    return { protocolOptions: ["http", "tcp", "udp"] };
   },
   methods: {
     input(value) {
       if (value && typeof value == "object") {
-        this.form.protocol = value.protocol == "UDP" ? "UDP" : "HTTP";
+        this.form.protocol = value.protocol == "udp" ? "udp" : "http";
         this.form.port = value.port;
       }
     },
@@ -67,8 +67,9 @@ export default {
   },
   computed: {
     portOptions() {
+      console.log(this.container)
       return (this.container?.ports ?? [])
-        .filter(p => p.protocol == "TCP")
+        .filter(p => p.protocol == "tcp")
         .map(p => {
           return {
             label: p.containerPort,

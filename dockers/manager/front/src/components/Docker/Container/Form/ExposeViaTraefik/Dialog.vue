@@ -17,7 +17,7 @@
                 :container="container"
               />
             </div>
-            <div class="col" v-if="form.exposedPort.protocol == 'HTTP'">
+            <div class="col" v-if="form.exposedPort.protocol == 'http'">
               <q-select
                 label="Domain"
                 ref="domainSelect"
@@ -54,7 +54,7 @@
               />
             </div>
           </div>
-          <q-separator class="q-mx-xl q-mb-md"/>
+          <q-separator class="q-mx-xl q-mb-md" />
           <component
             ref="service"
             :is="serviceComponent"
@@ -74,12 +74,36 @@
               />
             </div>
           </div>
-          <q-separator class="q-mx-xl q-mb-md"/>
+          <q-separator class="q-mx-xl q-mb-md" />
           <component
             ref="router"
             :is="routerComponent"
             v-model="form.routerForm"
           />
+        </q-tab-panel>
+        <q-tab-panel name="create" class="q-gutter-sm">
+          <div class="row text-h6">
+            Summary
+          </div>
+          <div class="row">
+            <div class="col">
+              Expose port {{ form.exposedPort.port }}/{{
+                form.exposedPort.protocol
+              }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">Create service {{ form.serviceName }}</div>
+            <div class="col col-auto">
+              <q-icon name="close" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">Create router {{ form.routerName }}</div>
+            <div class="col col-auto">
+              <q-icon name="close" />
+            </div>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
       <q-card-section>
@@ -111,31 +135,32 @@ import CreateUdpLoadBalancer from "src/components/Traefik/Service/CreateUdpLoadB
 import CreateTcpLoadBalancer from "src/components/Traefik/Service/CreateTcpLoadBalancer.vue";
 
 import CheckTraefikConnection from "./CheckTraefikConnection.vue";
-import ExposedPortInput from "./Form/ExposedPortInput.vue";
+import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import { notify } from "src/utils";
 
 function getRouterComponent(f) {
   const protocol = f?.exposedPort?.protocol;
-  if (protocol == "UDP") {
+  if (protocol == "udp") {
     return CreateUDPRouter;
   }
-  if (protocol == "TCP") {
+  if (protocol == "tcp") {
     return CreateTCPRouter;
   }
-  if (protocol == "HTTP") {
+  if (protocol == "http") {
     return CreateHTTPRouter;
   }
   return null;
 }
 function getServiceComponent(f) {
   const protocol = f?.exposedPort?.protocol;
-  if (protocol == "UDP") {
+  if (protocol == "udp") {
     return CreateUdpLoadBalancer;
   }
-  if (protocol == "TCP") {
+  if (protocol == "tcp") {
     return CreateTcpLoadBalancer;
   }
-  if (protocol == "HTTP") {
+  if (protocol == "http") {
     return CreateHttpLoadBalancer;
   }
   return null;
@@ -232,7 +257,7 @@ export default {
             return validators.every(x => x);
           }
         },
-        "serviceName"
+        "create"
       ];
       return steps;
     },
@@ -264,6 +289,37 @@ export default {
       if (!v) {
         return "This field is required";
       }
+    },
+    submit() {
+      const protocol = this.form.exposedPort.protocol;
+      const serviceMutation =
+        api.traefik.services.CREATE_SERVICE[protocol].loadBalancer;
+      const serviceInput = {
+        name: this.form.serviceName,
+        loadBalancer: this.form.serviceForm
+      };
+      const routerMutation = api.traefik.routers.CREATE_ROUTER[protocol];
+
+      const routerInput = {
+        name: this.form.routerName,
+        ...this.form.routerForm
+      };
+      this.$apollo
+        .mutate({
+          mutation: serviceMutation,
+          variables: { input: serviceInput }
+        })
+        .then(notify(`Service ${this.form.serviceName} created.`))
+        .then(r => {
+          if (r.success) {
+            this.$apollo
+              .mutate({
+                mutation: routerMutation,
+                variables: { input: routerInput }
+              })
+              .then(notify(`Router ${this.form.routerName} created.`));
+          }
+        });
     },
     onDomainInput(domain) {
       if (domain && domain.startsWith("*")) {
