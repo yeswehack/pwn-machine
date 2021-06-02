@@ -1,18 +1,24 @@
 <template>
   <div>
     <q-card-section>
-      <q-input
-        ref="name"
-        v-model="form.name"
-        autofocus
-        :rules="[validateName]"
-        label="Name"
-      />
-      <q-select
-        v-model="form.protocol"
-        :options="protocols"
-        label="Protocol"
-      />
+      <div class="row q-gutter-sm">
+        <div class="col">
+          <q-input
+            ref="name"
+            v-model="form.name"
+            autofocus
+            :rules="[validateName]"
+            label="Name"
+          />
+        </div>
+        <div class="col col-3">
+          <q-select
+            v-model="form.protocol"
+            :options="protocols"
+            label="Protocol"
+          />
+        </div>
+      </div>
     </q-card-section>
     <q-card-section class="q-pt-none">
       <component :is="createComponent" ref="create" v-model="form.extra" />

@@ -18,19 +18,7 @@
               />
             </div>
             <div class="col" v-if="form.exposedPort.protocol == 'http'">
-              <q-select
-                label="Domain"
-                ref="domainSelect"
-                input-debounce="0"
-                use-input
-                clearable
-                :rules="[required]"
-                new-value-mode="add"
-                :options="domainOptions"
-                v-model="form.domain"
-                @input="onDomainInput"
-                @filter="onFilter"
-              />
+              <component :is="formChildren.domain" v-model="form.domain" />
             </div>
           </div>
         </q-tab-panel>
@@ -138,6 +126,7 @@ import CheckTraefikConnection from "./CheckTraefikConnection.vue";
 import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import { notify } from "src/utils";
+import DomainInput from 'src/components/DNS/DomainInput.vue';
 
 function getRouterComponent(f) {
   const protocol = f?.exposedPort?.protocol;
@@ -174,6 +163,7 @@ export default {
     routerName: null,
     exposedPort: ExposedPortInput,
     aliasName: null,
+    domain: DomainInput,
     routerForm(f) {
       return getRouterComponent(f);
     },
@@ -185,9 +175,6 @@ export default {
     containerId: { type: String, required: true }
   },
   apollo: {
-    dnsRules: {
-      query: api.dns.rules.LIST_RULES
-    },
     container: {
       query: api.docker.containers.GET_CONTAINER_BY_ID,
       variables() {
@@ -200,8 +187,6 @@ export default {
     return {
       step: 1,
       panel: "choosePort",
-      currentDomain: null,
-      needle: ""
     };
   },
   computed: {
@@ -266,12 +251,6 @@ export default {
         .filter(p => p.protocol == "TCP")
         .map(p => p.containerPort);
     },
-    domainOptions() {
-      return (this.dnsRules ?? [])
-        .filter(r => ["A", "AAAA", "CNAME"].includes(r.type))
-        .map(r => r.name.slice(0, -1))
-        .filter(name => name.includes(this.needle));
-    }
   },
   methods: {
     validateServiceName(v) {
@@ -279,11 +258,6 @@ export default {
     },
     validateRouterName(v) {
       if (!v) return "Please enter a valid routter name.";
-    },
-    onFilter(v, done) {
-      done(() => {
-        this.needle = (v ?? "").toLowerCase();
-      });
     },
     required(v) {
       if (!v) {
@@ -320,19 +294,6 @@ export default {
               .then(notify(`Router ${this.form.routerName} created.`));
           }
         });
-    },
-    onDomainInput(domain) {
-      if (domain && domain.startsWith("*")) {
-        const el = this.$refs.domainSelect.$el;
-        const input = el.querySelector(".q-field__input");
-        this.$refs.domainSelect.updateInputValue(domain.slice(1), false);
-        el.blur();
-        this.$nextTick(() => {
-          this.form.domain = null;
-          input.setSelectionRange(0, 0);
-          input.focus();
-        });
-      }
     },
     updateRouterDefault() {
       if (!this.form.routerForm) return;

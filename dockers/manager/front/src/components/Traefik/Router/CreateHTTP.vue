@@ -1,7 +1,7 @@
 <template>
-  <div class="column q-col-gutter-sm">
-    <div class="col row q-gutter-sm">
-      <div class="col">
+  <div class="q-gutter-sm">
+    <div class="col row">
+      <div class="col q-mr-sm">
         <q-input
           v-model="form.rule"
           ref="rule"
@@ -11,7 +11,7 @@
           label="Rule"
         />
       </div>
-      <div class="col col-auto">
+      <div class="col col-3">
         <q-input
           type="number"
           label="Prority"
@@ -36,6 +36,9 @@
       v-model="form.service"
       protocol="http"
     />
+    <q-list separator class="rounded-borders" bordered>
+      <component ref="tls" :is="formChildren.tls" v-model="form.tls" />
+    </q-list>
   </div>
 </template>
 
@@ -44,6 +47,7 @@ import DeepForm from "src/mixins/DeepForm";
 import EntrypointInput from "./EntrypointInput.vue";
 import ServiceInput from "./ServiceInput.vue";
 import MiddlewareInput from "./MiddlewareInput.vue";
+import TlsInput from "./TlsInput.vue";
 import { isValidRule } from "src/traefik";
 export default {
   mixins: [DeepForm],
@@ -53,7 +57,7 @@ export default {
     middlewares: MiddlewareInput,
     priority: null,
     service: ServiceInput,
-    tls: null
+    tls: TlsInput
   },
   methods: {
     validateRule(rule) {
