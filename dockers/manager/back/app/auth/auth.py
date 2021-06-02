@@ -75,8 +75,8 @@ async def resolve_update_password(*_, password):
 
 @auth_mutation("updateAuthTotp", skip_auth=resolve_setup_needed)
 async def resolve_update_totp(*_, uri, totp):
-    totp_client = pyotp.parse_uri(uri)
-    if not totp_client.verify(totp):
+    totp_client: pyotp.TOTP = pyotp.parse_uri(uri)
+    if not totp_client.verify(f"{totp:0{totp_client.digits}}"):
         return False
 
     await db.save_totp_client(totp_client, uri)

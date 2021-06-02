@@ -62,6 +62,7 @@ export default {
   apollo: {
     setupNeeded: {
       query: api.auth.GET_SETUP_NEEDED,
+      fetchPolicy: "no-cache",
       update: ({ authSetupNeeded }) => authSetupNeeded,
       result() {
         if (this.setupNeeded) {
@@ -82,27 +83,26 @@ export default {
   }),
   methods: {
     async submit() {
-      try {
-        const {
-          data: { login }
-        } = await this.$apollo.mutate({
-          mutation: api.auth.CREATE_TOKEN,
-          variables: {
-            password: this.password,
-            totp: +this.totp,
-            expire: this.expire
-          }
-        });
-        localStorage.setItem("token", login);
+      const {
+        data: { createAuthToken }
+      } = await this.$apollo.mutate({
+        mutation: api.auth.CREATE_TOKEN,
+        variables: {
+          password: this.password,
+          totp: +this.totp,
+          expire: this.expire
+        }
+      });
+
+      if (createAuthToken) {
+        const { token, expire } = createAuthToken;
+        localStorage.setItem("token", token);
         this.$router.push("/");
-      } catch ({ graphQLErrors }) {
-        graphQLErrors.forEach(({ message }) => {
-          this.$q.notify({
-            color: "negative",
-            message,
-            position: "top",
-            timeout: 3000
-          });
+      } else {
+        this.$q.notify({
+          message: "Invalid credentials",
+          color: "negative",
+          position: "top"
         });
       }
     }
