@@ -140,6 +140,11 @@ const configRoute = {
       path: "2fa",
       name: "config2fa",
       component: () => import("components/Config/2FA.vue")
+    },
+    {
+      path: "totp",
+      name: "configTotp",
+      redirect: { name: "config2fa" }
     }
   ]
 };

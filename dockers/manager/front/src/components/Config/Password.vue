@@ -22,10 +22,7 @@
 import api from "src/api";
 
 export default {
-  data: () => ({
-    password: "",
-    repeated: ""
-  }),
+  data: () => ({ password: "", repeated: "" }),
   methods: {
     async submit() {
       if (this.password !== this.repeated) return;
