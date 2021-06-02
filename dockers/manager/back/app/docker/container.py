@@ -184,10 +184,6 @@ def resolve_container_ps(container, _):
         yield process
 
 
-@DockerContainerConnection.field("ipAddress")
-def resolve_connection_ip_address(connection, *_):
-    return connection.get("IPAddress", None) or None
-
 
 @DockerContainer.field("mounts")
 def resolve_container_mounts(container, _):
