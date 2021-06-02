@@ -101,10 +101,20 @@
         </q-card>
       </div>
       <div class="col">
-        <log-card>
-          <log-list :containers="[container.name]" />
-        </log-card>
+        <q-card>
+          <q-card-section class="q-pb-none">
+            <div class="text-h6">Connect to a network</div>
+          </q-card-section>
+          <q-card-section>
+            <connect-network-input :container="container" />
+          </q-card-section>
+        </q-card>
       </div>
+    </div>
+    <div class="col">
+      <log-card>
+        <log-list :containers="[container.name]" />
+      </log-card>
     </div>
 
     <details-process :processes="container.ps" v-if="container.ps" />
@@ -120,12 +130,14 @@ import api from "src/api";
 import ShellDialog from "src/components/Shell/Dialog.vue";
 import LogList from "src/components/Docker/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
-import { notify } from 'src/utils';
+import ConnectNetworkInput from "src/components/Docker/ConnectNetworkInput.vue"
+import { notify } from "src/utils";
 
 export default {
   components: {
     CreateContainer,
     DetailsProcess,
+    ConnectNetworkInput,
     LogCard,
     ImageLink,
     ContainerStatus,
