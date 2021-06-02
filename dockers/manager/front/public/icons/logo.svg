@@ -15,20 +15,6 @@
       <use id="cube3" visibility="visible" xlink:href="#cube" x="19.5" y="50" fill="#00aeef" stroke="black" />
       <use id="cube2" visibility="visible" xlink:href="#cube" x="50.5" y="50" fill="#fff200" stroke="black" />
     </g>
-    <g  >
-      <animate xlink:href="#cube1" attributeName="fill" attributeType="XML" values="#ec008c;#00aeef;#fff200" dur="6s"
-        repeatCount="indefinite" calcMode="discrete" end="circle.mouseleave" begin="circle.mouseenter" />
-      <animate xlink:href="#cube2" attributeName="fill" attributeType="XML" values="#fff200;#ec008c;#00aeef" dur="6s"
-        repeatCount="indefinite" calcMode="discrete" end="circle.mouseleave" begin="circle.mouseenter" />
-      <animate xlink:href="#cube3" attributeName="fill" attributeType="XML" values="#00aeef;#fff200;#ec008c" dur="6s"
-        repeatCount="indefinite" calcMode="discrete" end="circle.mouseleave" begin="circle.mouseenter" />
-      <animateTransform xlink:href="#cube1" attributeName="transform" attributeType="XML" type="translate" from="0 0"
-        to="15.5 26.5"  dur="2s" repeatCount="indefinite" end="circle.mouseleave" begin="circle.mouseenter" />
-      <animateTransform xlink:href="#cube2" attributeName="transform" attributeType="XML" type="translate" from="0 0"
-        to="-31 0" dur="2s" repeatCount="indefinite" end="circle.mouseleave" begin="circle.mouseenter" />
-      <animateTransform xlink:href="#cube3" attributeName="transform" attributeType="XML" type="translate" from="0 0"
-        to="15.5 -26.5" dur="2s" repeatCount="indefinite" end="circle.mouseleave" begin="circle.mouseenter" />
-    </g>
   </g>
 
 </svg>
