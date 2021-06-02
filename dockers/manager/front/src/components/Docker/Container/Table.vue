@@ -20,6 +20,12 @@
       />
     </template>
     <template #menu="{row}">
+      <q-item v-close-popup clickable @click="openShell(row)">
+        <q-item-section avatar>
+          <q-avatar icon="navigate_next" />
+        </q-item-section>
+        <q-item-section>Start a shell ...</q-item-section>
+      </q-item>
       <q-item v-close-popup clickable @click="exposeContainer(row)">
         <q-item-section avatar>
           <q-avatar icon="eva-globe-outline" />
@@ -89,9 +95,10 @@ import VolumeLink from "src/components/Docker/Volume/Link.vue";
 import PortList from "src/components/Docker/Container/PortList.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
 import ExposeContainerDialog from "src/components/Docker/Container/ExposeContainerDialog.vue";
+import ShellDialog from "src/components/Shell/Dialog.vue";
 import api from "src/api";
 import { format } from "quasar";
-import { notify } from 'src/utils';
+import { notify } from "src/utils";
 const { humanStorageSize } = format;
 
 export default {
@@ -130,6 +137,13 @@ export default {
     return { columns };
   },
   methods: {
+    async openShell(container) {
+      this.$q.dialog({
+        component: ShellDialog,
+        parent: this,
+        container
+      });
+    },
     pruneContainers() {
       this.$q
         .dialog({
@@ -203,7 +217,7 @@ export default {
               variables: { id: container.id, force, pruneVolumes },
               refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
             })
-            .then(notify(`${container.name} deleted.`))
+            .then(notify(`${container.name} deleted.`));
         });
     },
     cloneContainer(container) {
