@@ -53,7 +53,7 @@ async def resolve_create_token(*_, password, totp, expire=None):
         if not (await db.totp_client).verify(totp):
             return None
 
-    return make_jwt_token(expire)
+    return await make_jwt_token(expire)
 
 
 @auth_mutation("refreshAuthToken")
@@ -64,7 +64,7 @@ async def resolve_resfresh_token(*_, token, expire=None):
         except jwt.exceptions.InvalidTokenError:
             return None
 
-    return make_jwt_token(expire)
+    return await make_jwt_token(expire)
 
 
 @auth_mutation("updateAuthPassword", skip_auth=resolve_setup_needed)

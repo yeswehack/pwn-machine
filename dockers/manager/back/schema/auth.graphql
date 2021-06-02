@@ -17,5 +17,5 @@ extend type Mutation {
 
 type AuthToken {
   token: String!
-  expire: DateTime!
+  expire: DateTime
 }
