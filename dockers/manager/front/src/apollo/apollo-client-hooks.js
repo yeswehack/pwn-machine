@@ -30,8 +30,7 @@ const ErrorLink = onError(({ graphQLErrors = [] }) => {
     Notify.create({
       message,
       color: "negative",
-      position: "top",
-      timeout: 3000
+      position: "top"
     });
   });
 });

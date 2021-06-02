@@ -26,10 +26,17 @@ export default {
   methods: {
     async submit() {
       if (this.password !== this.repeated) return;
-      await this.$apollo.mutate({
+
+      const {
+        data: { updateAuthPassword }
+      } = await this.$apollo.mutate({
         mutation: api.auth.UPDATE_PASSWORD,
         variables: { password: this.password }
       });
+
+      if (updateAuthPassword) {
+        this.$router.push({ name: "login" });
+      }
     }
   }
 };
