@@ -1,23 +1,21 @@
 extend type Query {
-  authNeedsSetup: SetupNeeded
+  authSetupNeeded: SetupStep
+  authTotpUri: String!
 }
 
-type SetupNeeded {
-  step: SetupStepNeeded
-  totpUri: String
-}
-
-enum SetupStepNeeded {
+enum SetupStep {
   PASSWORD
   TOTP
 }
 
 extend type Mutation {
-  login(password: String!, otp: Int!, expire: Int): User
-  setPassword(password: String!): Boolean!
-  setTotp(uri: String!, totp: Int!): Boolean!
+  createAuthToken(password: String!, totp: Int!, expire: Int): AuthToken
+  refreshAuthToken(token: String!, expire: Int): AuthToken
+  updateAuthPassword(password: String!): Boolean!
+  updateAuthTotp(uri: String!, totp: Int!): Boolean!
 }
 
-type User {
+type AuthToken {
   token: String!
+  expire: DateTime!
 }

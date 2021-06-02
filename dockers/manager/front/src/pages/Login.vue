@@ -1,48 +1,42 @@
 <template>
-  <q-page padding>
-    <div class="row justify-center">
-      <q-form class="login-form" @submit="submit">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              Authentication required
-            </div>
-          </q-card-section>
-          <q-separator />
-          <q-card-section>
-            <q-input
-              type="password"
-              label="Password"
-              v-model="password"
-              required
-            />
-            <q-input
-              type="number"
-              min="0"
-              label="OTP"
-              v-model.number="otp"
-              required
-            />
-            <q-select
-              label="Remember me"
-              :options="expireOptions"
-              emit-value
-              map-options
-              v-model="expire"
-            />
-          </q-card-section>
-          <q-card-actions vertical>
-            <q-btn color="green" type="submit">Login</q-btn>
-          </q-card-actions>
-        </q-card>
-      </q-form>
-    </div>
-    <!-- content -->
+  <q-page padding class="flex">
+    <q-form class="row col flex-center bg-dark q-pa-md" @submit="submit">
+      <q-card bordered style="width:500px">
+        <q-card-section class="text-h6">
+          Authentication required
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-input type="password" label="Password" v-model="password" />
+          <q-input
+            borderless
+            label="Authenticator app code"
+            input-class="text-mono text-h6"
+            mask="######"
+            fill-mask
+            v-model="totp"
+          />
+          <q-select
+            label="Remember me"
+            :options="expireOptions"
+            emit-value
+            map-options
+            v-model="expire"
+          />
+        </q-card-section>
+        <q-card-actions vertical>
+          <q-btn color="positive" :disable="!+totp" type="submit">
+            Login
+          </q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-form>
   </q-page>
 </template>
 
 <script>
-import { login as loginMutation } from "src/api/auth/mutations";
+import _ from "lodash";
+import api from "src/api";
 
 const dayDuration = 60 * 60 * 24;
 const expireOptions = [
@@ -65,12 +59,25 @@ const expireOptions = [
 ];
 
 export default {
+  apollo: {
+    setupNeeded: {
+      query: api.auth.GET_SETUP_NEEDED,
+      update: ({ authSetupNeeded }) => authSetupNeeded,
+      result() {
+        if (this.setupNeeded) {
+          this.$router.push({
+            name: "config" + _.capitalize(this.setupNeeded)
+          });
+        }
+      }
+    }
+  },
   created() {
     this.expireOptions = expireOptions;
   },
   data: () => ({
-    password: null,
-    otp: null,
+    password: "",
+    totp: "",
     expire: null
   }),
   methods: {
@@ -79,15 +86,15 @@ export default {
         const {
           data: { login }
         } = await this.$apollo.mutate({
-          mutation: loginMutation,
+          mutation: api.auth.CREATE_TOKEN,
           variables: {
             password: this.password,
-            otp: this.otp,
+            totp: +this.totp,
             expire: this.expire
           }
         });
-        this.$store.commit("setToken", login);
-        this.$router.push({ name: "index" });
+        localStorage.setItem("token", login);
+        this.$router.push("/");
       } catch ({ graphQLErrors }) {
         graphQLErrors.forEach(({ message }) => {
           this.$q.notify({
@@ -102,9 +109,3 @@ export default {
   }
 };
 </script>
-
-<style lang="css" scoped>
-.login-form {
-  width: max(400px, 50%);
-}
-</style>

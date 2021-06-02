@@ -1,9 +1,11 @@
+import auth from "./auth";
 import docker from "./docker";
-import traefik from "./traefik";
 import dns from "./dns";
+import traefik from "./traefik";
 
 export default {
+  auth,
   docker,
-  traefik,
-  dns
+  dns,
+  traefik
 };

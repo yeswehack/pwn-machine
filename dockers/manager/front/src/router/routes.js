@@ -54,11 +54,11 @@ const traefikRoute = {
       path: "logs",
       name: "traefikLogs",
       component: () => import("components/Traefik/Log/Table.vue")
-    },
+    }
   ]
 };
 
-const DnsRoute = {
+const dnsRoute = {
   path: "dns",
   name: "dnsIndex",
   redirect: "/dns/overview",
@@ -83,7 +83,7 @@ const DnsRoute = {
       path: "logs",
       name: "dnsLogs",
       component: () => import("components/DNS/Log/Table.vue")
-    },
+    }
   ]
 };
 
@@ -122,12 +122,32 @@ const dockerRoute = {
       path: "logs",
       name: "dockerLogs",
       component: () => import("components/Docker/Log/Table.vue")
-    },
-
+    }
   ]
+};
 
-}
-
+const configRoute = {
+  path: "config",
+  name: "configIndex",
+  component: () => import("pages/Config.vue"),
+  children: [
+    {
+      path: "password",
+      name: "configPassword",
+      component: () => import("components/Config/Password.vue")
+    },
+    {
+      path: "2fa",
+      name: "config2fa",
+      component: () => import("components/Config/2FA.vue")
+    },
+    {
+      path: "totp",
+      name: "configTotp",
+      redirect: { name: "config2fa" }
+    }
+  ]
+};
 
 const routes = [
   {
@@ -137,23 +157,15 @@ const routes = [
       {
         path: "login",
         name: "login",
-        component: () => import("pages/Login.vue"),
-        meta: {
-          noauth: true
-        }
+        component: () => import("pages/Login.vue")
       },
-      {
-        path: "",
-        name: "index",
-        component: () => import("pages/Index.vue")
-      },
+      configRoute,
       dockerRoute,
-      DnsRoute,
+      dnsRoute,
       traefikRoute,
       shellRoute
     ]
   },
-
   {
     path: "*",
     component: () => import("pages/Error404.vue")

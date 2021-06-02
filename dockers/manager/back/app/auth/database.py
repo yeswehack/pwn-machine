@@ -1,12 +1,13 @@
 import os
 import pyotp
 
+from . import USERNAME, ISSUER
 from app.redis import client as redis_client
 
 
-PASSWORD_KEY = "admin.password"
-TOTP_URI_KEY = "admin.totp"
-JWT_SECRET_KEY = "secret"
+PASSWORD_KEY = f"{USERNAME}.password"
+TOTP_URI_KEY = f"{USERNAME}.totp"
+JWT_SECRET_KEY = f"{ISSUER}.secret"
 
 
 class Database:

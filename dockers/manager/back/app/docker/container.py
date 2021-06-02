@@ -110,7 +110,7 @@ def resolve_form_create_container(*_, input):
 def resolve_container_by_name(*_, name=None, id=None):
     try:
         return docker_client.containers.get(name or id)
-    except:
+    except NotFound:
         return None
 
 

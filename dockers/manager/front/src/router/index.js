@@ -8,9 +8,9 @@ Vue.use(VueRouter);
 Vue.mixin({
   methods: {
     async refresh() {
-      const queries = Object.values(this.$apollo.queries)
+      const queries = Object.values(this.$apollo.queries);
       queries.forEach(q => q.refetch());
-      this.$children.forEach(c => c.refresh())
+      this.$children.forEach(c => c.refresh());
     }
   }
 });
@@ -24,31 +24,12 @@ Vue.mixin({
  * with the Router instance.
  */
 
-function AuthMiddleware(store) {
-  return function(to, from, next) {
-    if (to.matched.some(r => r.meta.noauth)) {
-      return next();
-    }
-    next();
-    /* if (store.getters.validToken) {
-      next()
-    } else {
-      next({ name: "login" })
-    } */
-  };
-}
+export default new VueRouter({
+  routes,
 
-export default function({ store }) {
-  const Router = new VueRouter({
-    routes,
-
-    // Leave these as they are and change in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    mode: process.env.VUE_ROUTER_MODE,
-    base: process.env.VUE_ROUTER_BASE
-  });
-
-  Router.beforeEach(AuthMiddleware(store));
-  return Router;
-}
+  // Leave these as they are and change in quasar.conf.js instead!
+  // quasar.conf.js -> build -> vueRouterMode
+  // quasar.conf.js -> build -> publicPath
+  mode: process.env.VUE_ROUTER_MODE,
+  base: process.env.VUE_ROUTER_BASE
+});

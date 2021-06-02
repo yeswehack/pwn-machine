@@ -1,69 +1,65 @@
-import { ApolloLink, from } from "apollo-link";
-import { split } from "apollo-link";
+import { ApolloLink, split, from } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
+import { onError } from "apollo-link-error";
+import { Notify } from "quasar";
+import router from "src/router";
 
-function createWSLink() {
-  const connectionParams = {};
-  const jwt = localStorage.getItem("token");
-  if (jwt) {
-    connectionParams.authorization = `Bearer ${jwt}`;
+function withAuthToken(params = {}) {
+  const token = localStorage.getItem("token");
+  if (token) {
+    params.authorization = `Bearer ${token}`;
   }
-  const wsLinkConfig = {
-    uri: `${location.protocol == "https:" ? "wss" : "ws"}://${
-      location.host
-    }/api`,
-    options: {
-      reconnect: true,
-      connectionParams
+  return params;
+}
+
+const AuthLink = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers = {} }) => ({
+    headers: withAuthToken(headers)
+  }));
+  return forward(operation);
+});
+
+const ErrorLink = onError(({ graphQLErrors = [] }) => {
+  graphQLErrors.forEach(({ message }) => {
+    if (message === "Unauthorized") {
+      router.push("/login");
     }
-  };
 
-  return new WebSocketLink(wsLinkConfig);
-}
-
-function createHTTPLink() {
-  return new HttpLink({
-    uri: "/api"
-  });
-}
-
-function createAuthLink() {
-  return new ApolloLink((operation, forward) => {
-    operation.setContext(({ headers = {} }) => {
-      const token = localStorage.getItem("JWT");
-
-      if (token) {
-        headers = { ...headers, authorization: `Bearer ${token}` };
-      }
-
-      return { headers };
+    Notify.create({
+      message,
+      color: "negative",
+      position: "top",
+      timeout: 3000
     });
-
-    return forward(operation);
   });
-}
+});
 
-function createTerminatingLink() {
-  return split(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "subscription"
-      );
-    },
-    createWSLink(),
-    createHTTPLink()
-  );
-}
+const WSLink = new WebSocketLink({
+  uri: `${location.protocol.replace("http", "ws")}//${location.host}/api`,
+  options: {
+    reconnect: true,
+    connectionParams: withAuthToken
+  }
+});
 
-export async function apolloClientBeforeCreate({ apolloClientConfigObj }) {
-  apolloClientConfigObj.link = from([
-    createAuthLink(),
-    createTerminatingLink()
-  ]);
+const HTTPLink = new HttpLink({ uri: "/api" });
+
+const TerminatingLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  WSLink,
+  HTTPLink
+);
+
+export function apolloClientBeforeCreate({ apolloClientConfigObj }) {
+  apolloClientConfigObj.link = from([AuthLink, ErrorLink, TerminatingLink]);
 }
 
 export async function apolloClientAfterCreate(/* { apolloClient, app, router, store, ssrContext, urlPath, redirect } */) {
