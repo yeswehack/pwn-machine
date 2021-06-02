@@ -23,7 +23,7 @@ extend type Mutation {
   validateAuthToken(token: String!): ValidateAuthTokenPayload!
   initializeAuth(password: String!, otp: String!): InitializeAuthPayload!
   login(password: String!, otp: String!, expire: Int): LoginPayload!
-  updateAuthPassword(old: String!, new: String!): Boolean!
+  updatePassword(old: String!, new: String!): BasicMutationResponse!
 }
 type ValidateAuthTokenPayload {
   token: AuthToken

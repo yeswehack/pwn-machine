@@ -1,8 +1,13 @@
+import os
+from warnings import warn
 
+from app.utils import registerMutation, registerQuery
 
-
-from app.utils import registerQuery, registerMutation
 from .database import Database
+
+AUTH_DISABLED_ENVVAR = "PM_DISABLE_AUTH"
+if AUTH_DISABLED := bool(os.environ.get(AUTH_DISABLED_ENVVAR)):
+    warn(f"Never set {AUTH_DISABLED_ENVVAR} in production")
 
 db = Database()
 auth_operations = {}

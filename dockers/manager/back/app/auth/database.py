@@ -1,9 +1,8 @@
 import os
-import pyotp
-from functools import wraps
 from dataclasses import dataclass
+from functools import wraps
 
-
+import pyotp
 from app.redis import client as redis_client
 
 IS_FIRST_RUN_KEY = "pm/ready"
@@ -20,8 +19,15 @@ class Database:
     jwt_secret: bytes = None
 
     async def init(self):
+        from . import AUTH_DISABLED
+
         self.is_first_run = not await redis_client.get(IS_FIRST_RUN_KEY)
         self.password_hash = await redis_client.get(PASSWORD_KEY)
+        if AUTH_DISABLED:
+            self.totp_secret = pyotp.random_base32()
+            self.jwt_secret = os.urandom(32).hex()
+            return self
+
         self.totp_secret = await redis_client.get(TOTP_SECRET_KEY)
         if self.totp_secret is None:
             self.totp_secret = pyotp.random_base32()

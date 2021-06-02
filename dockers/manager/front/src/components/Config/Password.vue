@@ -9,29 +9,17 @@
           <q-separator />
           <q-card-section>
             <q-input
+              required
               label="Current password"
               type="password"
-              v-model="currentPassword"
+              v-model="form.old"
             />
           </q-card-section>
           <q-card-section>
-            <q-input
-              label="New password"
-              type="password"
-              v-model="newPassword"
-            />
-            <q-input
-              label="Confirm password"
-              type="password"
-              v-model="repeatedPassword"
-            />
+            <component :is="formChildren.new" v-model="form.new" />
           </q-card-section>
           <q-card-actions vertical>
-            <q-btn
-              color="positive"
-              :disable="newPassword !== repeatedPassword"
-              type="submit"
-            >
+            <q-btn color="positive" type="submit">
               Submit
             </q-btn>
           </q-card-actions>
@@ -43,30 +31,23 @@
 
 <script>
 import api from "src/api";
+import DeepForm from "src/mixins/DeepForm";
+import PasswordInput from "./PasswordInput.vue";
+import { notify } from 'src/utils';
 
 export default {
-  data: () => ({
-    currentPassword: "",
-    newPassword: "",
-    repeatedPassword: ""
-  }),
+  mixins: [DeepForm],
+  formDefinition: {
+    old: null,
+    new: PasswordInput
+  },
+  data: () => ({}),
   methods: {
     async submit() {
-      if (this.newPassword !== this.repeatedPassword) return;
-
-      const {
-        data: { updateAuthPassword }
-      } = await this.$apollo.mutate({
+      this.$apollo.mutate({
         mutation: api.auth.UPDATE_PASSWORD,
-        variables: {
-          current: this.currentPassword,
-          new: this.newPassword
-        }
-      });
-
-      if (updateAuthPassword) {
-        this.$router.push({ name: "login" });
-      }
+        variables: this.form
+      }).then(notify("Password changed."));
     }
   }
 };

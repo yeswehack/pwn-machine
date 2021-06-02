@@ -37,18 +37,12 @@ export const LOGIN = gql`
   }
 `;
 
-export const REFRESH_TOKEN = gql`
-  mutation refreshToken($token: String!, $expire: Int) {
-    refreshAuthToken(token: $token, expire: $expire) {
-      token
-      expire
-    }
-  }
-`;
-
 export const UPDATE_PASSWORD = gql`
-  mutation updatePassword($password: String!) {
-    updateAuthPassword(password: $password)
+  mutation updatePassword($old: String!, $new: String!) {
+    updatePassword(old: $old, new: $new) {
+      success
+      error
+    }
   }
 `;
 

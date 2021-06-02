@@ -1,22 +1,18 @@
-from . import auth_query, auth_mutation, auth_operations
-from . import db
-
 import os
 import time
-from warnings import warn
 from inspect import isawaitable
 
 import argon2
-import pyotp
 import jwt
+import pyotp
+from app.utils import registerMutation
+
+from . import AUTH_DISABLED, auth_mutation, auth_operations, auth_query, db
 
 USERNAME = "admin"
 ISSUER = "PwnMachine"
 TWO_DAYS = 3600 * 24 * 2
 
-AUTH_DISABLED_ENVVAR = "PM_DISABLE_AUTH"
-if AUTH_DISABLED := bool(os.environ.get(AUTH_DISABLED_ENVVAR)):
-    warn(f"Never set {AUTH_DISABLED_ENVVAR} in production")
 
 hasher = argon2.PasswordHasher()
 
@@ -27,6 +23,7 @@ def check_token(token):
     except jwt.exceptions.InvalidTokenError:
         return False
     return True
+
 
 @auth_query("authSetupNeeded")
 async def resolve_setup_needed(*_):
@@ -68,29 +65,25 @@ async def resolve_create_token(*_, password, otp, expire=None):
     return {"success": True, "result": token}
 
 
-
 @auth_mutation("validateAuthToken")
 async def resolve_validate_token(*_, token, expire=None):
     isFirstRun = db.is_first_run
-    if check_token(token):
+    if AUTH_DISABLED or check_token(token):
         return {"token": make_jwt_token(expire), "isFirstRun": isFirstRun}
     else:
         return {"isFirstRun": isFirstRun}
 
 
-
-
-
-@auth_mutation("updateAuthPassword", skip_auth=resolve_setup_needed)
-async def resolve_update_password(*_, current, new):
-    if AUTH_DISABLED is False:
-        try:
-            hasher.verify(db.password_hash, current)
-        except argon2.exceptions.VerificationError:
-            return False
+@registerMutation("updatePassword")
+async def resolve_update_password(*_, old, new):
+    try:
+        hasher.verify(db.password_hash, old)
+    except argon2.exceptions.VerificationError:
+        return {"success": False, "error": "Invalid password"}
 
     await db.save_password_hash(hasher.hash(new))
-    return True
+    return {"success": True}
+
 
 @auth_mutation("initializeAuth")
 async def resolve_initialize_auth(*_, password, otp):
@@ -105,11 +98,6 @@ async def resolve_initialize_auth(*_, password, otp):
 
 async def auth_middleware(resolver, obj, info, **args):
     skip_auth = auth_operations.get(info.field_name)
-    if callable(skip_auth):
-        skip_auth = skip_auth()
-    if isawaitable(skip_auth):
-        skip_auth = await skip_auth
-
     if (
         # Check auth only for root fields
         info.path.prev is None
