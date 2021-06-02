@@ -1,9 +1,9 @@
 <template>
-  <q-layout view="hhh lpR fFf">
+  <q-layout view="hhh lpR fFf" class="main-layout">
     <q-header class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title shrink class="q-mr-sm">
-          <q-avatar  class="q-mr-sm">
+          <q-avatar class="q-mr-sm">
             <img src="/icons/logo.svg" />
           </q-avatar>
           Pwn Machine
@@ -19,10 +19,9 @@
         </q-tabs>
       </q-toolbar>
     </q-header>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+      <q-page-container>
+        <router-view />
+      </q-page-container>
     <Downloader />
     <Uploader />
     <image-puller />
@@ -77,5 +76,11 @@ export default {
 <style lang="scss" scoped>
 .tabs a {
   text-decoration: none;
+}
+.main-layout {
+  background-image: url("/icons/logo.svg");
+  background-size: 50vh 50vh;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
 }
 </style>
