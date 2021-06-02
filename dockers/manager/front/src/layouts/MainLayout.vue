@@ -2,22 +2,22 @@
   <q-layout view="hhh lpR fFf">
     <q-header class="bg-primary text-white" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title>
+        <q-toolbar-title shrink>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
+            <img src="/icons/logo.svg" />
           </q-avatar>
           Pwn Machine
         </q-toolbar-title>
-      </q-toolbar>
 
-      <q-tabs align="left" v-if="showMenu" class="tabs" narrow-indicator>
-        <q-route-tab :to="{ name: 'dockerIndex' }" label="Docker" />
-        <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
-        <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
-        <q-route-tab :to="{ name: 'shellIndex' }" label="Shell" />
-        <q-space />
-        <q-route-tab :to="{ name: 'configIndex' }" label="Config" />
-      </q-tabs>
+        <q-tabs align="left" v-if="showMenu" class="tabs col" narrow-indicator>
+          <q-route-tab :to="{ name: 'dockerIndex' }" label="Docker" />
+          <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
+          <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
+          <q-route-tab :to="{ name: 'shellIndex' }" label="Shell" />
+          <q-space />
+          <q-route-tab :to="{ name: 'configIndex' }" label="Auth" />
+        </q-tabs>
+      </q-toolbar>
     </q-header>
 
     <q-page-container>
@@ -54,8 +54,8 @@ export default {
       return false;
     }
   },
-  data(){
-    return {loading: false}
+  data() {
+    return { loading: false };
   },
   methods: {
     async refresh_() {
