@@ -59,7 +59,6 @@ export default {
   apollo: {
     containers: {
       query: api.docker.containers.LIST_CONTAINERS,
-      variables: { onlyRunning: true },
       update: data => data.dockerContainers
     }
   },
