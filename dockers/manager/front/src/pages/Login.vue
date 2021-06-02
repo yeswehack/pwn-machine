@@ -1,36 +1,40 @@
 <template>
-  <q-page padding class="flex">
-    <q-form class="row col flex-center bg-dark q-pa-md" @submit="submit">
-      <q-card bordered style="width:500px">
-        <q-card-section class="text-h6">
-          Authentication required
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <q-input type="password" label="Password" v-model="password" />
-          <q-input
-            borderless
-            label="Authenticator app code"
-            input-class="text-mono text-h6"
-            mask="######"
-            fill-mask
-            v-model="totp"
-          />
-          <q-select
-            label="Remember me"
-            :options="expireOptions"
-            emit-value
-            map-options
-            v-model="expire"
-          />
-        </q-card-section>
-        <q-card-actions vertical>
-          <q-btn color="positive" :disable="!+totp" type="submit">
-            Login
-          </q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-form>
+  <q-page padding>
+    <div class="row justify-center q-pa-lg">
+      <div class="col col-auto">
+        <q-form @submit="submit">
+          <q-card bordered style="width:500px">
+            <q-card-section class="text-h6">
+              Authentication required
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              <q-input type="password" label="Password" v-model="password" />
+              <q-input
+                borderless
+                label="Authenticator app code"
+                input-class="text-mono text-h6"
+                mask="######"
+                fill-mask
+                v-model="totp"
+              />
+              <q-select
+                label="Remember me"
+                :options="expireOptions"
+                emit-value
+                map-options
+                v-model="expire"
+              />
+            </q-card-section>
+            <q-card-actions vertical>
+              <q-btn color="positive" :disable="!+totp" type="submit">
+                Login
+              </q-btn>
+            </q-card-actions>
+          </q-card>
+        </q-form>
+      </div>
+    </div>
   </q-page>
 </template>
 

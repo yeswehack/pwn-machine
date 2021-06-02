@@ -129,6 +129,7 @@ const dockerRoute = {
 const configRoute = {
   path: "config",
   name: "configIndex",
+  redirect: { name: "configPassword" },
   component: () => import("pages/Config.vue"),
   children: [
     {
