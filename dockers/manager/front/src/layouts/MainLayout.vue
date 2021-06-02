@@ -2,8 +2,8 @@
   <q-layout view="hhh lpR fFf">
     <q-header class="bg-primary text-white" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title shrink>
-          <q-avatar>
+        <q-toolbar-title shrink class="q-mr-sm">
+          <q-avatar  class="q-mr-sm">
             <img src="/icons/logo.svg" />
           </q-avatar>
           Pwn Machine
