@@ -32,7 +32,6 @@
               </q-step>
               <template #navigation>
                 <q-card-section>
-                  {{form}}
                   <reset-and-save
                     @reset="reset"
                     :step.sync="step"
