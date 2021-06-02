@@ -8,6 +8,7 @@
       ref="tabs"
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
       :indicator-color="indicatorColor"
+       narrow-indicator
       v-bind="$attrs"
       align="left"
     >

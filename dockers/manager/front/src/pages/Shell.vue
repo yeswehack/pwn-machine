@@ -1,5 +1,5 @@
 <template>
-  <tab-page :indicator-color="color" narrow-indicator>
+  <tab-page :indicator-color="color">
     <q-route-tab
       :to="{ name: 'shellNew' }"
       icon="add"
