@@ -13,6 +13,7 @@ scalar DateTime
 
 interface IMutationResponse {
     error: String
+    success: Boolean!
 }
 
 type BasicMutationResponse implements IMutationResponse {

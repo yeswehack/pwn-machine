@@ -130,7 +130,7 @@ const configRoute = {
   path: "config",
   name: "configIndex",
   redirect: { name: "configPassword" },
-  component: () => import("pages/Config.vue"),
+  component: () => import("src/pages/Auth.vue"),
   children: [
     {
       path: "password",
@@ -153,12 +153,24 @@ const configRoute = {
 const routes = [
   {
     path: "/",
+    name: "index",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
         path: "login",
         name: "login",
+        meta: {
+          hideMenu: true,
+        },
         component: () => import("pages/Login.vue")
+      },
+      {
+        path: "install",
+        name: "firstRun",
+        meta: {
+          hideMenu: true,
+        },
+        component: () => import("pages/FirstRun.vue")
       },
       configRoute,
       dockerRoute,

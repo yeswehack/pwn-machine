@@ -8,11 +8,26 @@ enum SetupStep {
   TOTP
 }
 
+type InitializeAuthPayload implements IMutationResponse   {
+  error: String
+  success: Boolean!
+  result: AuthToken
+}
+type LoginPayload implements IMutationResponse{
+  error: String
+  success: Boolean!
+  result: AuthToken
+}
+
 extend type Mutation {
-  createAuthToken(password: String!, totp: Int!, expire: Int): AuthToken
-  refreshAuthToken(token: String!, expire: Int): AuthToken
-  updateAuthPassword(current: String!, new: String!): Boolean!
-  updateAuthTotp(uri: String!, totp: Int!): Boolean!
+  validateAuthToken(token: String!): ValidateAuthTokenPayload!
+  initializeAuth(password: String!, otp: String!): InitializeAuthPayload!
+  login(password: String!, otp: String!, expire: Int): LoginPayload!
+  updateAuthPassword(old: String!, new: String!): Boolean!
+}
+type ValidateAuthTokenPayload {
+  token: AuthToken
+  isFirstRun: Boolean!
 }
 
 type AuthToken {

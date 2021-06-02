@@ -75,11 +75,14 @@ export default {
     },
     buildOriginalForm() {
       const definition = this.$options.formDefinition;
-      const value = this.value
+      const value = this.value;
       if (isBasicType(definition)) {
         this.originalForm = value ?? definition;
       } else if (Array.isArray(definition)) {
         this.originalForm = value ? [...value] : [...definition];
+      } else if (isDeepForm(definition)) {
+        this.formChildren = definition;
+        this.originalForm = this.instanciateSubForm(definition, value).originalForm;
       } else {
         const originalForm = {};
         for (let [name, defaultValue] of Object.entries(definition)) {

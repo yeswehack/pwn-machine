@@ -19,7 +19,7 @@ from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
 from app import config
 from . import dns, docker, traefik
 from .docker.shell import handle_shell
-from app.api import es
+from app.auth import db
 from .auth import auth_middleware
 from .redis import client as redis_client
 from .utils.registration import (
@@ -76,6 +76,8 @@ sessions = {}
 
 
 async def on_startup():
+    ## Auth
+    await db.init()
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
 
     ## Traefik

@@ -17,11 +17,14 @@
           <q-space />
           <q-route-tab :to="{ name: 'configIndex' }" label="Auth" />
         </q-tabs>
+        <q-toolbar-title shrink class="q-mr-sm" v-if="showMenu">
+          <q-btn flat round icon="logout" title="logout" @click="logout" />
+        </q-toolbar-title>
       </q-toolbar>
     </q-header>
-      <q-page-container>
-        <router-view />
-      </q-page-container>
+    <q-page-container>
+      <router-view />
+    </q-page-container>
     <Downloader />
     <Uploader />
     <image-puller />
@@ -47,7 +50,7 @@ export default {
   components: { Downloader, Uploader, ImagePuller },
   computed: {
     showMenu() {
-      return this.$route.name != "login";
+      return !this.$route.meta?.hideMenu;
     },
     requireLogin() {
       return false;
@@ -57,6 +60,10 @@ export default {
     return { loading: false };
   },
   methods: {
+    logout(){
+      localStorage.removeItem("token")
+      window.location.reload()
+    },
     async refresh_() {
       this.loading = true;
       window.setTimeout(() => (this.loading = false), 1000);

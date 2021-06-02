@@ -1,5 +1,5 @@
-from . import USERNAME, ISSUER, auth_query, auth_mutation, auth_operations
-from .database import Database
+from . import auth_query, auth_mutation, auth_operations
+from . import db
 
 import os
 import time
@@ -10,83 +10,97 @@ import argon2
 import pyotp
 import jwt
 
+USERNAME = "admin"
+ISSUER = "PwnMachine"
+TWO_DAYS = 3600 * 24 * 2
 
 AUTH_DISABLED_ENVVAR = "PM_DISABLE_AUTH"
 if AUTH_DISABLED := bool(os.environ.get(AUTH_DISABLED_ENVVAR)):
     warn(f"Never set {AUTH_DISABLED_ENVVAR} in production")
 
 hasher = argon2.PasswordHasher()
-db = Database()
 
+
+def check_token(token):
+    try:
+        jwt.decode(token, db.jwt_secret, ["HS256"], issuer=ISSUER)
+    except jwt.exceptions.InvalidTokenError:
+        return False
+    return True
 
 @auth_query("authSetupNeeded")
 async def resolve_setup_needed(*_):
-    if await db.password_hash is None:
+    if db.password_hash is None:
         return "PASSWORD"
-    if await db.totp_client is None:
+    if db.totp_client is None:
         return "TOTP"
 
 
 @auth_query("authTotpUri")
 async def resolve_totp_uri(*_):
-    secret = pyotp.random_base32()
-    return pyotp.totp.utils.build_uri(secret, USERNAME, issuer=ISSUER)
+    if not db.is_first_run:
+        return None
+    otp = pyotp.TOTP(db.totp_secret)
+    return otp.provisioning_uri(name=USERNAME, issuer_name=ISSUER)
 
 
-async def make_jwt_token(expire=None):
+async def make_jwt_token(expire=TWO_DAYS):
     now = int(time.time())
     payload = {"iss": ISSUER, "iat": now}
     if expire is not None:
         payload["exp"] = now + expire
 
-    token = jwt.encode(payload, await db.jwt_secret)
-    return {"token": token, "expire": payload.get("exp")}
+    token = jwt.encode(payload, db.jwt_secret)
+    return {"token": token, "expire": expire}
 
 
-@auth_mutation("createAuthToken")
-async def resolve_create_token(*_, password, totp, expire=None):
-    if AUTH_DISABLED is False:
-        try:
-            hasher.verify(await db.password_hash, password)
-        except argon2.exceptions.VerificationError:
-            return None
-        if not (await db.totp_client).verify(totp):
-            return None
+@auth_mutation("login")
+async def resolve_create_token(*_, password, otp, expire=None):
+    try:
+        hasher.verify(db.password_hash, password)
+    except argon2.exceptions.VerificationError:
+        return {"success": False, "error": "Invalid credentials."}
+    print(otp, db.totp_client.now())
+    if not db.totp_client.verify(otp):
+        return {"success": False, "error": "Invalid credentials."}
 
-    return await make_jwt_token(expire)
+    token = await make_jwt_token(expire)
+    return {"success": True, "result": token}
 
 
-@auth_mutation("refreshAuthToken")
-async def resolve_resfresh_token(*_, token, expire=None):
-    if AUTH_DISABLED is False:
-        try:
-            jwt.decode(token, await db.jwt_secret, ["HS256"], issuer=ISSUER)
-        except jwt.exceptions.InvalidTokenError:
-            return None
 
-    return await make_jwt_token(expire)
+@auth_mutation("validateAuthToken")
+async def resolve_validate_token(*_, token, expire=None):
+    isFirstRun = db.is_first_run
+    if check_token(token):
+        return {"token": make_jwt_token(expire), "isFirstRun": isFirstRun}
+    else:
+        return {"isFirstRun": isFirstRun}
+
+
+
 
 
 @auth_mutation("updateAuthPassword", skip_auth=resolve_setup_needed)
 async def resolve_update_password(*_, current, new):
     if AUTH_DISABLED is False:
         try:
-            hasher.verify(await db.password_hash, current)
+            hasher.verify(db.password_hash, current)
         except argon2.exceptions.VerificationError:
             return False
 
     await db.save_password_hash(hasher.hash(new))
     return True
 
+@auth_mutation("initializeAuth")
+async def resolve_initialize_auth(*_, password, otp):
+    otp_client = pyotp.TOTP(db.totp_secret)
+    if not otp_client.verify(otp):
+        return {"error": "Invalid OTP", "success": False}
 
-@auth_mutation("updateAuthTotp", skip_auth=resolve_setup_needed)
-async def resolve_update_totp(*_, uri, totp):
-    totp_client: pyotp.TOTP = pyotp.parse_uri(uri)
-    if not totp_client.verify(f"{totp:0{totp_client.digits}}"):
-        return False
-
-    await db.save_totp_client(totp_client, uri)
-    return True
+    await db.save_password_hash(hasher.hash(password))
+    await db.set_ready(True)
+    return {"result": make_jwt_token(), "success": True}
 
 
 async def auth_middleware(resolver, obj, info, **args):
@@ -97,9 +111,8 @@ async def auth_middleware(resolver, obj, info, **args):
         skip_auth = await skip_auth
 
     if (
-        AUTH_DISABLED is False
         # Check auth only for root fields
-        and info.path.prev is None
+        info.path.prev is None
         # except for introspection queries
         and not info.field_name.startswith("__")
         # except for auth operations
@@ -108,7 +121,7 @@ async def auth_middleware(resolver, obj, info, **args):
         try:
             headers = info.context["request"].headers
             token = headers["Authorization"].split()[-1]
-            jwt.decode(token, await db.jwt_secret, ["HS256"], issuer=ISSUER)
+            jwt.decode(token, db.jwt_secret, ["HS256"], issuer=ISSUER)
         except (KeyError, jwt.exceptions.InvalidTokenError):
             raise Exception("Unauthorized")
 

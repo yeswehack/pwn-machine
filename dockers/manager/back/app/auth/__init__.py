@@ -1,9 +1,10 @@
-USERNAME = "admin"
-ISSUER = "PwnMachine"
+
 
 
 from app.utils import registerQuery, registerMutation
+from .database import Database
 
+db = Database()
 auth_operations = {}
 
 

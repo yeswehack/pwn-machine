@@ -26,7 +26,6 @@ const ErrorLink = onError(({ graphQLErrors = [] }) => {
     if (message === "Unauthorized") {
       router.push("/login");
     }
-
     Notify.create({
       message,
       color: "negative",

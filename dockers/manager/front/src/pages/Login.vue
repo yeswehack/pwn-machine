@@ -8,26 +8,23 @@
               Authentication required
             </q-card-section>
             <q-separator />
-            <q-card-section>
-              <q-input type="password" label="Password" v-model="password" />
-              <q-input
-                borderless
-                label="Authenticator app code"
-                input-class="text-mono text-h6"
-                mask="######"
-                fill-mask
-                v-model="totp"
-              />
+            <q-card-section class="q-gutter-md">
+              <q-input type="password" label="Password" v-model="form.password" />
+              <div class="row ">
+                <div class="col col-auto">
+                  <component :is="formChildren.otp" v-model="form.otp" />
+                </div>
+              </div>
               <q-select
                 label="Remember me"
                 :options="expireOptions"
                 emit-value
                 map-options
-                v-model="expire"
+                v-model="form.expire"
               />
             </q-card-section>
             <q-card-actions vertical>
-              <q-btn color="positive" :disable="!+totp" type="submit">
+              <q-btn color="positive" type="submit">
                 Login
               </q-btn>
             </q-card-actions>
@@ -41,74 +38,56 @@
 <script>
 import _ from "lodash";
 import api from "src/api";
-
+import { notify } from "src/utils";
+import DeepForm from "src/mixins/DeepForm";
+import OtpInput from "src/components/Config/OtpInput.vue";
+  
 const dayDuration = 60 * 60 * 24;
-const expireOptions = [
-  {
-    label: "One day",
-    value: dayDuration
-  },
-  {
-    label: "One week",
-    value: dayDuration * 7
-  },
-  {
-    label: "One month",
-    value: dayDuration * 30
-  },
-  {
-    label: "Forever",
-    value: null
-  }
-];
 
 export default {
-  apollo: {
-    setupNeeded: {
-      query: api.auth.GET_SETUP_NEEDED,
-      fetchPolicy: "no-cache",
-      update: ({ authSetupNeeded }) => authSetupNeeded,
-      result() {
-        if (this.setupNeeded) {
-          this.$router.push({
-            name: "config" + _.capitalize(this.setupNeeded)
-          });
-        }
+  mixins: [DeepForm],
+  formDefinition: {
+    password: null,
+    otp: OtpInput,
+    expire: dayDuration
+  },
+  data: () => {
+    const expireOptions = [
+      {
+        label: "One day",
+        value: dayDuration
+      },
+      {
+        label: "One week",
+        value: dayDuration * 7
+      },
+      {
+        label: "One month",
+        value: dayDuration * 30
+      },
+      {
+        label: "Forever",
+        value: null
       }
-    }
+    ];
+    return {
+      expireOptions,
+    };
   },
-  created() {
-    this.expireOptions = expireOptions;
-  },
-  data: () => ({
-    password: "",
-    totp: "",
-    expire: null
-  }),
   methods: {
-    async submit() {
-      const {
-        data: { createAuthToken }
-      } = await this.$apollo.mutate({
-        mutation: api.auth.CREATE_TOKEN,
-        variables: {
-          password: this.password,
-          totp: +this.totp,
-          expire: this.expire
-        }
-      });
-
-      if (createAuthToken) {
-        const { token, expire } = createAuthToken;
-        localStorage.setItem("token", token);
-        this.$router.push("/");
-      } else {
-        this.$q.notify({
-          message: "Invalid credentials",
-          color: "negative",
-          position: "top"
+    submit() {
+      this.$apollo
+        .mutate({
+          mutation: api.auth.LOGIN,
+          variables: this.form
+        })
+        .then(notify("Logged in."))
+        .then(r => {
+          if (r.success) {
+            localStorage.setItem("token", r.result.token);
+            this.$router.push({ name: "index" });
+          }
         });
-      }
     }
   }
 };
