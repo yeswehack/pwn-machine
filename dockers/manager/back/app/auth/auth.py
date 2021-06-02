@@ -68,8 +68,14 @@ async def resolve_resfresh_token(*_, token, expire=None):
 
 
 @auth_mutation("updateAuthPassword", skip_auth=resolve_setup_needed)
-async def resolve_update_password(*_, password):
-    await db.save_password_hash(hasher.hash(password))
+async def resolve_update_password(*_, current, new):
+    if AUTH_DISABLED is False:
+        try:
+            hasher.verify(await db.password_hash, current)
+        except argon2.exceptions.VerificationError:
+            return False
+
+    await db.save_password_hash(hasher.hash(new))
     return True
 
 
