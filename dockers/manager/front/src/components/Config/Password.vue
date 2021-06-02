@@ -8,17 +8,28 @@
           </q-card-section>
           <q-separator />
           <q-card-section>
-            <q-input label="New password" type="password" v-model="password" />
+            <q-input
+              label="Current password"
+              type="password"
+              v-model="currentPassword"
+            />
+          </q-card-section>
+          <q-card-section>
+            <q-input
+              label="New password"
+              type="password"
+              v-model="newPassword"
+            />
             <q-input
               label="Confirm password"
               type="password"
-              v-model="repeated"
+              v-model="repeatedPassword"
             />
           </q-card-section>
           <q-card-actions vertical>
             <q-btn
               color="positive"
-              :disable="password !== repeated"
+              :disable="newPassword !== repeatedPassword"
               type="submit"
             >
               Submit
@@ -34,16 +45,23 @@
 import api from "src/api";
 
 export default {
-  data: () => ({ password: "", repeated: "" }),
+  data: () => ({
+    currentPassword: "",
+    newPassword: "",
+    repeatedPassword: ""
+  }),
   methods: {
     async submit() {
-      if (this.password !== this.repeated) return;
+      if (this.newPassword !== this.repeatedPassword) return;
 
       const {
         data: { updateAuthPassword }
       } = await this.$apollo.mutate({
         mutation: api.auth.UPDATE_PASSWORD,
-        variables: { password: this.password }
+        variables: {
+          current: this.currentPassword,
+          new: this.newPassword
+        }
       });
 
       if (updateAuthPassword) {
