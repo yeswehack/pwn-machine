@@ -28,8 +28,8 @@
 
 
 [certificatesResolvers]
-  [certificatesResolvers.lets-encrypt-http]
-    [certificatesResolvers.lets-encrypt-http.acme]
+  [certificatesResolvers.letsencrypt-staging-http]
+    [certificatesResolvers.letsencrypt-staging-http.acme]
       email = "test@example.com"
       storage = "/data/acme.json"
       caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
@@ -37,8 +37,8 @@
       [certificatesResolvers.lets-encrypt-http.acme.httpChallenge]
         entryPoint = "http"
 
-  [certificatesResolvers.lets-encrypt-dns]
-    [certificatesResolvers.lets-encrypt-dns.acme]
+  [certificatesResolvers.letsencrypt-staging-dns]
+    [certificatesResolvers.letsencrypt-staging-dns.acme]
       email = "test@example.com"
       storage = "/data/acme.json"
       caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
