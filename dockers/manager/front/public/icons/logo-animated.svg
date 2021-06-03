@@ -8,19 +8,19 @@
     </g>
   </defs>
   <g transform-origin="50 50">
-    <circle r="48" cx="50" cy="50" id="circle" stroke="white"/>
+    <circle r="50" cx="50" cy="50" id="circle" />
     <g transform-origin="50 50">
 
-      <use id="cube1" visibility="visible" xlink:href="#cube" x="35" y="23.5" fill="#ec008c" stroke="black" />
-      <use id="cube3" visibility="visible" xlink:href="#cube" x="19.5" y="50" fill="#00aeef" stroke="black" />
-      <use id="cube2" visibility="visible" xlink:href="#cube" x="50.5" y="50" fill="#fff200" stroke="black" />
+      <use id="cube1" visibility="visible" xlink:href="#cube" x="35" y="23.5" fill="#ffffff" stroke="black" />
+      <use id="cube3" visibility="visible" xlink:href="#cube" x="19.5" y="50" fill="#536491" stroke="black" />
+      <use id="cube2" visibility="visible" xlink:href="#cube" x="50.5" y="50" fill="#e73541" stroke="black" />
     </g>
     <g  >
-      <animate xlink:href="#cube1" attributeName="fill" attributeType="XML" values="#ec008c;#00aeef;#fff200" dur="6s"
+      <animate xlink:href="#cube1" attributeName="fill" attributeType="XML" values="#ffffff;#536491;#e73541" dur="6s"
         repeatCount="indefinite" calcMode="discrete"  />
-      <animate xlink:href="#cube2" attributeName="fill" attributeType="XML" values="#fff200;#ec008c;#00aeef" dur="6s"
+      <animate xlink:href="#cube2" attributeName="fill" attributeType="XML" values="#e73541;#ffffff;#536491" dur="6s"
         repeatCount="indefinite" calcMode="discrete"  />
-      <animate xlink:href="#cube3" attributeName="fill" attributeType="XML" values="#00aeef;#fff200;#ec008c" dur="6s"
+      <animate xlink:href="#cube3" attributeName="fill" attributeType="XML" values="#536491;#e73541;#ffffff" dur="6s"
         repeatCount="indefinite" calcMode="discrete"  />
       <animateTransform xlink:href="#cube1" attributeName="transform" attributeType="XML" type="translate" from="0 0"
         to="15.5 26.5"  dur="2s" repeatCount="indefinite"  />
