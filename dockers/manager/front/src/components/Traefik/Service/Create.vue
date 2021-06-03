@@ -52,6 +52,7 @@ import CreateTcpWeighted from "./CreateTcpWeighted.vue";
 import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
 import CreateUdpWeighted from "./CreateUdpWeighted.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import { notify } from "src/utils";
 
 export function getCreateComponent(value) {
   const mapping = {
@@ -118,7 +119,7 @@ export default {
       const availableTypes = this.availableTypes[proto];
       this.form.type =
         availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
-      this.changeSubtitle()
+      this.changeSubtitle();
     },
     currentType(v, old) {
       if (!old) return;
@@ -127,7 +128,7 @@ export default {
         this.form
       );
       this.form.extra = instance.originalForm;
-      this.changeSubtitle()
+      this.changeSubtitle();
     }
   },
   computed: {
@@ -149,7 +150,10 @@ export default {
   },
   methods: {
     changeSubtitle() {
-      this.$emit("updateSubtitle", `${this.form.protocol.toUpperCase()} ${this.form.type}`);
+      this.$emit(
+        "updateSubtitle",
+        `${this.form.protocol.toUpperCase()} ${this.form.type}`
+      );
     },
     okBtnClick() {
       if (this.panel == "chooseType") {
@@ -169,7 +173,6 @@ export default {
       }
     },
     async createService() {
-      this.loading = true;
       const protocol = this.form.protocol;
       const type = this.form.type;
       const mutation = api.traefik.services.CREATE_SERVICE[protocol][type];
@@ -181,15 +184,18 @@ export default {
         .mutate({
           mutation,
           variables: { input },
-          refetchQueries: [{ query: api.traefik.service.LIST_SERVICES }]
+          refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
         })
+        .then(notify(`${this.form.name} created.`))
         .then(r => {
-          this.$emit("ok");
-        });
+          if (r.success) {
+            this.$emit("ok");
+          }
+        })
     },
     async updateService() {
       const type = this.form.type;
-      const mutation = api.traefik.service.UPDATE_SERVICE[type];
+      const mutation = api.traefik.services.UPDATE_SERVICE[type];
       const variables = {
         nodeId: this.service.nodeId,
         patch: this.form.extra
@@ -198,7 +204,7 @@ export default {
         .mutate({
           mutation,
           variables,
-          refetchQueries: [{ query: api.traefik.service.LIST_SERVICES }]
+          refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
         })
         .then(r => {
           this.$emit("ok");
@@ -210,8 +216,7 @@ export default {
           });
         });
     },
-    async submit() {
-      this.loading = true;
+    async submit(done) {
       try {
         if (this.edit) {
           await this.updateService();
@@ -219,7 +224,7 @@ export default {
           await this.createService();
         }
       } finally {
-        this.loading = false;
+        done()
       }
     }
   }

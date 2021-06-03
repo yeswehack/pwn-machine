@@ -15,6 +15,7 @@ from app.api import (
 
 TraefikService = createInterface("TraefikService")
 
+
 @TraefikService.type_resolver
 def resolve_service_type(service, *_):
     mapping = {
@@ -31,15 +32,12 @@ def resolve_service_type(service, *_):
             "loadbalancer": "TraefikUDPServiceLoadBalancer",
             "weighted": "TraefikUDPServiceWeighted",
         },
-        "invalid": {
-            "invalid": "TraefikInvalidService"
-        }
+        "invalid": {"invalid": "TraefikInvalidService"},
     }
     try:
         return mapping[service["protocol"]][service["type"]]
     except:
         return "TraefikHTTPServiceInternal"
-
 
 
 @registerQuery("traefikServices")
@@ -109,46 +107,78 @@ async def create_http_loadbalancer(*_, input):
 
 @registerMutation("createTraefikHTTPServiceMirroring")
 async def create_http_mirroring(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "http", "mirroring", input["mirroring"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "http", "mirroring", input["mirroring"]
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("createTraefikHTTPServiceWeighted")
 async def create_http_weighted(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "http", "weighted", input["weighted"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "http", "weighted", input["weighted"]
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("createTraefikTCPServiceLoadBalancer")
 async def create_tcp_loadbalancer(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "tcp", "loadBalancer", input["loadBalancer"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "tcp", "loadBalancer", input["loadBalancer"]
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("createTraefikTCPServiceWeighted")
 async def create_tcp_weighted(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "tcp", "weighted", input["weighted"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "tcp", "weighted", input["weighted"]
+        )
+
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("createTraefikUDPServiceLoadBalancer")
 async def create_udp_loadbalancer(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "udp", "loadBalancer", input["loadBalancer"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "udp", "loadBalancer", input["loadBalancer"]
+        )
+
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("createTraefikUDPServiceWeighted")
 async def create_udp_weighted(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "udp", "weighted", input["weighted"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "udp", "weighted", input["weighted"]
+        )
+
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 @registerMutation("deleteTraefikService")
 async def delete_service(*_, nodeId):
-    return await traefik_redis().delete_service(nodeId)
+    try:
+        await traefik_redis().delete_service(nodeId)
+
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}

@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-
 export const HEALTH_CHECK_FRAGMENT = gql`
   fragment HealthCheckFragment on TraefikServiceLoadBalancerHealthCheck {
     followRedirects
@@ -90,17 +89,6 @@ export const TCP_LOADBALANCER_FRAGMENT = gql`
     }
   }
 `;
-export const TCP_WEIGHTED_FRAGMENT = gql`
-  fragment TcpWeightedFragment on TraefikTCPServiceWeighted {
-    weighted {
-      services {
-        name
-        weight
-      }
-    }
-  }
-`;
-
 export const UDP_LOADBALANCER_FRAGMENT = gql`
   fragment UdpLoadbalancerFragment on TraefikUDPServiceLoadBalancer {
     loadBalancer {
@@ -111,8 +99,8 @@ export const UDP_LOADBALANCER_FRAGMENT = gql`
   }
 `;
 
-export const UDP_WEIGHTED_FRAGMENT = gql`
-  fragment UdpWeightedFragment on TraefikUDPServiceWeighted {
+export const WEIGHTED_FRAGMENT = gql`
+  fragment WeightedFragment on TraefikServiceWeighted {
     weighted {
       services {
         name
@@ -143,21 +131,17 @@ export const SERVICE_FRAGMENT = gql`
     ... on TraefikTCPServiceLoadBalancer {
       ...TcpLoadbalancerFragment
     }
-    ... on TraefikTCPServiceWeighted {
-      ...TcpWeightedFragment
-    }
     ... on TraefikUDPServiceLoadBalancer {
       ...UdpLoadbalancerFragment
     }
-    ... on TraefikUDPServiceWeighted {
-      ...UdpWeightedFragment
+    ... on TraefikServiceWeighted {
+      ...WeightedFragment
     }
   }
   ${HTTP_LOADBALANCER_FRAGMENT}
   ${HTTP_MIRRORING_FRAGMENT}
   ${HTTP_WEIGHTED_FRAGMENT}
   ${TCP_LOADBALANCER_FRAGMENT}
-  ${TCP_WEIGHTED_FRAGMENT}
   ${UDP_LOADBALANCER_FRAGMENT}
-  ${UDP_WEIGHTED_FRAGMENT}
+  ${WEIGHTED_FRAGMENT}
 `;

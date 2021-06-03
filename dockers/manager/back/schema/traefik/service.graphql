@@ -9,7 +9,7 @@ interface TraefikService {
 
 
 extend type Mutation {
-  deleteTraefikService(nodeId: ID!): Boolean
+  deleteTraefikService(nodeId: ID!): BasicMutationResponse
 }
 
 type TraefikInvalidService implements TraefikService {
@@ -148,7 +148,7 @@ input TraefikHTTPServiceLoadBalancerInput {
 extend type Mutation {
   createTraefikHTTPServiceLoadBalancer(
     input: TraefikHTTPServiceLoadBalancerInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # HTTP MIRRORING
@@ -191,7 +191,7 @@ input TraefikHTTPServiceMirroringInput {
 extend type Mutation {
   createTraefikHTTPServiceMirroring(
     input: TraefikHTTPServiceMirroringInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # HTTP WEIGHTED
@@ -224,7 +224,7 @@ input TraefikHTTPServiceWeightedInput {
 extend type Mutation {
   createTraefikHTTPServiceWeighted(
     input: TraefikHTTPServiceWeightedInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # TCP / UDP
@@ -300,7 +300,7 @@ input TraefikTCPServiceLoadBalancerInput {
 extend type Mutation {
   createTraefikTCPServiceLoadBalancer(
     input: TraefikTCPServiceLoadBalancerInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # TCP WEIGHTED
@@ -308,7 +308,7 @@ extend type Mutation {
 extend type Mutation {
   createTraefikTCPServiceWeighted(
     input: TraefikServiceWeightedInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # UDP LOAD BALANCER
@@ -339,7 +339,7 @@ input TraefikUDPServiceLoadBalancerInput {
 extend type Mutation {
   createTraefikUDPServiceLoadBalancer(
     input: TraefikUDPServiceLoadBalancerInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }
 
 # UDP WEIGHTED
@@ -347,5 +347,5 @@ extend type Mutation {
 extend type Mutation {
   createTraefikUDPServiceWeighted(
     input: TraefikServiceWeightedInput!
-  ): TraefikService!
+  ): BasicMutationResponse!
 }

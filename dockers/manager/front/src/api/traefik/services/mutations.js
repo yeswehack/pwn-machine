@@ -1,10 +1,14 @@
 import gql from "graphql-tag";
 import { SERVICE_FRAGMENT } from "./fragments";
+import { BASIC_MUTATION_FRAGMENT } from "src/api/common/fragments";
 
 export const DELETE_SERVICE = gql`
   mutation deleteService($nodeId: ID!) {
-    deleteTraefikService(nodeId: $nodeId)
+    deleteTraefikService(nodeId: $nodeId) {
+      ...BasicMutationFragment
+    }
   }
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_http_loadbalancer = gql`
@@ -12,10 +16,10 @@ const create_http_loadbalancer = gql`
     $input: TraefikHTTPServiceLoadBalancerInput!
   ) {
     createTraefikHTTPServiceLoadBalancer(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_http_weighted = gql`
@@ -23,10 +27,10 @@ const create_http_weighted = gql`
     $input: TraefikHTTPServiceWeightedInput!
   ) {
     createTraefikHTTPServiceWeighted(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_http_mirroring = gql`
@@ -34,10 +38,10 @@ const create_http_mirroring = gql`
     $input: TraefikHTTPServiceMirroringInput!
   ) {
     createTraefikHTTPServiceMirroring(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_tcp_loadbalancer = gql`
@@ -45,10 +49,10 @@ const create_tcp_loadbalancer = gql`
     $input: TraefikTCPServiceLoadBalancerInput!
   ) {
     createTraefikTCPServiceLoadBalancer(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_tcp_weighted = gql`
@@ -56,10 +60,10 @@ const create_tcp_weighted = gql`
     $input: TraefikTCPServiceWeightedInput!
   ) {
     createTraefikTCPServiceWeighted(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_udp_loadbalancer = gql`
@@ -67,10 +71,10 @@ const create_udp_loadbalancer = gql`
     $input: TraefikUDPServiceLoadBalancerInput!
   ) {
     createTraefikUDPServiceLoadBalancer(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 const create_udp_weighted = gql`
@@ -78,10 +82,10 @@ const create_udp_weighted = gql`
     $input: TraefikUDPServiceWeightedInput!
   ) {
     createTraefikUDPServiceWeighted(input: $input) {
-      ...ServiceFragment
+      ...BasicMutationFragment
     }
   }
-  ${SERVICE_FRAGMENT}
+  ${BASIC_MUTATION_FRAGMENT}
 `;
 
 export const CREATE_SERVICE = {
