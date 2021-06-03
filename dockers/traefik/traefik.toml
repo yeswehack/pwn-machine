@@ -5,13 +5,8 @@
 [entryPoints]
   [entryPoints.http]
     address=":80"
-  [entryPoints.manager]
-    address=":1337"
   [entryPoints.https]
     address=":443"
-
-[providers.file]
-  filename = "/etc/traefik/dynamic_conf.toml"
 
 [providers.redis]
   endpoints = "redis:6379"
@@ -30,19 +25,38 @@
 [certificatesResolvers]
   [certificatesResolvers.letsencrypt-staging-http]
     [certificatesResolvers.letsencrypt-staging-http.acme]
-      email = "test@example.com"
-      storage = "/data/acme.json"
+      email = "__EMAIL__"
+      storage = "/data/acme-staging-http.json"
       caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
   
-      [certificatesResolvers.lets-encrypt-http.acme.httpChallenge]
+      [certificatesResolvers.letsencrypt-staging-http.acme.httpChallenge]
         entryPoint = "http"
 
   [certificatesResolvers.letsencrypt-staging-dns]
     [certificatesResolvers.letsencrypt-staging-dns.acme]
-      email = "test@example.com"
-      storage = "/data/acme.json"
+      email = "__EMAIL__"
+      storage = "/data/acme-staging-dns.json"
       caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
       
-      [certificatesResolvers.lets-encrypt-dns.acme.dnsChallenge]
+      [certificatesResolvers.letsencrypt-staging-dns.acme.dnsChallenge]
+        provider = "pdns"
+        delayBeforeCheck = 5
+
+  [certificatesResolvers.letsencrypt-http]
+    [certificatesResolvers.letsencrypt-http.acme]
+      email = "__EMAIL__"
+      storage = "/data/acme-http.json"
+      caServer = "https://acme-v02.api.letsencrypt.org/directory"
+  
+      [certificatesResolvers.letsencrypt-http.acme.httpChallenge]
+        entryPoint = "http"
+
+  [certificatesResolvers.letsencrypt-dns]
+    [certificatesResolvers.letsencrypt-dns.acme]
+      email = "__EMAIL__"
+      storage = "/data/acme-dns.json"
+      caServer = "https://acme-v02.api.letsencrypt.org/directory"
+      
+      [certificatesResolvers.letsencrypt-dns.acme.dnsChallenge]
         provider = "pdns"
         delayBeforeCheck = 5
