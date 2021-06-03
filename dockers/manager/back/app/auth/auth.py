@@ -67,7 +67,9 @@ async def resolve_create_token(*_, password, otp, expire=None):
 @auth_mutation("validateAuthToken")
 async def resolve_validate_token(*_, token, expire=None):
     isFirstRun = db.is_first_run
-    if AUTH_DISABLED or check_token(token):
+    if AUTH_DISABLED: 
+        return {"token": make_jwt_token(expire),"isFirstRun": False }
+    if check_token(token):
         return {"token": make_jwt_token(expire), "isFirstRun": isFirstRun}
     else:
         return {"isFirstRun": isFirstRun}
