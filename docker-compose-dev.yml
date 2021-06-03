@@ -1,32 +1,41 @@
 version: "3.8"
+
+x-pm-settings:
+  - &LETS_ENCRYPT_EMAIL "${LETS_ENCRYPT_EMAIL?Please provide an email for let's encrypt}" # Replace with your email address or create a .env file
+  - &PDNS_MYSQL_ROOT_PASSWORD "pdns"
+  - &PDNS_MYSQL_DATABASE "pdns"
+  - &PDNS_API_KEY "test"
+
 services:
   ##
   # DNS
   ##
   powerdns-db:
+    container_name: pm_powerdns-db
     image: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: pdns
-      MYSQL_DATABASE: pdns
+      MYSQL_ROOT_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
     networks:
       - dns-net
     volumes:
-      - powerdns-db:/var/lib/mysql
+      - powerdns-data:/var/lib/mysql
 
   powerdns:
+    container_name: pm_powerdns
     build:
       context: ./dockers/powerdns
       args:
-        - API_KEY=test
+        API_KEY: *PDNS_API_KEY
     ports:
       - "53:53"
       - "53:53/udp"
       - "8081:8081"
     environment:
-      MYSQL_HOST: "powerdns-db"
-      MYSQL_PASSWORD: "pdns"
+      MYSQL_HOST: powerdns-db
       MYSQL_USER: "root"
-      MYSQL_DATABASE: "pdns"
+      MYSQL_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
     depends_on:
       - powerdns-db
       - elasticsearch
@@ -40,6 +49,7 @@ services:
   # TRAEFIK
   ##
   redis:
+    container_name: pm_redis
     image: redis
     ports:
       - "6379:6379"
@@ -50,23 +60,24 @@ services:
       - redis-data:/data
 
   traefik:
-    container_name: traefik
+    container_name: pm_traefik
     image: traefik
     build:
       context: ./dockers/traefik
+      args:
+        LETS_ENCRYPT_EMAIL: *LETS_ENCRYPT_EMAIL
 
     ports:
       - "80:80"
       - "8080:8080"
       - "443:443"
-      - "1337:1337"
     volumes:
       - traefik-data:/data:rw
       - traefik-logs:/logs/traefik
     environment:
       TRAEFIK_PROVIDERS_REDIS_ENDPOINTS: "redis:6379"
       TRAEFIK_PROVIDERS_REDIS_ROOTKEY: "traefik"
-      PDNS_API_KEY: "test"
+      PDNS_API_KEY: *PDNS_API_KEY
       PDNS_API_URL: "http://powerdns:8081/"
 
     depends_on:
@@ -74,7 +85,7 @@ services:
       - powerdns
 
     networks:
-      - traefik
+      - traefik-net
       - dns-net
       - redis-net
 
@@ -82,6 +93,7 @@ services:
   # ELASTIC SEARCH
   ##
   elasticsearch:
+    container_name: pm_elasticsearch
     image: elasticsearch:7.12.1
     ports:
       - 9200:9200
@@ -90,7 +102,6 @@ services:
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
@@ -100,6 +111,7 @@ services:
       retries: 5
 
   filebeat:
+    container_name: pm_filebeat
     build:
       context: ./dockers/filebeat
     user: root
@@ -141,18 +153,27 @@ services:
 #     - traefik
 # ###
 
+
 volumes:
   elasticsearch-data:
+    name: elasticsearch-data
   powerdns-logs:
-  powerdns-db:
-    name: powerdns-db
+    name: powerdns-logs
+  powerdns-data:
+    name: powerdns-data
   redis-data:
+    name: redis-data
   traefik-data:
+    name: traefik-data
   traefik-logs:
+    name: traefik-logs
 
 networks:
   redis-net:
+    name: "pm_redis-net"
   dns-net:
+    name: "pm_dns-net"
   elasticsearch-net:
-  traefik:
-    name: traefik
+    name: "pm_elasticsearch-net"
+  traefik-net:
+    name: pm_traefik
