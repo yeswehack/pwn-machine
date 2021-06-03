@@ -57,7 +57,6 @@ async def resolve_create_token(*_, password, otp, expire=None):
         hasher.verify(db.password_hash, password)
     except argon2.exceptions.VerificationError:
         return {"success": False, "error": "Invalid credentials."}
-    print(otp, db.totp_client.now())
     if not db.totp_client.verify(otp):
         return {"success": False, "error": "Invalid credentials."}
 
@@ -87,6 +86,8 @@ async def resolve_update_password(*_, old, new):
 
 @auth_mutation("initializeAuth")
 async def resolve_initialize_auth(*_, password, otp):
+    if not db.is_first_run:
+        return {"success": False, "error": "PwnMachine is already setup"}
     otp_client = pyotp.TOTP(db.totp_secret)
     if not otp_client.verify(otp):
         return {"error": "Invalid OTP", "success": False}
