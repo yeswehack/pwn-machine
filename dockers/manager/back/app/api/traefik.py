@@ -8,6 +8,7 @@ import aiohttp
 
 from app.utils import base64_decode, validate_node_id
 from app.utils.cached import cacheMethodForQuery, no_cache
+from app.exception import PMException
 
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
@@ -73,41 +74,37 @@ class TraefikRedisApi:
         prefix = f"{self.root}/{protocol}/services/{redis_name}/{type}"
         await self.create_from_object(settings, prefix)
         await asyncio.sleep(1)
-        return {"success": True}
 
     async def delete_service(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_SERVICE")
         service = await self.http_api.get_service(protocol, name)
         if service["provider"] != "redis":
-            return {"error": "You can't delete this service", "success": False}
+            raise PMException("You can't delete this service")
         redis_name = name.split("@")[0] if "@" in name else name
         await self.delete_pattern(f"{self.root}/{protocol}/services/{redis_name}/*")
         await asyncio.sleep(1)
-        return {"success": True}
 
     # Middleware
     async def delete_middleware(self, nodeId):
         (name,) = validate_node_id(nodeId, "TRAEFIK_MW")
         middleware = await self.http_api.get_middleware(name)
         if middleware["provider"] != "redis":
-            return {"error": "You can't delete this middleware", "success": False}
+            raise PMException("You can't delete this middleware")
         redis_name = name.split("@")[0] if "@" in name else name
         await self.delete_pattern(f"{self.root}/http/middlewares/{redis_name}/*")
         await asyncio.sleep(1)
-        return {"success": True}
 
     async def create_middleware(self, name, type, settings):
         redis_name = name.split("@")[0] if "@" in name else name
         prefix = f"{self.root}/http/middlewares/{redis_name}/{type}"
         await self.create_from_object(settings, prefix)
         await asyncio.sleep(1)
-        return {"success": True}
 
     async def update_middleware(self, nodeId, type_name, patch):
         (name,) = validate_node_id(nodeId, "TRAEFIK_MW")
         middleware = await self.http_api.get_middleware(name)
         if middleware["provider"] != "redis":
-            return {"error": "You can't edit this middleware", "success": False}
+            raise PMException("You can't edit this middleware")
 
         prefix = f"{self.root}/http/middlewares/{middleware['name'].split('@')[0]}/{type_name}"
 
@@ -115,7 +112,6 @@ class TraefikRedisApi:
             await self.delete_pattern(f"{prefix}/{key}/*")
             await self.create_from_object({key: option}, prefix)
         await asyncio.sleep(1)
-        return {"success": True}
 
     # Router
     async def create_router(self, protocol, settings):
@@ -126,25 +122,23 @@ class TraefikRedisApi:
         await self.create_from_object(settings, prefix)
 
         await asyncio.sleep(1)
-        return {"success": True}
 
     async def delete_router(self, nodeId):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
         router = await self.http_api.get_router(protocol, name)
         if router["provider"] != "redis":
-            return {"error": "You can't delete this router", "success": False}
+            raise PMException("You can't delete this router")
 
         redis_name = name.split("@")[0]
         await self.delete_pattern(f"{self.root}/{protocol}/routers/{redis_name}/*")
 
         await asyncio.sleep(1)
-        return {"success": True}
 
     async def update_router(self, nodeId, patch):
         protocol, name = validate_node_id(nodeId, "TRAEFIK_ROUTER")
         router = await self.http_api.get_router(protocol, name)
         if router["provider"] != "redis":
-            return {"error": "You can't edit this router", "success": False}
+            raise PMException("You can't edit this router")
 
         prefix = (
             f"{self.root}/{router['protocol']}/routers/{router['name'].split('@')[0]}"
@@ -154,7 +148,6 @@ class TraefikRedisApi:
             await self.delete_pattern(f"{prefix}/{key}/*")
             await self.create_from_object({key: option}, prefix)
         await asyncio.sleep(1)
-        return {"success": True}
 
 
 class TraefikHTTPApi:
