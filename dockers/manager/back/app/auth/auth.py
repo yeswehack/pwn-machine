@@ -54,7 +54,6 @@ async def make_jwt_token(expire=TWO_DAYS):
 
 @auth_mutation("login")
 async def resolve_create_token(*_, password, otp, expire=None):
-    print(dir(argon2.exceptions))
     try:
         hasher.verify(db.password_hash, password)
     except Exception as e:

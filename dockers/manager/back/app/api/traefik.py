@@ -250,11 +250,3 @@ class TraefikHTTPApi:
 
         return all_services
 
-
-@asynccontextmanager
-async def new_traefik_http_client(root):
-    try:
-        async with aiohttp.ClientSession() as session:
-            yield TraefikHTTPApi.create(root, session)
-    finally:
-        pass
