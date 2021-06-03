@@ -172,7 +172,7 @@ export default {
       this.loading = true;
       const protocol = this.form.protocol;
       const type = this.form.type;
-      const mutation = api.traefik.service.CREATE_SERVICE[protocol][type];
+      const mutation = api.traefik.services.CREATE_SERVICE[protocol][type];
       const input = {
         name: this.form.name,
         [type]: this.form.extra

@@ -7,6 +7,13 @@ export const HTTP_ROUTER_FRAGMENT = gql`
     }
     priority
     rule
+    tls {
+      certResolver
+      domains {
+        main
+        sans
+      }
+    }
   }
 `;
 
@@ -22,6 +29,7 @@ export const ROUTER_FRAGMENT = gql`
     service {
       nodeId
       name
+      type
     }
     ... on TraefikHTTPRouter {
       ...HttpRouterFragment

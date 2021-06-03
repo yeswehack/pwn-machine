@@ -7,8 +7,18 @@ interface TraefikService {
   usedBy: [TraefikRouter!]!
 }
 
+
 extend type Mutation {
   deleteTraefikService(nodeId: ID!): Boolean
+}
+
+type TraefikInvalidService implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
 }
 
 enum TraefikSameSiteCookie {
@@ -16,6 +26,8 @@ enum TraefikSameSiteCookie {
   lax
   strict
 }
+
+
 
 type TraefikHTTPStickyCookie {
   httpOnly: Boolean

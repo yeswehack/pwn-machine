@@ -16,7 +16,7 @@ function isDeepForm(obj) {
   return "formDefinition" in obj;
 }
 
-export function mapGetter(...names) {
+export function mapGetters(...names) {
   const getters = {};
   for (const name of names) {
     const parts = name.split(".");

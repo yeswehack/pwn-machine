@@ -24,6 +24,7 @@
       <component :is="createComponent" ref="create" v-model="form.extra" />
     </q-card-section>
     <q-card-section>
+      <pre>{{form}}</pre>
       <reset-and-save
         :modified="modified"
         @save="submit"

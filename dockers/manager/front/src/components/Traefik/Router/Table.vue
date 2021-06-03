@@ -23,12 +23,24 @@
       </div>
     </template>
     <template #body-cell-service="{row}">
-      <service-link :name="row.service.name" />
+      <template v-if="row.service">
+        <q-badge
+          color="negative"
+          :label="row.service.name"
+          v-if="row.service.type == 'invalid'"
+        />
+        <service-link :name="row.service.name" v-else />
+      </template>
     </template>
     <template #body-cell-middlewares="{row}">
       <div class="q-gutter-xs">
         <template v-for="(middleware, idx) of row.middlewares">
-          <q-badge :key="idx"  color="negative" :label="middleware.name"  v-if="middleware.type == 'invalid'" />
+          <q-badge
+            :key="idx"
+            color="negative"
+            :label="middleware.name"
+            v-if="middleware.type == 'invalid'"
+          />
           <middleware-link :name="middleware.name" :key="idx" v-else />
         </template>
       </div>

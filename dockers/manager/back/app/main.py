@@ -18,8 +18,12 @@ from app import config
 from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
 from app.auth import auth_middleware, db
 from app.docker.shell import handle_shell
-from app.utils.registration import (registered_mutations, registered_queries,
-                                    registered_subscriptions, registered_types)
+from app.utils.registration import (
+    registered_mutations,
+    registered_queries,
+    registered_subscriptions,
+    registered_types,
+)
 
 
 class RequestCacheMiddleware(BaseHTTPMiddleware):
@@ -28,6 +32,8 @@ class RequestCacheMiddleware(BaseHTTPMiddleware):
         context["cache_disabled"] = False
         return await call_next(request)
 
+
+MANAGER_ROUTER_INSTALLED_KEY = "pm/manager/installed"
 
 type_defs = ariadne.load_schema_from_path("./schema")
 
@@ -67,6 +73,45 @@ class StaticFilesFallback(StaticFiles):
 sessions = {}
 
 
+async def init_traefik(redis_client):
+
+    sessions["traefik"] = aiohttp.ClientSession()
+    traefik_http = TraefikHTTPApi.create(
+        config.PM_TRAEFIK_HTTP_API, sessions["traefik"]
+    )
+    traefik_redis = TraefikRedisApi.create(
+        config.PM_TRAEFIK_REDIS_ROOT, redis_client, traefik_http
+    )
+    is_installed = await redis_client.get(MANAGER_ROUTER_INSTALLED_KEY)
+    if not is_installed:
+        await traefik_redis.create_service(
+            "pm-manager-service",
+            "http",
+            "loadBalancer",
+            {
+                "servers": [{"url": "http://manager:5000/"}],
+            },
+        )
+        await traefik_redis.create_router(
+            "http",
+            {
+                "entrypoints": ["http"],
+                "name": "pm-manager-router",
+                "service": "pm-manager-service@redis",
+                "rule": "PathPrefix(`/`)",
+            },
+        )
+        await redis_client.set(MANAGER_ROUTER_INSTALLED_KEY, "True")
+        
+
+
+async def init_powerdns():
+    sessions["powerdns"] = aiohttp.ClientSession(
+        headers={"X-Api-Key": config.PM_POWERDNS_HTTP_API_KEY}
+    )
+    PowerdnsHTTPApi.create(config.PM_POWERDNS_HTTP_API, sessions["powerdns"])
+
+
 async def on_startup():
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
 
@@ -74,17 +119,9 @@ async def on_startup():
     await db.init(redis_client)
 
     ## Traefik
-    sessions["traefik"] = aiohttp.ClientSession()
-    traefik_http = TraefikHTTPApi.create(
-        config.PM_TRAEFIK_HTTP_API, sessions["traefik"]
-    )
-    TraefikRedisApi.create(config.PM_TRAEFIK_REDIS_ROOT, redis_client, traefik_http)
-
+    await init_traefik(redis_client)
     ## PowerDNS
-    sessions["powerdns"] = aiohttp.ClientSession(
-        headers={"X-Api-Key": config.PM_POWERDNS_HTTP_API_KEY}
-    )
-    PowerdnsHTTPApi.create(config.PM_POWERDNS_HTTP_API, sessions["powerdns"])
+    await init_powerdns()
 
 
 async def on_shutdown():

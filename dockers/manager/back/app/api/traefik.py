@@ -178,30 +178,6 @@ class TraefikHTTPApi:
         async with self.session.get(full_path) as response:
             return await response.json()
 
-    # Do request until it succede
-    # if it fail wait more and more .1 -> 1
-    async def wait(self, path):
-        max_try = 10
-        while max_try := max_try - 1:
-            try:
-                with no_cache():
-                    return await self.get(path)
-            except:
-                await asyncio.sleep(0.1 * (10 - max_try))
-
-    # Do request until it fail
-    # if it succede wait more and more .1 -> 1
-    async def wait_delete(self, path):
-        max_try = 10
-        try:
-            while max_try := max_try - 1:
-                with no_cache():
-                    await self.get(path)
-                await asyncio.sleep(0.1 * (10 - max_try))
-            return False
-        except Exception as e:
-            return True
-
     # Entrypoints
     def parse_entrypoint(self, entrypoint):
         groups = entrypoint_re.match(entrypoint["address"]).groupdict()
@@ -258,9 +234,18 @@ class TraefikHTTPApi:
 
     # Services
     async def get_service(self, protocol, name):
-        service = await self.get(f"/{protocol}/services/{name}")
-        service["protocol"] = protocol
-        return service
+        try:
+            service = await self.get(f"/{protocol}/services/{name}")
+            service["protocol"] = protocol
+            return service
+        except:
+            return {
+                "protocol": "invalid",
+                "type": "invalid",
+                "enabled": False,
+                "usedBy": [],
+                "name": name,
+            }
 
     async def get_services(self, protocols=("http", "tcp", "udp")):
         all_services = []

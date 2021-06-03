@@ -52,7 +52,7 @@ import { isValidRule } from "src/traefik";
 export default {
   mixins: [DeepForm],
   formDefinition: {
-    rule: null,
+    rule: 'Host(`example.com`) && PathPrefix(`/`)',
     entryPoints: EntrypointInput,
     middlewares: MiddlewareInput,
     priority: null,

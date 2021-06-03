@@ -76,10 +76,9 @@ async def resolve_nodeid(router, *_):
 
 @TraefikRouter.field("service")
 async def resolve_traefikrouter_name(router, *_):
-    try:
+    if "service" in router:
         return await traefik_http().get_service(router["protocol"], router["service"])
-    except:
-        return None
+    return None
 
 
 @registerMutation("updateTraefikHTTPRouter")

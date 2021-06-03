@@ -112,7 +112,7 @@
 
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
-import DeepForm, { mapGetter } from "src/mixins/DeepForm";
+import DeepForm, { mapGetters } from "src/mixins/DeepForm";
 import api from "src/api";
 
 import CreateHTTPRouter from "src/components/Traefik/Router/CreateHTTP.vue";
@@ -190,7 +190,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetter(
+    ...mapGetters(
       "exposedPort.port",
       "exposedPort.protocol",
       "serviceForm.name",

@@ -7,7 +7,6 @@
     use-input
     clearable
     :rules="[required('Domain is required')]"
-    new-value-mode="add"
     :options="domainOptions"
     v-model="form"
     @filter="onFilter"
@@ -34,6 +33,9 @@ export default {
       done(() => {
         this.needle = (v ?? "").toLowerCase();
       });
+    },
+    clear() {
+      this.form = null;
     }
   },
   computed: {

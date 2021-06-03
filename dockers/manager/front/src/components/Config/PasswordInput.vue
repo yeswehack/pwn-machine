@@ -19,9 +19,7 @@
 </template>
 
 <script>
-import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
-import { mapGetter } from "src/mixins/DeepForm";
 import { required } from "src/utils/validators.js";
 
 export default {

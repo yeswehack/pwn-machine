@@ -12,23 +12,23 @@ interface TraefikRouter {
 
 type TraefikTLSDomain {
     main: String
-    sans: [String!]!
+    sans: [String!]
 }
 
 type TraefikTLS {
     certResolver: String
-    domains: [TraefikTLSDomain!]!
+    domains: [TraefikTLSDomain!]
 }
 
 input TraefikTLSDomainInput {
     main: String
-    sans: [String!]!
+    sans: [String!]
 }
 
 
 input TraefikTLSInput {
     certResolver: String
-    domains: [TraefikTLSDomainInput!]!
+    domains: [TraefikTLSDomainInput!]
 }
 
 type TraefikHTTPRouter implements TraefikRouter {

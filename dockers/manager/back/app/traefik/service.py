@@ -15,7 +15,6 @@ from app.api import (
 
 TraefikService = createInterface("TraefikService")
 
-
 @TraefikService.type_resolver
 def resolve_service_type(service, *_):
     mapping = {
@@ -32,11 +31,15 @@ def resolve_service_type(service, *_):
             "loadbalancer": "TraefikUDPServiceLoadBalancer",
             "weighted": "TraefikUDPServiceWeighted",
         },
+        "invalid": {
+            "invalid": "TraefikInvalidService"
+        }
     }
     try:
         return mapping[service["protocol"]][service["type"]]
     except:
         return "TraefikHTTPServiceInternal"
+
 
 
 @registerQuery("traefikServices")
