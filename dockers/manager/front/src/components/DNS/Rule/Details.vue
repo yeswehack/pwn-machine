@@ -59,7 +59,7 @@
 <script>
 import HelpLink from "src/components/HelpLink.vue";
 import LogList from "src/components/DNS/Log/LogList.vue";
-import RecordInput from "./RecordInput.vue";
+import RuleInput from "./RuleInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
@@ -71,7 +71,7 @@ export default {
   mixins: [DeepForm],
   components: { ResetAndSave, HelpLink, LogList, LuaEditor, LogCard },
   formDefinition: {
-    records: RecordInput,
+    records: RuleInput,
     ttl: 3600
   },
   data() {
