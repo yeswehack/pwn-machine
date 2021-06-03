@@ -8,26 +8,18 @@ from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import HTTPConnection
 from starlette.routing import Mount, Route, Router, WebSocketRoute
 from starlette.staticfiles import StaticFiles
-from starlette.websockets import WebSocket
 from starlette_context import context
 from starlette_context.middleware import RawContextMiddleware
 
-from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
 from app import config
-from . import dns, docker, traefik
-from .docker.shell import handle_shell
-from app.auth import db
-from .auth import auth_middleware
-from .redis import client as redis_client
-from .utils.registration import (
-    registered_mutations,
-    registered_queries,
-    registered_subscriptions,
-    registered_types,
-)
+
+from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
+from app.auth import auth_middleware, db
+from app.docker.shell import handle_shell
+from app.utils.registration import (registered_mutations, registered_queries,
+                                    registered_subscriptions, registered_types)
 
 
 class RequestCacheMiddleware(BaseHTTPMiddleware):
@@ -76,9 +68,10 @@ sessions = {}
 
 
 async def on_startup():
-    ## Auth
-    await db.init()
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
+
+    ## Auth
+    await db.init(redis_client)
 
     ## Traefik
     sessions["traefik"] = aiohttp.ClientSession()

@@ -1,4 +1,3 @@
-from app.redis import client as redis_client
 from functools import wraps
 
 
