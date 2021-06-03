@@ -37,7 +37,6 @@ def registerMutation(name):
 
         @wraps(f)
         async def async_wrapper(*args, **kwargs):
-            print("WRAPS ASYNC")
             try:
                 result = await f(*args, **kwargs)
                 return {"success": True, "result": result}
@@ -46,7 +45,6 @@ def registerMutation(name):
 
         @wraps(f)
         def wrapper(*args, **kwargs):
-            print("WRAPS ")
             try:
                 result = f(*args, **kwargs)
                 return {"success": True, "result": result}
