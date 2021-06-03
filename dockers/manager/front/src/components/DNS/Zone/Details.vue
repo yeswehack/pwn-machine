@@ -50,9 +50,6 @@ import LogCard from "src/components/LogCard.vue";
 export default {
   mixins: [DeepForm],
   components: { HelpLink, SoaForm, LogList, ResetAndSave, LogCard },
-  props: {
-    zone: { type: Object, default: null }
-  },
   formDefinition: {
     soa: SoaForm
   },
@@ -65,7 +62,7 @@ export default {
           patch: { soa: this.form.soa }
         },
         refetchQueries: [{ query: api.dns.zones.LIST_ZONES }],
-        message: `${this.zone.name} updated.`
+        message: `${this.value.name} updated.`
       }).finally(done);
     }
   }
