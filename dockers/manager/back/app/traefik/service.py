@@ -82,12 +82,10 @@ TraefikServiceLoadBalancerHealthCheck = createType(
 TraefikServiceLoadBalancerHealthCheck.field("headers")(create_kv_resolver("headers"))
 
 
-TraefikUDPWeighted = createType("TraefikUDPWeighted")
 TraefikWeighted = createType("TraefikWeighted")
 
 
 @TraefikWeighted.field("services")
-@TraefikUDPWeighted.field("services")
 def resolve_weighted_services(weighted, *_):
     services = weighted.get("services", [])
     return services
@@ -104,9 +102,50 @@ def resolve_loadbalancer_servers(loadbalancer, *_):
 
 @registerMutation("createTraefikHTTPServiceLoadBalancer")
 async def create_http_loadbalancer(*_, input):
-    name = input["name"]
     return await traefik_redis().create_service(
-        name, "http", "loadBalancer", input["loadBalancer"]
+        input["name"], "http", "loadBalancer", input["loadBalancer"]
+    )
+
+
+@registerMutation("createTraefikHTTPServiceMirroring")
+async def create_http_mirroring(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "http", "mirroring", input["mirroring"]
+    )
+
+
+@registerMutation("createTraefikHTTPServiceWeighted")
+async def create_http_weighted(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "http", "weighted", input["weighted"]
+    )
+
+
+@registerMutation("createTraefikTCPServiceLoadBalancer")
+async def create_tcp_loadbalancer(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "tcp", "loadBalancer", input["loadBalancer"]
+    )
+
+
+@registerMutation("createTraefikTCPServiceWeighted")
+async def create_tcp_weighted(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "tcp", "weighted", input["weighted"]
+    )
+
+
+@registerMutation("createTraefikUDPServiceLoadBalancer")
+async def create_udp_loadbalancer(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "udp", "loadBalancer", input["loadBalancer"]
+    )
+
+
+@registerMutation("createTraefikUDPServiceWeighted")
+async def create_udp_weighted(*_, input):
+    return await traefik_redis().create_service(
+        input["name"], "udp", "weighted", input["weighted"]
     )
 
 

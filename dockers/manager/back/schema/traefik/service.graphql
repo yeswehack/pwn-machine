@@ -56,6 +56,11 @@ type TraefikWeightedService {
   weight: Int
 }
 
+input TraefikWeightedServiceInput {
+  name: String
+  weight: Int
+}
+
 # HTTP INTERNAL
 
 type TraefikHTTPServiceInternal implements TraefikService {
@@ -153,9 +158,19 @@ type TraefikHTTPMirroringMirror {
   percent: Float!
 }
 
+input TraefikHTTPMirroringMirrorInput {
+  name: String!
+  percent: Float!
+}
+
 type TraefikHTTPMirroring {
   maxBodySize: Int
   mirrors: [TraefikHTTPMirroringMirror!]!
+}
+
+input TraefikHTTPMirroringInput {
+  maxBodySize: Int
+  mirrors: [TraefikHTTPMirroringMirrorInput!]!
 }
 
 type TraefikHTTPServiceMirroring implements TraefikService {
@@ -168,11 +183,27 @@ type TraefikHTTPServiceMirroring implements TraefikService {
   mirroring: TraefikHTTPMirroring
 }
 
+input TraefikHTTPServiceMirroringInput {
+  name: String!
+  mirroring: TraefikHTTPMirroringInput!
+}
+
+extend type Mutation {
+  createTraefikHTTPServiceMirroring(
+    input: TraefikHTTPServiceMirroringInput!
+  ): TraefikService!
+}
+
 # HTTP WEIGHTED
 
 type TraefikHTTPWeighted {
   services: [TraefikWeightedService!]!
   sticky: TraefikHTTPSticky
+}
+
+input TraefikHTTPWeightedInput {
+  services: [TraefikWeightedServiceInput!]!
+  sticky: TraefikHTTPStickyInput
 }
 
 type TraefikHTTPServiceWeighted implements TraefikService {
@@ -185,12 +216,48 @@ type TraefikHTTPServiceWeighted implements TraefikService {
   weighted: TraefikHTTPWeighted
 }
 
+input TraefikHTTPServiceWeightedInput {
+  name: String!
+  weighted: TraefikHTTPWeightedInput!
+}
+
+extend type Mutation {
+  createTraefikHTTPServiceWeighted(
+    input: TraefikHTTPServiceWeightedInput!
+  ): TraefikService!
+}
+
 # TCP / UDP
+
 type TraefikServiceLoadBalancerServer {
   address: String
 }
+
+input TraefikServiceLoadBalancerServerInput {
+  address: String
+}
+
 type TraefikWeighted {
   services: [TraefikWeightedService!]!
+}
+
+input TraefikWeightedInput {
+  services: [TraefikWeightedServiceInput!]!
+}
+
+type TraefikServiceWeighted implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  weighted: TraefikWeighted
+}
+
+input TraefikServiceWeightedInput {
+  name: String!
+  weighted: TraefikWeightedInput!
 }
 
 # TCP LOAD BALANCER
@@ -199,9 +266,19 @@ type TraefikTCPLoadBalancerProxyProtocol {
   version: Int
 }
 
+input TraefikTCPLoadBalancerProxyProtocolInput {
+  version: Int
+}
+
 type TraefikTCPLoadBalancer {
   proxyProtocol: TraefikTCPLoadBalancerProxyProtocol
   servers: [TraefikServiceLoadBalancerServer!]!
+  terminationDelay: Int
+}
+
+input TraefikTCPLoadBalancerInput {
+  proxyProtocol: TraefikTCPLoadBalancerProxyProtocolInput
+  servers: [TraefikServiceLoadBalancerServerInput!]!
   terminationDelay: Int
 }
 
@@ -215,22 +292,33 @@ type TraefikTCPServiceLoadBalancer implements TraefikService {
   loadBalancer: TraefikTCPLoadBalancer
 }
 
+input TraefikTCPServiceLoadBalancerInput {
+  name: String!
+  loadBalancer: TraefikTCPLoadBalancerInput!
+}
+
+extend type Mutation {
+  createTraefikTCPServiceLoadBalancer(
+    input: TraefikTCPServiceLoadBalancerInput!
+  ): TraefikService!
+}
+
 # TCP WEIGHTED
 
-type TraefikTCPServiceWeighted implements TraefikService {
-  nodeId: ID!
-  type: String!
-  name: String!
-  protocol: TraefikProtocol!
-  enabled: Boolean!
-  usedBy: [TraefikRouter!]!
-  weighted: TraefikWeighted
+extend type Mutation {
+  createTraefikTCPServiceWeighted(
+    input: TraefikServiceWeightedInput!
+  ): TraefikService!
 }
 
 # UDP LOAD BALANCER
 
 type TraefikUDPLoadBalancer {
   servers: [TraefikServiceLoadBalancerServer!]!
+}
+
+input TraefikUDPLoadBalancerInput {
+  servers: [TraefikServiceLoadBalancerServerInput!]!
 }
 
 type TraefikUDPServiceLoadBalancer implements TraefikService {
@@ -243,18 +331,21 @@ type TraefikUDPServiceLoadBalancer implements TraefikService {
   loadBalancer: TraefikUDPLoadBalancer
 }
 
-# UDP WEIGHTED
-
-type TraefikUDPWeighted {
-  services: [TraefikWeightedService!]!
+input TraefikUDPServiceLoadBalancerInput {
+  name: String!
+  loadBalancer: TraefikUDPLoadBalancerInput!
 }
 
-type TraefikUDPServiceWeighted implements TraefikService {
-  nodeId: ID!
-  type: String!
-  name: String!
-  protocol: TraefikProtocol!
-  enabled: Boolean!
-  usedBy: [TraefikRouter!]!
-  weighted: TraefikUDPWeighted
+extend type Mutation {
+  createTraefikUDPServiceLoadBalancer(
+    input: TraefikUDPServiceLoadBalancerInput!
+  ): TraefikService!
+}
+
+# UDP WEIGHTED
+
+extend type Mutation {
+  createTraefikUDPServiceWeighted(
+    input: TraefikServiceWeightedInput!
+  ): TraefikService!
 }
