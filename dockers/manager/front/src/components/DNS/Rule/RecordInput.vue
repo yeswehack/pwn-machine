@@ -5,6 +5,7 @@
       :titles="['Record', 'Enabled']"
       gridFormat="1fr auto"
       :entries="form"
+      :error="error"
       @addEntry="addEntry"
       @removeEntry="removeEntry"
     >
@@ -61,10 +62,17 @@ export default {
     label: { type: String, default: null }
   },
   data() {
-    return { model: { content: null, enabled: true } };
+    return { model: { content: null, enabled: true }, error: null };
   },
   formDefinition: [],
   methods: {
+    validate(){
+      if (this.form.length < 1){
+        this.error = "You need at least one record."
+        return false
+      }
+      return true
+    },
     addEntry() {
       if (!this.model.content) return;
       this.form.unshift(this.model);

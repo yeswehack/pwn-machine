@@ -2,15 +2,16 @@
   <q-form @submit="submit">
     <q-card-section class="column q-col-gutter-md">
       <q-select
-        required
+        :rules="[required('Please choose a zone')]"
         v-model="form.zone"
         :options="zoneNames"
+        ref="zone"
         label="zone"
         class="col"
       />
       <q-input
-        required
         :disable="!form.zone"
+        ref="name"
         v-model="form.name"
         :rules="[validateName]"
         label="name"
@@ -24,8 +25,10 @@
         />
         <q-select
           :disable="!form.zone"
+          :rules="[required('Please choose a type')]"
           v-model="form.type"
           :options="types"
+          ref="type"
           class="col"
           label="type"
         />
@@ -46,10 +49,16 @@
         v-model="form.records"
         object-key="content"
         label="Records"
+        ref="records"
       />
     </q-card-section>
     <q-card-section>
-      <reset-and-save :modified="modified" @reset="reset" @save="submit" />
+      <reset-and-save
+        :modified="modified"
+        :validate="validate"
+        @reset="reset"
+        @save="submit"
+      />
     </q-card-section>
   </q-form>
 </template>
@@ -60,7 +69,7 @@ import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import LuaEditor from "./LuaEditor.vue";
 import RecordInput from "./RecordInput.vue";
-import { notify } from "src/utils";
+import { required, requiredArray } from "src/utils/validators";
 
 const types = [
   "A",
@@ -120,7 +129,7 @@ export default {
     ttl: 3600
   },
   data() {
-    return { types };
+    return { types, required };
   },
   computed: {
     zoneNames() {
@@ -133,9 +142,18 @@ export default {
   methods: {
     validateName(name) {
       const suffix = "." + this.form.zone;
-      if (name !== this.form.zone && !name.endsWith(suffix)) {
+      if (!name || (name !== this.form.zone && !name.endsWith(suffix))) {
         return `Name must ends with ${this.form.zone}`;
       }
+    },
+    validate() {
+      const validators = [
+        this.$refs.zone.validate(),
+        this.$refs.name.validate(),
+        this.$refs.type.validate(),
+        this.$refs.records.validate()
+      ];
+      return validators.every(x => x);
     },
     submit(done) {
       const input = {
