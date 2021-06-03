@@ -163,7 +163,6 @@ class PowerdnsHTTPApi:
     async def create_zone(self, name, soa):
         zone_info = await self.get_zone(name)
         if zone_info is not None:
-            print(zone_info)
             raise Exception("A zone with this name already exists.")
 
         content = soa_to_string(soa)

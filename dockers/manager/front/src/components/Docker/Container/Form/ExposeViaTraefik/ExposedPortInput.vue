@@ -67,7 +67,6 @@ export default {
   },
   computed: {
     portOptions() {
-      console.log(this.container)
       return (this.container?.ports ?? [])
         .filter(p => p.protocol == "tcp")
         .map(p => {
