@@ -16,23 +16,23 @@ export default {
   },
   async created() {
     const token = localStorage.getItem("token");
-    const r = await this.$apollo.mutate({
+    this.mutate({
       mutation: api.auth.VALIDATE_TOKEN,
       variables: { token: token ?? "" }
+    }).then(response => {
+      if (response.isFirstRun) {
+        if (this.$route.name != "firstRun") {
+          this.$router.push({ name: "firstRun" });
+        }
+      } else if (response.token) {
+        localStorage.setItem("token", response.token.token);
+      } else {
+        if (this.$route.name != "login") {
+          this.$router.push({ name: "login" });
+        }
+      }
+      this.ready = true;
     });
-    const response = r.data.validateAuthToken;
-    if (response.isFirstRun) {
-      if (this.$route.name != "firstRun") {
-        this.$router.push({ name: "firstRun" });
-      }
-    } else if (response.token) {
-      localStorage.setItem("token", response.token.token);
-    } else {
-      if (this.$route.name != "login") {
-        this.$router.push({ name: "login" });
-      }
-    }
-    this.ready = true
   }
 };
 </script>

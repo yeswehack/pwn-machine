@@ -135,30 +135,28 @@ export default {
         .onOk(result => {
           const onlyDangling = !result.includes("full");
           const plural = (w, q) => (q > 1 ? w + "s" : s);
-          this.$apollo
-            .mutate({
-              mutation: api.docker.images.PRUNE_IMAGES,
-              variables: { onlyDangling },
-              refetchQueries: [{ query: api.docker.images.LIST_IMAGES }]
-            })
-            .then(({ data }) => {
-              const deleted = data.pruneDockerImages.deleted;
-              const reclaimed = humanStorageSize(
-                data.pruneDockerImages.spaceReclaimed
-              );
-              let message = `No image deleted.`;
-              if (deleted.length) {
-                message = `${deleted.length} ${plural(
-                  "image",
-                  deleted.length
-                )} deleted (${reclaimed})`;
-              }
+          this.mutate({
+            mutation: api.docker.images.PRUNE_IMAGES,
+            variables: { onlyDangling },
+            refetchQueries: [{ query: api.docker.images.LIST_IMAGES }]
+          }).then(result => {
+            const deleted = result.deleted;
+            const reclaimed = humanStorageSize(
+              result.spaceReclaimed
+            );
+            let message = `No image deleted.`;
+            if (deleted.length) {
+              message = `${deleted.length} ${plural(
+                "image",
+                deleted.length
+              )} deleted (${reclaimed})`;
+            }
 
-              this.$q.notify({
-                message,
-                type: "positive"
-              });
+            this.$q.notify({
+              message,
+              type: "positive"
             });
+          });
         });
     }
   }

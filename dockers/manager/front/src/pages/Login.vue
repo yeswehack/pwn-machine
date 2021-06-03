@@ -9,7 +9,11 @@
             </q-card-section>
             <q-separator />
             <q-card-section class="q-gutter-md">
-              <q-input type="password" label="Password" v-model="form.password" />
+              <q-input
+                type="password"
+                label="Password"
+                v-model="form.password"
+              />
               <div class="row ">
                 <div class="col col-auto">
                   <component :is="formChildren.otp" v-model="form.otp" />
@@ -41,7 +45,7 @@ import api from "src/api";
 import { notify } from "src/utils";
 import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "src/components/Config/OtpInput.vue";
-  
+
 const dayDuration = 60 * 60 * 24;
 
 export default {
@@ -71,23 +75,19 @@ export default {
       }
     ];
     return {
-      expireOptions,
+      expireOptions
     };
   },
   methods: {
     submit() {
-      this.$apollo
-        .mutate({
-          mutation: api.auth.LOGIN,
-          variables: this.form
-        })
-        .then(notify("Logged in."))
-        .then(r => {
-          if (r.success) {
-            localStorage.setItem("token", r.result.token);
-            this.$router.push({ name: "index" });
-          }
-        });
+      this.mutate({
+        mutation: api.auth.LOGIN,
+        variables: this.form,
+        message: "Logged in."
+      }).then(result => {
+        localStorage.setItem("token", result.token);
+        this.$router.push({ name: "index" });
+      });
     }
   }
 };

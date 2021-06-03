@@ -126,7 +126,7 @@ import CheckTraefikConnection from "./CheckTraefikConnection.vue";
 import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import { notify } from "src/utils";
-import DomainInput from 'src/components/DNS/DomainInput.vue';
+import DomainInput from "src/components/DNS/DomainInput.vue";
 
 function getRouterComponent(f) {
   const protocol = f?.exposedPort?.protocol;
@@ -186,7 +186,7 @@ export default {
   data() {
     return {
       step: 1,
-      panel: "choosePort",
+      panel: "choosePort"
     };
   },
   computed: {
@@ -250,7 +250,7 @@ export default {
       return (this.container?.ports ?? [])
         .filter(p => p.protocol == "TCP")
         .map(p => p.containerPort);
-    },
+    }
   },
   methods: {
     validateServiceName(v) {
@@ -278,22 +278,17 @@ export default {
         name: this.form.routerName,
         ...this.form.routerForm
       };
-      this.$apollo
-        .mutate({
-          mutation: serviceMutation,
-          variables: { input: serviceInput }
-        })
-        .then(notify(`Service ${this.form.serviceName} created.`))
-        .then(r => {
-          if (r.success) {
-            this.$apollo
-              .mutate({
-                mutation: routerMutation,
-                variables: { input: routerInput }
-              })
-              .then(notify(`Router ${this.form.routerName} created.`));
-          }
-        });
+      this.mutate({
+        mutation: serviceMutation,
+        variables: { input: serviceInput },
+        message: `Service ${this.form.serviceName} created.`
+      }).then(r => {
+        return this.mutate({
+            mutation: routerMutation,
+            variables: { input: routerInput },
+            message: `Router ${this.form.routerName} created.`
+          })
+      });
     },
     updateRouterDefault() {
       if (!this.form.routerForm) return;

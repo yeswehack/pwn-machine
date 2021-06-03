@@ -1,6 +1,7 @@
 from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime
 from docker.errors import APIError
+from app.exception import PMException 
 
 DockerVolume = createType("DockerVolume")
 
@@ -39,8 +40,9 @@ def resolve_create_volume(*_, input):
             input.get("name"), labels=dict(input["labels"])
         )
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDockerVolume")
@@ -48,8 +50,9 @@ def resolve_remove_volume(*_, name, force):
     try:
         docker_client.api.remove_volume(name, force=force)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("pruneDockerVolumes")

@@ -3,6 +3,11 @@ type DockerContainerShell {
   containerName: String!
   running: Boolean!
 }
+type DockerContainerShellResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerContainerShell
+}
 
 extend type Query {
   dockerContainerShells: [DockerContainerShell!]!
@@ -19,6 +24,6 @@ input SpawnContainerShellInput {
 }
 
 extend type Mutation {
-  spawnDockerContainerShell(input: SpawnContainerShellInput!): DockerContainerShell
-  deleteDockerContainerShell(id: ID!): Boolean
+  spawnDockerContainerShell(input: SpawnContainerShellInput!): DockerContainerShellResponse!
+  deleteDockerContainerShell(id: ID!): BasicMutationResponse!
 }

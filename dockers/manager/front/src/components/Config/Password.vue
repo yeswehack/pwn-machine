@@ -44,10 +44,11 @@ export default {
   data: () => ({}),
   methods: {
     async submit() {
-      this.$apollo.mutate({
+      this.mutate({
         mutation: api.auth.UPDATE_PASSWORD,
-        variables: this.form
-      }).then(notify("Password changed."));
+        variables: this.form,
+        message: "Password changed."
+      })
     }
   }
 };

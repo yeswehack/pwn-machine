@@ -20,7 +20,7 @@ type LoginPayload implements IMutationResponse{
 }
 
 extend type Mutation {
-  validateAuthToken(token: String!): ValidateAuthTokenPayload!
+  validateAuthToken(token: String!): ValidateAuthTokenResponse!
   initializeAuth(password: String!, otp: String!): InitializeAuthPayload!
   login(password: String!, otp: String!, expire: Int): LoginPayload!
   updatePassword(old: String!, new: String!): BasicMutationResponse!
@@ -28,6 +28,11 @@ extend type Mutation {
 type ValidateAuthTokenPayload {
   token: AuthToken
   isFirstRun: Boolean!
+}
+type ValidateAuthTokenResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: ValidateAuthTokenPayload
 }
 
 type AuthToken {

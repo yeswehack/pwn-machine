@@ -34,7 +34,7 @@ import { extend } from "quasar";
 import forms from "./Forms";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from 'src/utils';
+import { notify } from "src/utils";
 
 export function getCreateComponent(value) {
   return forms[value?.type] ?? null;
@@ -114,16 +114,14 @@ export default {
         name: this.form.name,
         [type]: this.form.extra
       };
-      await this.$apollo
-        .mutate({
-          mutation,
-          variables: { input },
-          refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
-        })
-        .then(notify(`${this.form.name} created.`))
-        .then(r => {
-          if (r.success) this.$emit("ok");
-        });
+      await this.mutate({
+        mutation,
+        variables: { input },
+        refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
+        message: `${this.form.name} created.`
+      }).then(() => {
+        this.$emit("ok");
+      });
     },
     async updateMiddleware() {
       const type = this.form.type;
@@ -132,16 +130,14 @@ export default {
         nodeId: this.middleware.nodeId,
         patch: this.form.extra
       };
-      await this.$apollo
-        .mutate({
-          mutation,
-          variables,
-          refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
-        })
-        .then(notify(`${this.middleware.name} updated.`))
-        .then(r => {
-          if (r.success) this.$emit("ok");
-        })
+      await this.mutate({
+        mutation,
+        variables,
+        refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
+        message: `${this.middleware.name} updated.`
+      }).then(() => {
+        this.$emit("ok");
+      });
     },
     async submit() {
       this.loading = true;

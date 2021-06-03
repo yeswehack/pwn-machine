@@ -48,9 +48,6 @@
         label="Records"
       />
     </q-card-section>
-    <q-card-section v-if="0">
-      <pre>{{ form }}</pre>
-    </q-card-section>
     <q-card-section>
       <reset-and-save :modified="modified" @reset="reset" @save="submit" />
     </q-card-section>
@@ -146,17 +143,14 @@ export default {
         records: this.form.records.map(r => ({ content: r.content }))
       };
 
-      this.$apollo
-        .mutate({
-          mutation: api.dns.rules.CREATE_RULE,
-          variables: { input },
-          refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
-        })
-        .then(notify(`${this.form.name} created`))
-        .then(r => {
-          if (r.success) this.$emit("ok");
-        })
-        .finally(() => done());
+      this.mutate({
+        mutation: api.dns.rules.CREATE_RULE,
+        variables: { input },
+        refetchQueries: [{ query: api.dns.rules.LIST_RULES }],
+        message: `${this.form.name} created`
+      })
+        .then(() => this.$emit("ok"))
+        .finally(done);
     }
   },
   watch: {

@@ -88,32 +88,25 @@ export default {
       const containerId = this.model.container.value.id;
       const aliases = this.model.aliases;
       const input = { networkId: this.network.id, containerId, aliases };
-      this.$apollo
-        .mutate({
-          mutation: api.docker.networks.CONNECT_TO_NETWORK,
-          variables: { input },
-          refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-        })
-        .then(
-          notify(`${this.model.container.value.name} connected to ${this.network.name}`)
-        )
-        .then(() => {
-          this.model.container = null;
-          this.model.aliases = [];
-        });
+      this.mutate({
+        mutation: api.docker.networks.CONNECT_TO_NETWORK,
+        variables: { input },
+        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
+        message: `${this.model.container.value.name} connected to ${this.network.name}`
+      }).finally(() => {
+        this.model.container = null;
+        this.model.aliases = [];
+      });
     },
     disconnectContainer(id) {
       const container = this.network.usedBy[id].container;
       const input = { networkId: this.network.id, containerId: container.id };
-      this.$apollo
-        .mutate({
-          mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
-          variables: { input },
-          refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-        })
-        .then(
-          notify(`${container.name} disconnected from ${this.network.name}`)
-        );
+      this.mutate({
+        mutation: api.docker.networks.DISCONNECT_FROM_NETWORK,
+        variables: { input },
+        refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
+        message: `${container.name} disconnected from ${this.network.name}`
+      });
     }
   }
 };

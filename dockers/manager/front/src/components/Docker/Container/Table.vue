@@ -58,18 +58,16 @@
     </template>
     <template #body-cell-networks="{row}">
       <div class="row q-gutter-sm">
-        <network-link
-          :name="connection.network.name"
-          :key="idx"
-          v-for="(connection, idx) of row.connections"
-        >
-          <q-tooltip
-            v-if="connection.ipAddress"
-            anchor="top middle"
-            self="bottom middle"
-            >{{ connection.ipAddress }}</q-tooltip
-          >
-        </network-link>
+        <template v-for="(connection, idx) of row.connections">
+          <network-link :network="connection.network" :key="idx">
+            <q-tooltip
+              v-if="connection.ipAddress"
+              anchor="top middle"
+              self="bottom middle"
+              >{{ connection.ipAddress }}</q-tooltip
+            >
+          </network-link>
+        </template>
       </div>
     </template>
     <template #body-cell-status="{row}">
@@ -98,7 +96,6 @@ import ExposeContainerDialog from "src/components/Docker/Container/Form/ExposeVi
 import ShellDialog from "src/components/Shell/Dialog.vue";
 import api from "src/api";
 import { format } from "quasar";
-import { notify } from "src/utils";
 const { humanStorageSize } = format;
 
 export default {
@@ -154,26 +151,22 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.docker.containers.PRUNE_CONTAINERS,
-              refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-            })
-            .then(({ data }) => {
-              const deleted = data.pruneDockerContainers.deleted;
-              const reclaimed = humanStorageSize(
-                data.pruneDockerContainers.spaceReclaimed
-              );
-              const message = deleted.length
-                ? `${deleted.length} container${
-                    deleted.length > 1 ? "s" : ""
-                  } deleted (${reclaimed})`
-                : `No container deleted.`;
-              this.$q.notify({
-                message,
-                type: "positive"
-              });
+          this.mutate({
+            mutation: api.docker.containers.PRUNE_CONTAINERS,
+            refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
+          }).then(result => {
+            const deleted = result.deleted;
+            const reclaimed = humanStorageSize(result.spaceReclaimed);
+            const message = deleted.length
+              ? `${deleted.length} container${
+                  deleted.length > 1 ? "s" : ""
+                } deleted (${reclaimed})`
+              : `No container deleted.`;
+            this.$q.notify({
+              message,
+              type: "positive"
             });
+          });
         });
     },
     createContainer() {
@@ -211,13 +204,12 @@ export default {
         .onOk(result => {
           const force = result.includes("force");
           const pruneVolumes = result.includes("pruneVolumes");
-          this.$apollo
-            .mutate({
-              mutation: api.docker.containers.DELETE_CONTAINER,
-              variables: { id: container.id, force, pruneVolumes },
-              refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-            })
-            .then(notify(`${container.name} deleted.`));
+          this.mutate({
+            mutation: api.docker.containers.DELETE_CONTAINER,
+            variables: { id: container.id, force, pruneVolumes },
+            refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }],
+            message: `${container.name} deleted.`
+          });
         });
     },
     cloneContainer(container) {

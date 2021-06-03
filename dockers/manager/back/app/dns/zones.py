@@ -37,8 +37,7 @@ async def create_dns_zone_mutation(*_, input):
     try:
         await dns_http().create_zone(input["name"], input["soa"])
     except Exception as e:
-        return {"error": str(e), "success": False}
-    return {"success": True}
+        raise PMException(str(e))
 
 
 @registerMutation("updateDnsZone")
@@ -46,8 +45,7 @@ async def update_dns_zone_mutation(*_, nodeId, patch):
     try:
         await dns_http().update_zone(nodeId, patch["soa"])
     except Exception as e:
-        return {"error": str(e), "success": False}
-    return {"success": True}
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDnsZone")
@@ -55,5 +53,4 @@ async def delete_dns_zone_mutation(*_, nodeId):
     try:
         await dns_http().delete_zone(nodeId)
     except Exception as e:
-        return {"error": str(e), "success": False}
-    return {"success": True}
+        raise PMException(str(e))

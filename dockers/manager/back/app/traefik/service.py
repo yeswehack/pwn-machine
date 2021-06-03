@@ -12,6 +12,7 @@ from app.api import (
     get_traefik_redis_api as traefik_redis,
 )
 
+from app.exception import PMException
 
 TraefikService = createInterface("TraefikService")
 
@@ -100,9 +101,12 @@ def resolve_loadbalancer_servers(loadbalancer, *_):
 
 @registerMutation("createTraefikHTTPServiceLoadBalancer")
 async def create_http_loadbalancer(*_, input):
-    return await traefik_redis().create_service(
-        input["name"], "http", "loadBalancer", input["loadBalancer"]
-    )
+    try:
+        await traefik_redis().create_service(
+            input["name"], "http", "loadBalancer", input["loadBalancer"]
+        )
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikHTTPServiceMirroring")
@@ -111,9 +115,8 @@ async def create_http_mirroring(*_, input):
         await traefik_redis().create_service(
             input["name"], "http", "mirroring", input["mirroring"]
         )
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikHTTPServiceWeighted")
@@ -122,9 +125,8 @@ async def create_http_weighted(*_, input):
         await traefik_redis().create_service(
             input["name"], "http", "weighted", input["weighted"]
         )
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikTCPServiceLoadBalancer")
@@ -133,9 +135,8 @@ async def create_tcp_loadbalancer(*_, input):
         await traefik_redis().create_service(
             input["name"], "tcp", "loadBalancer", input["loadBalancer"]
         )
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikTCPServiceWeighted")
@@ -144,10 +145,8 @@ async def create_tcp_weighted(*_, input):
         await traefik_redis().create_service(
             input["name"], "tcp", "weighted", input["weighted"]
         )
-
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikUDPServiceLoadBalancer")
@@ -156,10 +155,8 @@ async def create_udp_loadbalancer(*_, input):
         await traefik_redis().create_service(
             input["name"], "udp", "loadBalancer", input["loadBalancer"]
         )
-
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikUDPServiceWeighted")
@@ -168,17 +165,13 @@ async def create_udp_weighted(*_, input):
         await traefik_redis().create_service(
             input["name"], "udp", "weighted", input["weighted"]
         )
-
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))
 
 
 @registerMutation("deleteTraefikService")
 async def delete_service(*_, nodeId):
     try:
         await traefik_redis().delete_service(nodeId)
-
-        return {"success": True}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        raise PMException(str(e))

@@ -4,6 +4,7 @@ from functools import lru_cache
 import aiohttp
 import aioredis
 import ariadne
+import graphql
 from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
@@ -36,7 +37,6 @@ class RequestCacheMiddleware(BaseHTTPMiddleware):
 MANAGER_ROUTER_INSTALLED_KEY = "pm/manager/installed"
 
 type_defs = ariadne.load_schema_from_path("./schema")
-
 query = ariadne.QueryType()
 mutation = ariadne.MutationType()
 subscription = ariadne.SubscriptionType()
@@ -102,7 +102,6 @@ async def init_traefik(redis_client):
             },
         )
         await redis_client.set(MANAGER_ROUTER_INSTALLED_KEY, "True")
-        
 
 
 async def init_powerdns():
@@ -129,6 +128,29 @@ async def on_shutdown():
     await sessions["powerdns"].close()
 
 
+def is_basic_mutation(type):
+    for interface in getattr(type, "interfaces", []):
+        if is_basic_mutation(interface):
+            return True
+    return type.name == "IMutationResponse"
+
+
+def is_non_null_basic_mutation(type):
+    if isinstance(type, graphql.type.definition.GraphQLNonNull):
+        return is_basic_mutation(type.of_type)
+    return False
+
+
+def validate_schema(schema):
+
+    for name, mutation in schema.mutation_type.fields.items():
+        if name == "_unused":
+            continue
+        if not is_non_null_basic_mutation(mutation.type):
+            raise ValueError(f"{name} Must implement IMutationResponse!")
+
+
+validate_schema(schema)
 graphql_route = GraphQL(schema, middleware=[auth_middleware])
 app = Starlette(
     routes=[

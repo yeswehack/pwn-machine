@@ -1,6 +1,6 @@
 <template>
   <q-page-sticky :offset="[16, 16]">
-    <transition appear  leave-active-class="animated fadeOut slower">
+    <transition appear leave-active-class="animated fadeOut slower">
       <q-card v-show="visible" style="width: 500px">
         <transition-group
           tag="div"
@@ -36,21 +36,22 @@ export default {
   },
   methods: {
     async pullImage(name, done) {
-      const { data } = await this.$apollo.mutate({
+      this.mutate({
         mutation: api.docker.images.PULL_IMAGE,
         variables: { name }
+      }).then(result => {
+        const { id } = result.pullDockerImage;
+        const pull = { id, name, over: false };
+        pull.done = () => {
+          pull.over = false;
+          window.setTimeout(() => {
+            const pos = this.pulls.findIndex(p => p == pull);
+            this.pulls.splice(pos, 1);
+          }, 3000);
+          done();
+        };
+        this.pulls.push(pull);
       });
-      const { id } = data.pullDockerImage;
-      const pull = { id, name, over: false };
-      pull.done = () => {
-        pull.over = false;
-        window.setTimeout(() => {
-          const pos = this.pulls.findIndex(p => p == pull);
-          this.pulls.splice(pos, 1);
-        }, 3000);
-        done()
-      };
-      this.pulls.push(pull);
     }
   },
   created() {

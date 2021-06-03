@@ -70,9 +70,6 @@ export default {
     }
   },
   methods: {
-    submit() {
-      this.$apollo.mutate({});
-    }
   }
 };
 </script>

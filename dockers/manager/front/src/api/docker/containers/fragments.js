@@ -39,6 +39,7 @@ export const CONNECTION_FRAGMENT = gql`
     aliases
     ipAddress
     network {
+      deleted
       id
       name
     }

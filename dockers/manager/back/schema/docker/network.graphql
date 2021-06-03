@@ -25,6 +25,7 @@ type DockerNetwork {
   internal: Boolean!
   ipams: [DockerNetworkIpam!]!
   usedBy: [DockerNetworkConnection!]!
+  deleted: Boolean
 }
 
 input DockerNetworkInput {

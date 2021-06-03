@@ -115,7 +115,8 @@ export default {
         priority: f.priority,
         entryPoints: (f.entryPoints ?? []).map(ep => ep.name),
         service: f.service?.name,
-        middlewares: (f.middlewares ?? []).map(m => m.name)
+        middlewares: (f.middlewares ?? []).map(m => m.name),
+        tls: f.tls
       };
 
       return { ...f, extra };
@@ -146,24 +147,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.traefik.routers.DELETE_ROUTER,
-              variables: { id: router.nodeId },
-              refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
-            })
-            .then(response => {
-              this.$q.notify({
-                message: `${router.name} deleted.`,
-                type: "positive"
-              });
-            })
-            .catch(e => {
-              this.$q.notify({
-                message: `${e.message}`,
-                type: "negative"
-              });
-            });
+          this.mutate({
+            mutation: api.traefik.routers.DELETE_ROUTER,
+            variables: { id: router.nodeId },
+            refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
+            message: `${router.name} deleted.`
+          });
         });
     }
   }

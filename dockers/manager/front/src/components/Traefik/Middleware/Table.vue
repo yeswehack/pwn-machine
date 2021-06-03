@@ -94,15 +94,14 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.traefik.middlewares.DELETE_MIDDLEWARE,
-              variables: { nodeId: middleware.nodeId },
-              refetchQueries: [
-                { query: api.traefik.middlewares.LIST_MIDDLEWARES }
-              ]
-            })
-            .then(notify(`${middleware.name} deleted.`));
+          this.mutate({
+            mutation: api.traefik.middlewares.DELETE_MIDDLEWARE,
+            variables: { nodeId: middleware.nodeId },
+            refetchQueries: [
+              { query: api.traefik.middlewares.LIST_MIDDLEWARES }
+            ],
+            message: `${middleware.name} deleted.`
+          });
         });
     }
   }

@@ -68,6 +68,10 @@ export function mergeKeepShape(dest, source) {
 export function notify(msg) {
   return function({ data }) {
     const response = Object.values(data)[0];
+    if (!msg){
+      return response
+    }
+
     if (response.success) {
       if (typeof msg === "function") {
         Notify.create({

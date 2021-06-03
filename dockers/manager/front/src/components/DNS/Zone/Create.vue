@@ -34,16 +34,13 @@ export default {
       if (s && !s.endsWith(".")) return "Must end with a dot.";
     },
     submit(done) {
-      this.$apollo
-        .mutate({
-          mutation: api.dns.zones.CREATE_ZONE,
-          variables: { input: this.form },
-          refetchQueries: [{ query: api.dns.zones.LIST_ZONES }]
-        })
-        .then(notify(`${this.form.name} created`))
-        .then(r => {
-          if (r.success) this.$emit("ok");
-        })
+      this.mutate({
+        mutation: api.dns.zones.CREATE_ZONE,
+        variables: { input: this.form },
+        refetchQueries: [{ query: api.dns.zones.LIST_ZONES }],
+        message: `${this.form.name} created`
+      })
+        .then(r => this.$emit("ok"))
         .finally(done);
     }
   }

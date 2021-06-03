@@ -24,7 +24,6 @@
       <component :is="createComponent" ref="create" v-model="form.extra" />
     </q-card-section>
     <q-card-section>
-      <pre>{{form}}</pre>
       <reset-and-save
         :modified="modified"
         @save="submit"
@@ -114,21 +113,22 @@ export default {
     }
   },
   methods: {
-    submit() {
+    submit(done) {
       const mutation = api.traefik.routers.CREATE_ROUTER[this.form.protocol];
       const input = {
         name: this.form.name,
         ...this.form.extra
       };
-      this.$apollo
-        .mutate({
-          mutation,
-          variables: { input },
-          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
-        })
+      this.mutate({
+        mutation,
+        variables: { input },
+        refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
+        message: `${this.form.name} created.`
+      })
         .then(() => {
           this.$emit("ok");
-        });
+        })
+        .finally(done);
     },
     validateName(name) {
       if (!name) {

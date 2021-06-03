@@ -80,8 +80,12 @@ export const DELETE_CONTAINER = gql`
 export const PRUNE_CONTAINERS = gql`
   mutation pruneContainers {
     pruneDockerContainers {
-      deleted
-      spaceReclaimed
+      success
+      error
+      result {
+        deleted
+        spaceReclaimed
+      }
     }
   }
 `;

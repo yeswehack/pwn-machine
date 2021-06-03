@@ -68,16 +68,14 @@ export default {
   components: { ContainerSelect, ResetAndSave },
   methods: {
     submit() {
-      this.$apollo
-        .mutate({
-          mutation: api.docker.shells.SPAWN_SHELL,
-          variables: { input: this.form },
-          refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
-        })
-        .then(({ data }) => {
-          const id = data.spawnDockerContainerShell.nodeId;
-          this.$router.push({ name: "shellId", params: { id } });
-        });
+      this.mutate({
+        mutation: api.docker.shells.SPAWN_SHELL,
+        variables: { input: this.form },
+        refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
+      }).then(result => {
+        const id = result.nodeId;
+        this.$router.push({ name: "shellId", params: { id } });
+      });
     },
     validate() {
       return this.$refs.containerName.validate();

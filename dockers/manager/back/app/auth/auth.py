@@ -6,6 +6,7 @@ import argon2
 import jwt
 import pyotp
 from app.utils import registerMutation
+from app.exception import PMException
 
 from . import AUTH_DISABLED, auth_mutation, auth_operations, auth_query, db
 
@@ -53,23 +54,22 @@ async def make_jwt_token(expire=TWO_DAYS):
 
 @auth_mutation("login")
 async def resolve_create_token(*_, password, otp, expire=None):
+    print(dir(argon2.exceptions))
     try:
         hasher.verify(db.password_hash, password)
-    except argon2.exceptions.VerificationError:
-        return {"success": False, "error": "Invalid credentials."}
+    except Exception as e:
+        raise PMException("Invalid credentials.")
     if not db.totp_client.verify(otp):
-        return {"success": False, "error": "Invalid credentials."}
+        raise PMException("Invalid credentials.")
 
     token = await make_jwt_token(expire)
-    return {"success": True, "result": token}
+    return token
 
 
 @auth_mutation("validateAuthToken")
 async def resolve_validate_token(*_, token, expire=None):
     isFirstRun = db.is_first_run
-    if AUTH_DISABLED: 
-        return {"token": make_jwt_token(expire),"isFirstRun": False }
-    if check_token(token):
+    if AUTH_DISABLED or check_token(token):
         return {"token": make_jwt_token(expire), "isFirstRun": isFirstRun}
     else:
         return {"isFirstRun": isFirstRun}
@@ -79,24 +79,23 @@ async def resolve_validate_token(*_, token, expire=None):
 async def resolve_update_password(*_, old, new):
     try:
         hasher.verify(db.password_hash, old)
-    except argon2.exceptions.VerificationError:
-        return {"success": False, "error": "Invalid password"}
+    except Exception as e:
+        raise PMException("Invalid password.")
 
     await db.save_password_hash(hasher.hash(new))
-    return {"success": True}
 
 
 @auth_mutation("initializeAuth")
 async def resolve_initialize_auth(*_, password, otp):
     if not db.is_first_run:
-        return {"success": False, "error": "PwnMachine is already setup"}
+        raise PMException("PwnMachine is already setup.")
     otp_client = pyotp.TOTP(db.totp_secret)
     if not otp_client.verify(otp):
-        return {"error": "Invalid OTP", "success": False}
+        raise PMException("Invalid OTP.")
 
     await db.save_password_hash(hasher.hash(password))
     await db.set_ready(True)
-    return {"result": make_jwt_token(), "success": True}
+    return make_jwt_token()
 
 
 async def auth_middleware(resolver, obj, info, **args):

@@ -22,8 +22,12 @@ export const DELETE_VOLUME = gql`
 export const PRUNE_VOLUMES = gql`
   mutation pruneVolumes {
     pruneDockerVolumes {
-      deleted
-      spaceReclaimed
+      success
+      error
+      result {
+        deleted
+        spaceReclaimed
+      }
     }
   }
 `;

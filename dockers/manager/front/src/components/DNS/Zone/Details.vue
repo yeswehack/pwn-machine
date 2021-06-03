@@ -58,16 +58,15 @@ export default {
   },
   methods: {
     submit(done) {
-      this.$apollo
-        .mutate({
-          mutation: api.dns.zones.UPDATE_ZONE,
-          variables: {
-            nodeId: this.value.nodeId,
-            patch: { soa: this.form.soa }
-          },
-          refetchQueries: [{ query: api.dns.zones.LIST_ZONES }]
-        })
-        .then(done);
+      this.mutate({
+        mutation: api.dns.zones.UPDATE_ZONE,
+        variables: {
+          nodeId: this.value.nodeId,
+          patch: { soa: this.form.soa }
+        },
+        refetchQueries: [{ query: api.dns.zones.LIST_ZONES }],
+        message: `${this.zone.name} updated.`
+      }).finally(done);
     }
   }
 };

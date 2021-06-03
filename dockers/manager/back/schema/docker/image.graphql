@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  pullDockerImage(name: String!): DockerImagePull!
+  pullDockerImage(name: String!): DockerImagePullResponse!
   dockerRemoveImage(
     id: ID!
     force: Boolean! = false
@@ -42,7 +42,7 @@ extend type Mutation {
     id: ID!
     tag: DockerImageTagInput!
     force: Boolean! = false
-  ): DockerImage
+  ): BasicMutationResponse!
 }
 
 input DockerImageTagInput {
@@ -90,6 +90,12 @@ type DockerImagePullLogEntry {
 type DockerImagePull {
   id: ID!
   name: String
+}
+
+type DockerImagePullResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerImagePull
 }
 
 extend type Query {

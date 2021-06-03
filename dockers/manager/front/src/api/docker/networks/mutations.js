@@ -1,12 +1,15 @@
 import gql from "graphql-tag";
 import { BASIC_MUTATION_FRAGMENT } from "src/api/common/fragments.js";
-import { NETWORK_FRAGMENT } from "./fragments.js";
 
 export const PRUNE_NETWORKS = gql`
   mutation pruneNetworks {
     pruneDockerNetworks {
-      deleted
-      spaceReclaimed
+      success
+      error
+      result {
+        deleted
+        spaceReclaimed
+      }
     }
   }
 `;

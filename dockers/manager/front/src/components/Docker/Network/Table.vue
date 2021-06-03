@@ -74,7 +74,7 @@ import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 import NetworkDetails from "src/components/Docker/Network/Details.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
-import { notify } from 'src/utils';
+import { notify } from "src/utils";
 
 export default {
   components: {
@@ -124,21 +124,19 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.docker.networks.PRUNE_NETWORKS,
-              refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-            })
-            .then(({ data }) => {
-              const deleted = data.pruneDockerNetworks.deleted;
-              const message = deleted.length
-                ? `${deleted.length} network(s) deleted: ${deleted.join(", ")}`
-                : `No network deleted.`;
-              this.$q.notify({
-                message,
-                type: "positive"
-              });
+          this.mutate({
+            mutation: api.docker.networks.PRUNE_NETWORKS,
+            refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
+          }).then(result => {
+            const deleted = result.deleted;
+            const message = deleted.length
+              ? `${deleted.length} network(s) deleted: ${deleted.join(", ")}`
+              : `No network deleted.`;
+            this.$q.notify({
+              message,
+              type: "positive"
             });
+          });
         });
     },
     getDriverColor(driver) {
@@ -174,13 +172,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.docker.networks.DELETE_NETWORK,
-              variables: { id: network.id },
-              refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }]
-            })
-            .then(notify(`${network.name} deleted.`))
+          this.mutate({
+            mutation: api.docker.networks.DELETE_NETWORK,
+            variables: { id: network.id },
+            refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
+            message: `${network.name} deleted.`
+          });
         });
     }
   }

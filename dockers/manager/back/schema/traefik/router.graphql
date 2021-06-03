@@ -127,11 +127,11 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTraefikHTTPRouter(input: TraefikHTTPRouterInput!): TraefikHTTPRouter!
-  createTraefikTCPRouter(input: TraefikTCPRouterInput!): TraefikTCPRouter!
-  createTraefikUDPRouter(input: TraefikUDPRouterInput!): TraefikUDPRouter!
-  updateTraefikHTTPRouter(id: ID!, patch: TraefikHTTPRouterPatch!): TraefikHTTPRouter!
-  updateTraefikTCPRouter(id: ID!, patch: TraefikTCPRouterPatch!): TraefikTCPRouter!
-  updateTraefikUDPRouter(id: ID!, patch: TraefikUDPRouterPatch!): TraefikUDPRouter!
-  deleteTraefikRouter(id: ID!): Boolean
+  createTraefikHTTPRouter(input: TraefikHTTPRouterInput!): BasicMutationResponse!
+  createTraefikTCPRouter(input: TraefikTCPRouterInput!): BasicMutationResponse!
+  createTraefikUDPRouter(input: TraefikUDPRouterInput!): BasicMutationResponse!
+  updateTraefikHTTPRouter(id: ID!, patch: TraefikHTTPRouterPatch!): BasicMutationResponse!
+  updateTraefikTCPRouter(id: ID!, patch: TraefikTCPRouterPatch!): BasicMutationResponse!
+  updateTraefikUDPRouter(id: ID!, patch: TraefikUDPRouterPatch!): BasicMutationResponse!
+  deleteTraefikRouter(id: ID!): BasicMutationResponse!
 }

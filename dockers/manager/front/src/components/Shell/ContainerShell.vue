@@ -150,7 +150,7 @@ export default {
     },
 
     remove() {
-      this.$apollo.mutate({
+      this.mutate({
         mutation: api.docker.shells.DELETE_SHELL,
         variables: { id: this.id },
         refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]

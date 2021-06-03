@@ -4,6 +4,7 @@ from . import kv_to_dict
 from app.api import create_shell
 from app.utils import createType, registerMutation, registerQuery
 from starlette.websockets import WebSocketDisconnect
+from app.exception import PMException 
 
 DockerContainerShell = createType("DockerContainerShell")
 
@@ -23,11 +24,10 @@ def resolve_docker_shells(id, *_):
 @registerMutation("deleteDockerContainerShell")
 def delete_shell(*_, id):
     if id not in shells:
-        raise ValueError("Invalid id")
+        raise PMException("Invalid id")
     if shells[id].running:
-        raise ValueError("The shell is still running")
+        raise PMException("The shell is still running")
     shells.pop(id)
-    return True
 
 
 @registerMutation("spawnDockerContainerShell")

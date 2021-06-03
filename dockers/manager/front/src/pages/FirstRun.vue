@@ -82,19 +82,16 @@ export default {
   },
   methods: {
     submit(done) {
-      this.$apollo
-        .mutate({
-          mutation: api.auth.INITIALIZE_AUTH,
-          variables: this.form
+      this.mutate({
+        mutation: api.auth.INITIALIZE_AUTH,
+        variables: this.form,
+        message: "Setup complete!"
+      })
+        .then(result => {
+          localStorage.setItem("token", result.token);
+          this.$router.push({ name: "index" });
         })
-        .then(notify("Setup complete!"))
-        .then(r => {
-          if (r.success) {
-            localStorage.setItem("token", r.result.token)
-            this.$router.push({ name: "index" });
-          }
-        });
-      done();
+        .finally(done);
     }
   }
 };

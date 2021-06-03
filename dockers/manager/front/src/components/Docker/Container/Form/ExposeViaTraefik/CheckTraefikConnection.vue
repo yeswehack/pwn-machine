@@ -105,7 +105,7 @@ export default {
         networkId: this.connectTo.value,
         aliases: [this.container.name]
       };
-      this.$apollo.mutate({
+      this.mutate({
         mutation: api.docker.networks.CONNECT_TO_NETWORK,
         variables: { input },
         refetchQueries: [
@@ -128,9 +128,9 @@ export default {
           cancel: true
         })
         .onOk(name => {
-          this.$apollo.mutate({
+          this.mutate({
             mutation: api.docker.networks.CREATE_NETWORK,
-            variables: { name }
+            variables: { name },
           });
         });
     }

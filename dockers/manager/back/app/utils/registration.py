@@ -1,5 +1,7 @@
 from ariadne import ObjectType, InterfaceType
-
+from functools import wraps
+from app.exception import PMException
+import asyncio
 
 registered_types = []
 
@@ -32,8 +34,28 @@ registered_mutations = {}
 
 def registerMutation(name):
     def decorator(f):
-        registered_mutations[name] = f
-        return f
+
+        @wraps(f)
+        async def async_wrapper(*args, **kwargs):
+            print("WRAPS ASYNC")
+            try:
+                result = await f(*args, **kwargs)
+                return {"success": True, "result": result}
+            except PMException as e:
+                return {"success": False, "error": str(e)}
+
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            print("WRAPS ")
+            try:
+                result = f(*args, **kwargs)
+                return {"success": True, "result": result}
+            except PMException as e:
+                return {"success": False, "error": str(e)}
+
+        w = async_wrapper if asyncio.iscoroutinefunction(f) else wrapper
+        registered_mutations[name] = w
+        return w
 
     return decorator
 

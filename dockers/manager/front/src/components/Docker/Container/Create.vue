@@ -64,7 +64,7 @@ import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
 import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from 'src/utils';
+import { notify } from "src/utils";
 export default {
   props: {
     readonly: { type: Boolean, default: false }
@@ -120,16 +120,15 @@ export default {
     validate() {
       return this.$refs.image.validate();
     },
-    submit() {
+    submit(done) {
       const input = Object.assign({}, this.form);
       delete input["extra"];
-      this.$apollo
-        .mutate({
-          mutation: api.docker.containers.CREATE_CONTAINER,
-          variables: { input },
-          refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-        })
-        .then(notify(`Container created`));
+      this.mutate({
+        mutation: api.docker.containers.CREATE_CONTAINER,
+        variables: { input },
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }],
+        message: `Container created`
+      }).finally(done);
     }
   }
 };

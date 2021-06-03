@@ -2,6 +2,7 @@ from app.utils import registerQuery, registerMutation, createType
 from . import docker_client, KeyValue, formatTime, kv_to_dict
 from docker.errors import APIError, NotFound
 from docker.types import IPAMConfig, IPAMPool
+from app.exception import PMException
 
 DockerNetwork = createType("DockerNetwork")
 DockerNetworkConnection = createType("DockerNetworkConnection")
@@ -101,21 +102,20 @@ def resolve_create_network(*_, input):
             ipam=ipam,
         )
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDockerNetwork")
 def mutation_delete_network(*_, id):
     try:
         network = docker_client.networks.get(id)
-    except APIError as e:
-        return {"error": e.explanation, "success": False}
-    try:
         network.remove()
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("connectDockerContainer")
@@ -126,19 +126,22 @@ def resolve_connect_container(*_, input):
     try:
         network.connect(container, aliases=aliases)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("disconnectDockerContainer")
 def resolve_disconnect_container(*_, input):
-    network = docker_client.networks.get(input["networkId"])
-    container = docker_client.containers.get(input["containerId"])
     try:
-        network.disconnect(container)
+        docker_client.api.disconnect_container_from_network(
+            input["containerId"],
+            input["networkId"],
+        )
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDockerNetwork")
@@ -146,8 +149,9 @@ def resolve_remove_network(*_, id):
     try:
         docker_client.api.remove_network(id)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("pruneDockerNetworks")

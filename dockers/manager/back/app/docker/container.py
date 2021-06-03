@@ -1,6 +1,7 @@
 import re
 import shlex
 from typing import NamedTuple
+from dataclasses import dataclass
 
 from app.utils import createType, registerMutation, registerQuery
 
@@ -9,6 +10,7 @@ from docker.types import Mount
 
 from . import KeyValue, docker_client, formatTime, kv_to_dict
 from .image import resolve_image_name
+from app.exception import PMException
 
 DockerContainer = createType("DockerContainer")
 DockerContainerMount = createType("DockerContainerMount")
@@ -101,8 +103,9 @@ def resolve_form_create_container(*_, input):
     try:
         resolve_create_container(**input)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerQuery("dockerContainerByName")
@@ -177,12 +180,11 @@ def resolve_container_ps(container, _):
     except:
         return
     processes = []
-    for ps in (top["Processes"] or []):
+    for ps in top["Processes"] or []:
         process = {}
         for title, value in zip(titles, ps):
             process[title] = value
         yield process
-
 
 
 @DockerContainer.field("mounts")
@@ -205,13 +207,30 @@ def resolve_container_mount_volume(mount: ContainerMount, _):
     return None
 
 
+@dataclass
+class InvalidNetwork:
+    id: str
+    name: str
+    deleted = True
+    labels = []
+    created = 0
+    builtin = False
+    internal = False
+    ipams = []
+    usedBy = []
+
+
 @DockerContainer.field("connections")
 def resolve_container_connections(container, _):
     for name, endpoint in container.attrs["NetworkSettings"]["Networks"].items():
+        try:
+            network = docker_client.networks.get(name)
+        except:
+            network = InvalidNetwork(endpoint["NetworkID"], name)
         yield {
             "aliases": endpoint["Aliases"] or [],
             "ipAddress": endpoint["IPAddress"] or None,
-            "network": docker_client.networks.get(name),
+            "network": network,
         }
 
 
@@ -254,8 +273,10 @@ def basic_docker_operation(name, id):
     try:
         op(id)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
+
 
 @registerMutation("startDockerContainer")
 def resolve_start_container(*_, id):
@@ -292,8 +313,9 @@ def resolve_rename_container(*_, id, name):
     try:
         docker_client.api.rename(id, name=name)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDockerContainer")
@@ -301,8 +323,9 @@ def resolve_remove_container(*_, id, force, pruneVolumes):
     try:
         docker_client.api.remove_container(id, v=pruneVolumes, force=force)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("pruneDockerContainers")

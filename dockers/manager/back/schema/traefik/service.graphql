@@ -9,7 +9,7 @@ interface TraefikService {
 
 
 extend type Mutation {
-  deleteTraefikService(nodeId: ID!): BasicMutationResponse
+  deleteTraefikService(nodeId: ID!): BasicMutationResponse!
 }
 
 type TraefikInvalidService implements TraefikService {

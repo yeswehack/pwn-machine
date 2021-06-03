@@ -100,20 +100,12 @@ export default {
   },
   methods: {
     submit(done) {
-      const patch = {
-        ...this.form,
-        records: this.form.records.map(r => ({
-          content: r.content,
-          enabled: r.enabled
-        }))
-      };
-      this.$apollo
-        .mutate({
-          mutation: api.dns.rules.UPDATE_RULE,
-          variables: { nodeId: this.value.nodeId, patch },
-          refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
-        })
-        .then(done);
+      this.mutate({
+        mutation: api.dns.rules.UPDATE_RULE,
+        variables: { nodeId: this.value.nodeId, patch: this.form },
+        refetchQueries: [{ query: api.dns.rules.LIST_RULES }],
+        message: `${this.form.name} updated.`
+      }).finally(done);
     }
   }
 };

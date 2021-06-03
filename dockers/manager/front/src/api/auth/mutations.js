@@ -3,11 +3,15 @@ import gql from "graphql-tag";
 export const VALIDATE_TOKEN = gql`
   mutation validateToken($token: String!) {
     validateAuthToken(token: $token) {
-      token {
-        token
-        expire
+      success
+      error
+      result {
+        token {
+          token
+          expire
+        }
+        isFirstRun
       }
-      isFirstRun
     }
   }
 `;
@@ -15,8 +19,8 @@ export const VALIDATE_TOKEN = gql`
 export const INITIALIZE_AUTH = gql`
   mutation initializeAuth($password: String!, $otp: String!) {
     initializeAuth(password: $password, otp: $otp) {
-      error
       success
+      error
       result {
         token
       }

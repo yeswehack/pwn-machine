@@ -9,6 +9,7 @@ from app.utils import (
     registerMutation,
     registerQuery,
 )
+from app.exception import PMException
 
 
 def escape_lua(lua):
@@ -97,7 +98,7 @@ async def create_dns_rule_mutation(*_, input):
     ttl = input["ttl"]
     type = input["type"]
     if len(records) < 1:
-        raise ValueError("At least one record required")
+        raise PMException("At least one record required")
 
     if input["isLua"]:
         record = input["records"][0]
@@ -109,9 +110,7 @@ async def create_dns_rule_mutation(*_, input):
     try:
         await dns_http().create_rule(zone, name, type, ttl, records)
     except Exception as e:
-        return {"error": str(e), "success": False}
-
-    return {"success": True}
+        raise PMException(str(e))
 
 
 @registerMutation("updateDnsRule")
@@ -120,10 +119,8 @@ async def update_dns_zone_mutation(*_, nodeId, patch):
     records = patch["records"]
     try:
         await dns_http().update_rule(nodeId, ttl, records)
-    except:
-        return {"error": "Unknow error", "success": False}
-
-    return {"success": True}
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteDnsRule")
@@ -131,9 +128,7 @@ async def delete_dns_rule_mutation(*_, nodeId):
     try:
         await dns_http().delete_rule(nodeId)
     except Exception as e:
-        return {"error": str(e), "success": False}
-
-    return {"success": True}
+        raise PMException(str(e))
 
 
 @registerMutation("enableDnsRule")
@@ -141,6 +136,4 @@ async def enable_dns_rule_mutation(*_, nodeId, enabled):
     try:
         await dns_http().enable_rule(nodeId, enabled)
     except Exception as e:
-        return {"error": str(e), "success": False}
-
-    return {"success": True}
+        raise PMException(str(e))

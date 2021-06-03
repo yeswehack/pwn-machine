@@ -8,6 +8,8 @@ from .registration import (
     createInterface,
 )
 
+class PMException(Exception):
+    pass
 
 
 def base64_encode(s, json=False):

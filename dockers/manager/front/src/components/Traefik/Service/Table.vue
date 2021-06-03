@@ -24,11 +24,6 @@
       <protocol-badge :protocol="row.protocol" />
     </template>
 
-    <template #body-cell-servers="{row}">
-      <div class="q-gutter-xs">
-        {{ row }}
-      </div>
-    </template>
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
@@ -110,13 +105,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.traefik.services.DELETE_SERVICE,
-              variables: { nodeId: service.nodeId },
-              refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
-            })
-            .then(notify(`${service.name} deleted.`));
+          this.mutate({
+            mutation: api.traefik.services.DELETE_SERVICE,
+            variables: { nodeId: service.nodeId },
+            refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
+            message: `${service.name} deleted.`
+          });
         });
     }
   }

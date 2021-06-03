@@ -29,21 +29,18 @@ export default {
   },
   methods: {
     async submit(done) {
-      const name = this.form.name ?? "<unnamed>"
-      this.$apollo
-        .mutate({
-          mutation: api.docker.volumes.CREATE_VOLUME,
-          variables: { input: this.form },
-          refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
+      const name = this.form.name ?? "<unnamed>";
+      this.mutate({
+        mutation: api.docker.volumes.CREATE_VOLUME,
+        variables: { input: this.form },
+        refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }],
+        message: `Volume ${name} created.`
+      })
+        .then(() => {
+          this.$emit("ok");
+          this.$emit("created", this.form.name);
         })
-        .then(notify(`Volume ${name} created.`))
-        .then(r => {
-          if (r.success) {
-            done();
-            this.$emit("ok");
-            this.$emit("created", this.form.name);
-          }
-        });
+        .finally(done);
     }
   }
 };

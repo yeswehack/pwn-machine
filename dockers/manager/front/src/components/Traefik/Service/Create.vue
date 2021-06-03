@@ -172,7 +172,7 @@ export default {
         return "You must enter a name.";
       }
     },
-    async createService() {
+    createService() {
       const protocol = this.form.protocol;
       const type = this.form.type;
       const mutation = api.traefik.services.CREATE_SERVICE[protocol][type];
@@ -180,51 +180,36 @@ export default {
         name: this.form.name,
         [type]: this.form.extra
       };
-      await this.$apollo
-        .mutate({
-          mutation,
-          variables: { input },
-          refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
-        })
-        .then(notify(`${this.form.name} created.`))
-        .then(r => {
-          if (r.success) {
-            this.$emit("ok");
-          }
-        })
+      this.mutate({
+        mutation,
+        variables: { input },
+        refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
+        message: `${this.form.name} created.`
+      }).then(() => this.$emit("ok"));
     },
-    async updateService() {
+    updateService() {
       const type = this.form.type;
       const mutation = api.traefik.services.UPDATE_SERVICE[type];
       const variables = {
         nodeId: this.service.nodeId,
         patch: this.form.extra
       };
-      await this.$apollo
-        .mutate({
-          mutation,
-          variables,
-          refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }]
-        })
-        .then(r => {
-          this.$emit("ok");
-        })
-        .catch(r => {
-          this.$q.notify({
-            message: `Unable to update ${this.service.name}.`,
-            type: "negative"
-          });
-        });
+      this.mutate({
+        mutation,
+        variables,
+        refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
+        message: `${this.service.name} updated.`
+      }).then(() => this.$emit("ok"));
     },
-    async submit(done) {
+    submit(done) {
       try {
         if (this.edit) {
-          await this.updateService();
+          this.updateService();
         } else {
-          await this.createService();
+          this.createService();
         }
       } finally {
-        done()
+        done();
       }
     }
   }

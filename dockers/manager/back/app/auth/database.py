@@ -20,12 +20,14 @@ class Database:
     async def init(self, client):
         from . import AUTH_DISABLED
         self.client = client
-        self.is_first_run = not await client.get(IS_FIRST_RUN_KEY)
-        self.password_hash = await client.get(PASSWORD_KEY)
         if AUTH_DISABLED:
+            self.is_first_run = False
+            self.password_hash = "nope"
             self.totp_secret = pyotp.random_base32()
             self.jwt_secret = os.urandom(32).hex()
             return self
+        self.is_first_run = not await client.get(IS_FIRST_RUN_KEY)
+        self.password_hash = await client.get(PASSWORD_KEY)
 
         self.totp_secret = await client.get(TOTP_SECRET_KEY)
         if self.totp_secret is None:

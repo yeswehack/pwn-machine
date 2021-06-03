@@ -1,3 +1,2 @@
 
-
-class ApiException(Exception): pass
+class PMException(Exception): pass

@@ -83,7 +83,7 @@ export default {
       });
     },
     toggleRule(rule, value) {
-      this.$apollo.mutate({
+      this.mutate({
         mutation: api.dns.rules.ENABLE_RULE,
         variables: { nodeId: rule.nodeId, enabled: value },
         refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
@@ -105,13 +105,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.dns.rules.DELETE_RULE,
-              variables: { nodeId: rule.nodeId },
-              refetchQueries: [{ query: api.dns.rules.LIST_RULES }]
-            })
-            .then(notify(`(${rule.type}) ${rule.name} deleted`));
+          this.mutate({
+            mutation: api.dns.rules.DELETE_RULE,
+            variables: { nodeId: rule.nodeId },
+            refetchQueries: [{ query: api.dns.rules.LIST_RULES }],
+            message: `(${rule.type}) ${rule.name} deleted`
+          })
         });
     },
     isEnabled(r) {

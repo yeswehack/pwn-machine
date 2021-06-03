@@ -55,15 +55,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.dns.zones.DELETE_ZONE,
-              variables: { nodeId: zone.nodeId },
-              refetchQueries: [
-                { query: api.dns.zones.LIST_ZONES },
-              ]
-            })
-            .then(notify(`${zone.name} deleted`));
+          this.mutate({
+            mutation: api.dns.zones.DELETE_ZONE,
+            variables: { nodeId: zone.nodeId },
+            refetchQueries: [{ query: api.dns.zones.LIST_ZONES }],
+            message: `${zone.name} deleted`
+          });
         });
     }
   },

@@ -64,22 +64,14 @@ export default {
     async submit() {
       if (!+this.totp) return;
 
-      const {
-        data: { updateAuthTotp }
-      } = await this.$apollo.mutate({
+      this.mutate({
         mutation: api.auth.UPDATE_TOTP,
         variables: { uri: this.totpUri, totp: +this.totp }
+      }).then(r => {
+        if (r.updateAuthTotp) {
+          this.$router.push({ name: "login" });
+        }
       });
-
-      if (updateAuthTotp) {
-        this.$router.push({ name: "login" });
-      } else {
-        this.$q.notify({
-          message: "Invalid code",
-          color: "negative",
-          position: "top"
-        });
-      }
     }
   }
 };

@@ -130,7 +130,7 @@ import api from "src/api";
 import ShellDialog from "src/components/Shell/Dialog.vue";
 import LogList from "src/components/Docker/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
-import ConnectNetworkInput from "src/components/Docker/ConnectNetworkInput.vue"
+import ConnectNetworkInput from "src/components/Docker/ConnectNetworkInput.vue";
 import { notify } from "src/utils";
 
 export default {
@@ -197,16 +197,14 @@ export default {
         unpause: `${this.container.name} unpaused`
       };
       this.btnLoad[name] = true;
-      this.$apollo
-        .mutate({
-          mutation: mutations[name],
-          variables: { id: this.container.id },
-          refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }]
-        })
-        .then(notify(message[name]))
-        .finally(() => {
-          this.btnLoad[name] = false;
-        });
+      this.mutate({
+        mutation: mutations[name],
+        variables: { id: this.container.id },
+        refetchQueries: [{ query: api.docker.containers.LIST_CONTAINERS }],
+        message: message[name]
+      }).finally(() => {
+        this.btnLoad[name] = false;
+      });
     }
   }
 };

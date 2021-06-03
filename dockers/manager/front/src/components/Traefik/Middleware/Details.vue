@@ -47,13 +47,12 @@ export default {
     submit(done) {
       const mutation =
         api.traefik.middlewares.UPDATE_MIDDLEWARE[this.value.type];
-      this.$apollo
-        .mutate({
-          mutation,
-          variables: { nodeId: this.value.nodeId, patch: this.form.extra },
-          refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }]
-        })
-        .then(done);
+      this.mutate({
+        mutation,
+        variables: { nodeId: this.value.nodeId, patch: this.form.extra },
+        refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
+        message: `${this.value.name} updated.`
+      }).finally(done);
     }
   }
 };

@@ -12,19 +12,26 @@ from app.api import (
     get_traefik_http_api as traefik_http,
     get_traefik_redis_api as traefik_redis,
 )
+from app.exception import PMException
 
 
 def create_mutation_resolver(object_type, type_name):
     @registerMutation(f"create{object_type}")
     async def resolve_create_mutation(*_, input):
         middleware_name = input["name"]
-        return await traefik_redis().create_middleware(
-            middleware_name, type_name, input[type_name]
-        )
+        try:
+            await traefik_redis().create_middleware(
+                middleware_name, type_name, input[type_name]
+            )
+        except Exception as e:
+            raise PMException(str(e))
 
     @registerMutation(f"update{object_type}")
     async def resolve_update_mutation(*_, nodeId, patch):
-        return await traefik_redis().update_middleware(nodeId, type_name, patch)
+        try:
+            await traefik_redis().update_middleware(nodeId, type_name, patch)
+        except Exception as e:
+            raise PMException(str(e))
 
 
 def create_type_resolver(type):
@@ -124,6 +131,7 @@ def resolve_middleware_type(obj, *_):
             return graphql_name
     return "InvalidMiddlewareInfo"
 
+
 @registerQuery("traefikMiddlewares")
 async def resolve_middlewares(*_):
     return await traefik_http().get_middlewares()
@@ -131,4 +139,4 @@ async def resolve_middlewares(*_):
 
 @registerMutation("deleteTraefikMiddleware")
 async def resolve_delete(*_, nodeId):
-    return await traefik_redis().delete_middleware(nodeId)
+    await traefik_redis().delete_middleware(nodeId)

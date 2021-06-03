@@ -62,27 +62,23 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.docker.volumes.PRUNE_VOLUMES,
-              refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
-            })
-            .then(({ data }) => {
-              const deleted = data.pruneDockerVolumes.deleted;
-              const reclaimed = humanStorageSize(
-                data.pruneDockerVolumes.spaceReclaimed
-              );
-              const message = deleted.length
-                ? `${deleted.length} volume(s) deleted: ${deleted.join(
-                    ", "
-                  )} (${reclaimed})`
-                : `No volume deleted.`;
+          this.mutate({
+            mutation: api.docker.volumes.PRUNE_VOLUMES,
+            refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
+          }).then(result => {
+            const deleted = result.deleted;
+            const reclaimed = humanStorageSize(result.spaceReclaimed);
+            const message = deleted.length
+              ? `${deleted.length} volume(s) deleted: ${deleted.join(
+                  ", "
+                )} (${reclaimed})`
+              : `No volume deleted.`;
 
-              this.$q.notify({
-                message,
-                type: "positive"
-              });
+            this.$q.notify({
+              message,
+              type: "positive"
             });
+          });
         });
     },
     createVolume() {
@@ -107,13 +103,12 @@ export default {
           cancel: true
         })
         .onOk(() => {
-          this.$apollo
-            .mutate({
-              mutation: api.docker.volumes.DELETE_VOLUME,
-              variables: { name: volume.name },
-              refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }]
-            })
-            .then(notify(`Volume ${volume.name} deleted.`));
+          this.mutate({
+            mutation: api.docker.volumes.DELETE_VOLUME,
+            variables: { name: volume.name },
+            refetchQueries: [{ query: api.docker.volumes.LIST_VOLUMES }],
+            message: `Volume ${volume.name} deleted.`
+          });
         });
     }
   },

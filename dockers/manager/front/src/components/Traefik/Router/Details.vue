@@ -66,13 +66,13 @@ export default {
   },
   methods: {
     submit(done) {
-      this.$apollo
-        .mutate({
+      this.mutate({
           mutation: api.traefik.routers.UPDATE_ROUTER[this.value.protocol],
           variables: { id: this.value.nodeId, patch: this.form.extra },
-          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }]
+          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
+          message: `${this.value.name} updated.`
         })
-        .then(done);
+        .finally(done);
     },
     validate() {
       return this.$refs.create.validate();

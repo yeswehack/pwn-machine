@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from uuid import uuid4
 import asyncio
 import re
+from app.exception import PMException
 
 DockerImage = createType("DockerImage")
 
@@ -129,8 +130,10 @@ def resolve_tag_image(*_, id, tag, force):
     try:
         docker_client.api.tag(id, **tag, force=force)
         return docker_client.images.get(id)
-    except (APIError, ImageNotFound):
-        return None
+    except APIError as e:
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerQuery("dockerSearchImage")
@@ -182,8 +185,9 @@ def resolve_remove_image(*_, id, force, pruneParents):
     try:
         docker_client.api.remove_image(id, force=force, noprune=not pruneParents)
     except APIError as e:
-        return {"error": e.explanation, "success": False}
-    return {"success": True}
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("pruneDockerImages")

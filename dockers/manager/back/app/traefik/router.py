@@ -9,6 +9,7 @@ from app.api import (
     get_traefik_http_api as traefik_http,
     get_traefik_redis_api as traefik_redis,
 )
+from app.exception import PMException
 
 TraefikRouter = createInterface("TraefikRouter")
 
@@ -37,11 +38,12 @@ def resolve_traefik_enabled(obj, *_):
 async def resolve_traefik_enabled(router, *_):
     if "entryPoints" not in router:
         return []
-    entrypoints = {e['name']: e for e in await traefik_http().get_entrypoints()}
+    entrypoints = {e["name"]: e for e in await traefik_http().get_entrypoints()}
     results = []
     for name in router["entryPoints"]:
         results.append(entrypoints[name])
     return results
+
 
 TraefikHTTPRouter = createType("TraefikHTTPRouter")
 
@@ -65,7 +67,7 @@ async def middlewares(router, *_):
         if name in middlewares:
             results.append(middlewares[name])
         else:
-            results.append({"name":name, "type": "invalid"})
+            results.append({"name": name, "type": "invalid"})
     return results
 
 
@@ -85,24 +87,39 @@ async def resolve_traefikrouter_name(router, *_):
 @registerMutation("updateTraefikTCPRouter")
 @registerMutation("updateTraefikUDPRouter")
 async def mutation_update_http_router(*_, id, patch):
-    return await traefik_redis().update_router(id, patch)
+    try:
+        await traefik_redis().update_router(id, patch)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikHTTPRouter")
 async def mutation_create_router(*_, input):
-    return await traefik_redis().create_router("http", input)
+    try:
+        await traefik_redis().create_router("http", input)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikTCPRouter")
 async def mutation_create_router(*_, input):
-    return await traefik_redis().create_router("tcp", input)
+    try:
+        await traefik_redis().create_router("tcp", input)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("createTraefikUDPRouter")
 async def mutation_create_router(*_, input):
-    return await traefik_redis().create_router("udp", input)
+    try:
+        await traefik_redis().create_router("udp", input)
+    except Exception as e:
+        raise PMException(str(e))
 
 
 @registerMutation("deleteTraefikRouter")
 async def mutation_delete_router(*_, id):
-    return await traefik_redis().delete_router(id)
+    try:
+        await traefik_redis().delete_router(id)
+    except Exception as e:
+        raise PMException(str(e))
