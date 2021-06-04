@@ -12,7 +12,7 @@
   endpoints = "redis:6379"
   rootkey = "traefik"
 [log]
-  level = "DEBUG"
+  level = "WARN"
 [accessLog]
   filePath = "/logs/traefik/traefik.json"
   format = "json"
