@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-toolbar-title shrink class="q-mr-sm">
           <q-avatar class="q-mr-sm">
-            <img src="/icons/logo.svg" />
+            <img src="/icons/logo.svg" class="logo"/>
           </q-avatar>
           Pwn Machine
         </q-toolbar-title>
@@ -83,6 +83,9 @@ export default {
 <style lang="scss" scoped>
 .tabs a {
   text-decoration: none;
+}
+.logo {
+  border: 1px solid white;
 }
 .main-layout {
   background-image: url("/icons/logo.svg");
