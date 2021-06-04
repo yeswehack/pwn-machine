@@ -39,7 +39,6 @@ import ContainerDialog from "./Dialog.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 import { format } from "quasar";
-import { notify } from "src/utils";
 const { humanStorageSize } = format;
 
 export default {

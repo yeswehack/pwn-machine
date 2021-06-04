@@ -55,7 +55,6 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
 import OtpSetup from "src/components/Config/OtpSetup.vue";
 import api from "src/api";
-import { notify } from "src/utils";
 export default {
   mixins: [DeepForm],
   formDefinition: {

@@ -6,7 +6,10 @@
     :query="$apollo.queries.entrypoints"
     :data="entrypoints"
     :columns="columns"
-    v-on:delete="deleteService"
+    no-details
+    no-new
+    no-menu
+    @delete="deleteService"
   >
     <template #body-cell-protocol="{row}">
       <protocol-badge :protocol="row.protocol" />
@@ -19,9 +22,6 @@
           v-for="(name, idx) of row.usedBy.map(r => r.name)"
         />
       </div>
-    </template>
-    <template #details>
-      <div>details</div>
     </template>
   </base-table>
 </template>

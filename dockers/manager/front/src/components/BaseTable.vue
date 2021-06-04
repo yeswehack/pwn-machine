@@ -24,6 +24,7 @@
             icon="eva-plus"
             :label="txt.create"
             @click="$emit('create')"
+            :disable="noNew"
           />
           <slot name="header-button" />
         </div>
@@ -51,7 +52,7 @@
         :name="props.row[rowKey]"
         @click="toggleRow(props.row)"
       >
-        <q-menu touch-position context-menu>
+        <q-menu touch-position context-menu v-if="!noMenu">
           <q-list dense class="rounded-borders bg-grey-9">
             <slot name="menu" v-bind="{ row: props.row }" />
             <q-item v-close-popup clickable @click="$emit('clone', props.row)">
@@ -119,6 +120,8 @@
 export default {
   props: {
     "no-details": { type: Boolean, default: false },
+    "no-new": { type: Boolean, default: false },
+    "no-menu": { type: Boolean, default: false },
     query: { type: Object, required: true },
     rowKey: { type: String, default: "nodeId" },
     name: { type: String },

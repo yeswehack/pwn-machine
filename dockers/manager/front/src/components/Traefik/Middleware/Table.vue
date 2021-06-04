@@ -35,7 +35,6 @@ import MiddlewareDialog from "src/components/Traefik/Middleware/Dialog.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
-import { notify } from "src/utils";
 export default {
   components: {
     MiddlewareDetails,

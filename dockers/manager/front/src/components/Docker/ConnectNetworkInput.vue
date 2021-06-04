@@ -44,7 +44,6 @@
 import api from "src/api";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
-import { notify } from "src/utils";
 export default {
   components: { BaseGridInput, NetworkLink },
   props: {

@@ -34,7 +34,6 @@ import { extend } from "quasar";
 import forms from "./Forms";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from "src/utils";
 
 export function getCreateComponent(value) {
   return forms[value?.type] ?? null;

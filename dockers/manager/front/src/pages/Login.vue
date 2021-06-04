@@ -42,7 +42,6 @@
 <script>
 import _ from "lodash";
 import api from "src/api";
-import { notify } from "src/utils";
 import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "src/components/Config/OtpInput.vue";
 

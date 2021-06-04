@@ -15,7 +15,7 @@ export default {
   apollo: {
     containers: {
       query: api.docker.containers.LIST_CONTAINERS,
-      variables: { onlyRunning: true },
+      variables: { onlyRunning: false },
       update: data => data.dockerContainers
     }
   },
@@ -159,7 +159,10 @@ export default {
           name: "fcose",
           randomize: true,
           fit: true,
-          animate: false
+          animate: false,
+          fixedNodeConstraint: [
+            { nodeId: "Internet", position: { x: 0, y: 0 } },
+          ]
         }
       });
       cy.on("mouseover", "edge", function(event) {

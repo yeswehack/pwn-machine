@@ -20,17 +20,17 @@
       />
     </template>
     <template #menu="{row}">
-      <q-item v-close-popup clickable @click="openShell(row)">
-        <q-item-section avatar>
-          <q-avatar icon="navigate_next" />
-        </q-item-section>
-        <q-item-section>Start a shell ...</q-item-section>
-      </q-item>
       <q-item v-close-popup clickable @click="exposeContainer(row)">
         <q-item-section avatar>
           <q-avatar icon="eva-globe-outline" />
         </q-item-section>
         <q-item-section>Expose via traefik ...</q-item-section>
+      </q-item>
+      <q-item v-close-popup clickable @click="openShell(row)">
+        <q-item-section avatar>
+          <q-avatar icon="navigate_next" />
+        </q-item-section>
+        <q-item-section>Start a shell ...</q-item-section>
       </q-item>
     </template>
     <template #body-cell-image="{row}">

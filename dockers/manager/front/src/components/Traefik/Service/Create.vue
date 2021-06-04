@@ -52,7 +52,6 @@ import CreateTcpWeighted from "./CreateTcpWeighted.vue";
 import CreateUdpLoadBalancer from "./CreateUdpLoadBalancer.vue";
 import CreateUdpWeighted from "./CreateUdpWeighted.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from "src/utils";
 
 export function getCreateComponent(value) {
   const mapping = {

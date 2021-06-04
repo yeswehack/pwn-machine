@@ -54,7 +54,6 @@ import LabelInput from "../LabelInput.vue";
 import IpamsInput from "./IpamsInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
-import { notify } from "src/utils";
 import { required } from "src/utils/validators";
 
 export default {

@@ -41,7 +41,6 @@ import RouterLink from "src/components/Traefik/Router/Link.vue";
 import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
-import { notify } from "src/utils";
 
 export default {
   components: {

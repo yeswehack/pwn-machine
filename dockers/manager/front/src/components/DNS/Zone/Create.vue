@@ -21,7 +21,6 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import SoaForm from "src/components/DNS/Zone/SoaForm.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
-import { notify } from "src/utils";
 export default {
   mixins: [DeepForm],
   components: { ResetAndSave },

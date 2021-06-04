@@ -45,7 +45,6 @@
 import api from "src/api";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
-import { notify } from "src/utils";
 export default {
   components: { BaseGridInput, ContainerLink },
   props: {

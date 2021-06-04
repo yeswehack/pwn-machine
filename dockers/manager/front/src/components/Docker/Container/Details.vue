@@ -15,6 +15,13 @@
             </div>
             <q-space />
             <div class="col-auto q-gutter-sm">
+                <q-btn
+                  round
+                  color="grey"
+                  icon="eva-globe-outline"
+                  title="Expose via traefik"
+                  @click="exposeContainer"
+                />
               <template v-if="status == 'running'">
                 <q-btn
                   round
@@ -131,7 +138,7 @@ import ShellDialog from "src/components/Shell/Dialog.vue";
 import LogList from "src/components/Docker/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
 import ConnectNetworkInput from "src/components/Docker/ConnectNetworkInput.vue";
-import { notify } from "src/utils";
+import ExposeContainerDialog from "src/components/Docker/Container/Form/ExposeViaTraefik/Dialog.vue"
 
 export default {
   components: {
@@ -179,6 +186,13 @@ export default {
         component: ShellDialog,
         parent: this,
         container: this.container
+      });
+    },
+    exposeContainer() {
+      this.$q.dialog({
+        component: ExposeContainerDialog,
+        parent: this,
+        containerId: this.container.id
       });
     },
     pressButton(name) {

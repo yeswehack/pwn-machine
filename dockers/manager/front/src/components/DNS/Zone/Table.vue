@@ -22,7 +22,6 @@ import ZoneDialog from "src/components/DNS/Zone/Dialog.vue";
 import ZoneDetails from "src/components/DNS/Zone/Details.vue";
 
 import api from "src/api";
-import { notify } from "src/utils";
 
 export default {
   components: { BaseTable, ZoneDetails },

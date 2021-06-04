@@ -38,7 +38,6 @@ import BaseTable from "src/components/BaseTable.vue";
 import RuleDetails from "src/components/DNS/Rule/Details.vue";
 import ZoneLink from "src/components/DNS/Zone/Link.vue";
 import ZoneDialog from "src/components/DNS/Rule/Dialog.vue";
-import { notify } from "src/utils";
 
 export default {
   components: { BaseTable, ZoneLink, RuleDetails },

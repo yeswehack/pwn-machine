@@ -64,7 +64,6 @@ import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
 import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from "src/utils";
 export default {
   props: {
     readonly: { type: Boolean, default: false }

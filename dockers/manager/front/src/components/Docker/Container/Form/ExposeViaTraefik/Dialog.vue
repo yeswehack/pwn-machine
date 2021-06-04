@@ -13,10 +13,11 @@
               ref="exposedPort"
               :is="formChildren.exposedPort"
               v-model="form.exposedPort"
+              protocol="http"
               :container="container"
             />
           </div>
-          <div class="col" v-if="form.exposedPort.protocol == 'http'">
+          <div class="col">
             <component
               :is="formChildren.domain"
               ref="domainSelect"
@@ -41,7 +42,7 @@
         />
         <component
           ref="service"
-          :is="serviceComponent"
+          :is="formChildren.serviceForm"
           v-model="form.serviceForm"
         />
       </q-tab-panel>
@@ -54,7 +55,7 @@
         />
         <component
           ref="router"
-          :is="routerComponent"
+          :is="formChildren.routerForm"
           v-model="form.routerForm"
         />
       </q-tab-panel>
@@ -64,9 +65,7 @@
         </div>
         <div class="row">
           <div class="col">
-            Expose port {{ form.exposedPort.port }}/{{
-              form.exposedPort.protocol
-            }}
+            Expose port {{ form.exposedPort }}
           </div>
         </div>
         <div class="row">
@@ -101,43 +100,13 @@ import DeepForm, { mapGetters } from "src/mixins/DeepForm";
 import api from "src/api";
 
 import CreateHTTPRouter from "src/components/Traefik/Router/CreateHTTP.vue";
-import CreateTCPRouter from "src/components/Traefik/Router/CreateUDP.vue";
-import CreateUDPRouter from "src/components/Traefik/Router/CreateTCP.vue";
 import CreateHttpLoadBalancer from "src/components/Traefik/Service/CreateHttpLoadBalancer.vue";
-import CreateUdpLoadBalancer from "src/components/Traefik/Service/CreateUdpLoadBalancer.vue";
-import CreateTcpLoadBalancer from "src/components/Traefik/Service/CreateTcpLoadBalancer.vue";
 
 import CheckTraefikConnection from "./CheckTraefikConnection.vue";
 import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DomainInput from "src/components/DNS/DomainInput.vue";
 
-function getRouterComponent(f) {
-  const protocol = f?.exposedPort?.protocol;
-  if (protocol == "udp") {
-    return CreateUDPRouter;
-  }
-  if (protocol == "tcp") {
-    return CreateTCPRouter;
-  }
-  if (protocol == "http") {
-    return CreateHTTPRouter;
-  }
-  return null;
-}
-function getServiceComponent(f) {
-  const protocol = f?.exposedPort?.protocol;
-  if (protocol == "udp") {
-    return CreateUdpLoadBalancer;
-  }
-  if (protocol == "tcp") {
-    return CreateTcpLoadBalancer;
-  }
-  if (protocol == "http") {
-    return CreateHttpLoadBalancer;
-  }
-  return null;
-}
 
 export default {
   components: { BaseDialog, ResetAndSave, CheckTraefikConnection },
@@ -148,12 +117,8 @@ export default {
     exposedPort: ExposedPortInput,
     aliasName: null,
     domain: DomainInput,
-    routerForm(f) {
-      return getRouterComponent(f);
-    },
-    serviceForm(f) {
-      return getServiceComponent(f);
-    }
+    routerForm: CreateHTTPRouter,
+    serviceForm: CreateHttpLoadBalancer
   },
   props: {
     containerId: { type: String, required: true }
@@ -175,20 +140,13 @@ export default {
   },
   computed: {
     ...mapGetters(
-      "exposedPort.port",
-      "exposedPort.protocol",
+      "exposedPort",
       "serviceForm.name",
       "domain",
       "serviceName",
       "routerName",
       "aliasName"
     ),
-    routerComponent() {
-      return getRouterComponent(this.form);
-    },
-    serviceComponent() {
-      return getServiceComponent(this.form);
-    },
     steps() {
       const steps = [
         {
@@ -249,14 +207,13 @@ export default {
       }
     },
     async submit(done) {
-      const protocol = this.form.exposedPort.protocol;
       const serviceMutation =
-        api.traefik.services.CREATE_SERVICE[protocol].loadBalancer;
+        api.traefik.services.CREATE_SERVICE.http.loadBalancer;
       const serviceInput = {
         name: this.form.serviceName,
         loadBalancer: this.form.serviceForm
       };
-      const routerMutation = api.traefik.routers.CREATE_ROUTER[protocol];
+      const routerMutation = api.traefik.routers.CREATE_ROUTER.http;
 
       const routerInput = {
         name: this.form.routerName,
@@ -288,7 +245,7 @@ export default {
     updateServiceDefault() {
       if (!this.form.serviceForm) return;
       this.form.serviceForm.servers = [
-        { url: `http://${this.aliasName}:${this.exposedPort_port}` }
+        { url: `http://${this.aliasName}:${this.exposedPort}` }
       ];
     },
     show() {
@@ -303,18 +260,6 @@ export default {
       this.form.serviceName = `${this.container.name}-service`;
       this.form.routerName = `${this.container.name}-router`;
     },
-    routerComponent: {
-      immediate: true,
-      handler() {
-        this.updateRouterDefault();
-      }
-    },
-    serviceComponent: {
-      immediate: true,
-      handler() {
-        this.updateServiceDefault();
-      }
-    },
     serviceName() {
       this.updateRouterDefault();
     },
@@ -324,23 +269,9 @@ export default {
     aliasName() {
       this.updateServiceDefault();
     },
-    exposedPort_port() {
+    exposedPort() {
       this.updateServiceDefault();
     },
-    exposedPort_protocol(protocol) {
-      const serviceComponent = this.instanciateSubForm(
-        getServiceComponent(this.form),
-        this.form
-      );
-      this.form.serviceForm = serviceComponent.originalForm;
-
-      const routerComponent = this.instanciateSubForm(
-        getRouterComponent(this.form),
-        this.form
-      );
-      this.form.routerForm = routerComponent.originalForm;
-      this.updateServiceDefault();
-    }
   }
 };
 </script>

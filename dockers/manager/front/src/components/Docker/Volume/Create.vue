@@ -18,7 +18,6 @@ import LabelInput from "../LabelInput.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
-import { notify } from "src/utils";
 
 export default {
   components: { ResetAndSave },
