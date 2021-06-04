@@ -5,108 +5,93 @@
     :subtitle="panel"
     :loading="$apollo.loading"
   >
-    <template #default="{ok, cancel}">
-      <q-tab-panels v-model="panel" animated>
-        <q-tab-panel name="choosePort">
-          <div class="column q-col-gutter-sm">
-            <div class="col">
-              <component
-                ref="exposedPort"
-                :is="formChildren.exposedPort"
-                v-model="form.exposedPort"
-                :container="container"
-              />
-            </div>
-            <div class="col" v-if="form.exposedPort.protocol == 'http'">
-              <component :is="formChildren.domain" v-model="form.domain" />
-            </div>
+    <q-tab-panels v-model="panel" animated>
+      <q-tab-panel name="choosePort">
+        <div class="column q-col-gutter-sm">
+          <div class="col">
+            <component
+              ref="exposedPort"
+              :is="formChildren.exposedPort"
+              v-model="form.exposedPort"
+              :container="container"
+            />
           </div>
-        </q-tab-panel>
-        <q-tab-panel name="checkTraefikConnection">
-          <check-traefik-connection
-            :container="container"
-            ref="aliasName"
-            v-model="form.aliasName"
-          />
-        </q-tab-panel>
-        <q-tab-panel name="createService">
-          <div class="row items-baseline">
-            <div class="col text-h6">New service:</div>
-            <div class="col col-5">
-              <q-input
-                ref="serviceName"
-                filled
-                :rules="[validateServiceName]"
-                v-model="form.serviceName"
-                label="name"
-              />
-            </div>
+          <div class="col" v-if="form.exposedPort.protocol == 'http'">
+            <component
+              :is="formChildren.domain"
+              ref="domainSelect"
+              v-model="form.domain"
+            />
           </div>
-          <q-separator class="q-mx-xl q-mb-md" />
-          <component
-            ref="service"
-            :is="serviceComponent"
-            v-model="form.serviceForm"
-          />
-        </q-tab-panel>
-        <q-tab-panel name="createRouter">
-          <div class="row items-baseline">
-            <div class="col text-h6">New router:</div>
-            <div class="col col-5">
-              <q-input
-                ref="routerName"
-                filled
-                :rules="[validateRouterName]"
-                v-model="form.routerName"
-                label="name"
-              />
-            </div>
-          </div>
-          <q-separator class="q-mx-xl q-mb-md" />
-          <component
-            ref="router"
-            :is="routerComponent"
-            v-model="form.routerForm"
-          />
-        </q-tab-panel>
-        <q-tab-panel name="create" class="q-gutter-sm">
-          <div class="row text-h6">
-            Summary
-          </div>
-          <div class="row">
-            <div class="col">
-              Expose port {{ form.exposedPort.port }}/{{
-                form.exposedPort.protocol
-              }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">Create service {{ form.serviceName }}</div>
-            <div class="col col-auto">
-              <q-icon name="close" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">Create router {{ form.routerName }}</div>
-            <div class="col col-auto">
-              <q-icon name="close" />
-            </div>
-          </div>
-        </q-tab-panel>
-      </q-tab-panels>
-      <q-card-section>
-        <reset-and-save
-          :steps="steps"
-          :step.sync="panel"
-          :modified="modified"
-          @save="submit"
-          @reset="reset"
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="checkTraefikConnection">
+        <check-traefik-connection
+          :container="container"
+          ref="aliasName"
+          v-model="form.aliasName"
         />
-      </q-card-section>
-      <div :value="container" @ok="ok" @cancel="cancel" v-if="0">
-        {{ container }}
-      </div>
-    </template>
+      </q-tab-panel>
+      <q-tab-panel name="createService">
+        <q-input
+          ref="serviceName"
+          :rules="[validateServiceName]"
+          v-model="form.serviceName"
+          label="name"
+        />
+        <component
+          ref="service"
+          :is="serviceComponent"
+          v-model="form.serviceForm"
+        />
+      </q-tab-panel>
+      <q-tab-panel name="createRouter">
+        <q-input
+          ref="routerName"
+          :rules="[validateRouterName]"
+          v-model="form.routerName"
+          label="name"
+        />
+        <component
+          ref="router"
+          :is="routerComponent"
+          v-model="form.routerForm"
+        />
+      </q-tab-panel>
+      <q-tab-panel name="create" class="q-gutter-sm">
+        <div class="row text-h6">
+          Summary
+        </div>
+        <div class="row">
+          <div class="col">
+            Expose port {{ form.exposedPort.port }}/{{
+              form.exposedPort.protocol
+            }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">Create service {{ form.serviceName }}</div>
+          <div class="col col-auto">
+            <q-icon name="close" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">Create router {{ form.routerName }}</div>
+          <div class="col col-auto">
+            <q-icon name="close" />
+          </div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
+    <q-card-section>
+      <reset-and-save
+        :steps="steps"
+        :step.sync="panel"
+        :modified="modified"
+        @save="submit"
+        @reset="reset"
+      />
+    </q-card-section>
   </base-dialog>
 </template>
 
@@ -125,7 +110,6 @@ import CreateTcpLoadBalancer from "src/components/Traefik/Service/CreateTcpLoadB
 import CheckTraefikConnection from "./CheckTraefikConnection.vue";
 import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
-import { notify } from "src/utils";
 import DomainInput from "src/components/DNS/DomainInput.vue";
 
 function getRouterComponent(f) {
@@ -264,7 +248,7 @@ export default {
         return "This field is required";
       }
     },
-    submit() {
+    async submit(done) {
       const protocol = this.form.exposedPort.protocol;
       const serviceMutation =
         api.traefik.services.CREATE_SERVICE[protocol].loadBalancer;
@@ -278,17 +262,23 @@ export default {
         name: this.form.routerName,
         ...this.form.routerForm
       };
+      routerInput.service = `${routerInput.service}@redis`;
+
       this.mutate({
         mutation: serviceMutation,
         variables: { input: serviceInput },
         message: `Service ${this.form.serviceName} created.`
-      }).then(r => {
-        return this.mutate({
+      })
+        .then(() => {
+          return this.mutate({
             mutation: routerMutation,
             variables: { input: routerInput },
             message: `Router ${this.form.routerName} created.`
-          })
-      });
+          }).then(() => {
+            this.$refs.dialog.onOk();
+          });
+        })
+        .finally(done);
     },
     updateRouterDefault() {
       if (!this.form.routerForm) return;
@@ -326,6 +316,9 @@ export default {
       }
     },
     serviceName() {
+      this.updateRouterDefault();
+    },
+    domain() {
       this.updateRouterDefault();
     },
     aliasName() {

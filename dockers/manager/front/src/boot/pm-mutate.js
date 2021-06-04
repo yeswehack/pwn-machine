@@ -9,7 +9,6 @@ export default ({ Vue }) => {
     methods: {
       mutate: function({ message, ...opt }) {
         return new Promise((resolve, reject) => {
-          console.log(opt)
           return this.$apollo.mutate(opt).then(notify(message)).then(r => {
             if (r.success){
               resolve(r.result)

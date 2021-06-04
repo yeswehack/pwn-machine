@@ -54,6 +54,7 @@ export default {
     },
     onOk(data) {
       this.$emit("ok", data);
+      this.$parent.$emit("ok", data);
       this.hide();
     }
   }

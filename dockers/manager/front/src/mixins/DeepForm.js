@@ -64,6 +64,9 @@ export default {
     renderForm(f) {
       return f;
     },
+    validate(){
+      return true
+    },
     reset() {
       this.form = _.cloneDeep(this.originalForm);
     },

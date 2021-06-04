@@ -77,6 +77,7 @@
 <script>
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
+import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 export default {
   mixins: [DeepForm],
   formDefinition: null,
@@ -87,7 +88,7 @@ export default {
   apollo: {
     traefikContainer: {
       query: api.docker.containers.GET_CONTAINER_BY_NAME,
-      variables: { name: "traefik" },
+      variables: { name: "pm_traefik" },
       update: data => data.dockerContainerByName
     }
   },
@@ -117,21 +118,33 @@ export default {
       });
     },
     createNetwork() {
+      const connectContainer = (container, networkId, refetchQueries = []) => {
+        const input = {
+          containerId: container.id,
+          networkId,
+          aliases: [container.name]
+        };
+        return this.mutate({
+          mutation: api.docker.networks.CONNECT_TO_NETWORK,
+          variables: { input },
+          refetchQueries
+        });
+      };
+
       this.$q
         .dialog({
-          title: "Create a new network",
-          message: "Network name ?",
-          prompt: {
-            model: "",
-            type: "text"
-          },
-          cancel: true
+          component: NetworkDialog,
+          parent: this
         })
-        .onOk(name => {
-          this.mutate({
-            mutation: api.docker.networks.CREATE_NETWORK,
-            variables: { name },
-          });
+        .onOk(async network => {
+          await connectContainer(this.container, network);
+          await connectContainer(this.traefikContainer, network, [
+            {
+              query: api.docker.containers.GET_CONTAINER_BY_ID,
+              variables: { id: this.container.id }
+            }
+          ]);
+          await this.$apollo.queries.traefikContainer.refetch();
         });
     }
   },

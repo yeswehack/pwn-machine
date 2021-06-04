@@ -81,8 +81,7 @@ export default {
         refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
         message: `Network ${this.form.name} created.`
       }).then(r => {
-        this.$emit("ok");
-        this.$emit("created", this.form.name);
+        this.$emit("ok", this.form.name);
       });
     }
   }
