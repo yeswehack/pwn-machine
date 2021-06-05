@@ -84,9 +84,6 @@ export default {
 .tabs a {
   text-decoration: none;
 }
-.logo {
-  border: 1px solid white;
-}
 .main-layout {
   background-image: url("/icons/logo.svg");
   background-size: 50vh 50vh;
