@@ -2,8 +2,8 @@
   <base-dialog
     ref="dialog"
     title="Create a new middleware"
-    size="600"
     :subtitle="subtitle"
+    size="600"
   >
     <template #default="{ok, cancel}">
       <create-middleware

@@ -1,9 +1,8 @@
 <template>
   <base-table
-    class=""
     ref="table"
-    name="service"
     row-key="name"
+    name="service"
     :query="$apollo.queries.services"
     :data="services"
     :columns="columns"

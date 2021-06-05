@@ -27,11 +27,6 @@ export default {
     tls: null
   },
   methods: {
-    validateRule(rule) {
-      if (!this.$api.traefik.isValidRule(rule)) {
-        return `Syntax error`;
-      }
-    },
     validate() {
       return this.$refs.service.validate();
     }

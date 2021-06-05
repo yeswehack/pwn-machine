@@ -3,21 +3,21 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
-          v-model="form.name"
           ref="name"
-          :rules="[required('You must enter a name.')]"
           label="Name"
+          :rules="[required('You must enter a name.')]"
+          v-model="form.name"
         />
         <q-select
-          v-model="form.protocol"
           label="Protocol"
           :options="Object.keys(availableTypes)"
+          v-model="form.protocol"
         />
         <q-select
-          :disable="!form.protocol"
-          v-model="form.type"
           label="Type"
+          :disable="!form.protocol"
           :options="availableTypes[form.protocol]"
+          v-model="form.type"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
@@ -75,13 +75,13 @@ export function getCreateComponent(value) {
 export default {
   components: { ResetAndSave },
   mixins: [DeepForm],
-  props: { service: { type: Object, default: null } },
   formDefinition: {
     name: null,
     protocol: "http",
     type: "loadBalancer",
     extra: getCreateComponent
   },
+  props: { service: { type: Object, default: null } },
   data() {
     const availableTypes = {
       http: ["loadBalancer", "weighted", "mirroring"],
@@ -100,6 +100,23 @@ export default {
     ];
     return { availableTypes, panel: "chooseType", steps };
   },
+  computed: {
+    currentProtocol() {
+      return this.form.protocol;
+    },
+    currentType() {
+      return this.form.type;
+    },
+    createComponent() {
+      return getCreateComponent(this.form);
+    },
+    okBtnLabel() {
+      return this.panel === "chooseType" ? "Next" : "Create";
+    },
+    cancelBtnLabel() {
+      return this.panel === "chooseType" ? "Cancel" : "Back";
+    }
+  },
   watch: {
     currentProtocol(proto, oldProto) {
       const idx = oldProto
@@ -117,23 +134,6 @@ export default {
       );
       this.form.extra = instance.originalForm;
       this.changeSubtitle();
-    }
-  },
-  computed: {
-    currentProtocol() {
-      return this.form.protocol;
-    },
-    currentType() {
-      return this.form.type;
-    },
-    createComponent() {
-      return getCreateComponent(this.form);
-    },
-    okBtnLabel() {
-      return this.panel === "chooseType" ? "Next" : "Create";
-    },
-    cancelBtnLabel() {
-      return this.panel === "chooseType" ? "Cancel" : "Back";
     }
   },
   methods: {

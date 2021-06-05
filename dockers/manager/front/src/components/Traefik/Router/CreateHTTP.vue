@@ -3,19 +3,19 @@
     <div class="col row">
       <div class="col q-mr-sm">
         <q-input
-          v-model="form.rule"
           ref="rule"
-          debounce="100"
-          :rules="[validateRule]"
-          hint="ex: Host(`example.com`)"
           label="Rule"
+          hint="ex: Host(`example.com`)"
+          :rules="[validateRule]"
+          v-model="form.rule"
+          debounce="100"
         />
       </div>
       <div class="col col-3">
         <q-input
-          type="number"
           label="Prority"
           placeholder="auto"
+          type="number"
           v-model.number="form.priority"
         />
       </div>
@@ -36,7 +36,7 @@
       v-model="form.service"
       protocol="http"
     />
-    <q-list separator class="rounded-borders" bordered>
+    <q-list separator bordered class="rounded-borders">
       <component ref="tls" :is="formChildren.tls" v-model="form.tls" />
     </q-list>
   </div>

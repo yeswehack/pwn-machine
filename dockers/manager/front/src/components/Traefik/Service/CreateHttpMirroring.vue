@@ -1,11 +1,11 @@
 <template>
   <div class="q-gutter-md">
     <q-select
-      label="Service"
       ref="service"
+      label="Service"
+      :options="serviceOptions"
       :rules="[required('You must select a service.')]"
       v-model="form.service"
-      :options="serviceOptions"
     />
     <q-input
       type="number"
@@ -28,16 +28,21 @@ import MirrorsInput from "./MirrorsInput.vue";
 
 export default {
   mixins: [DeepForm],
+  formDefinition: {
+    maxBodySize: null,
+    service: null,
+    mirrors: MirrorsInput
+  },
   apollo: {
     services: {
       query: api.traefik.services.LIST_SERVICES,
       update: data => data.traefikServices
     }
   },
-  formDefinition: {
-    maxBodySize: null,
-    service: null,
-    mirrors: MirrorsInput
+  computed: {
+    serviceOptions() {
+      return (this.services ?? []).map(s => s.name);
+    }
   },
   methods: {
     validate() {
@@ -46,11 +51,6 @@ export default {
         this.$refs.mirrors.validate()
       ];
       return validators.every(x => x);
-    }
-  },
-  computed: {
-    serviceOptions() {
-      return (this.services ?? []).map(s => s.name);
     }
   }
 };

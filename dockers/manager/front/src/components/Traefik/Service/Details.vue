@@ -31,7 +31,7 @@
 
       <div class="col col-6">
         <log-card>
-          <log-list flat :service="[value.name]" short />
+          <log-list flat short :service="[value.name]" />
         </log-card>
       </div>
     </template>
@@ -48,7 +48,6 @@ import LogList from "src/components/Traefik/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
 
 export default {
-  mixins: [DeepForm],
   components: {
     BaseDetails,
     ProtocolBadge,
@@ -56,6 +55,7 @@ export default {
     LogList,
     LogCard
   },
+  mixins: [DeepForm],
   formDefinition: {
     extra: getCreateComponent
   }

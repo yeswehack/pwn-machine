@@ -1,5 +1,5 @@
 <template>
-  <pm-link path="/traefik/middlewares" :hash="name" :label="name" />
+  <pm-link :label="name" :hash="name" path="/traefik/middlewares" />
 </template>
 
 <script>

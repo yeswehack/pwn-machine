@@ -3,18 +3,18 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
-          v-model="form.name"
-          required
           label="Name"
+          required
           :rule="[required('You must make a selection.')]"
+          v-model="form.name"
         />
         <q-select
-          v-model="form.type"
+          label="Type"
           use-input
-          input-debounce="0"
           :options="middlewaresTypes"
           :rules="[required('You must make a selection.')]"
-          label="Type"
+          v-model="form.type"
+          input-debounce="0"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
@@ -45,13 +45,13 @@ export function getCreateComponent(value) {
 }
 
 export default {
+  components: { ResetAndSave },
   mixins: [DeepForm],
   formDefinition: {
     name: null,
     type: "addPrefix",
     extra: getCreateComponent
   },
-  components: { ResetAndSave },
   props: { middleware: { type: Object, default: null } },
   data() {
     const originalForm = {

@@ -6,29 +6,29 @@
         <div class="column q-col-gutter-sm">
           <div class="row items-center q-gutter-sm">
             <q-select
-              class="col col-3"
-              v-model="form.scheme"
-              :options="['http', 'https']"
               label="protocol"
+              class="col col-3"
+              :options="['http', 'https']"
+              v-model="form.scheme"
             />
-            <q-input class="col " v-model="form.hostname" label="Hostname" />
+            <q-input label="Hostname" class="col " v-model="form.hostname" />
             <q-input
+              label="Port"
               class="col col-2"
               type="number"
               v-model.number="form.port"
-              label="Port"
             />
           </div>
-          <q-input v-model="form.path" label="Path" />
+          <q-input label="Path" v-model="form.path" />
           <q-toggle
+            label="Follow redirects"
             class="col"
             v-model="form.followRedirects"
-            label="Follow redirects"
           />
           <component :is="formChildren.headers" v-model="form.headers" />
           <div class="row q-gutter-md">
-            <q-input class="col" v-model="form.interval" label="Interval" />
-            <q-input class="col" v-model="form.timeout" label="Timeout" />
+            <q-input label="Interval" class="col" v-model="form.interval" />
+            <q-input label="Timeout" class="col" v-model="form.timeout" />
           </div>
         </div>
       </q-card-section>

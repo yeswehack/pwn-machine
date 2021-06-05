@@ -5,17 +5,17 @@
         <div class="col">
           <q-input
             ref="name"
-            v-model="form.name"
+            label="Name"
             autofocus
             :rules="[required('You must enter a name.')]"
-            label="Name"
+            v-model="form.name"
           />
         </div>
         <div class="col col-3">
           <q-select
-            v-model="form.protocol"
-            :options="protocols"
             label="Protocol"
+            :options="protocols"
+            v-model="form.protocol"
           />
         </div>
       </div>
@@ -76,25 +76,6 @@ export default {
     },
     createComponent() {
       return getCreateComponent(this.form);
-    },
-    relevantentrypoints() {
-      const protocol = this.form.protocol === "udp" ? "udp" : "tcp";
-      const entrypoints = (this.entrypoints || []).filter(
-        ep => ep.protocol === protocol
-      );
-      return entrypoints.map(ep => ({
-        label: ep.name,
-        protocol: ep.protocol
-      }));
-    },
-    relevantServices() {
-      const services = (this.services || []).filter(
-        s => s.protocol === this.form.protocol
-      );
-      return services.map(s => ({
-        label: s.name,
-        protocol: s.protocol
-      }));
     }
   },
   watch: {
@@ -108,15 +89,17 @@ export default {
     }
   },
   methods: {
+    validate() {
+      const validators = [
+        this.$refs.name.validate(),
+        this.$refs.create.validate()
+      ];
+      return validators.every(x => x);
+    },
     submit(done) {
-      const mutation = api.traefik.routers.CREATE_ROUTER[this.form.protocol];
-      const input = {
-        name: this.form.name,
-        ...this.form.extra
-      };
       this.mutate({
-        mutation,
-        variables: { input },
+        mutation: api.traefik.routers.CREATE_ROUTER[this.form.protocol],
+        variables: { input: { name: this.form.name, ...this.form.extra } },
         refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
         message: `${this.form.name} created.`
       })
@@ -124,13 +107,6 @@ export default {
           this.$emit("ok");
         })
         .finally(done);
-    },
-    validate() {
-      const validators = [
-        this.$refs.name.validate(),
-        this.$refs.create.validate()
-      ];
-      return validators.every(x => x);
     }
   }
 };

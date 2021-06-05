@@ -1,11 +1,11 @@
 <template>
   <q-select
     ref="select"
-    v-model="form"
+    label="Service"
+    :options="serviceNames"
     clearable
     :rules="[required('You must select a service.')]"
-    :options="serviceNames"
-    label="Service"
+    v-model="form"
   >
     <template #after>
       <q-btn
@@ -27,7 +27,6 @@ import api from "src/api";
 import ServiceDialog from "../Service/Dialog.vue";
 
 export default {
-  props: { protocol: { type: String, default: null } },
   mixins: [DeepForm],
   formDefinition: null,
   apollo: {
@@ -39,6 +38,7 @@ export default {
       update: data => data.traefikServices
     }
   },
+  props: { protocol: { type: String, default: null } },
   computed: {
     serviceNames() {
       return (this.services ?? []).map(s => s.name);

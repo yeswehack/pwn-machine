@@ -9,9 +9,9 @@
 
           <q-card-section>
             <component
+              hide-title
               :is="formChildren.extra"
               v-model="form.extra"
-              hide-title
             />
           </q-card-section>
 
@@ -45,7 +45,7 @@ export default {
   methods: {
     submit(done) {
       this.mutate({
-        mutation:api.traefik.middlewares.UPDATE_MIDDLEWARE[this.value.type],
+        mutation: api.traefik.middlewares.UPDATE_MIDDLEWARE[this.value.type],
         variables: { nodeId: this.value.nodeId, patch: this.form.extra },
         refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
         message: `${this.value.name} updated.`

@@ -2,11 +2,11 @@
   <div class="column q-col-gutter-sm">
     <q-input
       ref="rule"
+      label="Rule"
+      hint="ex: HostSNI(`example.com`)"
+      :rules="[validateRule]"
       v-model="form.rule"
       debounce="100"
-      :rules="[validateRule]"
-      hint="ex: HostSNI(`example.com`)"
-      label="Rule"
     />
     <component
       :is="formChildren.entryPoints"

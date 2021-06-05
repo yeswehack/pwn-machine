@@ -2,15 +2,12 @@
   <div class="q-gutter-md">
     <component
       ref="service"
+      protocol="http"
       :is="formChildren.services"
       v-model="form.services"
-      protocol="http"
     />
-    <q-list separator class="rounded-borders"  bordered>
-      <component
-        :is="formChildren.sticky"
-        v-model="form.sticky"
-      />
+    <q-list separator bordered class="rounded-borders">
+      <component :is="formChildren.sticky" v-model="form.sticky" />
     </q-list>
   </div>
 </template>
