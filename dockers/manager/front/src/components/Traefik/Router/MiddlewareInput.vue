@@ -123,7 +123,7 @@ export default {
     },
     onDrop(evt, newId) {
       const oldId = parseInt(evt.dataTransfer.getData("oldId"));
-      if (newId != oldId && newId != oldId + 1) {
+      if (newId !== oldId && newId !== oldId + 1) {
         array_move(this.form, oldId, newId);
       }
     },

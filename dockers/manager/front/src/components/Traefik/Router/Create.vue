@@ -21,7 +21,7 @@
       </div>
     </q-card-section>
     <q-card-section class="q-pt-none">
-      <component :is="createComponent" ref="create" v-model="form.extra" />
+      <component ref="create" :is="createComponent" v-model="form.extra" />
     </q-card-section>
     <q-card-section>
       <reset-and-save
@@ -48,7 +48,7 @@ export function getCreateComponent(value) {
     tcp: CreateTCP,
     udp: CreateUDP
   };
-  return mapping[value?.protocol] ?? null;
+  return mapping[value?.protocol];
 }
 
 export default {
@@ -57,9 +57,7 @@ export default {
   formDefinition: {
     name: null,
     protocol: null,
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
   apollo: {
     entrypoints: {

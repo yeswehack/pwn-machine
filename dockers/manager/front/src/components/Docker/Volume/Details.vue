@@ -155,7 +155,7 @@ export default {
     async deleteFile(node) {
       await this.$api.docker.deleteFromVolume(this.name, node.fullpath);
       const parent = this.getNode(node.parent);
-      parent.children = parent.children.filter(c => c != node);
+      parent.children = parent.children.filter(c => c !== node);
     },
     toggleDir(node) {
       this.$refs.tree.setExpanded(

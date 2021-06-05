@@ -122,7 +122,7 @@ export default {
     },
     deleteRow(row) {
       if (this.disable) return;
-      this.formData = this.formData.filter(r => r != row);
+      this.formData = this.formData.filter(r => r !== row);
     }
   }
 };

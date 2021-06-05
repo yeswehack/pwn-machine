@@ -75,17 +75,12 @@ export function getCreateComponent(value) {
 export default {
   components: { ResetAndSave },
   mixins: [DeepForm],
-  props: {
-    edit: { type: Boolean, default: false },
-    service: { type: Object, default: null }
-  },
+  props: { service: { type: Object, default: null } },
   formDefinition: {
     name: null,
     protocol: "http",
     type: "loadBalancer",
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
   data() {
     const availableTypes = {
@@ -96,15 +91,11 @@ export default {
     const steps = [
       {
         name: "chooseType",
-        validate: () => {
-          return this.$refs.name.validate();
-        }
+        validate: () => this.$refs.name.validate()
       },
       {
         name: "enterSettings",
-        validate: () => {
-          return this.$refs.create.validate();
-        }
+        validate: () => this.$refs.create.validate()
       }
     ];
     return { availableTypes, panel: "chooseType", steps };
@@ -164,7 +155,7 @@ export default {
         this.$emit("cancel");
       }
     },
-    createService() {
+    submit(done) {
       const protocol = this.form.protocol;
       const type = this.form.type;
       const mutation = api.traefik.services.CREATE_SERVICE[protocol][type];
@@ -177,32 +168,11 @@ export default {
         variables: { input },
         refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
         message: `${this.form.name} created.`
-      }).then(() => this.$emit("ok"));
-    },
-    updateService() {
-      const type = this.form.type;
-      const mutation = api.traefik.services.UPDATE_SERVICE[type];
-      const variables = {
-        nodeId: this.service.nodeId,
-        patch: this.form.extra
-      };
-      this.mutate({
-        mutation,
-        variables,
-        refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
-        message: `${this.service.name} updated.`
-      }).then(() => this.$emit("ok"));
-    },
-    submit(done) {
-      try {
-        if (this.edit) {
-          this.updateService();
-        } else {
-          this.createService();
-        }
-      } finally {
-        done();
-      }
+      })
+        .then(() => {
+          this.$emit("ok");
+        })
+        .finally(done);
     }
   }
 };

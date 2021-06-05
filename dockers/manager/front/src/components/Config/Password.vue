@@ -9,9 +9,9 @@
           <q-separator />
           <q-card-section>
             <q-input
-              required
               label="Current password"
               type="password"
+              :rules="[required('Please enter your current password')]"
               v-model="form.old"
             />
           </q-card-section>
@@ -37,7 +37,7 @@ import PasswordInput from "./PasswordInput.vue";
 export default {
   mixins: [DeepForm],
   formDefinition: {
-    old: null,
+    old: "",
     new: PasswordInput
   },
   methods: {

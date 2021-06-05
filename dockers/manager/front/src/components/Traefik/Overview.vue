@@ -1,5 +1,8 @@
 <template>
-  <base-overview ref='overview' :loading="$apollo.queries.entrypoints.loading" />
+  <base-overview
+    ref="overview"
+    :loading="$apollo.queries.entrypoints.loading"
+  />
 </template>
 
 <script>
@@ -17,7 +20,7 @@ export default {
     }
   },
   methods: {
-    renderOveriew(entrypoints) {
+    renderOverview(entrypoints) {
       cytoscape.use(dagre);
 
       const internet = {
@@ -146,7 +149,7 @@ export default {
   },
   watch: {
     entrypoints(entrypoints) {
-      this.renderOveriew(entrypoints ?? []);
+      this.renderOverview(entrypoints ?? []);
     }
   }
 };

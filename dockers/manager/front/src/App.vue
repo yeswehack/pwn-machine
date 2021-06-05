@@ -19,13 +19,13 @@ export default {
       variables: { token: token ?? "" }
     }).then(response => {
       if (response.isFirstRun) {
-        if (this.$route.name != "firstRun") {
+        if (this.$route.name !== "firstRun") {
           this.$router.push({ name: "firstRun" });
         }
       } else if (response.token) {
         localStorage.setItem("token", response.token.token);
       } else {
-        if (this.$route.name != "login") {
+        if (this.$route.name !== "login") {
           this.$router.push({ name: "login" });
         }
       }

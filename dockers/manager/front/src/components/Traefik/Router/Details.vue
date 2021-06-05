@@ -70,9 +70,6 @@ export default {
         refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
         message: `${this.value.name} updated.`
       }).finally(done);
-    },
-    validate() {
-      return this.$refs.create.validate();
     }
   }
 };

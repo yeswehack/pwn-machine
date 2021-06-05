@@ -17,7 +17,7 @@
       <p>Type the 6 digits displayed by the app:</p>
       <div class="row justify-center">
         <div class="col col-auto">
-          <component ref="otp" :is="formChildren" v-model="form" />
+          <component :is="formChildren" v-model="form" />
         </div>
       </div>
     </q-card-section>
@@ -44,11 +44,6 @@ export default {
     totpSecret() {
       if (!this.totpUri) return;
       return new URL(this.totpUri).searchParams.get("secret");
-    }
-  },
-  methods: {
-    validate() {
-      return this.$refs.otp.validate();
     }
   }
 };

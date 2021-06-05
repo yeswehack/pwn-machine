@@ -9,7 +9,7 @@
         emit-value
         label="Restart policy"
       >
-        <template #after v-if="this.form.name != 'on-failure'">
+        <template #after v-if="this.form.name !== 'on-failure'">
           <help-link
             href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
           />

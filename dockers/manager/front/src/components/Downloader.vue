@@ -42,7 +42,7 @@ export default {
       a.click();
       a.remove();
       setTimeout(() => {
-        this.downloading = this.downloading.filter(d => d != downloadInfo);
+        this.downloading = this.downloading.filter(d => d !== downloadInfo);
         URL.revokeObjectURL(url);
       });
     },

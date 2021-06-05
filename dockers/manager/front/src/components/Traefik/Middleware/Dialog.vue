@@ -22,9 +22,7 @@ import CreateMiddleware from "./Create.vue";
 
 export default {
   components: { CreateMiddleware, BaseDialog },
-  props: {
-    middleware: { type: Object, default: null }
-  },
+  props: { middleware: { type: Object, default: null } },
   data: () => ({ form: {}, subtitle: null }),
   methods: {
     updateSubtitle(t) {

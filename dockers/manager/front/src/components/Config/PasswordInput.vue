@@ -33,13 +33,6 @@ export default {
   methods: {
     matchesNew(v) {
       return v === this.form || "Passwords don't match";
-    },
-    validate() {
-      const validators = [
-        this.$refs.new.validate(),
-        this.$refs.confirm.validate()
-      ];
-      return validators.every(x => x);
     }
   }
 };

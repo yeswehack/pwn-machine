@@ -144,17 +144,16 @@ export default {
         {
           name: "choosePort",
           validate: () => {
-            return [
+            const validators = [
               this.$refs.exposedPort.validate(),
               this.$refs.domainSelect.validate()
-            ].every(x => x);
+            ];
+            return validators.every(x => x);
           }
         },
         {
           name: "checkTraefikConnection",
-          validate: () => {
-            return this.$refs.aliasName.validate();
-          }
+          validate: () => this.$refs.aliasName.validate()
         },
         {
           name: "createService",

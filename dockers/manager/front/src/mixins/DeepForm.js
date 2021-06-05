@@ -36,9 +36,7 @@ function isBasicType(obj) {
 }
 
 export default {
-  props: {
-    value: { default: null }
-  },
+  props: { value: { default: null } },
   isDeepForm: true,
   data: () => ({
     form: {},
@@ -52,7 +50,7 @@ export default {
   },
   methods: {
     renderForm: f => f,
-    required: msg => v => Boolean(v) || msg,
+    required: msg => v => v != false || msg,
     validate: () => true,
     reset() {
       this.form = _.cloneDeep(this.originalForm);
