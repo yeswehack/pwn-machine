@@ -1,46 +1,46 @@
 <template>
   <div>
     <q-input
+      ref="new"
       label="New password"
       type="password"
-      ref="new"
       :rules="[required('Please enter a password')]"
-      v-model="newPassword"
+      v-model="form"
     />
     <q-input
       ref="confirm"
       label="Confirm password"
       type="password"
-      lazy-rules=""
-      :rules="[mustMatch]"
-      v-model="form"
+      :rules="[matchesNew]"
+      reactive-rules
+      v-model="repeated"
     />
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import { required } from "src/utils/validators.js";
 
 export default {
   mixins: [DeepForm],
-  formDefinition: null,
-  data: () => ({
-    required,
-    currentPassword: "",
-    newPassword: "",
-  }),
+  formDefinition: "",
+  data: () => ({ repeated: "" }),
+  watch: {
+    form() {
+      this.repeated = "";
+    }
+  },
   methods: {
-    mustMatch(v) {
-      if (v != this.newPassword) {
-        return "Password doesn't match";
-      }
+    matchesNew(v) {
+      return v === this.form || "Passwords don't match";
     },
     validate() {
-      return [this.$refs.new.validate(), this.$refs.confirm.validate()].every(
-        x => x
-      );
-    },
-  },
+      const validators = [
+        this.$refs.new.validate(),
+        this.$refs.confirm.validate()
+      ];
+      return validators.every(x => x);
+    }
+  }
 };
 </script>

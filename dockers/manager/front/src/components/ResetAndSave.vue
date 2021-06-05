@@ -50,28 +50,25 @@ export default {
   },
   computed: {
     stepIndex() {
-      if (!this.steps) return 0;
-      return this.steps.findIndex(step =>
-        typeof step == "string" ? step == this.step : step.name == this.step
-      );
+      return this.steps?.findIndex(step => (step?.name ?? step) === this.step);
     },
     currentStep() {
-      if (!this.steps) return null;
-      return this.steps.find(step =>
-        typeof step == "string" ? step == this.step : step.name == this.step
-      );
+      return this.steps?.find(step => (step?.name ?? step) === this.step);
     },
     firstStep() {
-      return this.steps ? this.steps[0] : null;
+      return this.steps?.[0];
     },
     lastStep() {
-      return this.steps ? this.steps[this.steps.length - 1] : null;
+      return this.steps?.[this.steps.length - 1];
     },
     isFirstStep() {
-      return this.currentStep == this.firstStep;
+      return this.currentStep === this.firstStep;
     },
     isLastStep() {
-      return this.currentStep == this.lastStep;
+      return this.currentStep === this.lastStep;
+    },
+    isValidStep() {
+      return this.currentStep?.validate?.() ?? true;
     },
     saveColor() {
       return this.isLastStep ? "positive" : "grey";
@@ -80,30 +77,13 @@ export default {
       return this.modified ? "primary" : "grey";
     }
   },
-  data() {
-    return { isRunning: false };
-    validate;
-  },
+  data: () => ({ isRunning: false }),
   methods: {
     emitStep(step) {
-      if (step == null || typeof step == "string") {
-        this.$emit("update:step", step);
-      } else {
-        this.$emit("update:step", step.name);
-      }
-    },
-    validateStep(step) {
-      if (step == null) {
-        return this.validate ? this.validate() : true;
-      }
-      if (typeof step == "string") {
-        return true;
-      } else {
-        return step.validate ? step.validate() : true;
-      }
+      this.$emit("update:step", step?.name ?? step);
     },
     save() {
-      if (this.validateStep(this.currentStep)) {
+      if (this.isValidStep) {
         this.isRunning = true;
         this.$emit("save", () => {
           this.isRunning = false;
@@ -113,12 +93,10 @@ export default {
     reset() {
       this.emitStep(this.firstStep);
       this.$emit("reset");
-      this.$nextTick(() => {
-        this.validateStep(this.currentStep);
-      });
+      this.$nextTick(() => this.isValidStep);
     },
     nextStep() {
-      if (this.validateStep(this.currentStep)) {
+      if (this.isValidStep) {
         this.emitStep(this.steps[this.stepIndex + 1]);
       }
     },
@@ -128,5 +106,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

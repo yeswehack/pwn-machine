@@ -78,6 +78,7 @@
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
+
 export default {
   mixins: [DeepForm],
   formDefinition: null,
@@ -92,9 +93,7 @@ export default {
       update: data => data.dockerContainerByName
     }
   },
-  data() {
-    return { connectTo: null, invalid: false };
-  },
+  data: () => ({ connectTo: null, invalid: false }),
   methods: {
     validate() {
       this.invalid = !this.form;
@@ -199,5 +198,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

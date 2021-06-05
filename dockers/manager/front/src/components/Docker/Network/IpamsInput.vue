@@ -98,6 +98,12 @@ import DeepForm from "src/mixins/DeepForm";
 import HelpLink from "src/components/HelpLink.vue";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 
+const defaultModel = {
+  subnet: null,
+  gateway: null,
+  ipRange: null
+};
+
 export default {
   props: { readonly: { type: Boolean, default: false } },
   components: { HelpLink, BaseGridInput },
@@ -105,36 +111,22 @@ export default {
   formDefinition: [],
   computed: {
     caption() {
-      if (this.form.length == 0) {
+      if (this.form.length === 0) {
         return "Automatic";
       }
       return `${this.form.length} setting(s)`;
     }
   },
-  data() {
-    const model = this.getDefaultModel();
-    return {
-      model
-    };
-  },
+  data: () => ({ model: defaultModel }),
   methods: {
     removeEntry(idx) {
       this.form.splice(idx, 1);
     },
-    getDefaultModel() {
-      return {
-        subnet: null,
-        gateway: null,
-        ipRange: null
-      };
-    },
     addEntry() {
       if (!this.model.subnet) return;
       this.form.unshift(this.model);
-      this.model = this.getDefaultModel();
+      this.model = defaultModel;
     }
   }
 };
 </script>
-
-<style></style>

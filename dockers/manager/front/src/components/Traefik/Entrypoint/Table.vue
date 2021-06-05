@@ -56,19 +56,16 @@ export default {
     });
     const columns = [
       col("protocol"),
-      col("name", {autoWidth: false}),
+      col("name", { autoWidth: false }),
       col("ipport", {
         autoWidth: false,
         label: "Listening on",
         classes: "text-mono",
         field: row => `${row.ip}:${row.port}`
       }),
-      col("usedBy", {autoWidth: false})
+      col("usedBy", { autoWidth: false })
     ];
-
-    return {
-      columns
-    };
+    return { columns };
   },
   methods: {
     getServerStatusColor(row, server) {
@@ -77,7 +74,7 @@ export default {
         return "primary";
       }
 
-      return serverStatus.status == "UP" ? "positive" : "negative";
+      return serverStatus.status === "UP" ? "positive" : "negative";
     },
     getServers(row) {
       return row.loadBalancer?.servers.map(s => s.url) || [];

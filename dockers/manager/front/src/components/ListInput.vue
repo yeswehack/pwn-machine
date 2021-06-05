@@ -47,9 +47,7 @@ export default {
     readonly: { type: Boolean, default: false },
     label: { type: String, default: null }
   },
-  data() {
-    return { model: "", errorMsg: null };
-  },
+  data: () => ({ model: "", errorMsg: null }),
   formDefinition: [],
   methods: {
     addEntry() {
@@ -57,7 +55,7 @@ export default {
         return;
       }
       if (this.objectKey) {
-        this.form.unshift({[this.objectKey] : this.model});
+        this.form.unshift({ [this.objectKey]: this.model });
       } else {
         this.form.unshift(this.model);
       }

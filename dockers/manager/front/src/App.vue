@@ -11,9 +11,7 @@ Dark.set(true);
 
 export default {
   name: "App",
-  data() {
-    return { ready: false };
-  },
+  data: () => ({ ready: false }),
   async created() {
     const token = localStorage.getItem("token");
     this.mutate({
@@ -36,4 +34,3 @@ export default {
   }
 };
 </script>
-<style lang="scss"></style>

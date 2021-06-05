@@ -49,10 +49,11 @@ import ServiceInput from "./ServiceInput.vue";
 import MiddlewareInput from "./MiddlewareInput.vue";
 import TlsInput from "./TlsInput.vue";
 import { isValidRule } from "src/traefik";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
-    rule: 'Host(`example.com`) && PathPrefix(`/`)',
+    rule: "Host(`example.com`) && PathPrefix(`/`)",
     entryPoints: EntrypointInput,
     middlewares: MiddlewareInput,
     priority: null,
@@ -60,11 +61,7 @@ export default {
     tls: TlsInput
   },
   methods: {
-    validateRule(rule) {
-      if (!isValidRule(rule)) {
-        return `Syntax error`;
-      }
-    },
+    validateRule: v => isValidRule(v) || "Syntax error",
     validate() {
       const validators = [
         this.$refs.rule.validate(),
@@ -75,5 +72,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

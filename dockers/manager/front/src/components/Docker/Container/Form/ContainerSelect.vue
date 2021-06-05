@@ -12,14 +12,10 @@
 <script>
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
-import { required } from "src/utils/validators.js";
 
 export default {
   mixins: [DeepForm],
   formDefinition: null,
-  data() {
-    return { required };
-  },
   apollo: {
     containers: {
       query: api.docker.containers.LIST_CONTAINERS,

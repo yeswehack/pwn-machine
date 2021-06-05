@@ -116,6 +116,7 @@ import api from "src/api";
 import { PullImageBus } from "src/eventBus.js";
 import { format } from "quasar";
 import Vue from "vue";
+
 export default {
   props: {
     chooseImage: { type: Boolean, default: false },
@@ -172,13 +173,11 @@ export default {
       col("isOfficial", { label: "Official", align: "center" }),
       col("starCount", { label: "Stars" })
     ];
-
     const tagColumns = [
       col("name", { align: "left" }),
       col("size", { label: "Size", format: v => format.humanStorageSize(v) }),
       col("pull", { label: "" })
     ];
-
     return {
       imageColumns,
       tagColumns,
@@ -206,8 +205,8 @@ export default {
     pullImage(name, close = false) {
       Vue.set(this.loadings, name, true);
       if (close) {
-        this.$emit("ok", name)
-        this.$refs.dialog.hide()
+        this.$emit("ok", name);
+        this.$refs.dialog.hide();
       }
       PullImageBus.$emit("pullImage", {
         name,

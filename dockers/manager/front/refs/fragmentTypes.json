@@ -38,9 +38,8 @@
           { "name": "TraefikHTTPServiceMirroring" },
           { "name": "TraefikHTTPServiceWeighted" },
           { "name": "TraefikTCPServiceLoadBalancer" },
-          { "name": "TraefikTCPServiceWeighted" },
           { "name": "TraefikUDPServiceLoadBalancer" },
-          { "name": "TraefikUDPServiceWeighted" }
+          { "name": "TraefikServiceWeighted" }
         ]
       },
       {

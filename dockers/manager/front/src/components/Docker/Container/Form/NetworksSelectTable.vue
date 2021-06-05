@@ -39,6 +39,7 @@
 <script>
 import EditTable from "src/components/EditTable.vue";
 import DeepForm from "src/mixins/DeepForm.js";
+
 export default {
   mixins: [DeepForm],
   components: { EditTable },
@@ -66,7 +67,7 @@ export default {
   computed: {
     networkNames() {
       return this.$store.getters["docker/networks"]
-        .filter(network => network.Driver == "bridge")
+        .filter(network => network.Driver === "bridge")
         .map(network => network.Name);
     }
   },
@@ -95,5 +96,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

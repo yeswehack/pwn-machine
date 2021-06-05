@@ -73,9 +73,7 @@ export default {
     label: { type: String, default: null },
     readonly: { type: Boolean, default: false }
   },
-  data() {
-    return { model: { key: "", value: "" } };
-  },
+  data: () => ({ model: { key: "", value: "" } }),
   methods: {
     addEntry() {
       this.form.unshift(this.model);

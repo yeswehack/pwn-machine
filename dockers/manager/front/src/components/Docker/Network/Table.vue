@@ -45,7 +45,7 @@
           v-for="(connection, idx) of row.usedBy"
         >
           <q-tooltip
-            v-if="row.name == 'host'"
+            v-if="row.name === 'host'"
             anchor="top middle"
             self="bottom middle"
           >

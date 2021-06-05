@@ -3,7 +3,7 @@
     <q-select
       label="Service"
       ref="service"
-      :rules="[validateService]"
+      :rules="[required('You must select a service.')]"
       v-model="form.service"
       :options="serviceOptions"
     />
@@ -25,6 +25,7 @@
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm.js";
 import MirrorsInput from "./MirrorsInput.vue";
+
 export default {
   mixins: [DeepForm],
   apollo: {
@@ -39,9 +40,6 @@ export default {
     mirrors: MirrorsInput
   },
   methods: {
-    validateService(v) {
-      if (!v) return "You must select a service.";
-    },
     validate() {
       const validators = [
         this.$refs.service.validate(),
@@ -57,5 +55,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

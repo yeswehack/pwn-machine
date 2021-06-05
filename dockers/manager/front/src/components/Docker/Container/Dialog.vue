@@ -14,6 +14,7 @@
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
 import CreateContainer from "./Create.vue";
+
 export default {
   props: {
     container: { type: Object, default: null }
@@ -29,5 +30,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

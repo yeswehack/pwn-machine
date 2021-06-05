@@ -22,6 +22,7 @@
 import DeepForm from "src/mixins/DeepForm";
  import subject from './subject.vue';
  import issuer from './issuer.vue';
+
 export default {
     components: {  subject, issuer },
     mixins: [DeepForm],

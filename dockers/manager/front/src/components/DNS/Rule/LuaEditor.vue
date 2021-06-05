@@ -13,6 +13,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import MonacoEditor from "vue-monaco";
+
 export default {
   components: { MonacoEditor },
   mixins: [DeepForm],

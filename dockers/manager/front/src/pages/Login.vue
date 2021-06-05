@@ -73,9 +73,7 @@ export default {
         value: null
       }
     ];
-    return {
-      expireOptions
-    };
+    return { expireOptions };
   },
   methods: {
     submit() {

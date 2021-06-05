@@ -60,7 +60,6 @@ export default {
       autoWidth: true,
       ...opt
     });
-
     const columns = [
       field("zone"),
       field("name"),
@@ -109,7 +108,7 @@ export default {
             variables: { nodeId: rule.nodeId },
             refetchQueries: [{ query: api.dns.rules.LIST_RULES }],
             message: `(${rule.type}) ${rule.name} deleted`
-          })
+          });
         });
     },
     isEnabled(r) {

@@ -52,7 +52,7 @@
         <volume-link
           :name="name"
           :key="name"
-          v-for="{ name } of row.mounts.filter(n => n.type == 'volume')"
+          v-for="{ name } of row.mounts.filter(n => n.type === 'volume')"
         />
       </div>
     </template>

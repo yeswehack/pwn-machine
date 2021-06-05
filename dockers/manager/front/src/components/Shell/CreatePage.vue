@@ -14,9 +14,8 @@
 
 <script>
 import CreateShell from "./Create.vue";
+
 export default {
   components: { CreateShell }
 };
 </script>
-
-<style></style>

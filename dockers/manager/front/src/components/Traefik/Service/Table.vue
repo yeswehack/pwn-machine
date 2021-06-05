@@ -73,10 +73,7 @@ export default {
       col("usedBy", { label: "Connected Routers", autoWidth: false }),
       col("enabled", { label: "Status" })
     ];
-
-    return {
-      columns
-    };
+    return { columns };
   },
   methods: {
     extraForm(f) {

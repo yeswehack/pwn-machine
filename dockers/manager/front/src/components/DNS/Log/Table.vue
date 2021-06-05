@@ -21,11 +21,10 @@
 
 <script>
 import LogList from "src/components/DNS/Log/LogList.vue";
+
 export default {
   components: { LogList },
-  data() {
-    return { domain: "*", type: "*" };
-  }
+  data: () => ({ domain: "*", type: "*" })
 };
 </script>
 <style lang="scss" scoped>

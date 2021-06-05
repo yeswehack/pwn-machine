@@ -19,14 +19,13 @@
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
 import CreateMiddleware from "./Create.vue";
+
 export default {
   components: { CreateMiddleware, BaseDialog },
   props: {
     middleware: { type: Object, default: null }
   },
-  data() {
-    return { form: {}, subtitle: null };
-  },
+  data: () => ({ form: {}, subtitle: null }),
   methods: {
     updateSubtitle(t) {
       this.subtitle = t;

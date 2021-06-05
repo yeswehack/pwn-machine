@@ -105,16 +105,14 @@ export default {
   props: {
     name: String
   },
-  data() {
-    return {
-      files: [],
-      loading: true,
-      selected: [],
-      expanded: [],
-      splitterModel: 20,
-      fileInfo: new Map()
-    };
-  },
+  data: () => ({
+    files: [],
+    loading: true,
+    selected: [],
+    expanded: [],
+    splitterModel: 20,
+    fileInfo: new Map()
+  }),
   mounted() {
     this.fetchFiles().then(files => {
       const root = {

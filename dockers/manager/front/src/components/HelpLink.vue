@@ -8,8 +8,6 @@
 export default {
   props: {
     href: { type: String, required: true }
-  },
+  }
 };
 </script>
-
-<style></style>

@@ -83,9 +83,7 @@ export default {
       return (this.services ?? []).map(s => s.name);
     }
   },
-  data() {
-    return { model: { name: null, weight: null }, errorMsg: "" };
-  },
+  data: () => ({ model: { name: null, weight: null }, errorMsg: "" }),
   methods: {
     addEntry() {
       if (!this.model.name || !Number.isFinite(this.model.weight)) return;
@@ -97,7 +95,7 @@ export default {
     },
     validate() {
       this.errorMsg = "";
-      if (!Array.isArray(this.form) || this.form.length == 0) {
+      if (!Array.isArray(this.form) || this.form.length === 0) {
         this.errorMsg = "You must choose at least one service";
         return false;
       }

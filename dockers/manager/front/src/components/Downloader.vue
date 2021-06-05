@@ -11,7 +11,7 @@
           show-value
           instant-feedback
           :value="downloadInfo.progress"
-          :color="downloadInfo.progress == 100 ? 'green' : 'lime'"
+          :color="downloadInfo.progress === 100 ? 'green' : 'lime'"
           class="q-ma-sm q-py-none"
         />
         {{ downloadInfo.name }}
@@ -22,15 +22,14 @@
 
 <script>
 import { DownloaderBus } from "src/eventBus.js";
+
 export default {
   created() {
     DownloaderBus.$on("startDownload", ({ volume, path }) => {
       this.downloadFile(volume, path);
     });
   },
-  data() {
-    return { value: 0, downloading: [] };
-  },
+  data: () => ({ value: 0, downloading: [] }),
   methods: {
     downloadBlob(blob, downloadInfo) {
       const url = URL.createObjectURL(blob);

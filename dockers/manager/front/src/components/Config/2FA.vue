@@ -56,7 +56,7 @@ export default {
   data: () => ({ totp: "" }),
   computed: {
     totpSecret() {
-      if (!this.totpUri) return undefined;
+      if (!this.totpUri) return;
       return new URL(this.totpUri).searchParams.get("secret");
     }
   },

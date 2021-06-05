@@ -58,7 +58,7 @@
           </div>
         </q-item-section>
       </q-item>
-      <q-item v-if="form.length == 0">
+      <q-item v-if="form.length === 0">
         <q-item-section>
           ...
         </q-item-section>
@@ -75,9 +75,7 @@ export default {
   props: {
     label: { type: String, default: "Headers" }
   },
-  data() {
-    return { model: { key: "", value: "" } };
-  },
+  data: () => ({ model: { key: "", value: "" } }),
   formDefinition: [],
   methods: {
     addEntry() {

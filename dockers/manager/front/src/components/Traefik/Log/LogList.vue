@@ -165,10 +165,7 @@ export default {
         field("serviceName", { label: "Service" })
       ];
     }
-    return {
-      pagination,
-      columns
-    };
+    return { pagination, columns };
   },
   mounted() {
     const rowHeight = 28.5;
@@ -198,4 +195,3 @@ export default {
   }
 };
 </script>
-

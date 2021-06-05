@@ -31,14 +31,6 @@ export function mapGetters(...names) {
   return getters;
 }
 
-function instanciateComponent(comp, props = {}) {
-  const ComponentClass = Vue.extend(comp);
-  const instance = new ComponentClass({
-    propsData: props
-  });
-  return instance;
-}
-
 function isBasicType(obj) {
   return obj === null || ["number", "string", "boolean"].includes(typeof obj);
 }
@@ -48,25 +40,20 @@ export default {
     value: { default: null }
   },
   isDeepForm: true,
-  data() {
-    return {
-      form: {},
-      originalForm: {},
-      formChildren: {},
-      internalEdit: false
-    };
-  },
+  data: () => ({
+    form: {},
+    originalForm: {},
+    formChildren: {},
+    internalEdit: false
+  }),
   created() {
     this.buildOriginalForm();
     this.reset();
   },
   methods: {
-    renderForm(f) {
-      return f;
-    },
-    validate(){
-      return true
-    },
+    renderForm: f => f,
+    required: msg => v => Boolean(v) || msg,
+    validate: () => true,
     reset() {
       this.form = _.cloneDeep(this.originalForm);
     },
@@ -74,7 +61,8 @@ export default {
       this.$emit("submit", this.form);
     },
     instanciateSubForm(sub, value) {
-      return instanciateComponent(sub, { value });
+      const ComponentClass = Vue.extend(sub);
+      return new ComponentClass({ propsData: { value } });
     },
     buildOriginalForm() {
       const definition = this.$options.formDefinition;
@@ -85,7 +73,10 @@ export default {
         this.originalForm = value ? [...value] : [...definition];
       } else if (isDeepForm(definition)) {
         this.formChildren = definition;
-        this.originalForm = this.instanciateSubForm(definition, value).originalForm;
+        this.originalForm = this.instanciateSubForm(
+          definition,
+          value
+        ).originalForm;
       } else {
         const originalForm = {};
         for (let [name, defaultValue] of Object.entries(definition)) {

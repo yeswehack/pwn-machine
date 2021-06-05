@@ -55,23 +55,22 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import BaseGridInput from "src/components/BaseGridInput.vue";
+
 export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
   props: {
     label: { type: String, default: null }
   },
-  data() {
-    return { model: { content: null, enabled: true }, error: null };
-  },
+  data: () => ({ model: { content: null, enabled: true }, error: null }),
   formDefinition: [],
   methods: {
-    validate(){
-      if (this.form.length < 1){
-        this.error = "You need at least one record."
-        return false
+    validate() {
+      if (this.form.length < 1) {
+        this.error = "You need at least one record.";
+        return false;
       }
-      return true
+      return true;
     },
     addEntry() {
       if (!this.model.content) return;

@@ -3,7 +3,7 @@
     ref="select"
     v-model="form"
     clearable
-    :rules="[nonEmptyArray]"
+    :rules="[required('You must select a service.')]"
     :options="serviceNames"
     label="Service"
   >
@@ -25,6 +25,7 @@
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
 import ServiceDialog from "../Service/Dialog.vue";
+
 export default {
   props: { protocol: { type: String, default: null } },
   mixins: [DeepForm],
@@ -44,16 +45,15 @@ export default {
     }
   },
   methods: {
-    nonEmptyArray(val) {
-      if (val === null || val === undefined || val.length == 0) {
-        return "You must select a service.";
-      }
-    },
     createService() {
-      this.$q.dialog({
-        component: ServiceDialog,
-        parent: this
-      });
+      this.$q
+        .dialog({
+          component: ServiceDialog,
+          parent: this
+        })
+        .onOk(() => {
+          this.form = "";
+        });
     },
     validate() {
       return this.$refs.select.validate();
@@ -61,5 +61,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

@@ -22,7 +22,7 @@ import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
 
-const WS_URL = `${window.location.protocol == "https:" ? "wss" : "ws"}://${
+const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${
   window.location.host
 }/ws/shell`;
 
@@ -140,10 +140,7 @@ export default {
   props: {
     id: { type: String, required: true }
   },
-  data() {
-    const shell = new Shell();
-    return { shell, disconnecting: false };
-  },
+  data: () => ({ shell: new Shell(), disconnecting: false }),
   methods: {
     onResize(size) {
       this.shell.fit();
@@ -155,7 +152,7 @@ export default {
         variables: { id: this.id },
         refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
       }).then(() => {
-        this.$router.push({name: "shellNew"})
+        this.$router.push({ name: "shellNew" });
       });
     },
     disconnect() {

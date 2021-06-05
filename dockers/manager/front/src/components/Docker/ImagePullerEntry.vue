@@ -26,7 +26,11 @@
           "
         />
       </div>
-      <div class="col ellipsis" style="max-width: 600px; overflow: hidden" v-else>
+      <div
+        class="col ellipsis"
+        style="max-width: 600px; overflow: hidden"
+        v-else
+      >
         <span class="text-mono">{{ lastLogs[id].status }}</span>
       </div>
     </div>
@@ -36,13 +40,12 @@
 <script>
 import api from "src/api";
 import Vue from "vue";
+
 export default {
   props: {
-    pull: { type: Object, required: true },
+    pull: { type: Object, required: true }
   },
-  data() {
-    return { logIds: [], lastLogs: {}, done: false };
-  },
+  data: () => ({ logIds: [], lastLogs: {}, done: false }),
   apollo: {
     $subscribe: {
       pullImageProgress: {
@@ -54,7 +57,7 @@ export default {
           const log = data.pullImageProgress;
           if (!log) {
             this.done = true;
-            this.pull.done?.()  
+            this.pull.done?.();
             return;
           }
           const id = log.id ?? "info-" + Math.random().toString();
@@ -69,5 +72,3 @@ export default {
   methods: {}
 };
 </script>
-
-<style></style>

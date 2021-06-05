@@ -7,7 +7,7 @@
             ref="name"
             v-model="form.name"
             autofocus
-            :rules="[validateName]"
+            :rules="[required('You must enter a name.')]"
             label="Name"
           />
         </div>
@@ -71,10 +71,7 @@ export default {
       update: data => data.traefikServices
     }
   },
-  data() {
-    const protocols = ["http", "tcp", "udp"];
-    return { protocols };
-  },
+  data: () => ({ protocols: ["http", "tcp", "udp"] }),
   computed: {
     currentProtocol() {
       return this.form.protocol;
@@ -83,9 +80,9 @@ export default {
       return getCreateComponent(this.form);
     },
     relevantentrypoints() {
-      const protocol = this.form.protocol == "udp" ? "udp" : "tcp";
+      const protocol = this.form.protocol === "udp" ? "udp" : "tcp";
       const entrypoints = (this.entrypoints || []).filter(
-        ep => ep.protocol == protocol
+        ep => ep.protocol === protocol
       );
       return entrypoints.map(ep => ({
         label: ep.name,
@@ -94,7 +91,7 @@ export default {
     },
     relevantServices() {
       const services = (this.services || []).filter(
-        s => s.protocol == this.form.protocol
+        s => s.protocol === this.form.protocol
       );
       return services.map(s => ({
         label: s.name,
@@ -129,11 +126,6 @@ export default {
           this.$emit("ok");
         })
         .finally(done);
-    },
-    validateName(name) {
-      if (!name) {
-        return "You must enter a name.";
-      }
     },
     validate() {
       const validators = [

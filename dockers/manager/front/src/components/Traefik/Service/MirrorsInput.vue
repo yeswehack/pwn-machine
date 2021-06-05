@@ -83,9 +83,7 @@ export default {
       return (this.services ?? []).map(s => s.name);
     }
   },
-  data() {
-    return { model: { name: null, percent: null }, errorMsg: "" };
-  },
+  data: () => ({ model: { name: null, percent: null }, errorMsg: "" }),
   methods: {
     addEntry() {
       if (!this.model.name || !Number.isFinite(this.model.percent)) return;
@@ -97,7 +95,7 @@ export default {
     },
     validate() {
       this.errorMsg = "";
-      if (!Array.isArray(this.form) || this.form.length == 0) {
+      if (!Array.isArray(this.form) || this.form.length === 0) {
         this.errorMsg = "You must create at least one mirror.";
         return false;
       }

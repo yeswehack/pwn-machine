@@ -30,6 +30,7 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
+
 export default {
   mixins: [DeepForm],
   props: {
@@ -38,10 +39,7 @@ export default {
       default: () => true
     }
   },
-  data() {
-    const options = [];
-    return { options };
-  },
+  data: () => ({ options: [] }),
   computed: {
     volumeNames() {
       return this.$store.getters["docker/volumes"]
