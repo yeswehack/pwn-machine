@@ -8,7 +8,7 @@
     label="Image"
     use-input
     emit-value
-    :rules="[notEmpty]"
+    :rules="[required('Image is required')]"
     map-options
     @filter="filterFn"
     :readonly="readonly"
@@ -31,13 +31,12 @@
 import api from "src/api";
 import ImageSearchVue from "./ImageSearch.vue";
 import DeepForm from "src/mixins/DeepForm";
+
 export default {
   props: { readonly: { type: Boolean, default: false } },
   mixins: [DeepForm],
   formDefinition: null,
-  data() {
-    return { filter: null };
-  },
+  data: () => ({ filter: null }),
   apollo: {
     images: {
       query: api.docker.images.LIST_IMAGES,
@@ -55,11 +54,6 @@ export default {
     filterFn(val, update) {
       this.filter = val.toLowerCase();
       update();
-    },
-    notEmpty(v) {
-      if (!v) {
-        return "Image is required";
-      }
     },
     update(v) {
       this.$emit("input", v?.value ?? null);

@@ -20,7 +20,7 @@
           <template #inputs>
             <domain-input
               ref="dnsdomain"
-              :disable="certResolver == null"
+              :disable="certResolver === null"
               v-model="domain"
               @input="addEntry"
               v-if="dnsResolver"
@@ -28,7 +28,7 @@
             <q-input
               label="Domain"
               @keypress.enter="addEntry"
-              :disable="certResolver == null"
+              :disable="certResolver === null"
               v-model="domain"
               v-else
             />
@@ -49,6 +49,7 @@ import DeepForm from "src/mixins/DeepForm";
 import { mapGetters } from "src/mixins/DeepForm";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import DomainInput from "src/components/DNS/DomainInput.vue";
+
 export default {
   components: { BaseGridInput, DomainInput },
   mixins: [DeepForm],
@@ -107,5 +108,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

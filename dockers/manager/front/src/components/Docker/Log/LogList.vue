@@ -3,12 +3,16 @@
     <q-infinite-scroll :offset="200" @load="onLoad" reverse>
       <div class="docker-log-list">
         <template v-for="(log, idx) of items">
-          <div class="text-mono text-no-wrap" :key="`${idx}-date`">{{ formatDate(log.date) }}</div>
+          <div class="text-mono text-no-wrap" :key="`${idx}-date`">
+            {{ formatDate(log.date) }}
+          </div>
           <div
             class="text-mono text-no-wrap"
             :key="`${idx}-name`"
             :style="{ color: colorHash.hex(log.containerName) }"
-          >{{ log.containerName }}</div>
+          >
+            {{ log.containerName }}
+          </div>
           <div
             :key="`${idx}-msg`"
             class="text-mono text-no-wrap"
@@ -71,7 +75,7 @@ export default {
         updateQuery: (previousResult, { fetchMoreResult }) => {
           const logs = fetchMoreResult.dockerLogs.result;
           this.items.splice(0, 0, ...logs.reverse());
-          done(logs.length == 0);
+          done(logs.length === 0);
         }
       });
     },

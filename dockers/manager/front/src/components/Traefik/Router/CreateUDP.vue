@@ -18,6 +18,7 @@
 import DeepForm from "src/mixins/DeepForm";
 import EntrypointInput from "./EntrypointInput.vue";
 import ServiceInput from "./ServiceInput.vue";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -37,5 +38,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

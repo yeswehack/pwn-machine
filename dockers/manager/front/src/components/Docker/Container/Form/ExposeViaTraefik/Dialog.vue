@@ -36,7 +36,7 @@
       <q-tab-panel name="createService">
         <q-input
           ref="serviceName"
-          :rules="[validateServiceName]"
+          :rules="[required('Please enter a valid service name.')]"
           v-model="form.serviceName"
           label="name"
         />
@@ -49,7 +49,7 @@
       <q-tab-panel name="createRouter">
         <q-input
           ref="routerName"
-          :rules="[validateRouterName]"
+          :rules="[required('Please enter a valid router name.')]"
           v-model="form.routerName"
           label="name"
         />
@@ -64,9 +64,7 @@
           Summary
         </div>
         <div class="row">
-          <div class="col">
-            Expose port {{ form.exposedPort }}
-          </div>
+          <div class="col">Expose port {{ form.exposedPort }}</div>
         </div>
         <div class="row">
           <div class="col">Create service {{ form.serviceName }}</div>
@@ -107,7 +105,6 @@ import ExposedPortInput from "./ExposedPortInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DomainInput from "src/components/DNS/DomainInput.vue";
 
-
 export default {
   components: { BaseDialog, ResetAndSave, CheckTraefikConnection },
   mixins: [DeepForm],
@@ -132,12 +129,7 @@ export default {
       update: data => data.dockerContainerById
     }
   },
-  data() {
-    return {
-      step: 1,
-      panel: "choosePort"
-    };
-  },
+  data: () => ({ step: 1, panel: "choosePort" }),
   computed: {
     ...mapGetters(
       "exposedPort",
@@ -190,23 +182,12 @@ export default {
     },
     portOptions() {
       return (this.container?.ports ?? [])
-        .filter(p => p.protocol == "TCP")
+        .filter(p => p.protocol === "TCP")
         .map(p => p.containerPort);
     }
   },
   methods: {
-    validateServiceName(v) {
-      if (!v) return "Please enter a valid service name.";
-    },
-    validateRouterName(v) {
-      if (!v) return "Please enter a valid routter name.";
-    },
-    required(v) {
-      if (!v) {
-        return "This field is required";
-      }
-    },
-    async submit(done) {
+    submit(done) {
       const serviceMutation =
         api.traefik.services.CREATE_SERVICE.http.loadBalancer;
       const serviceInput = {
@@ -271,9 +252,7 @@ export default {
     },
     exposedPort() {
       this.updateServiceDefault();
-    },
+    }
   }
 };
 </script>
-
-<style></style>

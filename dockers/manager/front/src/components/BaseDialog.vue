@@ -4,7 +4,7 @@
       <q-card-section>
         <div class="row q-gutter-sm items-center">
           <div class="col col-auto title text-h6  ">
-            {{ title }} {{subtitle ? ':': ''}}
+            {{ title }} {{ subtitle ? ":" : "" }}
           </div>
           <div class="col col-auto text-h6 subtitle">
             {{ subtitle }}
@@ -22,13 +22,14 @@
 
 <script>
 import HelpLink from "./HelpLink.vue";
+
 export default {
   name: "BaseDialog",
   components: { HelpLink },
   props: {
     title: { type: String, required: true },
     subtitle: { type: String, default: null },
-    width: {type: Number, default: 700},
+    width: { type: Number, default: 700 },
     help: { type: String, default: null }
   },
   data() {

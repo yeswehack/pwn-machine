@@ -16,7 +16,7 @@
         </template>
       </q-select>
     </div>
-    <div class="col col-3 q-ml-sm" v-if="this.form.name == 'on-failure'">
+    <div class="col col-3 q-ml-sm" v-if="this.form.name === 'on-failure'">
       <q-input type="number" v-model="form.maximumRetryCount" label="Max-retry">
         <template #after>
           <help-link
@@ -31,6 +31,7 @@
 <script>
 import HelpLink from "src/components/HelpLink";
 import DeepForm from "src/mixins/DeepForm";
+
 export default {
   components: { HelpLink },
   mixins: [DeepForm],
@@ -64,5 +65,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

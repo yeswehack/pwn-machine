@@ -1,45 +1,36 @@
 <template>
   <q-input
     ref="otp"
-    borderless
     outlined
     label="OTP"
-    :rules="[validateOtp]"
-    input-class="text-mono text-h6 otp-input"
+    input-class="text-mono text-h5 text-center otp-input q-my-sm"
     autogrow
     mask="######"
     fill-mask
-    lazy-rules
+    :rules="[isTotp]"
     v-model="form"
   />
 </template>
 
 <script>
-import QrCode from "qrcode.vue";
-import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
   mixins: [DeepForm],
-  formDefinition: null,
+  formDefinition: "",
   methods: {
-    validateOtp(v) {
-      if (!(v ?? "").match(/^\d{6}$/)) {
-        return "Invalid format";
-      }
-    },
+    isTotp: v => +v || "Code must be 6 digits long",
     validate() {
       return this.$refs.otp.validate();
     }
   }
 };
 </script>
+
 <style>
 .otp-input {
-  font-size: 1.8em;
-  --spacing: 0.3em;
-  margin-left: 0.4em;
-  width: calc(6ch + (var(--spacing) * 7));
-  letter-spacing: var(--spacing);
+  width: 10ch;
+  text-indent: 0.5ch;
+  letter-spacing: 0.5ch;
 }
 </style>

@@ -54,7 +54,6 @@ import LabelInput from "../LabelInput.vue";
 import IpamsInput from "./IpamsInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
-import { required } from "src/utils/validators";
 
 export default {
   props: { readonly: { type: Boolean, default: false } },
@@ -65,9 +64,6 @@ export default {
     name: null,
     ipams: IpamsInput,
     labels: LabelInput
-  },
-  data() {
-    return { required };
   },
   methods: {
     validate() {

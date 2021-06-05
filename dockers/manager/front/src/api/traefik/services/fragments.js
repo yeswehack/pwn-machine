@@ -15,6 +15,7 @@ export const HEALTH_CHECK_FRAGMENT = gql`
     timeout
   }
 `;
+
 export const STICKY_FRAGMENT = gql`
   fragment StickyFragment on TraefikHTTPSticky {
     cookie {
@@ -89,6 +90,7 @@ export const TCP_LOADBALANCER_FRAGMENT = gql`
     }
   }
 `;
+
 export const UDP_LOADBALANCER_FRAGMENT = gql`
   fragment UdpLoadbalancerFragment on TraefikUDPServiceLoadBalancer {
     loadBalancer {
@@ -109,6 +111,7 @@ export const WEIGHTED_FRAGMENT = gql`
     }
   }
 `;
+
 export const SERVICE_FRAGMENT = gql`
   fragment ServiceFragment on TraefikService {
     name

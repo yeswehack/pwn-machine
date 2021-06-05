@@ -19,6 +19,7 @@
 <script>
 import Vue from "vue";
 import { UploaderBus } from "src/eventBus.js";
+
 export default {
   props: {},
   created() {
@@ -26,15 +27,14 @@ export default {
       this.startUpload(title, url);
     });
   },
-  data() {
-    return { isOpen: false, url: null, title: "Upload" };
-  },
+  data: () => ({ isOpen: false, url: null, title: "Upload" }),
   computed: {
-    headers() {
-      return [
-        { name: "Authorization", value: `Bearer ` }
-      ];
-    }
+    headers: () => [
+      {
+        name: "Authorization",
+        value: `Bearer ${localStorage.getItem("token")}`
+      }
+    ]
   },
   methods: {
     startUpload(title, url) {

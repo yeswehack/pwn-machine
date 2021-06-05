@@ -34,15 +34,25 @@
           <template #entry="{entry}">
             <div class="ellipsis">
               {{ entry.key }}
-              <q-popup-edit v-model="entry.key" >
-                <q-input :readonly="readonly" v-model.number="entry.key" dense autofocus />
+              <q-popup-edit v-model="entry.key">
+                <q-input
+                  :readonly="readonly"
+                  v-model.number="entry.key"
+                  dense
+                  autofocus
+                />
               </q-popup-edit>
             </div>
             <div class="col ellipsis">
               {{ entry.value }}
 
               <q-popup-edit v-model="entry.value">
-                <q-input :readonly="readonly" v-model.number="entry.value" dense autofocus />
+                <q-input
+                  :readonly="readonly"
+                  v-model.number="entry.value"
+                  dense
+                  autofocus
+                />
               </q-popup-edit>
             </div>
           </template>
@@ -63,9 +73,7 @@ export default {
     label: { type: String, default: null },
     readonly: { type: Boolean, default: false }
   },
-  data() {
-    return { model: { key: "", value: "" } };
-  },
+  data: () => ({ model: { key: "", value: "" } }),
   formDefinition: [],
   methods: {
     addEntry() {

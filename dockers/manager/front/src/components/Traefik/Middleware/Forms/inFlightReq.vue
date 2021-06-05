@@ -9,6 +9,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
  import sourceCriterion from './sourceCriterion.vue';
+
 export default {
     props: {
         hideTitle: {type: Boolean, default: false}

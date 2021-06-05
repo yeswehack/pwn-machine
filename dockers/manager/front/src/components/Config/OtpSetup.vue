@@ -14,12 +14,10 @@
     </q-card-section>
     <q-separator />
     <q-card-section>
-      <p>
-        Type the 6 digits displayed by the app:
-      </p>
+      <p>Type the 6 digits displayed by the app:</p>
       <div class="row justify-center">
         <div class="col col-auto">
-          <component ref="otp" :is="formChildren" v-model="form"/>
+          <component ref="otp" :is="formChildren" v-model="form" />
         </div>
       </div>
     </q-card-section>
@@ -29,8 +27,8 @@
 <script>
 import QrCode from "qrcode.vue";
 import api from "src/api";
-import DeepForm from 'src/mixins/DeepForm';
-import OtpInput from './OtpInput.vue';
+import DeepForm from "src/mixins/DeepForm";
+import OtpInput from "./OtpInput.vue";
 
 export default {
   mixins: [DeepForm],
@@ -44,14 +42,14 @@ export default {
   },
   computed: {
     totpSecret() {
-      if (!this.totpUri) return undefined;
+      if (!this.totpUri) return;
       return new URL(this.totpUri).searchParams.get("secret");
     }
   },
   methods: {
     validate() {
       return this.$refs.otp.validate();
-    },
+    }
   }
 };
 </script>

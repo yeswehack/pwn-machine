@@ -15,14 +15,14 @@
             </div>
             <q-space />
             <div class="col-auto q-gutter-sm">
-                <q-btn
-                  round
-                  color="grey"
-                  icon="eva-globe-outline"
-                  title="Expose via traefik"
-                  @click="exposeContainer"
-                />
-              <template v-if="status == 'running'">
+              <q-btn
+                round
+                color="grey"
+                icon="eva-globe-outline"
+                title="Expose via traefik"
+                @click="exposeContainer"
+              />
+              <template v-if="status === 'running'">
                 <q-btn
                   round
                   color="grey"
@@ -55,7 +55,7 @@
                   @click="pressButton('stop')"
                 />
               </template>
-              <template v-else-if="status == 'paused'">
+              <template v-else-if="status === 'paused'">
                 <q-btn
                   :loading="btnLoad.unpause"
                   round
@@ -138,7 +138,7 @@ import ShellDialog from "src/components/Shell/Dialog.vue";
 import LogList from "src/components/Docker/Log/LogList.vue";
 import LogCard from "src/components/LogCard.vue";
 import ConnectNetworkInput from "src/components/Docker/ConnectNetworkInput.vue";
-import ExposeContainerDialog from "src/components/Docker/Container/Form/ExposeViaTraefik/Dialog.vue"
+import ExposeContainerDialog from "src/components/Docker/Container/Form/ExposeViaTraefik/Dialog.vue";
 
 export default {
   components: {

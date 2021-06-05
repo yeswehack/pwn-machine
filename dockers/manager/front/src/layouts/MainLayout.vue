@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-toolbar-title shrink class="q-mr-sm">
           <q-avatar class="q-mr-sm">
-            <img src="/icons/logo.svg" class="logo"/>
+            <img src="/icons/logo.svg" class="logo" />
           </q-avatar>
           Pwn Machine
         </q-toolbar-title>
@@ -45,6 +45,7 @@
 import Downloader from "src/components/Downloader.vue";
 import Uploader from "src/components/Uploader.vue";
 import ImagePuller from "src/components/Docker/ImagePuller.vue";
+
 export default {
   name: "MainLayout",
   components: { Downloader, Uploader, ImagePuller },
@@ -56,13 +57,11 @@ export default {
       return false;
     }
   },
-  data() {
-    return { loading: false };
-  },
+  data: () => ({ loading: false }),
   methods: {
-    logout(){
-      localStorage.removeItem("token")
-      window.location.reload()
+    logout() {
+      localStorage.removeItem("token");
+      window.location.reload();
     },
     async refresh_() {
       this.loading = true;

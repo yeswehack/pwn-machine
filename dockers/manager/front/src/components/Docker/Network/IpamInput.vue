@@ -51,6 +51,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import BaseGridInput from "src/components/BaseGridInput.vue";
+
 export default {
   components: { BaseGridInput },
   props: { readonly: { type: Boolean, default: false } },
@@ -62,5 +63,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

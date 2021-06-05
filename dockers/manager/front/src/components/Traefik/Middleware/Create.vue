@@ -2,13 +2,18 @@
   <q-form @submit="submit">
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
-        <q-input v-model="form.name" required label="Name" :rule="[nonEmpty]" />
+        <q-input
+          v-model="form.name"
+          required
+          label="Name"
+          :rule="[required('You must make a selection.')]"
+        />
         <q-select
           v-model="form.type"
           use-input
           input-debounce="0"
           :options="middlewaresTypes"
-          :rules="[nonEmptyArray]"
+          :rules="[required('You must make a selection.')]"
           label="Type"
         />
       </q-tab-panel>
@@ -54,22 +59,19 @@ export default {
     middleware: { type: Object, default: null }
   },
   data() {
-    const loading = false;
     const originalForm = {
       name: this.middleware?.name.split("@")[0],
       type: this.middleware?.type,
       extra: this.middleware ? this.middleware[this.middleware.type] : {}
     };
     const form = extend(true, {}, originalForm);
-
-    const cache = {};
     const middlewaresTypes = Object.keys(forms);
     return {
       form,
       middlewaresTypes,
-      cache,
+      cache: {},
       originalForm,
-      loading,
+      loading: false,
       panel: "chooseType"
     };
   },
@@ -95,16 +97,6 @@ export default {
     }
   },
   methods: {
-    nonEmpty(val) {
-      if (val === null || val === undefined) {
-        return "You must make a selection.";
-      }
-    },
-    nonEmptyArray(val) {
-      if (val === null || val === undefined || val.length == 0) {
-        return "You must make a selection.";
-      }
-    },
     async createMiddleware() {
       this.loading = true;
       const type = this.form.type;

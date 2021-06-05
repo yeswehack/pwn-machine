@@ -23,11 +23,10 @@
 <script>
 import LogList from "src/components/Docker/Log/LogList.vue";
 import api from "src/api";
+
 export default {
   components: { LogList },
-  data() {
-    return { selectedContainers: [] };
-  },
+  data: () => ({ selectedContainers: [] }),
   apollo: {
     dockerContainers: {
       query: api.docker.containers.LIST_CONTAINERS
@@ -42,8 +41,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-.docker-log-table{
+.docker-log-table {
   width: 100%;
   display: grid;
   grid-template-rows: auto 1fr;

@@ -73,7 +73,6 @@ export default {
       autoWidth: true,
       ...opt
     });
-
     const soaField = (name, opt = {}) =>
       field(name, { field: r => r.soa[name], ...opt });
     const columns = [
@@ -86,12 +85,7 @@ export default {
       soaField("expire"),
       soaField("ttl", { label: "TTL" })
     ];
-
-    return {
-      columns
-    };
+    return { columns };
   }
 };
 </script>
-
-<style></style>

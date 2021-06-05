@@ -5,7 +5,7 @@
         <q-input
           v-model="form.name"
           ref="name"
-          :rules="[validateName]"
+          :rules="[required('You must enter a name.')]"
           label="Name"
         />
         <q-select
@@ -93,7 +93,6 @@ export default {
       tcp: ["loadBalancer", "weighted"],
       udp: ["loadBalancer", "weighted"]
     };
-
     const steps = [
       {
         name: "chooseType",
@@ -108,7 +107,7 @@ export default {
         }
       }
     ];
-    return { loading: false, availableTypes, panel: "chooseType", steps };
+    return { availableTypes, panel: "chooseType", steps };
   },
   watch: {
     currentProtocol(proto, oldProto) {
@@ -116,8 +115,7 @@ export default {
         ? this.availableTypes[oldProto].indexOf(this.form.type)
         : 0;
       const availableTypes = this.availableTypes[proto];
-      this.form.type =
-        availableTypes[idx > availableTypes.length - 1 ? 0 : idx];
+      this.form.type = availableTypes[idx] ?? availableTypes[0];
       this.changeSubtitle();
     },
     currentType(v, old) {
@@ -141,10 +139,10 @@ export default {
       return getCreateComponent(this.form);
     },
     okBtnLabel() {
-      return this.panel == "chooseType" ? "Next" : "Create";
+      return this.panel === "chooseType" ? "Next" : "Create";
     },
     cancelBtnLabel() {
-      return this.panel == "chooseType" ? "Cancel" : "Back";
+      return this.panel === "chooseType" ? "Cancel" : "Back";
     }
   },
   methods: {
@@ -155,20 +153,15 @@ export default {
       );
     },
     okBtnClick() {
-      if (this.panel == "chooseType") {
+      if (this.panel === "chooseType") {
         this.panel = "enterSettings";
       }
     },
     cancelBtnClick() {
-      if (this.panel == "enterSettings") {
+      if (this.panel === "enterSettings") {
         this.panel = "chooseType";
       } else {
         this.$emit("cancel");
-      }
-    },
-    validateName(val) {
-      if (!val) {
-        return "You must enter a name.";
       }
     },
     createService() {

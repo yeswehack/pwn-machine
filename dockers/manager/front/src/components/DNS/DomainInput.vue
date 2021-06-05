@@ -16,7 +16,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
-import { required } from "src/utils/validators.js";
+
 export default {
   mixins: [DeepForm],
   formDefinition: null,
@@ -25,9 +25,7 @@ export default {
       query: api.dns.rules.LIST_RULES
     }
   },
-  data() {
-    return { needle: null, required };
-  },
+  data: () => ({ needle: null }),
   methods: {
     onFilter(v, done) {
       done(() => {
@@ -48,5 +46,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

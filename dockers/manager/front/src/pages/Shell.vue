@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     color() {
-      return this.$route.name == "shellNew" ? "white" : "primary";
+      return this.$route.name === "shellNew" ? "white" : "primary";
     }
   }
 };

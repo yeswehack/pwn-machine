@@ -35,6 +35,7 @@ import BaseDetails from "src/components/Traefik/BaseDetails.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
+
 export default {
   components: { CreateMiddleware, BaseDetails, ResetAndSave },
   mixins: [DeepForm],

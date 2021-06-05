@@ -5,11 +5,12 @@
         ref="servers"
         :is="formChildren.servers"
         object-key="url"
-        :rules="[validateServers]"
+        :rules="[required('You must choose at least one server')]"
         v-model="form.servers"
         label="Servers url"
       />
     </div>
+
     <div class="col">
       <div class="row q-gutter-xl items-end">
         <div class="col">
@@ -27,7 +28,7 @@
         </div>
       </div>
     </div>
-    <!-- <q-input  v-model="form.serversTransport" label="Server transport" /> -->
+    <!-- q-input v-model="form.serversTransport" label="Server transport" /-->
     <q-list bordered separator class="rounded-borders">
       <component :is="formChildren.sticky" v-model="form.sticky" />
       <component :is="formChildren.healthCheck" v-model="form.healthCheck" />
@@ -40,6 +41,7 @@ import DeepForm from "src/mixins/DeepForm.js";
 import ListInput from "src/components/ListInput.vue";
 import StickyInput from "./StickyInput.vue";
 import HealthCheckInput from "./HealthCheckInput.vue";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -53,16 +55,9 @@ export default {
     serversTransport: null
   },
   methods: {
-    validateServers(v){
-      if (!Array.isArray(v) || v.length == 0){
-        return "You must choose at least one server"
-      }
-    },
     validate() {
-      return this.$refs.servers.validate()
+      return this.$refs.servers.validate();
     }
   }
 };
 </script>
-
-<style></style>

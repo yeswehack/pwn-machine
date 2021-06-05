@@ -49,6 +49,7 @@
 
 <script>
 import ListInput from "src/components/ListInput.vue";
+
 export default {
   components: { ListInput },
   props: {
@@ -68,5 +69,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

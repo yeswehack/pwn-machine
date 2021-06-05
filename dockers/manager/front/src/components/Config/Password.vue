@@ -33,7 +33,6 @@
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import PasswordInput from "./PasswordInput.vue";
-import { notify } from 'src/utils';
 
 export default {
   mixins: [DeepForm],
@@ -41,14 +40,13 @@ export default {
     old: null,
     new: PasswordInput
   },
-  data: () => ({}),
   methods: {
     async submit() {
       this.mutate({
         mutation: api.auth.UPDATE_PASSWORD,
         variables: this.form,
         message: "Password changed."
-      })
+      });
     }
   }
 };

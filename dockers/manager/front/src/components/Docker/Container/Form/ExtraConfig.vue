@@ -20,6 +20,7 @@ import RestartPolicy from "./RestartPolicy.vue";
 import CapabilitiesAddInput from "./CapabilitiesAddInput.vue";
 import CapabilitiesDropInput from "./CapabilitiesDropInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
+
 export default {
   props: {
     readonly: { type: Boolean, default: false }
@@ -35,5 +36,3 @@ export default {
   components: { RestartPolicy }
 };
 </script>
-
-<style></style>

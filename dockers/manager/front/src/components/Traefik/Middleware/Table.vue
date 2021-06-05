@@ -35,6 +35,7 @@ import MiddlewareDialog from "src/components/Traefik/Middleware/Dialog.vue";
 import RouterLink from "src/components/Traefik/Router/Link.vue";
 import api from "src/api";
 import StatusBadge from "src/components/Traefik/StatusBadge.vue";
+
 export default {
   components: {
     MiddlewareDetails,
@@ -62,10 +63,7 @@ export default {
       { ...col("usedBy"), label: "Used by" },
       { ...col("enabled"), label: "Status" }
     ];
-
-    return {
-      columns
-    };
+    return { columns };
   },
   methods: {
     extraForm(f) {

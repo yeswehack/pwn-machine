@@ -33,12 +33,10 @@ function replaceArray(arr, ...vals) {
 export default {
   mixins: [DeepForm],
   components: { NetworksSelectTable, ExposedPorts },
-  data() {
-    return {
-      enable: !this.value.networks.includes("none"),
-      host: this.value.networks.includes("host")
-    };
-  },
+  data: () => ({
+    enable: !this.value.networks.includes("none"),
+    host: this.value.networks.includes("host")
+  }),
   computed: {
     enableNetwork() {
       return this.formData.enable;
@@ -71,5 +69,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

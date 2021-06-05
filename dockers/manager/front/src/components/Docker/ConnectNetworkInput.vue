@@ -44,6 +44,7 @@
 import api from "src/api";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import NetworkLink from "src/components/Docker/Network/Link.vue";
+
 export default {
   components: { BaseGridInput, NetworkLink },
   props: {
@@ -53,9 +54,8 @@ export default {
   },
   data() {
     const defaultAliases = [this.container.name];
-
     const serviceName = this.container.labels.find(
-      l => l.key == "com.docker.compose.service"
+      l => l.key === "com.docker.compose.service"
     )?.value;
     if (serviceName && serviceName != this.container.name) {
       defaultAliases.push(serviceName);
@@ -76,7 +76,7 @@ export default {
     networksNotAlreadyConnected() {
       return (this.networks || [])
         .filter(
-          n => !this.container.connections.some(c => c.network.name == n.name)
+          n => !this.container.connections.some(c => c.network.name === n.name)
         )
         .map(c => ({
           label: c.name,

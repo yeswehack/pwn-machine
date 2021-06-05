@@ -47,6 +47,7 @@
 <script>
 import LogList from "src/components/Traefik/Log/LogList.vue";
 import api from "src/api";
+
 export default {
   components: { LogList },
   apollo: {
@@ -60,13 +61,7 @@ export default {
       query: api.traefik.services.LIST_SERVICES
     }
   },
-  data() {
-    return {
-      entrypoint: [],
-      router: [],
-      service: []
-    };
-  },
+  data: () => ({ entrypoint: [], router: [], service: [] }),
   computed: {
     entrypointOptions() {
       return (this.traefikEntrypoints ?? []).map(x => x.name);

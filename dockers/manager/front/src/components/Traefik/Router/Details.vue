@@ -60,19 +60,16 @@ export default {
   },
   mixins: [DeepForm],
   formDefinition: {
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
   methods: {
     submit(done) {
       this.mutate({
-          mutation: api.traefik.routers.UPDATE_ROUTER[this.value.protocol],
-          variables: { id: this.value.nodeId, patch: this.form.extra },
-          refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
-          message: `${this.value.name} updated.`
-        })
-        .finally(done);
+        mutation: api.traefik.routers.UPDATE_ROUTER[this.value.protocol],
+        variables: { id: this.value.nodeId, patch: this.form.extra },
+        refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
+        message: `${this.value.name} updated.`
+      }).finally(done);
     },
     validate() {
       return this.$refs.create.validate();

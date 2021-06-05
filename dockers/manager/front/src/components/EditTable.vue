@@ -68,13 +68,11 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import ResetAndSave from "src/components/ResetAndSave.vue"
+import ResetAndSave from "src/components/ResetAndSave.vue";
+
 export default {
-  components: {ResetAndSave},
+  components: { ResetAndSave },
   mixins: [DeepForm],
-  data() {
-    return {};
-  },
   props: {
     columns: Array,
     value: Array,
@@ -82,7 +80,7 @@ export default {
       type: Function,
       default: () => () => ({})
     },
-    noButtons: {type:Boolean, default  : false},
+    noButtons: { type: Boolean, default: false },
     disable: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
     pagination: {
@@ -129,5 +127,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss"></style>

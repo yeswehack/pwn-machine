@@ -12,6 +12,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
 import WeightedInput from "./WeightedInput.vue";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -24,5 +25,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

@@ -40,6 +40,7 @@
 import DeepForm from "src/mixins/DeepForm";
  import ListInput from 'src/components/ListInput.vue';
  import HeadersInput from 'src/components/Traefik/HeadersInput.vue';
+
 export default {
     props: {
         hideTitle: {type: Boolean, default: false}

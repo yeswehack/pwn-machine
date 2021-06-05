@@ -27,7 +27,7 @@
         <q-badge
           color="negative"
           :label="row.service.name"
-          v-if="row.service.type == 'invalid'"
+          v-if="row.service.type === 'invalid'"
         />
         <service-link :name="row.service.name" v-else />
       </template>
@@ -39,7 +39,7 @@
             :key="idx"
             color="negative"
             :label="middleware.name"
-            v-if="middleware.type == 'invalid'"
+            v-if="middleware.type === 'invalid'"
           />
           <middleware-link :name="middleware.name" :key="idx" v-else />
         </template>
@@ -103,10 +103,7 @@ export default {
       col("service"),
       col("enabled")
     ];
-
-    return {
-      columns
-    };
+    return { columns };
   },
   methods: {
     extraForm(f) {

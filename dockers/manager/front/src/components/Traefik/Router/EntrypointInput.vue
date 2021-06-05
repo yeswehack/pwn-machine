@@ -12,6 +12,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
+
 export default {
   props: { protocol: { type: String, default: null } },
   mixins: [DeepForm],
@@ -25,11 +26,9 @@ export default {
   computed: {
     relevantEntrypoints() {
       return (this.entrypoints ?? [])
-        .filter(ep => ep.protocol == this.protocol)
+        .filter(ep => ep.protocol === this.protocol)
         .map(ep => ep.name);
     }
-  },
+  }
 };
 </script>
-
-<style></style>

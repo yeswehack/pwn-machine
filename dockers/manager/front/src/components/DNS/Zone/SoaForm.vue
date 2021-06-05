@@ -41,6 +41,7 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -55,11 +56,7 @@ export default {
     zone: { type: String, default: null }
   },
   methods: {
-    endsWithDot(s) {
-      if (s && !s.endsWith(".")) return "Must end with a dot.";
-    },
+    endsWithDot: v => v?.endsWith(".") || "Must end with a dot."
   }
 };
 </script>
-
-<style></style>

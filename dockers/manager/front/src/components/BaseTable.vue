@@ -168,7 +168,7 @@ export default {
     toggleRow(row) {
       const name = row[this.rowKey];
       const idx = this.expanded.indexOf(name);
-      if (idx == -1) {
+      if (idx === -1) {
         this.expanded.push(name);
       } else {
         this.expanded.splice(idx, 1);

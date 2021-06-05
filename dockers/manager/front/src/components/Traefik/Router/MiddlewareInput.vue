@@ -62,7 +62,7 @@
           v-show="dragging"
         />
       </template>
-      <q-item v-if="form.length == 0" class="empty">
+      <q-item v-if="form.length === 0" class="empty">
         <q-item-section>...</q-item-section>
       </q-item>
     </q-list>
@@ -90,9 +90,7 @@ export default {
       update: data => data.traefikMiddlewares
     }
   },
-  data() {
-    return { model: "", dragging: false };
-  },
+  data: () => ({ model: "", dragging: false }),
   formDefinition: [],
   methods: {
     createMiddleware() {

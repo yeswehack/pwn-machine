@@ -8,7 +8,7 @@
       ref="tabs"
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
       :indicator-color="indicatorColor"
-       narrow-indicator
+      narrow-indicator
       v-bind="$attrs"
       align="left"
     >
@@ -35,7 +35,9 @@ export default {
     $route(to, from) {
       const links = Array.from(this.$refs.tabs.$el.querySelectorAll(".q-tab"));
       const findPos = route => {
-        const idx = links.findIndex(l => l.attributes.href.value == route.path);
+        const idx = links.findIndex(
+          l => l.attributes.href.value === route.path
+        );
         return idx > -1 ? idx : Infinity;
       };
 
@@ -47,6 +49,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .page-content {
   border-top-left-radius: 0;

@@ -3,7 +3,7 @@
     clearable
     use-input
     ref="portSelect"
-    :rules="[required]"
+    :rules="[required('This field is required')]"
     :options="portOptions"
     new-value-mode="add"
     label="Port to expose"
@@ -15,6 +15,7 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+
 export default {
   mixins: [DeepForm],
   formDefinition: null,
@@ -22,11 +23,6 @@ export default {
     container: { type: Object, required: false }
   },
   methods: {
-    required(v) {
-      if (!v) {
-        return "This field is required";
-      }
-    },
     validate() {
       return this.$refs.portSelect.validate();
     }
@@ -34,17 +30,13 @@ export default {
   computed: {
     portOptions() {
       return (this.container?.ports ?? [])
-        .filter(p => p.protocol == "tcp")
-        .map(p => {
-          return {
-            label: p.containerPort,
-            value: p.containerPort,
-            protocol: p.protocol
-          };
-        });
+        .filter(p => p.protocol === "tcp")
+        .map(p => ({
+          label: p.containerPort,
+          value: p.containerPort,
+          protocol: p.protocol
+        }));
     }
   }
 };
 </script>
-
-<style></style>

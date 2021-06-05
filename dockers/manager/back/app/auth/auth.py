@@ -36,8 +36,6 @@ async def resolve_setup_needed(*_):
 
 @auth_query("authTotpUri")
 async def resolve_totp_uri(*_):
-    if not db.is_first_run:
-        return None
     otp = pyotp.TOTP(db.totp_secret)
     return otp.provisioning_uri(name=USERNAME, issuer_name=ISSUER)
 

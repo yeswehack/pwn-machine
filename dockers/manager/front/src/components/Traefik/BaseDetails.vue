@@ -9,6 +9,7 @@
 
 <script>
 import TraefikError from "src/components/Traefik/TraefikError.vue";
+
 export default {
   components: { TraefikError },
   props: {

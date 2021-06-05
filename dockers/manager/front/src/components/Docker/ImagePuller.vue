@@ -24,11 +24,10 @@
 import api from "src/api";
 import ImagePullerEntry from "./ImagePullerEntry.vue";
 import { PullImageBus } from "src/eventBus.js";
+
 export default {
   components: { ImagePullerEntry },
-  data() {
-    return { pulls: [] };
-  },
+  data: () => ({ pulls: [] }),
   computed: {
     visible() {
       return this.pulls.some(pull => !pull.over);
@@ -45,7 +44,7 @@ export default {
         pull.done = () => {
           pull.over = false;
           window.setTimeout(() => {
-            const pos = this.pulls.findIndex(p => p == pull);
+            const pos = this.pulls.findIndex(p => p === pull);
             this.pulls.splice(pos, 1);
           }, 3000);
           done();
@@ -64,5 +63,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

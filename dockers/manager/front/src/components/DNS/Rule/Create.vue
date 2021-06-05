@@ -69,7 +69,6 @@ import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import LuaEditor from "./LuaEditor.vue";
 import RuleInput from "./RuleInput.vue";
-import { required, requiredArray } from "src/utils/validators";
 
 const types = [
   "A",
@@ -128,9 +127,7 @@ export default {
     records: RuleInput,
     ttl: 3600
   },
-  data() {
-    return { types, required };
-  },
+  data: () => ({ types }),
   computed: {
     zoneNames() {
       return (this.zones ?? []).map(z => z.name);
@@ -141,10 +138,11 @@ export default {
   },
   methods: {
     validateName(name) {
-      const suffix = "." + this.form.zone;
-      if (!name || (name !== this.form.zone && !name.endsWith(suffix))) {
-        return `Name must ends with ${this.form.zone}`;
-      }
+      return (
+        name === this.form.zone ||
+        name?.endsWith("." + this.form.zone) ||
+        `Name must ends with ${this.form.zone}`
+      );
     },
     validate() {
       const validators = [
@@ -173,7 +171,7 @@ export default {
   },
   watch: {
     isLua(v) {
-      if (v && this.form.records.length == 0) {
+      if (v && this.form.records.length === 0) {
         this.form.records = [{ content: "return ''" }];
       }
     }

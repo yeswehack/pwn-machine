@@ -45,6 +45,7 @@
 import api from "src/api";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
+
 export default {
   components: { BaseGridInput, ContainerLink },
   props: {
@@ -52,9 +53,7 @@ export default {
     network: { type: Object, default: null },
     container: { type: Object, default: null }
   },
-  data() {
-    return { model: { container: null, aliases: [] }, loading: false };
-  },
+  data: () => ({ model: { container: null, aliases: [] }, loading: false }),
   apollo: {
     containers: {
       query: api.docker.containers.LIST_CONTAINERS,
@@ -64,7 +63,7 @@ export default {
   computed: {
     containersNotAlreadyConnected() {
       return (this.containers || [])
-        .filter(c => !this.network.usedBy.some(f => f.containerName == c.name))
+        .filter(c => !this.network.usedBy.some(f => f.containerName === c.name))
         .map(c => ({
           label: c.name,
           value: c
@@ -76,7 +75,7 @@ export default {
       const aliases = [container.name];
 
       const serviceName = container.labels.find(
-        l => l.key == "com.docker.compose.service"
+        l => l.key === "com.docker.compose.service"
       )?.value;
       if (serviceName && serviceName != container.name) {
         aliases.push(serviceName);

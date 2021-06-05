@@ -1,9 +1,5 @@
 <template>
-  <base-dialog
-    ref="dialog"
-    title="Create a new service"
-    :subtitle="subtitle"
-  >
+  <base-dialog ref="dialog" title="Create a new service" :subtitle="subtitle">
     <template #default="{ok, cancel}">
       <create-service
         :value="serviceForm"
@@ -18,14 +14,13 @@
 <script>
 import BaseDialog from "src/components/BaseDialog.vue";
 import CreateService from "./Create.vue";
+
 export default {
   components: { CreateService, BaseDialog },
   props: {
     service: { type: Object, default: null }
   },
-  data() {
-    return { subtitle: null };
-  },
+  data: () => ({ subtitle: null }),
   computed: {
     serviceForm() {
       if (!this.service) {

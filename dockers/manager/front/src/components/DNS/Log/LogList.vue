@@ -94,10 +94,7 @@ export default {
       field("type", { align: "center" }),
       field("query")
     ];
-    return {
-      pagination,
-      columns
-    };
+    return { pagination, columns };
   },
   mounted() {
     const rowHeight = 28.5;
@@ -127,5 +124,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

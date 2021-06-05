@@ -9,6 +9,7 @@
 <script>
 import CreateRouter from "./Create.vue";
 import BaseDialog from "src/components/BaseDialog.vue";
+
 export default {
   components: { CreateRouter, BaseDialog },
   props: {

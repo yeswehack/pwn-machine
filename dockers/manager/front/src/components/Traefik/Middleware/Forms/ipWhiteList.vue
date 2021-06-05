@@ -10,6 +10,7 @@
 import DeepForm from "src/mixins/DeepForm";
  import ipStrategy from './ipStrategy.vue';
  import ListInput from 'src/components/ListInput.vue';
+
 export default {
     props: {
         hideTitle: {type: Boolean, default: false}

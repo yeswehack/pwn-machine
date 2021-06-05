@@ -1,7 +1,7 @@
 <template>
   <q-expansion-item label="Sticky Cookie" icon="fas fa-cookie-bite">
-    <q-separator/>
-    <q-card >
+    <q-separator />
+    <q-card>
       <q-card-section class="q-pt-none">
         <q-input v-model="form.cookie.name" label="Name" />
         <div class="row">
@@ -30,12 +30,10 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+
 export default {
   mixins: [DeepForm],
-  data() {
-    const sameSiteOptions = ["none", "lax", "strict"];
-    return { sameSiteOptions };
-  },
+  data: () => ({ sameSiteOptions: ["none", "lax", "strict"] }),
   formDefinition: {
     cookie: {
       name: null,

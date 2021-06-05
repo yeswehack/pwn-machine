@@ -10,6 +10,7 @@ import api from "src/api";
 import BaseOverview from "../BaseOverview.vue";
 
 cytoscape.use(fcose);
+
 export default {
   components: { BaseOverview },
   apollo: {
@@ -72,7 +73,7 @@ export default {
       });
 
       const networkNode = n => {
-        const classes = n.name == "host" ? ["host", "network"] : ["network"];
+        const classes = n.name === "host" ? ["host", "network"] : ["network"];
         return {
           data: { id: n.name },
           style: { "border-color": colorHash.hex(n.name) },
@@ -96,7 +97,7 @@ export default {
         }
         for (const connection of container.connections) {
           const network = connection.network;
-          if (network.name == "host") {
+          if (network.name === "host") {
             elements.push(hostEdge(container));
             continue;
           }
@@ -161,7 +162,7 @@ export default {
           fit: true,
           animate: false,
           fixedNodeConstraint: [
-            { nodeId: "Internet", position: { x: 0, y: 0 } },
+            { nodeId: "Internet", position: { x: 0, y: 0 } }
           ]
         }
       });

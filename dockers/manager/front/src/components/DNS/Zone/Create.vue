@@ -21,6 +21,7 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import SoaForm from "src/components/DNS/Zone/SoaForm.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
+
 export default {
   mixins: [DeepForm],
   components: { ResetAndSave },
@@ -29,9 +30,7 @@ export default {
     soa: SoaForm
   },
   methods: {
-    endsWithDot(s) {
-      if (s && !s.endsWith(".")) return "Must end with a dot.";
-    },
+    endsWithDot: v => v?.endsWith(".") || "Must end with a dot.",
     submit(done) {
       this.mutate({
         mutation: api.dns.zones.CREATE_ZONE,

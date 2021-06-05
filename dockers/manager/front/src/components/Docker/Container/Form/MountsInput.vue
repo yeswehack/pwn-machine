@@ -23,7 +23,7 @@
               @keypress.enter.prevent="addEntry"
               label="Type"
             />
-            <div style="overflow: hidden" v-if="model.type == 'volume'">
+            <div style="overflow: hidden" v-if="model.type === 'volume'">
               <q-select
                 flat
                 :options="volumeOptions"
@@ -36,7 +36,7 @@
                 </template>
               </q-select>
             </div>
-            <div style="overflow: hidden" v-if="model.type == 'bind'">
+            <div style="overflow: hidden" v-if="model.type === 'bind'">
               <q-input
                 flat
                 v-model="model.source"
@@ -44,7 +44,7 @@
                 label="Source"
               />
             </div>
-            <div style="overflow: hidden" v-if="model.type == 'tmpfs'">
+            <div style="overflow: hidden" v-if="model.type === 'tmpfs'">
               <q-input disable value="-" flat />
             </div>
             <q-input
@@ -65,7 +65,7 @@
             <div>
               {{ entry.type }}
             </div>
-            <div class="ellipsis" v-if="entry.type == 'volume'">
+            <div class="ellipsis" v-if="entry.type === 'volume'">
               <volume-link :name="entry.name" />
 
               <q-popup-edit v-model="entry.name">
@@ -78,7 +78,7 @@
               </q-popup-edit>
             </div>
 
-            <div class="ellipsis" v-if="entry.type == 'bind'">
+            <div class="ellipsis" v-if="entry.type === 'bind'">
               {{ entry.source }}
 
               <q-popup-edit v-model="entry.source">
@@ -90,7 +90,7 @@
                 />
               </q-popup-edit>
             </div>
-            <div class="ellipsis" v-if="entry.type == 'tmpfs'">
+            <div class="ellipsis" v-if="entry.type === 'tmpfs'">
               -
             </div>
             <div class="ellipsis">
@@ -118,7 +118,7 @@
           </template>
         </base-grid-input>
       </q-card-section>
-      <q-card-section v-if='!readonly'>
+      <q-card-section v-if="!readonly">
         <div class="row justify-end">
           <q-btn
             dense
@@ -137,6 +137,15 @@ import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
 import VolumeLink from "../../Volume/Link.vue";
 import BaseGridInput from "src/components/BaseGridInput.vue";
+
+const defaultModel = {
+  type: "volume",
+  name: null,
+  source: null,
+  target: null,
+  readonly: false
+};
+
 export default {
   props: {
     readonly: { type: Boolean, default: false }
@@ -157,28 +166,14 @@ export default {
       return this.model.type;
     }
   },
-  data() {
-    const model = this.getDefaultModel();
-    return {
-      model
-    };
-  },
+  data: () => ({ model: defaultModel }),
   methods: {
     removeEntry(idx) {
       this.form.splice(idx, 1);
     },
-    getDefaultModel() {
-      return {
-        type: "volume",
-        name: null,
-        source: null,
-        target: null,
-        readonly: false
-      };
-    },
     addEntry() {
       this.form.unshift(this.model);
-      this.model = this.getDefaultModel();
+      this.model = defaultModel;
     }
   },
   watch: {

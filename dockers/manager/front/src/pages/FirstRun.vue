@@ -9,6 +9,7 @@
               We are almost ready, you just need to setup the authentication.
             </div>
           </q-card-section>
+
           <q-card-section>
             <q-stepper v-model="step" ref="stepper" animated>
               <q-step
@@ -22,7 +23,6 @@
                   v-model="form.password"
                 />
               </q-step>
-
               <q-step name="otp" title="Initialize OTP" icon="eva-keypad">
                 <component
                   ref="otp"
@@ -30,6 +30,7 @@
                   v-model="form.otp"
                 />
               </q-step>
+
               <template #navigation>
                 <q-card-section>
                   <reset-and-save
@@ -55,6 +56,7 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
 import OtpSetup from "src/components/Config/OtpSetup.vue";
 import api from "src/api";
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -66,15 +68,11 @@ export default {
     const steps = [
       {
         name: "password",
-        validate: () => {
-          return this.$refs.password.validate();
-        }
+        validate: () => this.$refs.password.validate()
       },
       {
         name: "otp",
-        validate: () => {
-          return this.$refs.otp.validate();
-        }
+        validate: () => this.$refs.otp.validate()
       }
     ];
     return { step: "password", steps };
@@ -95,5 +93,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

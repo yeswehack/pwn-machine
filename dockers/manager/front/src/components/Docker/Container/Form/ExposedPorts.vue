@@ -61,7 +61,7 @@
               </q-popup-edit>
             </div>
             <div class="ellipsis">
-              {{entry.targets ? entry.targets.join(", ") : "Not forwarded"}}
+              {{ entry.targets ? entry.targets.join(", ") : "Not forwarded" }}
 
               <q-popup-edit v-model="entry.targets">
                 <q-select
@@ -86,6 +86,13 @@
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
 import BaseGridInput from "src/components/BaseGridInput.vue";
+
+const defaultModel = {
+  containerPort: null,
+  protocol: "tcp",
+  targets: []
+};
+
 export default {
   components: { BaseGridInput },
   props: {
@@ -94,12 +101,7 @@ export default {
   },
   mixins: [DeepForm],
   formDefinition: [],
-  data() {
-    const model = this.getDefaultModel();
-    return {
-      model
-    };
-  },
+  data: () => ({ model: defaultModel }),
   methods: {
     addPort(port) {
       this.model.targets = [`0.0.0.0:${port}`];
@@ -107,16 +109,9 @@ export default {
     removeEntry(idx) {
       this.form.splice(idx, 1);
     },
-    getDefaultModel() {
-      return {
-        containerPort: null,
-        protocol: "tcp",
-        targets: []
-      };
-    },
     addEntry() {
       this.form.unshift(this.model);
-      this.model = this.getDefaultModel();
+      this.model = defaultModel;
     }
   }
 };

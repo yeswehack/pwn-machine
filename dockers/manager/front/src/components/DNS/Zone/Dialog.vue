@@ -13,6 +13,7 @@
 <script>
 import CreateZone from "./Create.vue";
 import BaseDialog from "src/components/BaseDialog.vue";
+
 export default {
   components: { CreateZone,  BaseDialog },
   props: {
