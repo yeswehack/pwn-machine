@@ -183,7 +183,7 @@ class PowerdnsHTTPApi:
         r = await self.post("/api/v1/servers/localhost/zones", data)
         zone = await r.json()
         if "error" in zone:
-            raise ValueError(zone['error'])
+            raise ValueError(zone["error"])
 
     async def update_zone(self, nodeId, soa):
         zone_name = validate_node_id(nodeId, "DNS_ZONE")[0]

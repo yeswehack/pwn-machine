@@ -34,7 +34,6 @@ registered_mutations = {}
 
 def registerMutation(name):
     def decorator(f):
-
         @wraps(f)
         async def async_wrapper(*args, **kwargs):
             try:

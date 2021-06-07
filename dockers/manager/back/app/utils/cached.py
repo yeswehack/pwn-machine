@@ -3,6 +3,7 @@ import asyncio
 from starlette_context import context
 from contextlib import contextmanager
 
+
 @contextmanager
 def no_cache():
     try:
@@ -10,6 +11,7 @@ def no_cache():
         yield
     finally:
         context["cache_disabled"] = False
+
 
 def cacheMethodForQuery(func):
     runnings = set()
@@ -33,10 +35,10 @@ def cacheMethodForQuery(func):
             r = await func(self, *args, **kwargs)
             cache[key] = r
             return r
-        
+
         while cache[key] is running_marker:
             await asyncio.sleep(0.01)
-        
+
         return cache[key]
 
     @wraps(func)

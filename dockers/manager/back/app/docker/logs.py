@@ -19,7 +19,6 @@ async def resolve_docker_logs(*_, filter={}, cursor={}):
     if containerId := filter.get("containerId"):
         must.append({"terms": {"container.id": containerId}})
 
-
     body = {"query": {"bool": {"must": must, "must_not": must_not}}}
 
     r = await es.search(
@@ -49,6 +48,7 @@ def resolve_container_name(log, _):
 @dockerLog.field("containerId")
 def resolve_container_id(log, _):
     return log["container"]["id"]
+
 
 @dockerLog.field("message")
 def resolve_container_id(log, _):

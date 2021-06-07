@@ -58,7 +58,6 @@ class Database:
             return True
         return False
 
-
     async def save_password(self, password):
         self.password_hash = hasher.hash(password)
         await self.redis.set(PASSWORD_KEY, self.password_hash)

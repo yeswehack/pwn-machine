@@ -249,4 +249,3 @@ class TraefikHTTPApi:
             all_services += services
 
         return all_services
-

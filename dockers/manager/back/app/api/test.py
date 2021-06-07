@@ -39,8 +39,10 @@
 import pty
 from subprocess import Popen, PIPE
 
+
 def run(cmd):
     r = pty.spawn(["ls", "-l"])
     print(r)
+
 
 run(4)

@@ -111,7 +111,7 @@ class ShellConnection:
 
     async def start(self):
         await self.send(stdout=self.shell.logs)
-        if (not self.shell.running):
+        if not self.shell.running:
             await self.send(exit=self.shell.exitCode)
             return
 
@@ -140,7 +140,7 @@ class ShellConnection:
                     quit_task.cancel()
                     ws_task.cancel()
                     break
-                    
+
                 await self.send(stdout=data)
                 shell_task = create_shell_task()
 

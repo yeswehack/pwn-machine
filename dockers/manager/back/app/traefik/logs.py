@@ -114,4 +114,3 @@ def resolve_service(log, _):
 @TraefikLog.field("origin")
 def resolve_origin(log, _):
     return log.get("ClientHost")
-

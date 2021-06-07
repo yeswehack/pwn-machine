@@ -2,6 +2,7 @@ from typing import NamedTuple
 from datetime import datetime
 from app.api import docker_client
 
+
 class KeyValue(NamedTuple):
     key: str
     value: str = None
