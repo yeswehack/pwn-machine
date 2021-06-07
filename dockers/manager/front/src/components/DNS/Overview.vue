@@ -1,145 +1,56 @@
 <template>
-  <base-overview ref="overview" :loading="$apollo.queries.zones.loading" />
+  <q-tree
+    v-if="overviewTree"
+    class="full-width"
+    :nodes="overviewTree"
+    :expanded.sync="expanded"
+    node-key="id"
+  />
 </template>
 
 <script>
-import cytoscape from "cytoscape";
-import dagre from "cytoscape-dagre";
 import api from "src/api";
-import BaseOverview from "../BaseOverview.vue";
 
 export default {
-  components: { BaseOverview },
+  components: {},
   apollo: {
-    zones: {
+    overviewTree: {
       query: api.dns.OVERVIEW,
       fetchPolicy: "cache-and-network",
-      update: data => data.dnsZones
-    }
-  },
-  watch: {
-    zones(zones) {
-      this.renderOveriew(zones);
-    }
-  },
-  methods: {
-    renderOveriew(zones) {
-      cytoscape.use(dagre);
-
-      const elements = [];
-      const node = (id, label = "", classes = []) => {
-        return {
-          data: { id, label },
-          classes
-        };
-      };
-
-      const edge = (source, target, label = "") => ({
-        data: {
-          id: `${source}-${target}`,
-          label,
-          source,
-          target
-        }
-      });
-      const zoneNode = zone => node(`z-${zone.nodeId}`, zone.name, ["zone"]);
-      const ruleNode = (rule, cls) =>
-        node(`ru-${rule.nodeId}`, `${rule.name} (${rule.type})`, ["rule"]);
-      const recordNode = (rule, record) =>
-        node(`re-${rule.nodeId}-${record.content}`, record.content, [
-          "record",
-          record.enabled ? "enabled" : "disabled"
-        ]);
-
-      for (const zone of zones) {
-        elements.push(zoneNode(zone));
-
-        for (const rule of zone.rules) {
-          elements.push(ruleNode(rule));
-          elements.push(edge(`z-${zone.nodeId}`, `ru-${rule.nodeId}`));
-
-          for (const record of rule.records) {
-            elements.push(recordNode(rule, record));
-            elements.push(
-              edge(`ru-${rule.nodeId}`, `re-${rule.nodeId}-${record.content}`)
-            );
-          }
-        }
+      update(data) {
+        const zones = data.dnsZones;
+        this.expanded.splice(0, this.expanded.length);
+        return zones.map(zone => {
+          const zoneId = zone.name;
+          const rules = (zone.rules ?? []).map(rule => {
+            const ruleId = `${zoneId}-${rule.type}.${rule.name}`;
+            const records = rule.records.map((record, idx) => {
+              const recordId = `${ruleId}-${idx}`;
+              return {
+                label: record.content,
+                id: recordId,
+                icon: "trip_origin",
+                iconColor: record.enabled ? "positive" : "negative"
+              };
+            });
+            return {
+              label: `${rule.type} - ${rule.name}`,
+              id: ruleId,
+              icon: "eva-book",
+              children: records
+            };
+          });
+          this.expanded.push(zoneId);
+          return {
+            label: zone.name,
+            children: rules,
+            icon: "eva-home-outline",
+            id: zoneId
+          };
+        });
       }
-      cytoscape({
-        container: this.$refs.overview.getContainer(),
-
-        elements: elements,
-        wheelSensitivity: 0.5,
-        style: [
-          {
-            selector: "node",
-            style: {
-              label: "data(label)",
-              color: "white",
-              "font-size": 5,
-              width: 8,
-              height: 8,
-              shape: "ellipse",
-              "background-fit": "cover",
-              "border-width": 1
-            }
-          },
-          {
-            selector: ".enabled",
-            style: {
-              "background-color": "#1da13c"
-            }
-          },
-          {
-            selector: ".disabled",
-            style: {
-              "background-color": "#c10015"
-            }
-          },
-          {
-            selector: ".zone",
-            style: {
-              "text-margin-y": "-2"
-            }
-          },
-          {
-            selector: ".rule",
-            style: {
-              "text-margin-y": "-2"
-            }
-          },
-          {
-            selector: ".record",
-            style: {
-              "text-valign": "center",
-              "text-halign": "right",
-              "text-margin-x": "2"
-            }
-          },
-          {
-            selector: "edge",
-            style: {
-              width: 0.1,
-              label: "data(label)",
-              color: "white",
-              "text-rotation": "autorotate",
-              "text-margin-y": "-5",
-              "font-size": 5,
-              "curve-style": "bezier",
-              "haystack-radius": 0.1
-            }
-          }
-        ],
-        layout: {
-          name: "dagre",
-          rankDir: "LR",
-          fit: true,
-
-          nodeDimensionsIncludeLabels: true
-        }
-      });
     }
-  }
+  },
+  data: () => ({ expanded: [] })
 };
 </script>
