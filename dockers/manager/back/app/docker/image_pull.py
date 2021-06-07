@@ -68,8 +68,8 @@ def resolve_pull_image(*_):
 
 
 @registerMutation("pullDockerImage")
-def mutation_pull_image(*_, name):
-    id = ImagePuller.pull(name)
+async def mutation_pull_image(*_, name):
+    id = await ImagePuller.pull(name)
     return {"id": id, "name": name}
 
 

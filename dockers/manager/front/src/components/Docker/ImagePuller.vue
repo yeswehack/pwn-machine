@@ -39,7 +39,7 @@ export default {
         mutation: api.docker.images.PULL_IMAGE,
         variables: { name }
       }).then(result => {
-        const { id } = result.pullDockerImage;
+        const id = result.id;
         const pull = { id, name, over: false };
         pull.done = () => {
           pull.over = false;
