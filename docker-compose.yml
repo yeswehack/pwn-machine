@@ -20,6 +20,7 @@ services:
       - dns-net
     volumes:
       - powerdns-data:/var/lib/mysql
+    restart: unless-stopped
 
   powerdns:
     container_name: pm_powerdns
@@ -43,6 +44,7 @@ services:
       - elasticsearch-net
     volumes:
       - powerdns-logs:/logs/pdns
+    restart: unless-stopped
 
   ##
   # TRAEFIK
@@ -55,6 +57,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
+    restart: unless-stopped
 
   traefik:
     container_name: pm_traefik
@@ -84,6 +87,7 @@ services:
       - traefik-net
       - dns-net
       - redis-net
+    restart: unless-stopped
 
   ##
   # ELASTIC SEARCH
@@ -103,6 +107,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    restart: unless-stopped
 
   filebeat:
     container_name: pm_filebeat
@@ -118,6 +123,7 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock
         - powerdns-logs:/logs/pdns
         - traefik-logs:/logs/traefik
+    restart: unless-stopped
 ##
 # Manager
 ##
@@ -145,6 +151,7 @@ services:
       - dns-net
       - elasticsearch-net
       - traefik-net
+    restart: unless-stopped
 
 
 volumes:
