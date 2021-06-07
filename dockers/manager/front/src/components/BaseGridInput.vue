@@ -20,6 +20,7 @@
             size="md"
             icon="eva-plus"
             color="positive"
+            :loading="loading"
             @click="$emit('addEntry')"
           />
         </div>
@@ -50,6 +51,7 @@
 <script>
 export default {
   props: {
+    loading: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
     titles: { type: Array, default: () => [] },
     entries: { type: Array, default: () => [] },

@@ -103,12 +103,6 @@ export default {
             model: [],
             items: [
               {
-                label: "Force the removal",
-                value: "force",
-
-                color: "primary"
-              },
-              {
                 label: "Do not delete untagged parents",
                 value: "noPruneParents",
 
@@ -122,11 +116,10 @@ export default {
           cancel: true
         })
         .onOk(result => {
-          const force = result.includes("force");
           const pruneParent = !result.includes("noPruneParents");
           this.mutate({
             mutation: api.docker.images.DELETE_IMAGE,
-            variables: { id: image.id, force, pruneParent },
+            variables: { id: image.id, force: true, pruneParent },
             refetchQueries: [{ query: api.docker.images.LIST_IMAGES }],
             message: `${image.name} deleted.`
           });

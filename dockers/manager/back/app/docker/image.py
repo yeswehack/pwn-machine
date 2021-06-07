@@ -200,3 +200,12 @@ def resolve_prune_images(*_, onlyDangling):
         "deleted": deleted,
         "spaceReclaimed": pruned.get("SpaceReclaimed", None),
     }
+
+@registerMutation("tagDockerImage")
+def resolve_tag_image(*_, id, repository, tag=None):
+    try:
+        docker_client.images.get(id).tag(repository, tag)
+    except APIError as e:
+        raise PMException(e.explanation)
+    except Exception as e:
+        raise PMException(str(e))

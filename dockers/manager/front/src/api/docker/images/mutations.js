@@ -33,3 +33,13 @@ export const DELETE_IMAGE = gql`
     }
   }
 `
+
+export const TAG_IMAGE = gql`
+mutation tagDockerImage($id: ID!, $repository: String!, $tag: String){
+  tagDockerImage(id: $id, repository: $repository, tag: $tag ){
+    success
+    error
+  }
+}
+
+`

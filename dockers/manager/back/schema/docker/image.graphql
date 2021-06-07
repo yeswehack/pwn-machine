@@ -9,6 +9,7 @@ extend type Mutation {
     force: Boolean! = false
     pruneParents: Boolean! = true
   ): BasicMutationResponse!
+  tagDockerImage(id: ID!, repository: String!, tag: String): BasicMutationResponse!
   pruneDockerImages(onlyDangling: Boolean! = true): PruneResponse!
 }
 

@@ -6,7 +6,7 @@
           <div class="text-h6">
             Tags
           </div>
-          <list-input v-model="image.tags" />
+          <tag-input :value="image.tags" :image-id="image.id" />
         </q-card-section>
       </q-card>
     </div>
@@ -48,10 +48,10 @@
 </template>
 
 <script>
-import ListInput from "src/components/ListInput.vue";
+import TagInput from "./TagInput.vue";
 
 export default {
-  components: { ListInput },
+  components: { TagInput },
   props: {
     image: { type: Object, required: true }
   },
