@@ -56,7 +56,7 @@ export default {
   mixins: [DeepForm],
   formDefinition: {
     name: null,
-    protocol: null,
+    protocol: "http",
     extra(value) {
       return getCreateComponent(value);
     }
