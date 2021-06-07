@@ -80,7 +80,7 @@ export default {
         variables: { input: this.form },
         message: "Logged in."
       }).then(result => {
-        localStorage.setItem("token", result.token);
+        localStorage.setItem("token", result);
         this.$router.push({ name: "index" });
       });
     }
