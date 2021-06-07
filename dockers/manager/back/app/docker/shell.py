@@ -4,7 +4,7 @@ from . import kv_to_dict
 from app.api import create_shell
 from app.utils import createType, registerMutation, registerQuery
 from starlette.websockets import WebSocketDisconnect
-from app.exception import PMException 
+from app.exception import PMException
 
 DockerContainerShell = createType("DockerContainerShell")
 

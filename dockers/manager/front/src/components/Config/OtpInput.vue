@@ -7,6 +7,7 @@
     autogrow
     mask="######"
     fill-mask
+    @keypress.enter="$emit('enter')"
     :rules="[isTotp]"
     v-model="form"
   />

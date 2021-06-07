@@ -15,7 +15,7 @@ export default {
   async created() {
     const token = localStorage.getItem("token");
     this.mutate({
-      mutation: api.auth.VALIDATE_TOKEN,
+      mutation: api.auth.REFRESH_TOKEN,
       variables: { token: token ?? "" }
     }).then(response => {
       if (response.isFirstRun) {
@@ -23,7 +23,7 @@ export default {
           this.$router.push({ name: "firstRun" });
         }
       } else if (response.token) {
-        localStorage.setItem("token", response.token.token);
+        localStorage.setItem("token", response.token);
       } else {
         if (this.$route.name != "login") {
           this.$router.push({ name: "login" });

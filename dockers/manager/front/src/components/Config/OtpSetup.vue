@@ -5,11 +5,11 @@
         <p>Scan this image with your favorite TOTP app:</p>
         <div class="row justify-center q-my-md">
           <div class="col col-auto qr-container">
-            <qr-code :value="totpUri" size="250" class="rounded-borders" />
+            <qr-code :value="otpUrl" size="250" class="rounded-borders" />
           </div>
         </div>
         <p>or enter this code manually:</p>
-        <span class="flex flex-center q-mt-sm text-mono">{{ totpSecret }}</span>
+        <span class="flex flex-center q-mt-sm text-mono">{{ otpSecret }}</span>
       </div>
     </q-card-section>
     <q-separator />
@@ -35,15 +35,13 @@ export default {
   formDefinition: OtpInput,
   components: { QrCode },
   apollo: {
-    totpUri: {
-      query: api.auth.GET_TOTP_URI,
-      update: ({ authTotpUri }) => authTotpUri
+    otpSecret: {
+      query: api.auth.GET_OTP_SECRET,
     }
   },
-  computed: {
-    totpSecret() {
-      if (!this.totpUri) return;
-      return new URL(this.totpUri).searchParams.get("secret");
+  computed:{
+    otpUrl(){
+      return `otpauth://totp/Pwn-Machine:admin?secret=${this.otpSecret}&issuer=Pwn-Machine`
     }
   },
   methods: {

@@ -1,41 +1,33 @@
 extend type Query {
-  authSetupNeeded: SetupStep
-  authTotpUri: String!
+  otpSecret: String!
 }
 
-enum SetupStep {
-  PASSWORD
-  TOTP
+type LoginResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: String
 }
 
-type InitializeAuthPayload implements IMutationResponse   {
-  error: String
-  success: Boolean!
-  result: AuthToken
-}
-type LoginPayload implements IMutationResponse{
-  error: String
-  success: Boolean!
-  result: AuthToken
+input LoginInput {
+  password: String!
+  otp: String!
+  durationDays: Int
 }
 
 extend type Mutation {
-  validateAuthToken(token: String!): ValidateAuthTokenResponse!
-  initializeAuth(password: String!, otp: String!): InitializeAuthPayload!
-  login(password: String!, otp: String!, expire: Int): LoginPayload!
+  initializeAuth(password: String!, otp: String!): LoginResponse!
+  login(input: LoginInput!): LoginResponse!
+  refreshToken(token: String!): RefreshTokenResponse!
   updatePassword(old: String!, new: String!): BasicMutationResponse!
 }
-type ValidateAuthTokenPayload {
-  token: AuthToken
+
+type RefreshTokenPayload {
+  token: String
   isFirstRun: Boolean!
 }
-type ValidateAuthTokenResponse implements IMutationResponse {
+
+type RefreshTokenResponse implements IMutationResponse {
   success: Boolean!
   error: String
-  result: ValidateAuthTokenPayload
-}
-
-type AuthToken {
-  token: String!
-  expire: DateTime
+  result: RefreshTokenPayload
 }

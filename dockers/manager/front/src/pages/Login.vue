@@ -16,7 +16,7 @@
               />
               <div class="row ">
                 <div class="col col-auto">
-                  <component :is="formChildren.otp" v-model="form.otp" />
+                  <component :is="formChildren.otp" v-model="form.otp" @enter="submit" />
                 </div>
               </div>
               <q-select
@@ -24,7 +24,7 @@
                 :options="expireOptions"
                 emit-value
                 map-options
-                v-model="form.expire"
+                v-model="form.durationDays"
               />
             </q-card-section>
             <q-card-actions vertical>
@@ -45,32 +45,30 @@ import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "src/components/Config/OtpInput.vue";
 
-const dayDuration = 60 * 60 * 24;
-
 export default {
   mixins: [DeepForm],
   formDefinition: {
     password: null,
     otp: OtpInput,
-    expire: dayDuration
+    durationDays: 1
   },
   data: () => {
     const expireOptions = [
       {
         label: "One day",
-        value: dayDuration
+        value: 1
       },
       {
         label: "One week",
-        value: dayDuration * 7
+        value: 7
       },
       {
         label: "One month",
-        value: dayDuration * 30
+        value: 30
       },
       {
         label: "Forever",
-        value: null
+        value: 0
       }
     ];
     return { expireOptions };
@@ -79,7 +77,7 @@ export default {
     submit() {
       this.mutate({
         mutation: api.auth.LOGIN,
-        variables: this.form,
+        variables: { input: this.form },
         message: "Logged in."
       }).then(result => {
         localStorage.setItem("token", result.token);

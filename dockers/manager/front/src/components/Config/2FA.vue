@@ -13,7 +13,7 @@
           </div>
           or enter this code manually:
           <span class="flex flex-center q-mt-sm text-mono">{{
-            totpSecret
+            otpSecret
           }}</span>
         </q-card-section>
         <q-separator />
@@ -48,18 +48,11 @@ import api from "src/api";
 export default {
   components: { QrCode },
   apollo: {
-    totpUri: {
-      query: api.auth.GET_TOTP_URI,
-      update: ({ authTotpUri }) => authTotpUri
+    otpSecret: {
+      query: api.auth.GET_OTP_SECRET,
     }
   },
   data: () => ({ totp: "" }),
-  computed: {
-    totpSecret() {
-      if (!this.totpUri) return;
-      return new URL(this.totpUri).searchParams.get("secret");
-    }
-  },
   methods: {
     async submit() {
       if (!+this.totp) return;

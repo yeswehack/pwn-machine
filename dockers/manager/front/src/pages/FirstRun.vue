@@ -85,7 +85,7 @@ export default {
         message: "Setup complete!"
       })
         .then(result => {
-          localStorage.setItem("token", result.token);
+          localStorage.setItem("token", result);
           this.$router.push({ name: "index" });
         })
         .finally(done);
