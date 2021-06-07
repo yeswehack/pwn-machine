@@ -46,6 +46,6 @@ export default {
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 14px;
-  height: calc(100vh - 214px);
+  height: calc(100vh - 166px);
 }
 </style>
