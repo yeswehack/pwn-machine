@@ -57,7 +57,7 @@ const create_tcp_loadbalancer = gql`
 
 const create_tcp_weighted = gql`
   mutation createTraefikTCPServiceWeighted(
-    $input: TraefikTCPServiceWeightedInput!
+    $input: TraefikServiceWeightedInput!
   ) {
     createTraefikTCPServiceWeighted(input: $input) {
       ...BasicMutationFragment
@@ -79,7 +79,7 @@ const create_udp_loadbalancer = gql`
 
 const create_udp_weighted = gql`
   mutation createTraefikUDPServiceWeighted(
-    $input: TraefikUDPServiceWeightedInput!
+    $input: TraefikServiceWeightedInput!
   ) {
     createTraefikUDPServiceWeighted(input: $input) {
       ...BasicMutationFragment
