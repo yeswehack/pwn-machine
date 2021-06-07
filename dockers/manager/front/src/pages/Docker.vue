@@ -4,7 +4,7 @@
       <q-route-tab
         :to="{ name: 'dockerOverview' }"
         label="Overview"
-        icon="eva-globe-2"
+        icon="eva-globe-outline"
       />
       <q-route-tab
         :to="{ name: 'dockerImages' }"

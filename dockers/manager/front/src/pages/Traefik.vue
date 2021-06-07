@@ -3,7 +3,7 @@
     <q-route-tab
       :to="{ name: 'traefikOverview' }"
       label="Overview"
-      icon="eva-eye-outline"
+      icon="eva-globe-outline"
     />
     <q-route-tab
       :to="{ name: 'traefikEntrypoints' }"
