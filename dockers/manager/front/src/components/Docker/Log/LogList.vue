@@ -52,7 +52,7 @@ export default {
       query: api.docker.logs.LIST_LOGS,
       variables() {
         return {
-          filter: { containerName: [] },
+          filter: { containerName: this.containers },
           cursor: { from: 0, size: this.rowsPerPage }
         };
       },
