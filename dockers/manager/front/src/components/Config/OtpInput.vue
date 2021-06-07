@@ -1,15 +1,15 @@
 <template>
   <q-input
     ref="otp"
+    v-model="form"
     outlined
     label="OTP"
     input-class="text-mono text-h5 text-center otp-input q-my-sm"
     autogrow
     mask="######"
     fill-mask
-    @keypress.enter="$emit('enter')"
     :rules="[isTotp]"
-    v-model="form"
+    @keypress.enter="$emit('enter')"
   />
 </template>
 

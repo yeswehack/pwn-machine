@@ -1,16 +1,16 @@
 <template>
   <q-table
-    class="full-width scroll thin-scrollbar"
     v-bind="$attrs"
+    ref="table"
+    class="full-width scroll thin-scrollbar"
     :columns="columns"
     dense
-    @request="onRequest"
     :loading="$apollo.loading"
     :data="logs"
     :pagination.sync="pagination"
     no-data-label="No logs available."
     table-header-style="text-transform: capitalize"
-    ref="table"
+    @request="onRequest"
   >
     <template #body-cell="props">
       <q-td auto-width :props="props">
@@ -37,17 +37,17 @@
     </template>
     <template #body-cell-routerName="{value}">
       <q-td auto-width>
-        <router-link :name="value" v-if="value" />
+        <router-link v-if="value" :name="value" />
       </q-td>
     </template>
     <template #body-cell-serviceName="{value}">
       <q-td auto-width>
-        <service-link :name="value" v-if="value" />
+        <service-link v-if="value" :name="value" />
       </q-td>
     </template>
     <template #body-cell-entrypointName="{value}">
       <q-td auto-width align="center">
-        <entrypoint-link :name="value" v-if="value" />
+        <entrypoint-link v-if="value" :name="value" />
       </q-td>
     </template>
     <template #body-cell-status="{value}">
@@ -104,26 +104,6 @@ export default {
       pollInterval: 5000
     }
   },
-  methods: {
-    statusColor(status) {
-      if (status >= 200 && status < 300) {
-        return "text-green";
-      }
-      if (status >= 300 && status < 400) {
-        return "text-yellow";
-      }
-      if (status >= 400 && status < 600) {
-        return "text-red";
-      }
-      return "";
-    },
-    onRequest(props) {
-      const { page, rowsPerPage } = props.pagination;
-      this.pagination.page = page;
-      this.pagination.rowsPerPage = rowsPerPage;
-      this.$apollo.queries.traefikLogs.refetch();
-    }
-  },
   data() {
     const pagination = {
       page: 1,
@@ -167,18 +147,6 @@ export default {
     }
     return { pagination, columns };
   },
-  mounted() {
-    const rowHeight = 28.5;
-    const table = this.$refs.table.$el;
-    const inner = table.querySelector(".q-table__middle");
-    const height = inner.getBoundingClientRect().height;
-    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
-  },
-  watch: {
-    traefikLogs(traefikLogs) {
-      this.pagination.rowsNumber = traefikLogs.total;
-    }
-  },
   computed: {
     rowNumber() {
       return this.logs?.total ?? 0;
@@ -191,6 +159,38 @@ export default {
     },
     size() {
       return this.pagination.rowsPerPage;
+    }
+  },
+  watch: {
+    traefikLogs(traefikLogs) {
+      this.pagination.rowsNumber = traefikLogs.total;
+    }
+  },
+  mounted() {
+    const rowHeight = 28.5;
+    const table = this.$refs.table.$el;
+    const inner = table.querySelector(".q-table__middle");
+    const height = inner.getBoundingClientRect().height;
+    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
+  },
+  methods: {
+    statusColor(status) {
+      if (status >= 200 && status < 300) {
+        return "text-green";
+      }
+      if (status >= 300 && status < 400) {
+        return "text-yellow";
+      }
+      if (status >= 400 && status < 600) {
+        return "text-red";
+      }
+      return "";
+    },
+    onRequest(props) {
+      const { page, rowsPerPage } = props.pagination;
+      this.pagination.page = page;
+      this.pagination.rowsPerPage = rowsPerPage;
+      this.$apollo.queries.traefikLogs.refetch();
     }
   }
 };

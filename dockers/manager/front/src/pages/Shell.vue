@@ -6,11 +6,11 @@
       class="bg-positive text-white"
     />
     <q-route-tab
+      v-for="{ nodeId, containerName } of shells"
+      :key="nodeId"
       :to="{ name: 'shellId', params: { id: nodeId } }"
       :name="nodeId"
-      :key="nodeId"
       :label="containerName"
-      v-for="{ nodeId, containerName } of shells"
     />
   </tab-page>
 </template>

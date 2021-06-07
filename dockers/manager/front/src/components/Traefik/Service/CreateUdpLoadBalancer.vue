@@ -1,12 +1,12 @@
 <template>
   <div class="q-gutter-md">
     <component
+      :is="formChildren.servers"
       ref="servers"
+      v-model="form.servers"
       object-key="address"
       label="Servers"
-      :is="formChildren.servers"
       :rules="[required('You must choose at least one server')]"
-      v-model="form.servers"
     />
   </div>
 </template>

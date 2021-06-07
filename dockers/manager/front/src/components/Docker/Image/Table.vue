@@ -17,14 +17,14 @@
         icon="eva-trash-outline"
         @click="pruneImages"
       />
-      <q-checkbox label="Show intermediate images" v-model="showIntermediate" />
+      <q-checkbox v-model="showIntermediate" label="Show intermediate images" />
     </template>
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
         <container-link
-          :name="name"
-          :key="name"
           v-for="{ name } of row.usedBy"
+          :key="name"
+          :name="name"
         />
       </div>
     </template>
@@ -34,9 +34,9 @@
     <template #body-cell-tags="{row}">
       <div class="row q-gutter-sm">
         <div
-          class="col col-auto"
-          :key="`${row.shortId}-${tag}`"
           v-for="tag of row.tags"
+          :key="`${row.shortId}-${tag}`"
+          class="col col-auto"
         >
           <q-badge
             dense

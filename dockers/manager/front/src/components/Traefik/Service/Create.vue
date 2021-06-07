@@ -4,26 +4,26 @@
       <q-tab-panel name="chooseType">
         <q-input
           ref="name"
+          v-model="form.name"
           label="Name"
           :rules="[required('You must enter a name.')]"
-          v-model="form.name"
         />
         <q-select
+          v-model="form.protocol"
           label="Protocol"
           :options="Object.keys(availableTypes)"
-          v-model="form.protocol"
         />
         <q-select
+          v-model="form.type"
           label="Type"
           :disable="!form.protocol"
           :options="availableTypes[form.protocol]"
-          v-model="form.type"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
         <component
-          ref="create"
           :is="createComponent"
+          ref="create"
           v-model="form.extra"
           @updateSubtitle="t => $emit('updateSubtitle', t)"
         />

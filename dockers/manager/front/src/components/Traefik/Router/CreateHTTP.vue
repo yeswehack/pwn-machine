@@ -4,19 +4,19 @@
       <div class="col q-mr-sm">
         <q-input
           ref="rule"
+          v-model="form.rule"
           label="Rule"
           hint="ex: Host(`example.com`)"
           :rules="[validateRule]"
-          v-model="form.rule"
           debounce="100"
         />
       </div>
       <div class="col col-3">
         <q-input
+          v-model.number="form.priority"
           label="Prority"
           placeholder="auto"
           type="number"
-          v-model.number="form.priority"
         />
       </div>
     </div>
@@ -31,13 +31,13 @@
       protocol="http"
     />
     <component
-      ref="service"
       :is="formChildren.service"
+      ref="service"
       v-model="form.service"
       protocol="http"
     />
     <q-list separator bordered class="rounded-borders">
-      <component ref="tls" :is="formChildren.tls" v-model="form.tls" />
+      <component :is="formChildren.tls" ref="tls" v-model="form.tls" />
     </q-list>
   </div>
 </template>

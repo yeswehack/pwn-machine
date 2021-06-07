@@ -8,9 +8,9 @@
           leave-active-class="animated fadeIn fadeOut delay-3s"
         >
           <q-card-section
-            :key="`${pull.name}-${idx}`"
             v-for="(pull, idx) of pulls"
             v-show="!pull.over"
+            :key="`${pull.name}-${idx}`"
           >
             <image-puller-entry :pull="pull" @close="pull.over = true" />
           </q-card-section>
@@ -33,6 +33,14 @@ export default {
       return this.pulls.some(pull => !pull.over);
     }
   },
+  created() {
+    PullImageBus.$on("pullImage", ({ name, done }) => {
+      this.pullImage(name, done);
+    });
+  },
+  destroyed() {
+    PullImageBus.$off("pullImage");
+  },
   methods: {
     async pullImage(name, done) {
       this.mutate({
@@ -52,14 +60,6 @@ export default {
         this.pulls.push(pull);
       });
     }
-  },
-  created() {
-    PullImageBus.$on("pullImage", ({ name, done }) => {
-      this.pullImage(name, done);
-    });
-  },
-  destroyed() {
-    PullImageBus.$off("pullImage");
   }
 };
 </script>

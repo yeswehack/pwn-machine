@@ -2,25 +2,25 @@
   <q-select
     ref="select"
     v-bind="$attrs"
-    :options="imageOptions"
     v-model="form"
+    :options="imageOptions"
     input-debounce="0"
     label="Image"
     use-input
     emit-value
     :rules="[required('Image is required')]"
     map-options
-    @filter="filterFn"
     :readonly="readonly"
     clearable
+    @filter="filterFn"
   >
     <template #after>
       <q-btn
+        v-if="!readonly"
         round
         icon="eva-plus"
         color="positive"
         @click.stop="searchImage"
-        v-if="!readonly"
       />
     </template>
   </q-select>
@@ -32,8 +32,8 @@ import ImageSearchVue from "./ImageSearch.vue";
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
-  props: { readonly: { type: Boolean, default: false } },
   mixins: [DeepForm],
+  props: { readonly: { type: Boolean, default: false } },
   formDefinition: null,
   data: () => ({ filter: null }),
   apollo: {

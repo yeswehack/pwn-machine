@@ -23,12 +23,12 @@ import CreateNetwork from "./Create.vue";
 import ConnectContainerInput from "../ConnectContainerInput.vue";
 
 export default {
-  props: {
-    network: { type: Object, required: true }
-  },
   components: {
     CreateNetwork,
     ConnectContainerInput
+  },
+  props: {
+    network: { type: Object, required: true }
   },
   methods: {}
 };

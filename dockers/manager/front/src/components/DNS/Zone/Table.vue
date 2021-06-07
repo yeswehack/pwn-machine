@@ -31,6 +31,30 @@ export default {
       update: data => data.dnsZones
     }
   },
+  data() {
+    const field = (name, opt = {}) => ({
+      name: name,
+      align: "left",
+      label: name,
+      field: name,
+      sortable: true,
+      autoWidth: true,
+      ...opt
+    });
+    const soaField = (name, opt = {}) =>
+      field(name, { field: r => r.soa[name], ...opt });
+    const columns = [
+      field("name", { autoWidth: false }),
+      soaField("nameserver", { autoWidth: false }),
+      soaField("postmaster", { autoWidth: false }),
+      field("serial"),
+      soaField("refresh"),
+      soaField("retry"),
+      soaField("expire"),
+      soaField("ttl", { label: "TTL" })
+    ];
+    return { columns };
+  },
   methods: {
     createZone() {
       this.$q.dialog({
@@ -62,30 +86,6 @@ export default {
           });
         });
     }
-  },
-  data() {
-    const field = (name, opt = {}) => ({
-      name: name,
-      align: "left",
-      label: name,
-      field: name,
-      sortable: true,
-      autoWidth: true,
-      ...opt
-    });
-    const soaField = (name, opt = {}) =>
-      field(name, { field: r => r.soa[name], ...opt });
-    const columns = [
-      field("name", { autoWidth: false }),
-      soaField("nameserver", { autoWidth: false }),
-      soaField("postmaster", { autoWidth: false }),
-      field("serial"),
-      soaField("refresh"),
-      soaField("retry"),
-      soaField("expire"),
-      soaField("ttl", { label: "TTL" })
-    ];
-    return { columns };
   }
 };
 </script>

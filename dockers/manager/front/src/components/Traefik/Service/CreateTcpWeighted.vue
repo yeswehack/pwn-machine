@@ -1,10 +1,10 @@
 <template>
   <div class="q-gutter-md">
     <component
-      ref="service"
-      protocol="tcp"
       :is="formChildren.services"
+      ref="service"
       v-model="form.services"
+      protocol="tcp"
     />
   </div>
 </template>

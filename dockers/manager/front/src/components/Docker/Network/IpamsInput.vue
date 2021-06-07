@@ -24,32 +24,32 @@
         <base-grid-input
           :readonly="readonly"
           :titles="['Subnet', 'Gateway', 'IP Range']"
-          gridFormat="1fr 1fr 1fr"
+          grid-format="1fr 1fr 1fr"
           :entries="form"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
         >
           <template #inputs>
             <q-input
-              class="col"
-              flat
               v-model="model.subnet"
-              @keypress.enter.prevent="addEntry"
+              class="col"
+              flat
               label="Subnet"
+              @keypress.enter.prevent="addEntry"
             />
             <q-input
-              class="col"
-              flat
               v-model="model.gateway"
-              @keypress.enter.prevent="addEntry"
-              label="Gateway"
-            />
-            <q-input
               class="col"
               flat
-              v-model="model.ipRange"
+              label="Gateway"
               @keypress.enter.prevent="addEntry"
+            />
+            <q-input
+              v-model="model.ipRange"
+              class="col"
+              flat
               label="IP Range"
+              @keypress.enter.prevent="addEntry"
             />
           </template>
           <template #entry="{entry}">
@@ -57,8 +57,8 @@
               {{ entry.subnet }}
               <q-popup-edit v-model="entry.subnet">
                 <q-input
-                  :readonly="readonly"
                   v-model.number="entry.subnet"
+                  :readonly="readonly"
                   dense
                   autofocus
                 />
@@ -68,8 +68,8 @@
               {{ entry.gateway }}
               <q-popup-edit v-model="entry.gateway">
                 <q-input
-                  :readonly="readonly"
                   v-model.number="entry.gateway"
+                  :readonly="readonly"
                   dense
                   autofocus
                 />
@@ -79,8 +79,8 @@
               {{ entry.ipRange }}
               <q-popup-edit v-model="entry.ipRange">
                 <q-input
-                  :readonly="readonly"
                   v-model.number="entry.ipRange"
+                  :readonly="readonly"
                   dense
                   autofocus
                 />
@@ -105,10 +105,11 @@ const defaultModel = {
 };
 
 export default {
-  props: { readonly: { type: Boolean, default: false } },
   components: { HelpLink, BaseGridInput },
   mixins: [DeepForm],
+  props: { readonly: { type: Boolean, default: false } },
   formDefinition: [],
+  data: () => ({ model: defaultModel }),
   computed: {
     caption() {
       if (this.form.length === 0) {
@@ -117,7 +118,6 @@ export default {
       return `${this.form.length} setting(s)`;
     }
   },
-  data: () => ({ model: defaultModel }),
   methods: {
     removeEntry(idx) {
       this.form.splice(idx, 1);

@@ -19,6 +19,11 @@ export default {
       update: data => data.traefikEntrypoints
     }
   },
+  watch: {
+    entrypoints(entrypoints) {
+      this.renderOverview(entrypoints ?? []);
+    }
+  },
   methods: {
     renderOverview(entrypoints) {
       cytoscape.use(dagre);
@@ -145,11 +150,6 @@ export default {
           nodeDimensionsIncludeLabels: true
         }
       });
-    }
-  },
-  watch: {
-    entrypoints(entrypoints) {
-      this.renderOverview(entrypoints ?? []);
     }
   }
 };

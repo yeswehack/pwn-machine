@@ -103,7 +103,7 @@ import Vue from "vue";
 
 export default {
   props: {
-    name: String
+    name: { type: String, required: true }
   },
   data: () => ({
     files: [],

@@ -2,11 +2,11 @@
   <base-dialog ref="dialog" title="Search image" class="searchImage">
     <q-card-section>
       <q-input
+        v-model="search"
         filled
         clearable
         label="Search"
         class="full-width"
-        v-model="search"
         @input="doSearch"
       />
     </q-card-section>
@@ -118,11 +118,11 @@ import { format } from "quasar";
 import Vue from "vue";
 
 export default {
+  components: { BaseDialog },
   props: {
     chooseImage: { type: Boolean, default: false },
     input: { type: String, default: null }
   },
-  components: { BaseDialog },
   apollo: {
     imageSearchResults: {
       query: api.docker.images.SEARCH_IMAGE,

@@ -2,8 +2,8 @@
   <q-form @submit="submit">
     <q-card-section>
       <q-input
-        required
         v-model="form.name"
+        required
         label="Name"
         class="q-pb-md"
         :rules="[endsWithDot]"
@@ -23,8 +23,8 @@ import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
 
 export default {
-  mixins: [DeepForm],
   components: { ResetAndSave },
+  mixins: [DeepForm],
   formDefinition: {
     name: null,
     soa: SoaForm

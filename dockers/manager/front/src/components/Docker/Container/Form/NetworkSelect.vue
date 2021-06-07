@@ -2,9 +2,8 @@
   <q-select
     ref="select"
     v-bind="$attrs"
-    :options="options"
     v-model="formData"
-    @filter="filterOptions"
+    :options="options"
     input-debounce="0"
     label="Network"
     use-input
@@ -13,10 +12,11 @@
     fill-input
     use-chips
     multiple
+    @filter="filterOptions"
     @add="checkForConflict"
   >
     <template
-      v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }"
+      #option="{ itemProps, itemEvents, opt, selected, toggleOption }"
     >
       <q-item v-bind="itemProps" v-on="itemEvents">
         <q-item-section>

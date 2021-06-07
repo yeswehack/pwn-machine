@@ -1,8 +1,8 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Compress</div>
-      <list-input label="Excluded content types" v-model="form.excludedContentTypes" />
+  <div v-if="!hideTitle" class="text-h6">Compress</div>
+      <list-input v-model="form.excludedContentTypes" label="Excluded content types" />
   </div>
 </template>
 <script>
@@ -10,11 +10,11 @@ import DeepForm from "src/mixins/DeepForm";
  import ListInput from 'src/components/ListInput.vue';
 
 export default {
+    components: {  ListInput },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  ListInput },
-    mixins: [DeepForm],
     formDefinition: {
   excludedContentTypes: [],
 },

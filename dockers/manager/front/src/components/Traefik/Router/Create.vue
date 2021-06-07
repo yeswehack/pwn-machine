@@ -5,29 +5,29 @@
         <div class="col">
           <q-input
             ref="name"
+            v-model="form.name"
             label="Name"
             autofocus
             :rules="[required('You must enter a name.')]"
-            v-model="form.name"
           />
         </div>
         <div class="col col-3">
           <q-select
+            v-model="form.protocol"
             label="Protocol"
             :options="protocols"
-            v-model="form.protocol"
           />
         </div>
       </div>
     </q-card-section>
     <q-card-section class="q-pt-none">
-      <component ref="create" :is="createComponent" v-model="form.extra" />
+      <component :is="createComponent" ref="create" v-model="form.extra" />
     </q-card-section>
     <q-card-section>
       <reset-and-save
         :modified="modified"
-        @save="submit"
         :validate="validate"
+        @save="submit"
         @reset="reset"
       />
     </q-card-section>

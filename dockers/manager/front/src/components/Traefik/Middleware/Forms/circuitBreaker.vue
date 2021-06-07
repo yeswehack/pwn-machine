@@ -1,19 +1,19 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Circuit breaker</div>
-      <q-input label="Expression" v-model="form.expression" />
+  <div v-if="!hideTitle" class="text-h6">Circuit breaker</div>
+      <q-input v-model="form.expression" label="Expression" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
+    components: {  },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  },
-    mixins: [DeepForm],
     formDefinition: {
   expression: null,
 },

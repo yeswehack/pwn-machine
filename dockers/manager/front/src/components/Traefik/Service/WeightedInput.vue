@@ -4,7 +4,7 @@
     <base-grid-input
       :titles="['Service', 'Weight']"
       :readonly="readonly"
-      gridFormat="1fr 1fr"
+      grid-format="1fr 1fr"
       :entries="form"
       :error="errorMsg"
       @addEntry="addEntry"
@@ -12,17 +12,17 @@
     >
       <template #inputs>
         <q-select
+          v-model="model.name"
           label="Service"
           flat
           :options="serviceOptions"
-          v-model="model.name"
           @keypress.enter.prevent="addEntry"
         />
         <q-input
+          v-model.number="model.weight"
           label="Weight"
           flat
           type="number"
-          v-model.number="model.weight"
           @keypress.enter.prevent="addEntry"
         />
       </template>
@@ -31,10 +31,10 @@
           {{ entry.name }}
           <q-popup-edit v-model="entry.name">
             <q-select
+              v-model="entry.name"
               class="col"
               flat
               :options="serviceOptions"
-              v-model="entry.name"
               @keypress.enter.prevent="addEntry"
             />
           </q-popup-edit>
@@ -43,9 +43,9 @@
           {{ entry.weight }}
           <q-popup-edit v-model="entry.weight">
             <q-input
+              v-model.number="entry.weight"
               class="col"
               flat
-              v-model.number="entry.weight"
               @keypress.enter.prevent="addEntry"
             />
           </q-popup-edit>

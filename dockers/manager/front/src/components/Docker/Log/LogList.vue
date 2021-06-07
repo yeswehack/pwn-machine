@@ -1,14 +1,15 @@
+
 <template>
   <div class="full-width scroll thin-scrollbar">
-    <q-infinite-scroll :offset="200" @load="onLoad" reverse>
+    <q-infinite-scroll :offset="200" reverse @load="onLoad">
       <div class="docker-log-list">
         <template v-for="(log, idx) of items">
-          <div class="text-mono text-no-wrap" :key="`${idx}-date`">
+          <div :key="`${idx}-date`" class="text-mono text-no-wrap">
             {{ formatDate(log.date) }}
           </div>
           <div
-            class="text-mono text-no-wrap"
             :key="`${idx}-name`"
+            class="text-mono text-no-wrap"
             :style="{ color: colorHash.hex(log.containerName) }"
           >
             {{ log.containerName }}
@@ -20,7 +21,7 @@
           />
         </template>
       </div>
-      <template v-slot:loading>
+      <template #loading>
         <div class="row justify-center q-my-md">
           <q-spinner-dots color="primary" size="40px" />
         </div>
@@ -62,6 +63,20 @@ export default {
       fetchPolicy: "network-only"
     }
   },
+  data() {
+    const colorHash = new ColorHash({ lightness: 0.7, saturation: 1 });
+    return { items: [], colorHash };
+  },
+  computed: {
+    logs() {
+      return this.dockerLogs ?? [];
+    }
+  },
+  watch: {
+    containers(v) {
+      this.refresh();
+    }
+  },
   methods: {
     onLoad(index, done) {
       this.$apollo.queries.dockerLogs.fetchMore({
@@ -92,20 +107,6 @@ export default {
     refresh() {
       this.items.splice(0, this.items.length);
       this.onLoad(1, x => x);
-    }
-  },
-  watch: {
-    containers(v) {
-      this.refresh();
-    }
-  },
-  data() {
-    const colorHash = new ColorHash({ lightness: 0.7, saturation: 1 });
-    return { items: [], colorHash };
-  },
-  computed: {
-    logs() {
-      return this.dockerLogs ?? [];
     }
   }
 };

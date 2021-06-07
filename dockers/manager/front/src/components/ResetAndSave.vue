@@ -10,7 +10,7 @@
       />
     </div>
 
-    <div class="col col-auto q-gutter-sm" v-if="steps">
+    <div v-if="steps" class="col col-auto q-gutter-sm">
       <q-btn
         :disabled="isFirstStep"
         title="Back"
@@ -48,6 +48,7 @@ export default {
     validate: { type: Function, default: null },
     modified: { type: Boolean, default: false }
   },
+  data: () => ({ isRunning: false }),
   computed: {
     stepIndex() {
       return this.steps?.findIndex(step => (step?.name ?? step) === this.step);
@@ -77,7 +78,6 @@ export default {
       return this.modified ? "primary" : "grey";
     }
   },
-  data: () => ({ isRunning: false }),
   methods: {
     emitStep(step) {
       this.$emit("update:step", step?.name ?? step);

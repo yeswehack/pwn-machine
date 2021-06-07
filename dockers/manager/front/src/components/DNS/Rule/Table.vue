@@ -16,7 +16,7 @@
     </template>
     <template #body-cell-type="{row, value}">
       {{ value }}
-      <q-badge rounded label="LUA" class="q-ml-sm" v-if="row.isLua" />
+      <q-badge v-if="row.isLua" rounded label="LUA" class="q-ml-sm" />
     </template>
     <template #body-cell-enabled="{row, value}">
       <q-toggle
@@ -26,7 +26,7 @@
         @input="v => toggleRule(row, v)"
       />
     </template>
-    <template v-slot:details="{ row }">
+    <template #details="{ row }">
       <rule-details :value="row" />
     </template>
   </base-table>
@@ -46,9 +46,6 @@ export default {
       query: api.dns.rules.LIST_RULES,
       update: data => data.dnsRules
     }
-  },
-  created() {
-    this.$root.$on("refresh", () => this.$apollo.queries.rules.refetch());
   },
   data() {
     const field = (name, opt = {}) => ({
@@ -72,6 +69,9 @@ export default {
       field("enabled", { field: r => this.isEnabled(r) })
     ];
     return { columns };
+  },
+  created() {
+    this.$root.$on("refresh", () => this.$apollo.queries.rules.refetch());
   },
   methods: {
     createRule() {

@@ -2,12 +2,12 @@
   <div class="column q-gutter-md">
     <div class="col">
       <component
+        :is="formChildren.servers"
         ref="servers"
+        v-model="form.servers"
         object-key="url"
         label="Servers url"
-        :is="formChildren.servers"
         :rules="[required('You must choose at least one server')]"
-        v-model="form.servers"
       />
     </div>
 
@@ -15,15 +15,15 @@
       <div class="row q-gutter-xl items-end">
         <div class="col">
           <q-input
-            label="Flush interval"
             v-model="form.responseForwarding.flushInterval"
+            label="Flush interval"
           />
         </div>
         <div class="col-auto">
           <q-toggle
+            v-model="form.passHostHeader"
             label="Pass Host header"
             left-label
-            v-model="form.passHostHeader"
           />
         </div>
       </div>

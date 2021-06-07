@@ -6,12 +6,12 @@
       <q-card>
         <q-card-section>
         <div class="column q-gutter-sm">
-      <component :is="formChildren.issuer" label="Issuer" v-model="form.issuer" />
-      <q-toggle label="Not after" v-model="form.notAfter" />
-      <q-toggle label="Not before" v-model="form.notBefore" />
-      <q-toggle label="Sans" v-model="form.sans" />
-      <q-toggle label="Serial number" v-model="form.serialNumber" />
-      <component :is="formChildren.subject" label="Subject" v-model="form.subject" />
+      <component :is="formChildren.issuer" v-model="form.issuer" label="Issuer" />
+      <q-toggle v-model="form.notAfter" label="Not after" />
+      <q-toggle v-model="form.notBefore" label="Not before" />
+      <q-toggle v-model="form.sans" label="Sans" />
+      <q-toggle v-model="form.serialNumber" label="Serial number" />
+      <component :is="formChildren.subject" v-model="form.subject" label="Subject" />
 </div>
         </q-card-section>
       </q-card>

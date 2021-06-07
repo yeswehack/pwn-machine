@@ -3,18 +3,18 @@
     <label class="row text-bold">{{ label }}</label>
     <div class="row q-gutter-sm">
       <q-input
+        v-model="model.key"
         class="col"
         flat
-        v-model="model.key"
-        @keypress.enter.prevent="addEntry"
         label="Name"
+        @keypress.enter.prevent="addEntry"
       />
       <q-input
+        v-model="model.value"
         class="col"
         flat
-        v-model="model.value"
-        @keypress.enter.prevent="addEntry"
         label="Value"
+        @keypress.enter.prevent="addEntry"
       >
         <template #append>
           <q-btn
@@ -29,7 +29,7 @@
       </q-input>
     </div>
     <q-list separator dense padding>
-      <q-item :key="idx" v-for="(entry, idx) of form">
+      <q-item v-for="(entry, idx) of form" :key="idx">
         <q-item-section>
           <div class="row q-col-gutter-sm">
             <div class="col col-6">

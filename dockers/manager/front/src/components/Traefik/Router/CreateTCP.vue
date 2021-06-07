@@ -2,10 +2,10 @@
   <div class="column q-col-gutter-sm">
     <q-input
       ref="rule"
+      v-model="form.rule"
       label="Rule"
       hint="ex: HostSNI(`example.com`)"
       :rules="[validateRule]"
-      v-model="form.rule"
       debounce="100"
     />
     <component
@@ -14,8 +14,8 @@
       protocol="tcp"
     />
     <component
-      ref="service"
       :is="formChildren.service"
+      ref="service"
       v-model="form.service"
       protocol="tcp"
     />

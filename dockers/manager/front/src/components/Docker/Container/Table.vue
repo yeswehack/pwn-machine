@@ -39,10 +39,10 @@
     <template #body-cell-name="{value, row}">
       {{ value }}
       <q-badge
+        v-if="row.privileged"
         rounded
         color="red"
         align="top"
-        v-if="row.privileged"
         title="Privileged"
         class="q-ml-xs"
       />
@@ -50,16 +50,16 @@
     <template #body-cell-volumes="{row}">
       <div class="q-gutter-sm">
         <volume-link
-          :name="name"
-          :key="name"
           v-for="{ name } of row.mounts.filter(n => n.type === 'volume')"
+          :key="name"
+          :name="name"
         />
       </div>
     </template>
     <template #body-cell-networks="{row}">
       <div class="row q-gutter-sm">
         <template v-for="(connection, idx) of row.connections">
-          <network-link :network="connection.network" :key="idx">
+          <network-link :key="idx" :network="connection.network">
             <q-tooltip
               v-if="connection.ipAddress"
               anchor="top middle"

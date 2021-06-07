@@ -15,16 +15,16 @@
           </q-card-section>
           <q-card-section>
             <component
-              ref="create"
               :is="formChildren.extra"
+              ref="create"
               v-model="form.extra"
             />
           </q-card-section>
           <q-card-section>
             <reset-and-save
               :modified="modified"
-              @save="submit"
               :validate="validate"
+              @save="submit"
               @reset="reset"
             />
           </q-card-section>

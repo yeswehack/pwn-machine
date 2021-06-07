@@ -1,13 +1,13 @@
 <template>
   <q-select
+    ref="portSelect"
+    v-model.number="form"
     clearable
     use-input
-    ref="portSelect"
     :rules="[required('This field is required')]"
     :options="portOptions"
     new-value-mode="add"
     label="Port to expose"
-    v-model.number="form"
     map-options
     emit-value
   />
@@ -20,12 +20,7 @@ export default {
   mixins: [DeepForm],
   formDefinition: null,
   props: {
-    container: { type: Object, required: false }
-  },
-  methods: {
-    validate() {
-      return this.$refs.portSelect.validate();
-    }
+    container: { type: Object, default: null }
   },
   computed: {
     portOptions() {
@@ -36,6 +31,11 @@ export default {
           value: p.containerPort,
           protocol: p.protocol
         }));
+    }
+  },
+  methods: {
+    validate() {
+      return this.$refs.portSelect.validate();
     }
   }
 };

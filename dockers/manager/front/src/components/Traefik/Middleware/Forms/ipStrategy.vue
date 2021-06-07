@@ -6,8 +6,8 @@
       <q-card>
         <q-card-section>
         <div class="column q-gutter-sm">
-      <q-input type="number" label="Depth" v-model.number="form.depth" />
-      <list-input label="Excludedi ps" v-model="form.excludedIPs" />
+      <q-input v-model.number="form.depth" type="number" label="Depth" />
+      <list-input v-model="form.excludedIPs" label="Excludedi ps" />
 </div>
         </q-card-section>
       </q-card>

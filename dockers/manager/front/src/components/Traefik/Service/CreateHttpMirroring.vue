@@ -2,21 +2,21 @@
   <div class="q-gutter-md">
     <q-select
       ref="service"
+      v-model="form.service"
       label="Service"
       :options="serviceOptions"
       :rules="[required('You must select a service.')]"
-      v-model="form.service"
     />
     <q-input
+      v-model.number="form.maxBodySize"
       type="number"
       label="Max body size"
-      v-model.number="form.maxBodySize"
     />
     <component
-      ref="mirrors"
       :is="formChildren.mirrors"
-      :services="serviceOptions"
+      ref="mirrors"
       v-model="form.mirrors"
+      :services="serviceOptions"
     />
   </div>
 </template>

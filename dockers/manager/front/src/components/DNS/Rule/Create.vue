@@ -2,54 +2,54 @@
   <q-form @submit="submit">
     <q-card-section class="column q-col-gutter-md">
       <q-select
-        :rules="[required('Please choose a zone')]"
-        v-model="form.zone"
-        :options="zoneNames"
         ref="zone"
+        v-model="form.zone"
+        :rules="[required('Please choose a zone')]"
+        :options="zoneNames"
         label="zone"
         class="col"
       />
       <q-input
-        :disable="!form.zone"
         ref="name"
         v-model="form.name"
+        :disable="!form.zone"
         :rules="[validateName]"
         label="name"
         class="col"
       />
       <div class="row q-gutter-md ">
         <q-toggle
+          v-model="form.isLua"
           :disable="!form.zone"
           label="Lua record"
-          v-model="form.isLua"
         />
         <q-select
+          ref="type"
+          v-model="form.type"
           :disable="!form.zone"
           :rules="[required('Please choose a type')]"
-          v-model="form.type"
           :options="types"
-          ref="type"
           class="col"
           label="type"
         />
         <q-input
+          v-model.number="form.ttl"
           :disable="!form.zone"
           type="number"
           min="0"
-          v-model.number="form.ttl"
           class="col"
           label="TTL"
         />
       </div>
-      <lua-editor v-model="form.records[0].content" v-if="isLua" />
+      <lua-editor v-if="isLua" v-model="form.records[0].content" />
       <component
-        v-else
-        :disable="!form.zone"
         :is="formChildren.records"
+        v-else
+        ref="records"
         v-model="form.records"
+        :disable="!form.zone"
         object-key="content"
         label="Records"
-        ref="records"
       />
     </q-card-section>
     <q-card-section>
@@ -110,8 +110,7 @@ export default {
   components: { ResetAndSave, LuaEditor },
   mixins: [DeepForm],
   props: {
-    value: Object,
-    edit: { type: Boolean }
+    edit: { type: Boolean, default: false }
   },
   apollo: {
     zones: {
@@ -134,6 +133,13 @@ export default {
     },
     isLua() {
       return this.form.isLua;
+    }
+  },
+  watch: {
+    isLua(v) {
+      if (v && this.form.records.length === 0) {
+        this.form.records = [{ content: "return ''" }];
+      }
     }
   },
   methods: {
@@ -167,13 +173,6 @@ export default {
       })
         .then(() => this.$emit("ok"))
         .finally(done);
-    }
-  },
-  watch: {
-    isLua(v) {
-      if (v && this.form.records.length === 0) {
-        this.form.records = [{ content: "return ''" }];
-      }
     }
   }
 };

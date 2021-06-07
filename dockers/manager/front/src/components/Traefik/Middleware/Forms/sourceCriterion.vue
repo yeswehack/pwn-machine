@@ -6,9 +6,9 @@
       <q-card>
         <q-card-section>
         <div class="column q-gutter-sm">
-      <component :is="formChildren.ipStrategy" label="Ip strategy" v-model="form.ipStrategy" />
-      <q-input label="Request header name" v-model="form.requestHeaderName" />
-      <q-toggle label="Request host" v-model="form.requestHost" />
+      <component :is="formChildren.ipStrategy" v-model="form.ipStrategy" label="Ip strategy" />
+      <q-input v-model="form.requestHeaderName" label="Request header name" />
+      <q-toggle v-model="form.requestHost" label="Request host" />
 </div>
         </q-card-section>
       </q-card>

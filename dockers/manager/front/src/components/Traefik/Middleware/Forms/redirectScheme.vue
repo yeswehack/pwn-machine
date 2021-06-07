@@ -1,21 +1,21 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Redirect scheme</div>
-      <q-toggle label="Permanent" v-model="form.permanent" />
-      <q-input label="Port" v-model="form.port" />
-      <q-input label="Scheme" v-model="form.scheme" />
+  <div v-if="!hideTitle" class="text-h6">Redirect scheme</div>
+      <q-toggle v-model="form.permanent" label="Permanent" />
+      <q-input v-model="form.port" label="Port" />
+      <q-input v-model="form.scheme" label="Scheme" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
+    components: {  },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  },
-    mixins: [DeepForm],
     formDefinition: {
   permanent: null,
   port: null,

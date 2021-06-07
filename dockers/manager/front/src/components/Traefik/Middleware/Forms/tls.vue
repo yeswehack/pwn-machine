@@ -6,11 +6,11 @@
       <q-card>
         <q-card-section>
         <div class="column q-gutter-sm">
-      <q-input label="Ca" v-model="form.ca" />
-      <q-toggle label="Ca optional" v-model="form.caOptional" />
-      <q-input label="Cert" v-model="form.cert" />
-      <q-toggle label="Insecure skip verify" v-model="form.insecureSkipVerify" />
-      <q-input label="Key" v-model="form.key" />
+      <q-input v-model="form.ca" label="Ca" />
+      <q-toggle v-model="form.caOptional" label="Ca optional" />
+      <q-input v-model="form.cert" label="Cert" />
+      <q-toggle v-model="form.insecureSkipVerify" label="Insecure skip verify" />
+      <q-input v-model="form.key" label="Key" />
 </div>
         </q-card-section>
       </q-card>

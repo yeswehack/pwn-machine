@@ -1,6 +1,6 @@
 <template>
   <div class="row q-col-gutter-md q-py-md">
-    <div class="col-12" v-if="errors">
+    <div v-if="errors" class="col-12">
       <traefik-error :errors="errors" />
     </div>
     <slot name="body" />
@@ -13,9 +13,7 @@ import TraefikError from "src/components/Traefik/TraefikError.vue";
 export default {
   components: { TraefikError },
   props: {
-    errors: {
-      type: Array
-    }
+    errors: { type: Array, default: () => [] }
   }
 };
 </script>

@@ -48,8 +48,8 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import LogCard from "src/components/LogCard.vue";
 
 export default {
-  mixins: [DeepForm],
   components: { HelpLink, SoaForm, LogList, ResetAndSave, LogCard },
+  mixins: [DeepForm],
   formDefinition: {
     soa: SoaForm
   },

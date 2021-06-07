@@ -3,7 +3,7 @@
     <div class="text-h6">Records</div>
     <base-grid-input
       :titles="['Record', 'Enabled']"
-      gridFormat="1fr auto"
+      grid-format="1fr auto"
       :entries="form"
       :error="error"
       @addEntry="addEntry"
@@ -11,11 +11,11 @@
     >
       <template #inputs>
         <q-input
+          v-model="model.content"
           class="col"
           flat
-          v-model="model.content"
-          @keypress.enter.prevent="addEntry"
           label="New record"
+          @keypress.enter.prevent="addEntry"
         />
         <div>
           <q-toggle
@@ -33,7 +33,7 @@
         <div class="ellipsis">
           {{ entry.content }}
           <q-popup-edit v-model="entry.content">
-            <q-input class="col" flat v-model="entry.content" label="Content" />
+            <q-input v-model="entry.content" class="col" flat label="Content" />
           </q-popup-edit>
         </div>
         <div class="ellipsis">

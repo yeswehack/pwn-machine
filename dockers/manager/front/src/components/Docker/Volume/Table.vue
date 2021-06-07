@@ -24,9 +24,9 @@
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row">
         <container-link
-          :name="name"
-          :key="name"
           v-for="{ name } of row.usedBy"
+          :key="name"
+          :name="name"
         />
       </div>
     </template>
@@ -48,6 +48,25 @@ export default {
       query: api.docker.volumes.LIST_VOLUMES,
       update: data => data.dockerVolumes
     }
+  },
+  data() {
+    const col = (name, opts = {}) => ({
+      name,
+      align: "left",
+      label: name,
+      field: name,
+      sortable: true,
+      ...opts
+    });
+    const columns = [
+      col("name"),
+      col("path", { field: "mountpoint" }),
+      col("usedBy", {
+        label: "used by",
+        field: "usedBy"
+      })
+    ];
+    return { columns };
   },
   methods: {
     pruneVolumes() {
@@ -110,25 +129,6 @@ export default {
           });
         });
     }
-  },
-  data() {
-    const col = (name, opts = {}) => ({
-      name,
-      align: "left",
-      label: name,
-      field: name,
-      sortable: true,
-      ...opts
-    });
-    const columns = [
-      col("name"),
-      col("path", { field: "mountpoint" }),
-      col("usedBy", {
-        label: "used by",
-        field: "usedBy"
-      })
-    ];
-    return { columns };
   }
 };
 </script>

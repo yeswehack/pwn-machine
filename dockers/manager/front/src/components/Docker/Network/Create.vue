@@ -5,19 +5,19 @@
         <div class="col">
           <q-input
             ref="name"
+            v-model="form.name"
             :readonly="readonly"
             :rules="[required('Name is required')]"
-            v-model="form.name"
             required
             label="Name"
           />
         </div>
         <div class="col col-auto">
           <q-checkbox
+            v-model="form.internal"
             :disable="readonly"
             left-label
             label="Internal"
-            v-model="form.internal"
           />
         </div>
       </div>
@@ -40,8 +40,8 @@
     <q-card-section v-if="!readonly">
       <reset-and-save
         :modified="modified"
-        @save="submit"
         :validate="validate"
+        @save="submit"
         @reset="reset"
       />
     </q-card-section>
@@ -56,9 +56,9 @@ import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
 
 export default {
-  props: { readonly: { type: Boolean, default: false } },
-  mixins: [DeepForm],
   components: { ResetAndSave, LabelInput },
+  mixins: [DeepForm],
+  props: { readonly: { type: Boolean, default: false } },
   formDefinition: {
     internal: false,
     name: null,

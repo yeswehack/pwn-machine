@@ -1,7 +1,7 @@
 <template>
   <base-dialog
-    :width="800"
     ref="dialog"
+    :width="800"
     title="Create a new docker container"
     help="https://docs.docker.com/engine/reference/commandline/container_create/"
   >
@@ -16,10 +16,10 @@ import BaseDialog from "src/components/BaseDialog.vue";
 import CreateContainer from "./Create.vue";
 
 export default {
+  components: { BaseDialog, CreateContainer },
   props: {
     container: { type: Object, default: null }
   },
-  components: { BaseDialog, CreateContainer },
   methods: {
     show() {
       this.$refs.dialog.show();

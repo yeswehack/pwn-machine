@@ -2,29 +2,29 @@
   <base-grid-input
     :readonly="readonly"
     :titles="[label]"
-    gridFormat="1fr"
+    grid-format="1fr"
     :entries="form"
+    :error="errorMsg"
     @addEntry="addEntry"
     @removeEntry="removeEntry"
-    :error="errorMsg"
   >
     <template #inputs>
       <q-input
+        v-model="model"
         v-bind="$attrs"
         flat
-        v-model="model"
-        @keypress.enter.prevent="addEntry"
         :label="label"
+        @keypress.enter.prevent="addEntry"
       />
     </template>
     <template #entry="props">
-      <div class="ellipsis" v-if="objectKey">
+      <div v-if="objectKey" class="ellipsis">
         {{ props.entry[objectKey] }}
         <q-popup-edit v-model="props.entry[objectKey]">
           <q-input v-model="props.entry[objectKey]" dense autofocus />
         </q-popup-edit>
       </div>
-      <div class="ellipsis" v-else>
+      <div v-else class="ellipsis">
         {{ props.entry }}
         <q-popup-edit v-model="props.entry">
           <q-input v-model="props.entry" dense autofocus />

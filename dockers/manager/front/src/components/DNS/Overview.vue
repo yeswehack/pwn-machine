@@ -17,6 +17,11 @@ export default {
       update: data => data.dnsZones
     }
   },
+  watch: {
+    zones(zones) {
+      this.renderOveriew(zones);
+    }
+  },
   methods: {
     renderOveriew(zones) {
       cytoscape.use(dagre);
@@ -134,11 +139,6 @@ export default {
           nodeDimensionsIncludeLabels: true
         }
       });
-    }
-  },
-  watch: {
-    zones(zones) {
-      this.renderOveriew(zones);
     }
   }
 };

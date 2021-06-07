@@ -16,32 +16,32 @@
     <template #body-cell-entryPoints="{row}">
       <div class="q-gutter-xs">
         <entrypoint-link
-          :name="entrypoint.name"
-          :key="idx"
           v-for="(entrypoint, idx) of row.entryPoints"
+          :key="idx"
+          :name="entrypoint.name"
         />
       </div>
     </template>
     <template #body-cell-service="{row}">
       <template v-if="row.service">
         <q-badge
+          v-if="row.service.type === 'invalid'"
           :label="row.service.name"
           color="negative"
-          v-if="row.service.type === 'invalid'"
         />
-        <service-link :name="row.service.name" v-else />
+        <service-link v-else :name="row.service.name" />
       </template>
     </template>
     <template #body-cell-middlewares="{row}">
       <div class="q-gutter-xs">
         <template v-for="(middleware, idx) of row.middlewares">
           <q-badge
-            :label="middleware.name"
-            :key="idx"
-            color="negative"
             v-if="middleware.type === 'invalid'"
+            :key="idx"
+            :label="middleware.name"
+            color="negative"
           />
-          <middleware-link :name="middleware.name" :key="idx" v-else />
+          <middleware-link v-else :key="idx" :name="middleware.name" />
         </template>
       </div>
     </template>

@@ -1,11 +1,11 @@
 <template>
   <q-select
+    v-model="form"
     label="Entrypoint"
     :hint="form.length ? '' : 'all'"
     use-chips
     :options="relevantEntrypoints"
     multiple
-    v-model="form"
   />
 </template>
 
@@ -14,8 +14,8 @@ import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
 
 export default {
-  props: { protocol: { type: String, default: null } },
   mixins: [DeepForm],
+  props: { protocol: { type: String, default: null } },
   formDefinition: [],
   apollo: {
     entrypoints: {

@@ -124,7 +124,7 @@
       </log-card>
     </div>
 
-    <details-process :processes="container.ps" v-if="container.ps" />
+    <details-process v-if="container.ps" :processes="container.ps" />
   </div>
 </template>
 

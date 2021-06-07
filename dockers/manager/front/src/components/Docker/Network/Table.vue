@@ -21,8 +21,8 @@
     </template>
     <template #body-cell-name="{value, row}">
       <span
-        style="text-decoration:underline;text-decoration-style:dotted"
         v-if="row.builtin"
+        style="text-decoration:underline;text-decoration-style:dotted"
       >
         {{ value }}
         <q-tooltip anchor="center right" self="center left">Built-in</q-tooltip>
@@ -33,16 +33,16 @@
     </template>
 
     <template #body-cell-internal="{value}">
-      <q-badge color="positive" label="yes" v-if="value" />
-      <q-badge color="negative" label="no" v-else />
+      <q-badge v-if="value" color="positive" label="yes" />
+      <q-badge v-else color="negative" label="no" />
     </template>
 
     <template #body-cell-usedBy="{row}">
       <div class="row q-gutter-sm">
         <container-link
-          :name="connection.container.name"
-          :key="idx"
           v-for="(connection, idx) of row.usedBy"
+          :key="idx"
+          :name="connection.container.name"
         >
           <q-tooltip
             v-if="row.name === 'host'"

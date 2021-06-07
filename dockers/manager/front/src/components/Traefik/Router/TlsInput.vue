@@ -4,33 +4,33 @@
     <q-card>
       <q-card-section>
         <q-select
+          v-model="form.certResolver"
           label="Cert resolver"
           :options="resolverOptions"
           emit-value
           map-options
-          v-model="form.certResolver"
         />
         <base-grid-input
           :titles="['Domain']"
-          gridFormat="1fr"
+          grid-format="1fr"
           :entries="form.domains"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
         >
           <template #inputs>
             <domain-input
-              ref="dnsdomain"
-              :disable="certResolver === null"
-              v-model="domain"
-              @input="addEntry"
               v-if="dnsResolver"
+              ref="dnsdomain"
+              v-model="domain"
+              :disable="certResolver === null"
+              @input="addEntry"
             />
             <q-input
-              label="Domain"
-              @keypress.enter="addEntry"
-              :disable="certResolver === null"
-              v-model="domain"
               v-else
+              v-model="domain"
+              label="Domain"
+              :disable="certResolver === null"
+              @keypress.enter="addEntry"
             />
           </template>
           <template #entry="{entry}">

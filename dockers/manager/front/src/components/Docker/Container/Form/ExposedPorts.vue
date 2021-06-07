@@ -10,31 +10,31 @@
         <base-grid-input
           :readonly="readonly"
           :titles="['Container port', 'Protocol', 'Targets']"
-          gridFormat="3fr 2fr  6fr"
+          grid-format="3fr 2fr  6fr"
           :entries="form"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
         >
           <template #inputs>
             <q-input
+              v-model.number="model.containerPort"
               label="Container port"
               @keypress.enter.prevent="addEntry"
-              v-model.number="model.containerPort"
               @input="addPort"
             />
             <q-select
+              v-model="model.protocol"
               label="Protocol"
               :options="['tcp', 'udp']"
-              v-model="model.protocol"
             />
             <q-select
+              v-model="model.targets"
               use-chips
               new-value-mode="add"
               use-input
               hide-dropdown-icon
               multiple
               label="Targets"
-              v-model="model.targets"
             />
           </template>
           <template #entry="{entry}">
@@ -43,9 +43,9 @@
 
               <q-popup-edit v-model="entry.containerPort">
                 <q-input
+                  v-model.number="entry.containerPort"
                   :readonly="readonly"
                   label="Container port"
-                  v-model.number="entry.containerPort"
                 />
               </q-popup-edit>
             </div>
@@ -53,10 +53,10 @@
               {{ entry.protocol }}
               <q-popup-edit v-model="entry.protocol">
                 <q-select
+                  v-model="entry.protocol"
                   :readonly="readonly"
                   label="Protocol"
                   :options="['tcp', 'udp']"
-                  v-model="entry.protocol"
                 />
               </q-popup-edit>
             </div>
@@ -65,6 +65,7 @@
 
               <q-popup-edit v-model="entry.targets">
                 <q-select
+                  v-model="entry.targets"
                   :readonly="readonly"
                   use-chips
                   new-value-mode="add"
@@ -72,7 +73,6 @@
                   hide-dropdown-icon
                   multiple
                   label="Targets"
-                  v-model="entry.targets"
                 />
               </q-popup-edit>
             </div>
@@ -95,11 +95,11 @@ const defaultModel = {
 
 export default {
   components: { BaseGridInput },
+  mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false },
     container: { type: Object, default: null }
   },
-  mixins: [DeepForm],
   formDefinition: [],
   data: () => ({ model: defaultModel }),
   methods: {

@@ -1,6 +1,6 @@
 <template>
   <div class="overview">
-    <div class="graph-container" ref="graphContainer"></div>
+    <div ref="graphContainer" class="graph-container"></div>
     <q-inner-loading :showing="loading">
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>

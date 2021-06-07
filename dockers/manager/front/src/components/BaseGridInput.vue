@@ -3,16 +3,16 @@
     <div class="input-grid" :style="style">
       <template v-if="readonly">
         <div
-          class="text-bold"
-          :key="`title-${idx}`"
           v-for="(title, idx) of titles"
+          :key="`title-${idx}`"
+          class="text-bold"
         >
           {{ title }}
         </div>
       </template>
       <template v-else>
         <slot name="inputs" />
-        <div class="text-center" v-if="!readonly">
+        <div v-if="!readonly" class="text-center">
           <q-btn
             dense
             round
@@ -24,14 +24,14 @@
           />
         </div>
       </template>
-      <div class="spacing" v-if="!readonly" />
+      <div v-if="!readonly" class="spacing" />
       <div v-if="readonly && entries.length === 0" style="display: contents">
-        <div :key="`title-${idx}`" v-for="(title, idx) of titles">-</div>
+        <div v-for="(title, idx) of titles" :key="`title-${idx}`">-</div>
       </div>
-      <div :key="idx" v-for="(entry, idx) of entries" style="display: contents">
-        <div class="separator" v-if="idx > 0"></div>
+      <div v-for="(entry, idx) of entries" :key="idx" style="display: contents">
+        <div v-if="idx > 0" class="separator"></div>
         <slot name="entry" :entry="entry" />
-        <div class="text-center" v-if="!readonly">
+        <div v-if="!readonly" class="text-center">
           <q-btn
             dense
             round
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <label class="row text-negative" v-if="error">{{ error }}</label>
+    <label v-if="error" class="row text-negative">{{ error }}</label>
   </div>
 </template>
 

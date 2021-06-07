@@ -9,7 +9,7 @@
           Pwn Machine
         </q-toolbar-title>
 
-        <q-tabs align="left" v-if="showMenu" class="tabs col" narrow-indicator>
+        <q-tabs v-if="showMenu" align="left" class="tabs col" narrow-indicator>
           <q-route-tab :to="{ name: 'dockerIndex' }" label="Docker" />
           <q-route-tab :to="{ name: 'dnsIndex' }" label="DNS" />
           <q-route-tab :to="{ name: 'traefikIndex' }" label="Traefik" />
@@ -17,7 +17,7 @@
           <q-space />
           <q-route-tab :to="{ name: 'configIndex' }" label="Auth" />
         </q-tabs>
-        <q-toolbar-title shrink class="q-mr-sm" v-if="showMenu">
+        <q-toolbar-title v-if="showMenu" shrink class="q-mr-sm">
           <q-btn flat round icon="logout" title="logout" @click="logout" />
         </q-toolbar-title>
       </q-toolbar>
@@ -34,8 +34,8 @@
         color="primary"
         dense
         icon="refresh"
-        @click="refresh_"
         :loading="loading"
+        @click="refresh_"
       />
     </q-page-sticky>
   </q-layout>
@@ -49,6 +49,7 @@ import ImagePuller from "src/components/Docker/ImagePuller.vue";
 export default {
   name: "MainLayout",
   components: { Downloader, Uploader, ImagePuller },
+  data: () => ({ loading: false }),
   computed: {
     showMenu() {
       return !this.$route.meta?.hideMenu;
@@ -57,7 +58,13 @@ export default {
       return false;
     }
   },
-  data: () => ({ loading: false }),
+  watch: {
+    requireLogin(v) {
+      if (v) {
+        this.$router.push({ name: "login" });
+      }
+    }
+  },
   methods: {
     logout() {
       localStorage.removeItem("token");
@@ -67,13 +74,6 @@ export default {
       this.loading = true;
       window.setTimeout(() => (this.loading = false), 1000);
       this.refresh();
-    }
-  },
-  watch: {
-    requireLogin(v) {
-      if (v) {
-        this.$router.push({ name: "login" });
-      }
     }
   }
 };

@@ -1,19 +1,19 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Add prefix</div>
-      <q-input label="Prefix" v-model="form.prefix" />
+  <div v-if="!hideTitle" class="text-h6">Add prefix</div>
+      <q-input v-model="form.prefix" label="Prefix" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
+    components: {  },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  },
-    mixins: [DeepForm],
     formDefinition: {
   prefix: null,
 },

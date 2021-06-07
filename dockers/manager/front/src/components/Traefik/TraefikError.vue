@@ -5,7 +5,7 @@
         {{ errors.length > 1 ? "Errors" : "Error" }}
       </div>
       <ul class="error-list">
-        <li :key="idx" v-for="[idx, error] in errors.entries()">
+        <li v-for="[idx, error] in errors.entries()" :key="idx">
           {{ error }}
         </li>
       </ul>
@@ -16,7 +16,7 @@
 <script>
 export default {
   props: {
-    errors: Array
+    errors: { type: Array, default: () => [] }
   }
 };
 </script>

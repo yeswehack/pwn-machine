@@ -3,17 +3,17 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
+          v-model="form.name"
           label="Name"
           required
           :rule="[required('You must make a selection.')]"
-          v-model="form.name"
         />
         <q-select
+          v-model="form.type"
           label="Type"
           use-input
           :options="middlewaresTypes"
           :rules="[required('You must make a selection.')]"
-          v-model="form.type"
           input-debounce="0"
         />
       </q-tab-panel>

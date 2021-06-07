@@ -10,10 +10,10 @@
               <div title="Rule type" class="text-mono">
                 {{ value.type }}
                 <q-badge
+                  v-if="value.isLua"
                   rounded
                   label="LUA"
                   class="q-ml-sm"
-                  v-if="value.isLua"
                 />
               </div>
               <help-link
@@ -23,10 +23,10 @@
           </q-card-section>
           <q-card-section class="q-gutter-md">
             <q-input v-model.number="form.ttl" type="number" label="TTL" />
-            <lua-editor v-model="form.records[0].content" v-if="value.isLua" />
+            <lua-editor v-if="value.isLua" v-model="form.records[0].content" />
             <component
-              v-else
               :is="formChildren.records"
+              v-else
               v-model="form.records"
               object-key="content"
               label="Records"
@@ -68,8 +68,8 @@ import LuaEditor from "./LuaEditor.vue";
 import LogCard from "src/components/LogCard.vue";
 
 export default {
-  mixins: [DeepForm],
   components: { ResetAndSave, HelpLink, LogList, LuaEditor, LogCard },
+  mixins: [DeepForm],
   formDefinition: {
     records: RuleInput,
     ttl: 3600

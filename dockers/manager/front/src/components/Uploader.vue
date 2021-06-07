@@ -22,11 +22,6 @@ import { UploaderBus } from "src/eventBus.js";
 
 export default {
   props: {},
-  created() {
-    UploaderBus.$on("startUpload", ({ title, url }) => {
-      this.startUpload(title, url);
-    });
-  },
   data: () => ({ isOpen: false, url: null, title: "Upload" }),
   computed: {
     headers: () => [
@@ -35,6 +30,11 @@ export default {
         value: `Bearer ${localStorage.getItem("token")}`
       }
     ]
+  },
+  created() {
+    UploaderBus.$on("startUpload", ({ title, url }) => {
+      this.startUpload(title, url);
+    });
   },
   methods: {
     startUpload(title, url) {

@@ -6,21 +6,21 @@
         <q-input v-model="form.cookie.name" label="Name" />
         <div class="row">
           <q-select
+            v-model="form.cookie.sameSite"
             label="SameSite"
             class="col"
             :options="sameSiteOptions"
             clearable
-            v-model="form.cookie.sameSite"
           />
           <q-toggle
+            v-model="form.cookie.httpOnly"
             label="http-only"
             class="col col-auto"
-            v-model="form.cookie.httpOnly"
           />
           <q-toggle
+            v-model="form.cookie.secure"
             label="secure"
             class="col col-auto"
-            v-model="form.cookie.secure"
           />
         </div>
       </q-card-section>

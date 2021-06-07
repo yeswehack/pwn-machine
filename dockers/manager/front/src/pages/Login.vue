@@ -10,10 +10,10 @@
             <q-separator />
             <q-card-section class="q-gutter-md">
               <q-input
+                v-model="form.password"
                 type="password"
                 label="Password"
                 :rules="[required('Please enter your password')]"
-                v-model="form.password"
               />
               <div class="row justify-center">
                 <div class="col col-auto">
@@ -21,11 +21,11 @@
                 </div>
               </div>
               <q-select
+                v-model="form.durationDays"
                 label="Remember me"
                 :options="expireOptions"
                 emit-value
                 map-options
-                v-model="form.durationDays"
               />
             </q-card-section>
             <q-card-actions vertical>

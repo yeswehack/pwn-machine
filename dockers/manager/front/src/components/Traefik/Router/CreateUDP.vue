@@ -6,8 +6,8 @@
       protocol="udp"
     />
     <component
-      ref="service"
       :is="formChildren.service"
+      ref="service"
       v-model="form.service"
       protocol="udp"
     />

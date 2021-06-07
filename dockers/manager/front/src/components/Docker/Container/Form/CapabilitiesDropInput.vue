@@ -2,17 +2,17 @@
   <base-grid-input
     :readonly="readonly"
     :titles="['Dropped capabilities']"
-    gridFormat="1fr"
+    grid-format="1fr"
     :entries="form"
     @addEntry="addEntry"
     @removeEntry="removeEntry"
   >
     <template #inputs>
       <q-select
-        :options="options"
         v-model="model"
-        @input="addEntry"
+        :options="options"
         label="Drop Capability"
+        @input="addEntry"
       >
         <template #after>
           <help-link
@@ -35,11 +35,11 @@ import DeepForm from "src/mixins/DeepForm";
 import BaseGridInput from "src/components/BaseGridInput.vue";
 
 export default {
+  components: { HelpLink, BaseGridInput },
+  mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false }
   },
-  components: { HelpLink, BaseGridInput },
-  mixins: [DeepForm],
   formDefinition: [],
   data() {
     const caps = [

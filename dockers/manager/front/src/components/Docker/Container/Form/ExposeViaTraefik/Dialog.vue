@@ -10,8 +10,8 @@
         <div class="column q-col-gutter-sm">
           <div class="col">
             <component
-              ref="exposedPort"
               :is="formChildren.exposedPort"
+              ref="exposedPort"
               v-model="form.exposedPort"
               protocol="http"
               :container="container"
@@ -28,34 +28,34 @@
       </q-tab-panel>
       <q-tab-panel name="checkTraefikConnection">
         <check-traefik-connection
-          :container="container"
           ref="aliasName"
           v-model="form.aliasName"
+          :container="container"
         />
       </q-tab-panel>
       <q-tab-panel name="createService">
         <q-input
           ref="serviceName"
-          :rules="[required('Please enter a valid service name.')]"
           v-model="form.serviceName"
+          :rules="[required('Please enter a valid service name.')]"
           label="name"
         />
         <component
-          ref="service"
           :is="formChildren.serviceForm"
+          ref="service"
           v-model="form.serviceForm"
         />
       </q-tab-panel>
       <q-tab-panel name="createRouter">
         <q-input
           ref="routerName"
-          :rules="[required('Please enter a valid router name.')]"
           v-model="form.routerName"
+          :rules="[required('Please enter a valid router name.')]"
           label="name"
         />
         <component
-          ref="router"
           :is="formChildren.routerForm"
+          ref="router"
           v-model="form.routerForm"
         />
       </q-tab-panel>
@@ -185,6 +185,24 @@ export default {
         .map(p => p.containerPort);
     }
   },
+  watch: {
+    container() {
+      this.form.serviceName = `${this.container.name}-service`;
+      this.form.routerName = `${this.container.name}-router`;
+    },
+    serviceName() {
+      this.updateRouterDefault();
+    },
+    domain() {
+      this.updateRouterDefault();
+    },
+    aliasName() {
+      this.updateServiceDefault();
+    },
+    exposedPort() {
+      this.updateServiceDefault();
+    }
+  },
   methods: {
     submit(done) {
       const serviceMutation =
@@ -233,24 +251,6 @@ export default {
     },
     hide() {
       this.$refs.dialog.hide();
-    }
-  },
-  watch: {
-    container() {
-      this.form.serviceName = `${this.container.name}-service`;
-      this.form.routerName = `${this.container.name}-router`;
-    },
-    serviceName() {
-      this.updateRouterDefault();
-    },
-    domain() {
-      this.updateRouterDefault();
-    },
-    aliasName() {
-      this.updateServiceDefault();
-    },
-    exposedPort() {
-      this.updateServiceDefault();
     }
   }
 };

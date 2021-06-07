@@ -1,20 +1,20 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Retry</div>
-      <q-input type="number" label="Attempts" v-model.number="form.attempts" />
-      <q-input type="number" label="Initial interval" v-model.number="form.initialInterval" />
+  <div v-if="!hideTitle" class="text-h6">Retry</div>
+      <q-input v-model.number="form.attempts" type="number" label="Attempts" />
+      <q-input v-model.number="form.initialInterval" type="number" label="Initial interval" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
+    components: {  },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  },
-    mixins: [DeepForm],
     formDefinition: {
   attempts: null,
   initialInterval: null,

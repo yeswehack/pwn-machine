@@ -1,9 +1,8 @@
 <template>
   <q-table
-    v-on="$listeners"
     v-bind="$attrs"
-    hide-pagination
     ref="table"
+    hide-pagination
     class="full-width"
     table-header-style="text-transform: capitalize"
     :row-key="rowKey"
@@ -13,6 +12,7 @@
     :filter="filter"
     :no-data-label="`You don't have any ${name}.`"
     :expanded.sync="expanded"
+    v-on="$listeners"
     @row-click="toggleRow"
   >
     <template #top>
@@ -23,20 +23,20 @@
             color="positive"
             icon="eva-plus"
             :label="txt.create"
-            @click="$emit('create')"
             :disable="noNew"
+            @click="$emit('create')"
           />
           <slot name="header-button" />
         </div>
 
         <div class="col col-auto">
           <q-input
+            v-model="filter"
             borderless
             label="Search"
             dense
             outlined
             debounce="200"
-            v-model="filter"
           >
             <template #append>
               <q-icon name="search" />
@@ -52,7 +52,7 @@
         :name="props.row[rowKey]"
         @click="toggleRow(props.row)"
       >
-        <q-menu touch-position context-menu v-if="!noMenu">
+        <q-menu v-if="!noMenu" touch-position context-menu>
           <q-list dense class="rounded-borders bg-grey-9">
             <slot name="menu" v-bind="{ row: props.row }" />
             <q-item v-close-popup clickable @click="$emit('clone', props.row)">
@@ -119,13 +119,13 @@
 <script>
 export default {
   props: {
-    "no-details": { type: Boolean, default: false },
-    "no-new": { type: Boolean, default: false },
-    "no-menu": { type: Boolean, default: false },
+    noDetails: { type: Boolean, default: false },
+    noNew: { type: Boolean, default: false },
+    noMenu: { type: Boolean, default: false },
     query: { type: Object, required: true },
     rowKey: { type: String, default: "nodeId" },
-    name: { type: String },
-    columns: Array
+    name: { type: String, required: true },
+    columns: { type: Array, required: true }
   },
   data() {
     return {

@@ -1,10 +1,10 @@
 <template>
   <div class="q-gutter-md">
     <component
-      ref="services"
-      protocol="udp"
       :is="formChildren.weighted"
+      ref="services"
       v-model="form.services"
+      protocol="udp"
     />
   </div>
 </template>

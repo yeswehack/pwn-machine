@@ -1,9 +1,9 @@
 <template>
   <q-select
     ref="select"
+    v-model="form"
     :options="options"
     :rules="[required('Please choose a container')]"
-    v-model="form"
     label="Container"
     clearable
   />

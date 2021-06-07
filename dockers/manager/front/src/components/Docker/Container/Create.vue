@@ -1,41 +1,41 @@
 <template>
   <q-form @submit="submit">
     <q-card-section class="q-gutter-md">
-      <image-input ref="image" v-model="image" v-if="!readonly" />
-      <q-input v-model="form.name" label="name" v-if="!readonly" />
+      <image-input v-if="!readonly" ref="image" v-model="image" />
+      <q-input v-if="!readonly" v-model="form.name" label="name" />
       <q-list separator class="rounded-borders" bordered>
         <component
-          :readonly="readonly"
           :is="formChildren.extra"
           v-model="extra"
+          :readonly="readonly"
         />
         <component
-          :readonly="readonly"
           :is="formChildren.environment"
           v-model="form.environment"
+          :readonly="readonly"
         />
         <component
-          :readonly="readonly"
           :is="formChildren.labels"
           v-model="form.labels"
+          :readonly="readonly"
         />
         <component
-          :readonly="readonly"
           :is="formChildren.ports"
           v-model="form.ports"
+          :readonly="readonly"
         />
         <component
-          :readonly="readonly"
           :is="formChildren.mounts"
           v-model="form.mounts"
+          :readonly="readonly"
         />
       </q-list>
     </q-card-section>
-    <q-card-section class="row q-gutter-md" v-if="!readonly">
+    <q-card-section v-if="!readonly" class="row q-gutter-md">
       <div class="col col-auto">
         <q-toggle
-          color="positive"
           v-model="form.start"
+          color="positive"
           label="Start the container"
         />
       </div>
@@ -66,10 +66,16 @@ import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export default {
+  components: {
+    EnvironInput,
+    ExtraConfig,
+    ImageInput,
+    ResetAndSave
+  },
+  mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false }
   },
-  mixins: [DeepForm],
   formDefinition: {
     start: true,
     name: null,
@@ -85,12 +91,6 @@ export default {
     command: null,
     mounts: MountsInput,
     ports: ExposedPorts
-  },
-  components: {
-    EnvironInput,
-    ExtraConfig,
-    ImageInput,
-    ResetAndSave
   },
   computed: {
     image: {

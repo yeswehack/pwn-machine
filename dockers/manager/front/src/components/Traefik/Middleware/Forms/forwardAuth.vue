@@ -1,13 +1,13 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Forward auth</div>
-      <q-input label="Address" v-model="form.address" />
-      <list-input label="Auth request headers" v-model="form.authRequestHeaders" />
-      <list-input label="Auth response headers" v-model="form.authResponseHeaders" />
-      <q-input label="Auth response headers regex" v-model="form.authResponseHeadersRegex" />
-      <component :is="formChildren.tls" label="Tls" v-model="form.tls" />
-      <q-toggle label="Trust forward header" v-model="form.trustForwardHeader" />
+  <div v-if="!hideTitle" class="text-h6">Forward auth</div>
+      <q-input v-model="form.address" label="Address" />
+      <list-input v-model="form.authRequestHeaders" label="Auth request headers" />
+      <list-input v-model="form.authResponseHeaders" label="Auth response headers" />
+      <q-input v-model="form.authResponseHeadersRegex" label="Auth response headers regex" />
+      <component :is="formChildren.tls" v-model="form.tls" label="Tls" />
+      <q-toggle v-model="form.trustForwardHeader" label="Trust forward header" />
   </div>
 </template>
 <script>
@@ -16,11 +16,11 @@ import DeepForm from "src/mixins/DeepForm";
  import ListInput from 'src/components/ListInput.vue';
 
 export default {
+    components: {  ListInput, tls },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  ListInput, tls },
-    mixins: [DeepForm],
     formDefinition: {
   address: null,
   authRequestHeaders: [],

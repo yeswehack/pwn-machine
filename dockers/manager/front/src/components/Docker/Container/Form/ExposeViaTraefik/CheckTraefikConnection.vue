@@ -6,13 +6,13 @@
       </div>
       <div class="col col-auto">
         <q-badge
-          :label="this.isConnected ? 'Connected' : 'Disconnected'"
-          :color="this.isConnected ? 'positive' : 'negative'"
+          :label="isConnected ? 'Connected' : 'Disconnected'"
+          :color="isConnected ? 'positive' : 'negative'"
         />
       </div>
     </div>
     <template v-if="isConnected">
-      <div class="col text-negative" v-show="invalid">
+      <div v-show="invalid" class="col text-negative">
         Please make a selection
       </div>
       <div class="col">
@@ -23,7 +23,7 @@
           node-key="id"
           class="q-mt-sm"
         >
-          <template v-slot:header-alias="prop">
+          <template #header-alias="prop">
             <div class="row items-center">
               <div class="col">
                 <q-radio
@@ -38,7 +38,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="col text-negative" v-show="invalid">
+      <div v-show="invalid" class="col text-negative">
         Please connect your container to traefik
       </div>
       <div class="col">
@@ -80,9 +80,9 @@ import DeepForm from "src/mixins/DeepForm";
 import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 
 export default {
+  components: {},
   mixins: [DeepForm],
   formDefinition: null,
-  components: {},
   props: {
     container: { type: Object, required: true }
   },
@@ -94,6 +94,55 @@ export default {
     }
   },
   data: () => ({ connectTo: null, invalid: false }),
+  computed: {
+    traefikConnections() {
+      return (this.traefikContainer?.connections ?? []).reduce((acc, co) => {
+        return { ...acc, [co.network.name]: co };
+      }, {});
+    },
+    isConnected() {
+      return !!Object.keys(this.commonNetworks).length;
+    },
+    traefikNetworkOptions() {
+      const options = [];
+      for (const [name, connection] of Object.entries(
+        this.traefikConnections
+      )) {
+        options.push({
+          label: name,
+          value: connection.network.id
+        });
+      }
+      return options;
+    },
+    commonNetworks() {
+      const networks = [];
+      for (const connection of this.container.connections) {
+        const name = connection.network.name;
+        if (!(name in this.traefikConnections)) {
+          continue;
+        }
+
+        const children = connection.aliases.map(alias => ({
+          label: alias,
+          header: "alias",
+          id: `n-${name}-${alias}`
+        }));
+        children.unshift({
+          label: connection.ipAddress,
+          header: "alias",
+          id: `n-${name}-${connection.ipAddress}`
+        });
+        networks.push({
+          icon: "eva-globe-outline",
+          label: name,
+          id: `n-${name}`,
+          children
+        });
+      }
+      return networks;
+    }
+  },
   methods: {
     validate() {
       this.invalid = !this.form;
@@ -145,55 +194,6 @@ export default {
           ]);
           await this.$apollo.queries.traefikContainer.refetch();
         });
-    }
-  },
-  computed: {
-    traefikConnections() {
-      return (this.traefikContainer?.connections ?? []).reduce((acc, co) => {
-        return { ...acc, [co.network.name]: co };
-      }, {});
-    },
-    isConnected() {
-      return !!Object.keys(this.commonNetworks).length;
-    },
-    traefikNetworkOptions() {
-      const options = [];
-      for (const [name, connection] of Object.entries(
-        this.traefikConnections
-      )) {
-        options.push({
-          label: name,
-          value: connection.network.id
-        });
-      }
-      return options;
-    },
-    commonNetworks() {
-      const networks = [];
-      for (const connection of this.container.connections) {
-        const name = connection.network.name;
-        if (!(name in this.traefikConnections)) {
-          continue;
-        }
-
-        const children = connection.aliases.map(alias => ({
-          label: alias,
-          header: "alias",
-          id: `n-${name}-${alias}`
-        }));
-        children.unshift({
-          label: connection.ipAddress,
-          header: "alias",
-          id: `n-${name}-${connection.ipAddress}`
-        });
-        networks.push({
-          icon: "eva-globe-outline",
-          label: name,
-          id: `n-${name}`,
-          children
-        });
-      }
-      return networks;
     }
   }
 };

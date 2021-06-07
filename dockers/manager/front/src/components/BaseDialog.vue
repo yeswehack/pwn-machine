@@ -10,8 +10,8 @@
             {{ subtitle }}
           </div>
           <q-space />
-          <help-link :href="help" v-if="help" />
-          <q-btn icon="close" flat round dense v-close-popup />
+          <help-link v-if="help" :href="help" />
+          <q-btn v-close-popup icon="close" flat round dense />
         </div>
       </q-card-section>
       <q-separator />

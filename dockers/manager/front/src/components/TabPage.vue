@@ -1,11 +1,11 @@
 <template>
-  <q-page padding class="page" ref="page">
+  <q-page ref="page" padding class="page">
     <q-tabs
+      ref="tabs"
       dense
       rounded
       inline-label
       shadow
-      ref="tabs"
       class="text-white bg-dark rounded-borders tabs q-pr-sm"
       :indicator-color="indicatorColor"
       narrow-indicator

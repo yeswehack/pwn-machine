@@ -1,11 +1,11 @@
 <template>
   <q-select
     ref="select"
+    v-model="form"
     label="Service"
     :options="serviceNames"
     clearable
     :rules="[required('You must select a service.')]"
-    v-model="form"
   >
     <template #after>
       <q-btn

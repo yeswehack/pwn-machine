@@ -31,9 +31,9 @@ import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "./OtpInput.vue";
 
 export default {
+  components: { QrCode },
   mixins: [DeepForm],
   formDefinition: OtpInput,
-  components: { QrCode },
   apollo: {
     otpSecret: {
       query: api.auth.GET_OTP_SECRET,

@@ -1,16 +1,16 @@
 <template>
   <q-table
-    class="full-width scroll thin-scrollbar"
     v-bind="$attrs"
+    ref="table"
+    class="full-width scroll thin-scrollbar"
     :columns="columns"
     dense
-    @request="onRequest"
     :loading="$apollo.queries.dnsLogs.loading"
     :data="logs"
     :pagination.sync="pagination"
     no-data-label="No logs available."
     table-header-style="text-transform: capitalize"
-    ref="table"
+    @request="onRequest"
   >
     <template #body-cell-date="{value}">
       <q-td auto-width>
@@ -67,14 +67,6 @@ export default {
       pollInterval: 5000
     }
   },
-  methods: {
-    onRequest(props) {
-      const { page, rowsPerPage } = props.pagination;
-      this.pagination.page = page;
-      this.pagination.rowsPerPage = rowsPerPage;
-      this.$apollo.queries.dnsLogs.refetch();
-    }
-  },
   data() {
     const pagination = {
       page: 1,
@@ -96,18 +88,6 @@ export default {
     ];
     return { pagination, columns };
   },
-  mounted() {
-    const rowHeight = 28.5;
-    const table = this.$refs.table.$el;
-    const inner = table.querySelector(".q-table__middle");
-    const height = inner.getBoundingClientRect().height;
-    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
-  },
-  watch: {
-    dnsLogs(dnsLogs) {
-      this.pagination.rowsNumber = dnsLogs.total;
-    }
-  },
   computed: {
     rowNumber() {
       return this.logs?.total ?? 0;
@@ -120,6 +100,26 @@ export default {
     },
     size() {
       return this.pagination.rowsPerPage;
+    }
+  },
+  watch: {
+    dnsLogs(dnsLogs) {
+      this.pagination.rowsNumber = dnsLogs.total;
+    }
+  },
+  mounted() {
+    const rowHeight = 28.5;
+    const table = this.$refs.table.$el;
+    const inner = table.querySelector(".q-table__middle");
+    const height = inner.getBoundingClientRect().height;
+    this.pagination.rowsPerPage = Math.floor(height / rowHeight - 1);
+  },
+  methods: {
+    onRequest(props) {
+      const { page, rowsPerPage } = props.pagination;
+      this.pagination.page = page;
+      this.pagination.rowsPerPage = rowsPerPage;
+      this.$apollo.queries.dnsLogs.refetch();
     }
   }
 };

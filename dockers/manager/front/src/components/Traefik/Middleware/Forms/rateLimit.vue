@@ -1,11 +1,11 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Rate limit</div>
-      <q-input type="number" label="Average" v-model.number="form.average" />
-      <q-input type="number" label="Burst" v-model.number="form.burst" />
-      <q-input type="number" label="Period" v-model.number="form.period" />
-      <component :is="formChildren.sourceCriterion" label="Source criterion" v-model="form.sourceCriterion" />
+  <div v-if="!hideTitle" class="text-h6">Rate limit</div>
+      <q-input v-model.number="form.average" type="number" label="Average" />
+      <q-input v-model.number="form.burst" type="number" label="Burst" />
+      <q-input v-model.number="form.period" type="number" label="Period" />
+      <component :is="formChildren.sourceCriterion" v-model="form.sourceCriterion" label="Source criterion" />
   </div>
 </template>
 <script>
@@ -13,11 +13,11 @@ import DeepForm from "src/mixins/DeepForm";
  import sourceCriterion from './sourceCriterion.vue';
 
 export default {
+    components: {  sourceCriterion },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  sourceCriterion },
-    mixins: [DeepForm],
     formDefinition: {
   average: null,
   burst: null,

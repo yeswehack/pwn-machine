@@ -2,18 +2,18 @@
   <div>
     <q-input
       ref="new"
+      v-model="form"
       label="New password"
       type="password"
       :rules="[required('Please enter a password')]"
-      v-model="form"
     />
     <q-input
       ref="confirm"
+      v-model="repeated"
       label="Confirm password"
       type="password"
       :rules="[matchesNew]"
       reactive-rules
-      v-model="repeated"
     />
   </div>
 </template>

@@ -1,10 +1,10 @@
 <template>
   <div class="q-gutter-md">
     <component
-      ref="service"
-      protocol="http"
       :is="formChildren.services"
+      ref="service"
       v-model="form.services"
+      protocol="http"
     />
     <q-list separator bordered class="rounded-borders">
       <component :is="formChildren.sticky" v-model="form.sticky" />

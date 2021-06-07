@@ -20,6 +20,11 @@ export default {
       update: data => data.dockerContainers
     }
   },
+  watch: {
+    containers(containers) {
+      this.renderOveriew(containers ?? []);
+    }
+  },
   methods: {
     renderOveriew(containers) {
       const colorHash = new ColorHash({ saturation: 1 });
@@ -187,11 +192,6 @@ export default {
           return "#C10015";
       }
       return "#1976D2";
-    }
-  },
-  watch: {
-    containers(containers) {
-      this.renderOveriew(containers ?? []);
     }
   }
 };

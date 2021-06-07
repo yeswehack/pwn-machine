@@ -10,25 +10,25 @@
         <base-grid-input
           :readonly="readonly"
           :titles="['Name', 'Value']"
-          gridFormat="1fr 1fr"
+          grid-format="1fr 1fr"
           :entries="form"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
         >
           <template #inputs>
             <q-input
+              v-model="model.key"
               class="col"
               flat
-              v-model="model.key"
-              @keypress.enter.prevent="addEntry"
               label="Name"
+              @keypress.enter.prevent="addEntry"
             />
             <q-input
+              v-model="model.value"
               class="col"
               flat
-              v-model="model.value"
-              @keypress.enter.prevent="addEntry"
               label="Value"
+              @keypress.enter.prevent="addEntry"
             />
           </template>
           <template #entry="{entry}">
@@ -36,8 +36,8 @@
               {{ entry.key }}
               <q-popup-edit v-model="entry.key">
                 <q-input
-                  :readonly="readonly"
                   v-model.number="entry.key"
+                  :readonly="readonly"
                   dense
                   autofocus
                 />
@@ -48,8 +48,8 @@
 
               <q-popup-edit v-model="entry.value">
                 <q-input
-                  :readonly="readonly"
                   v-model.number="entry.value"
+                  :readonly="readonly"
                   dense
                   autofocus
                 />

@@ -3,31 +3,31 @@
     <div class="row q-gutter-sm items-center">
       <div class="col">
         <q-select
+          v-model="entrypoint"
           multiple
           clearable
           filled
           :options="entrypointOptions"
-          v-model="entrypoint"
           label="Entrypoint"
         />
       </div>
       <div class="col">
         <q-select
+          v-model="router"
           multiple
           clearable
           filled
           :options="routerOptions"
-          v-model="router"
           label="Router"
         />
       </div>
       <div class="col">
         <q-select
+          v-model="service"
           multiple
           clearable
           filled
           :options="serviceOptions"
-          v-model="service"
           label="Service"
         />
       </div>

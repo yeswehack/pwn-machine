@@ -1,7 +1,7 @@
 <template>
   <div class="column q-gutter-sm">
-    <q-toggle label="Enable networking" v-model="enable" />
-    <q-toggle label="Host network" v-model="host" />
+    <q-toggle v-model="enable" label="Enable networking" />
+    <q-toggle v-model="host" label="Host network" />
     <NetworksSelectTable
       v-model="formData.networks"
       :disable="!enable || host"
@@ -31,8 +31,8 @@ function replaceArray(arr, ...vals) {
 }
 
 export default {
-  mixins: [DeepForm],
   components: { NetworksSelectTable, ExposedPorts },
+  mixins: [DeepForm],
   data: () => ({
     enable: !this.value.networks.includes("none"),
     host: this.value.networks.includes("host")

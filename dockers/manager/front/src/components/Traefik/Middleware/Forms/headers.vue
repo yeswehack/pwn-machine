@@ -1,39 +1,39 @@
 
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">Headers</div>
-      <q-toggle label="Access control allow credentials" v-model="form.accessControlAllowCredentials" />
-      <list-input label="Access control allow headers" v-model="form.accessControlAllowHeaders" />
-      <list-input label="Access control allow methods" v-model="form.accessControlAllowMethods" />
-      <q-input label="Access control allow origin" v-model="form.accessControlAllowOrigin" />
-      <list-input label="Access control allow origin list" v-model="form.accessControlAllowOriginList" />
-      <list-input label="Access control allow origin list regex" v-model="form.accessControlAllowOriginListRegex" />
-      <list-input label="Access control expose headers" v-model="form.accessControlExposeHeaders" />
-      <q-input type="number" label="Access control max age" v-model.number="form.accessControlMaxAge" />
-      <q-toggle label="Add vary header" v-model="form.addVaryHeader" />
-      <list-input label="Allowed hosts" v-model="form.allowedHosts" />
-      <q-toggle label="Browser xss filter" v-model="form.browserXssFilter" />
-      <q-input label="Content security policy" v-model="form.contentSecurityPolicy" />
-      <q-toggle label="Content type nosniff" v-model="form.contentTypeNosniff" />
-      <q-input label="Custom browserxss value" v-model="form.customBrowserXSSValue" />
-      <q-input label="Custom frame options value" v-model="form.customFrameOptionsValue" />
-      <component :is="formChildren.customRequestHeaders" label="Custom request headers" v-model="form.customRequestHeaders" />
-      <component :is="formChildren.customResponseHeaders" label="Custom response headers" v-model="form.customResponseHeaders" />
-      <q-input label="Feature policy" v-model="form.featurePolicy" />
-      <q-toggle label="Forcests header" v-model="form.forceSTSHeader" />
-      <q-toggle label="Frame deny" v-model="form.frameDeny" />
-      <list-input label="Hosts proxy headers" v-model="form.hostsProxyHeaders" />
-      <q-toggle label="Is development" v-model="form.isDevelopment" />
-      <q-input label="Public key" v-model="form.publicKey" />
-      <q-input label="Referrer policy" v-model="form.referrerPolicy" />
-      <q-toggle label="Ssl force host" v-model="form.sslForceHost" />
-      <q-input label="Ssl host" v-model="form.sslHost" />
-      <component :is="formChildren.sslProxyHeaders" label="Ssl proxy headers" v-model="form.sslProxyHeaders" />
-      <q-toggle label="Ssl redirect" v-model="form.sslRedirect" />
-      <q-toggle label="Ssl temporary redirect" v-model="form.sslTemporaryRedirect" />
-      <q-toggle label="Sts include subdomains" v-model="form.stsIncludeSubdomains" />
-      <q-toggle label="Sts preload" v-model="form.stsPreload" />
-      <q-input type="number" label="Sts seconds" v-model.number="form.stsSeconds" />
+  <div v-if="!hideTitle" class="text-h6">Headers</div>
+      <q-toggle v-model="form.accessControlAllowCredentials" label="Access control allow credentials" />
+      <list-input v-model="form.accessControlAllowHeaders" label="Access control allow headers" />
+      <list-input v-model="form.accessControlAllowMethods" label="Access control allow methods" />
+      <q-input v-model="form.accessControlAllowOrigin" label="Access control allow origin" />
+      <list-input v-model="form.accessControlAllowOriginList" label="Access control allow origin list" />
+      <list-input v-model="form.accessControlAllowOriginListRegex" label="Access control allow origin list regex" />
+      <list-input v-model="form.accessControlExposeHeaders" label="Access control expose headers" />
+      <q-input v-model.number="form.accessControlMaxAge" type="number" label="Access control max age" />
+      <q-toggle v-model="form.addVaryHeader" label="Add vary header" />
+      <list-input v-model="form.allowedHosts" label="Allowed hosts" />
+      <q-toggle v-model="form.browserXssFilter" label="Browser xss filter" />
+      <q-input v-model="form.contentSecurityPolicy" label="Content security policy" />
+      <q-toggle v-model="form.contentTypeNosniff" label="Content type nosniff" />
+      <q-input v-model="form.customBrowserXSSValue" label="Custom browserxss value" />
+      <q-input v-model="form.customFrameOptionsValue" label="Custom frame options value" />
+      <component :is="formChildren.customRequestHeaders" v-model="form.customRequestHeaders" label="Custom request headers" />
+      <component :is="formChildren.customResponseHeaders" v-model="form.customResponseHeaders" label="Custom response headers" />
+      <q-input v-model="form.featurePolicy" label="Feature policy" />
+      <q-toggle v-model="form.forceSTSHeader" label="Forcests header" />
+      <q-toggle v-model="form.frameDeny" label="Frame deny" />
+      <list-input v-model="form.hostsProxyHeaders" label="Hosts proxy headers" />
+      <q-toggle v-model="form.isDevelopment" label="Is development" />
+      <q-input v-model="form.publicKey" label="Public key" />
+      <q-input v-model="form.referrerPolicy" label="Referrer policy" />
+      <q-toggle v-model="form.sslForceHost" label="Ssl force host" />
+      <q-input v-model="form.sslHost" label="Ssl host" />
+      <component :is="formChildren.sslProxyHeaders" v-model="form.sslProxyHeaders" label="Ssl proxy headers" />
+      <q-toggle v-model="form.sslRedirect" label="Ssl redirect" />
+      <q-toggle v-model="form.sslTemporaryRedirect" label="Ssl temporary redirect" />
+      <q-toggle v-model="form.stsIncludeSubdomains" label="Sts include subdomains" />
+      <q-toggle v-model="form.stsPreload" label="Sts preload" />
+      <q-input v-model.number="form.stsSeconds" type="number" label="Sts seconds" />
   </div>
 </template>
 <script>
@@ -42,11 +42,11 @@ import DeepForm from "src/mixins/DeepForm";
  import HeadersInput from 'src/components/Traefik/HeadersInput.vue';
 
 export default {
+    components: {  ListInput, HeadersInput },
+    mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
     },
-    components: {  ListInput, HeadersInput },
-    mixins: [DeepForm],
     formDefinition: {
   accessControlAllowCredentials: null,
   accessControlAllowHeaders: [],

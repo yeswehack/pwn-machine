@@ -9,9 +9,9 @@
 
           <q-card-section>
             <component
-              hide-title
               :is="formChildren.extra"
               v-model="form.extra"
+              hide-title
             />
           </q-card-section>
 

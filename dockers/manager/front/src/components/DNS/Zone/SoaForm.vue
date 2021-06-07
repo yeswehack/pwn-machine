@@ -12,26 +12,26 @@
     />
     <div class="row q-gutter-sm">
       <q-input
-        class="col"
         v-model.number="form.refresh"
+        class="col"
         type="number"
         label="Refresh"
       />
       <q-input
-        class="col"
         v-model.number="form.retry"
+        class="col"
         type="number"
         label="Retry"
       />
       <q-input
-        class="col"
         v-model.number="form.expire"
+        class="col"
         type="number"
         label="Expire"
       />
       <q-input
-        class="col"
         v-model.number="form.ttl"
+        class="col"
         type="number"
         label="TTL"
       />

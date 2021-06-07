@@ -1,10 +1,10 @@
 <template>
   <q-slide-transition>
-    <q-card class="downloader" bordered v-show="downloading.length">
+    <q-card v-show="downloading.length" class="downloader" bordered>
       <q-card-section
-        class="q-py-none q-pl-sm"
-        :key="idx"
         v-for="[idx, downloadInfo] of downloading.entries()"
+        :key="idx"
+        class="q-py-none q-pl-sm"
       >
         <q-circular-progress
           size="50px"
@@ -24,12 +24,12 @@
 import { DownloaderBus } from "src/eventBus.js";
 
 export default {
+  data: () => ({ value: 0, downloading: [] }),
   created() {
     DownloaderBus.$on("startDownload", ({ volume, path }) => {
       this.downloadFile(volume, path);
     });
   },
-  data: () => ({ value: 0, downloading: [] }),
   methods: {
     downloadBlob(blob, downloadInfo) {
       const url = URL.createObjectURL(blob);

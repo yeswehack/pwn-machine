@@ -2,20 +2,21 @@
   <base-grid-input
     :readonly="readonly"
     :titles="['Containers']"
-    gridFormat="2fr 4fr 1fr"
+    grid-format="2fr 4fr 1fr"
     :entries="network.usedBy"
     @addEntry="connectContainer"
     @removeEntry="disconnectContainer"
   >
     <template #inputs>
       <q-select
+        v-model="model.container"
         label="Container name"
         :loading="loading"
         :options="containersNotAlreadyConnected"
         @input="fillAliases"
-        v-model="model.container"
       />
       <q-select
+        v-model="model.aliases"
         label="Aliases"
         use-input
         use-chips
@@ -23,7 +24,6 @@
         new-value-mode="add"
         :loading="loading"
         hide-dropdown-icon
-        v-model="model.aliases"
         style="grid-column-start:2;grid-column-end:4;"
       />
     </template>

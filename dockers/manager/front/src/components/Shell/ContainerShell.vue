@@ -1,7 +1,7 @@
 <template>
   <div class="terminal-container">
     <div ref="terminal" class="terminal">
-      <q-resize-observer @resize="onResize" :debounce="300" />
+      <q-resize-observer :debounce="300" @resize="onResize" />
     </div>
     <q-btn
       v-if="!connected"
@@ -141,6 +141,26 @@ export default {
     id: { type: String, required: true }
   },
   data: () => ({ shell: new Shell(), disconnecting: false }),
+  computed: {
+    connected() {
+      return this.shell?.connected ?? false;
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      async handler() {
+        //await this.disconnect();
+        //this.connect();
+      }
+    }
+  },
+  mounted() {
+    this.connect();
+  },
+  beforeDestroy() {
+    this.disconnect();
+  },
   methods: {
     onResize(size) {
       this.shell.fit();
@@ -173,26 +193,6 @@ export default {
         .catch(e => {
           this.$router.push({ name: "shellNew" });
         });
-    }
-  },
-  computed: {
-    connected() {
-      return this.shell?.connected ?? false;
-    }
-  },
-  mounted() {
-    this.connect();
-  },
-  beforeDestroy() {
-    this.disconnect();
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      async handler() {
-        //await this.disconnect();
-        //this.connect();
-      }
     }
   }
 };

@@ -1,9 +1,8 @@
 <template>
   <q-select
+    v-model="formData"
     v-bind="$attrs"
     :options="options"
-    v-model="formData"
-    @filter="filterOptions"
     input-debounce="0"
     label="Volume"
     use-input
@@ -12,9 +11,10 @@
     fill-input
     use-chips
     multiple
+    @filter="filterOptions"
   >
     <template
-      v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }"
+      #option="{ itemProps, itemEvents, opt, selected, toggleOption }"
     >
       <q-item v-bind="itemProps" v-on="itemEvents">
         <q-item-section>

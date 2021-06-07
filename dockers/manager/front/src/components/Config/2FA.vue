@@ -21,14 +21,14 @@
           Type the 6 digits displayed by the app:
           <q-form class="flex flex-center q-mt-sm" @submit="submit">
             <q-input
+              v-model="totp"
               borderless
               input-class="text-mono text-h6"
               input-style="width:8ch"
               mask="######"
               fill-mask
-              v-model="totp"
             >
-              <template v-slot:after>
+              <template #after>
                 <q-btn color="positive" :disable="!+totp" @click="submit">
                   Submit
                 </q-btn>

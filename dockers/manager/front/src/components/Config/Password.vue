@@ -9,10 +9,10 @@
           <q-separator />
           <q-card-section>
             <q-input
+              v-model="form.old"
               label="Current password"
               type="password"
               :rules="[required('Please enter your current password')]"
-              v-model="form.old"
             />
           </q-card-section>
           <q-card-section>

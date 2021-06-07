@@ -3,11 +3,11 @@
     <q-card-section>
       <div class="column q-gutter-sm">
         <component
-          ref="containerName"
           :is="formChildren.containerName"
+          ref="containerName"
           v-model="form.containerName"
         />
-        <q-input label="Command" v-model="form.cmd" />
+        <q-input v-model="form.cmd" label="Command" />
 
         <q-list separator class="rounded-borders" bordered>
           <q-expansion-item label="Extra config" icon="star">
@@ -16,16 +16,16 @@
                 <div class="column q-col-gutter-sm">
                   <div class="col">
                     <q-input
-                      label="User"
                       v-model="form.user"
+                      label="User"
                       hint="format: <name|uid>[:<group|gid>]"
                     />
                   </div>
                   <div class="col">
-                    <q-input label="Working directory" v-model="form.workdir" />
+                    <q-input v-model="form.workdir" label="Working directory" />
                   </div>
                   <div class="col">
-                    <q-toggle label="Privileged" v-model="form.privileged" />
+                    <q-toggle v-model="form.privileged" label="Privileged" />
                   </div>
                 </div>
               </q-card-section>
@@ -41,8 +41,8 @@
     <q-card-section>
       <reset-and-save
         :modified="modified"
-        @save="submit"
         :validate="validate"
+        @save="submit"
         @reset="reset"
       />
     </q-card-section>
@@ -57,6 +57,7 @@ import ResetAndSave from "../ResetAndSave.vue";
 import api from "src/api";
 
 export default {
+  components: { ContainerSelect, ResetAndSave },
   mixins: [DeepForm],
   formDefinition: {
     user: null,
@@ -66,7 +67,6 @@ export default {
     containerName: ContainerSelect,
     environment: EnvironInputVue
   },
-  components: { ContainerSelect, ResetAndSave },
   methods: {
     submit() {
       this.mutate({

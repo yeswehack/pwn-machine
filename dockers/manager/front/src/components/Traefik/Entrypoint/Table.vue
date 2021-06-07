@@ -16,9 +16,9 @@
     <template #body-cell-usedBy="{row}">
       <div class="q-gutter-xs">
         <router-link
-          :name="name"
-          :key="idx"
           v-for="(name, idx) of row.usedBy.map(r => r.name)"
+          :key="idx"
+          :name="name"
         />
       </div>
     </template>

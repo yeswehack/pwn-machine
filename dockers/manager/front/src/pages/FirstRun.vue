@@ -11,22 +11,22 @@
           </q-card-section>
 
           <q-card-section>
-            <q-stepper v-model="step" ref="stepper" animated>
+            <q-stepper ref="stepper" v-model="step" animated>
               <q-step
                 name="password"
                 title="Create admin password"
                 icon="eva-lock"
               >
                 <component
-                  ref="password"
                   :is="formChildren.password"
+                  ref="password"
                   v-model="form.password"
                 />
               </q-step>
               <q-step name="otp" title="Initialize OTP" icon="eva-keypad">
                 <component
-                  ref="otp"
                   :is="formChildren.otp"
+                  ref="otp"
                   v-model="form.otp"
                 />
               </q-step>
@@ -34,10 +34,10 @@
               <template #navigation>
                 <q-card-section>
                   <reset-and-save
-                    @reset="reset"
                     :step.sync="step"
                     :steps="steps"
                     :modified="modified"
+                    @reset="reset"
                     @save="submit"
                   />
                 </q-card-section>
@@ -58,12 +58,12 @@ import OtpSetup from "src/components/Config/OtpSetup.vue";
 import api from "src/api";
 
 export default {
+  components: { ResetAndSave },
   mixins: [DeepForm],
   formDefinition: {
     password: PasswordInput,
     otp: OtpSetup
   },
-  components: { ResetAndSave },
   data() {
     const steps = [
       {

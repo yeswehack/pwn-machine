@@ -7,7 +7,7 @@
 <script>
 export default {
   props: {
-    status: String
+    status: { type: String, required: true }
   },
   computed: {
     color() {

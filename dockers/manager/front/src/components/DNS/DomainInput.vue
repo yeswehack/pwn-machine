@@ -1,14 +1,14 @@
 <template>
   <q-select
-    label="Domain"
     v-bind="$attrs"
     ref="domainSelect"
+    v-model="form"
+    label="Domain"
     input-debounce="0"
     use-input
     clearable
     :rules="[required('Domain is required')]"
     :options="domainOptions"
-    v-model="form"
     @filter="onFilter"
   />
 </template>
@@ -26,6 +26,14 @@ export default {
     }
   },
   data: () => ({ needle: null }),
+  computed: {
+    domainOptions() {
+      return (this.dnsRules ?? [])
+        .filter(r => ["A", "AAAA", "CNAME"].includes(r.type))
+        .map(r => r.name.slice(0, -1))
+        .filter(name => name.includes(this.needle));
+    }
+  },
   methods: {
     onFilter(v, done) {
       done(() => {
@@ -34,14 +42,6 @@ export default {
     },
     clear() {
       this.form = null;
-    }
-  },
-  computed: {
-    domainOptions() {
-      return (this.dnsRules ?? [])
-        .filter(r => ["A", "AAAA", "CNAME"].includes(r.type))
-        .map(r => r.name.slice(0, -1))
-        .filter(name => name.includes(this.needle));
     }
   }
 };

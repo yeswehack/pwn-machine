@@ -6,13 +6,13 @@
       <q-card>
         <q-card-section>
         <div class="column q-gutter-sm">
-      <q-toggle label="Common name" v-model="form.commonName" />
-      <q-toggle label="Country" v-model="form.country" />
-      <q-toggle label="Domain component" v-model="form.domainComponent" />
-      <q-toggle label="Locality" v-model="form.locality" />
-      <q-toggle label="Organization" v-model="form.organization" />
-      <q-toggle label="Province" v-model="form.province" />
-      <q-toggle label="Serial number" v-model="form.serialNumber" />
+      <q-toggle v-model="form.commonName" label="Common name" />
+      <q-toggle v-model="form.country" label="Country" />
+      <q-toggle v-model="form.domainComponent" label="Domain component" />
+      <q-toggle v-model="form.locality" label="Locality" />
+      <q-toggle v-model="form.organization" label="Organization" />
+      <q-toggle v-model="form.province" label="Province" />
+      <q-toggle v-model="form.serialNumber" label="Serial number" />
 </div>
         </q-card-section>
       </q-card>

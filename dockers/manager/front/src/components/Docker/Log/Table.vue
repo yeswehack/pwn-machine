@@ -3,10 +3,10 @@
     <div class="row">
       <div class="col">
         <q-select
+          v-model="selectedContainers"
           multiple
           use-chips
           clearable
-          v-model="selectedContainers"
           :options="containerOptions"
           filled
           label="Filter by container"

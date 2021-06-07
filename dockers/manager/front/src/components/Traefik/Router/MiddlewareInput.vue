@@ -1,11 +1,11 @@
 <template>
   <div class="column">
     <q-select
+      v-model="model"
       label="Middlewares"
       flat
       v-bind="$attrs"
       :options="options"
-      v-model="model"
       @input="addEntry"
     >
       <template #after>
@@ -21,19 +21,19 @@
     </q-select>
     <q-list separator dense padding class="drop-container">
       <div
+        v-show="dragging"
         class="drop-zone"
         @drop="onDrop($event, 0)"
         @dragover.prevent
         @dragleave="dragLeave"
         @dragenter="dragEnter"
-        v-show="dragging"
       />
       <template v-for="(entry, idx) of form">
         <q-item
           :key="idx"
+          draggable
           @dragstart="dragStart($event, idx)"
           @dragend="dragEnd"
-          draggable
         >
           <q-item-section side>
             {{ idx + 1 }}
@@ -53,13 +53,13 @@
           </q-item-section>
         </q-item>
         <div
+          v-show="dragging"
           :key="`after-${idx}`"
           class="drop-zone"
           @drop="onDrop($event, idx + 1)"
           @dragover.prevent
           @dragleave="dragLeave"
           @dragenter="dragEnter"
-          v-show="dragging"
         />
       </template>
       <q-item v-if="form.length === 0" class="empty">

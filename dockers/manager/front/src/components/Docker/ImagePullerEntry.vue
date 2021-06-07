@@ -9,13 +9,13 @@
         />
       </div>
     </div>
-    <div class="row q-gutter-sm items-center" :key="id" v-for="id of logIds">
-      <div class="col col-auto" v-if="!id.startsWith('info-')">
+    <div v-for="id of logIds" :key="id" class="row q-gutter-sm items-center">
+      <div v-if="!id.startsWith('info-')" class="col col-auto">
         <span class="text-mono">{{ id }}</span>
       </div>
       <div
-        class="col"
         v-if="lastLogs[id].progressDetail && lastLogs[id].progressDetail.total"
+        class="col"
       >
         <q-linear-progress
           rounded
@@ -27,9 +27,9 @@
         />
       </div>
       <div
+        v-else
         class="col ellipsis"
         style="max-width: 600px; overflow: hidden"
-        v-else
       >
         <span class="text-mono">{{ lastLogs[id].status }}</span>
       </div>

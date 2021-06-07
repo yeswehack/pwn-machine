@@ -2,10 +2,10 @@
   <div class="dns-log-table">
     <div class="row q-gutter-sm items-center">
       <div class="col">
-        <q-input filled v-model="domain" label="Domain" />
+        <q-input v-model="domain" filled label="Domain" />
       </div>
       <div class="col col-auto">
-        <q-input filled v-model="type" label="Type" />
+        <q-input v-model="type" filled label="Type" />
       </div>
     </div>
     <log-list

@@ -2,22 +2,22 @@
   <div class="row">
     <div class="col">
       <q-select
+        v-model="form.name"
         :readonly="readonly"
         :options="options"
-        v-model="form.name"
         map-options
         emit-value
         label="Restart policy"
       >
-        <template #after v-if="this.form.name !== 'on-failure'">
+        <template v-if="form.name !== 'on-failure'" #after>
           <help-link
             href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
           />
         </template>
       </q-select>
     </div>
-    <div class="col col-3 q-ml-sm" v-if="this.form.name === 'on-failure'">
-      <q-input type="number" v-model="form.maximumRetryCount" label="Max-retry">
+    <div v-if="form.name === 'on-failure'" class="col col-3 q-ml-sm">
+      <q-input v-model="form.maximumRetryCount" type="number" label="Max-retry">
         <template #after>
           <help-link
             href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"
