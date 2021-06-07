@@ -14,9 +14,8 @@
     :readonly="readonly"
     clearable
   >
-    <template #append>
+    <template #after>
       <q-btn
-        flat
         round
         icon="eva-plus"
         color="positive"
