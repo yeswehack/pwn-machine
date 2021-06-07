@@ -3,18 +3,18 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
-          v-model="form.name"
-          required
           label="Name"
+          required
           :rule="[required('You must make a selection.')]"
+          v-model="form.name"
         />
         <q-select
-          v-model="form.type"
+          label="Type"
           use-input
-          input-debounce="0"
           :options="middlewaresTypes"
           :rules="[required('You must make a selection.')]"
-          label="Type"
+          v-model="form.type"
+          input-debounce="0"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
@@ -41,23 +41,18 @@ import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export function getCreateComponent(value) {
-  return forms[value?.type] ?? null;
+  return forms[value?.type];
 }
 
 export default {
+  components: { ResetAndSave },
   mixins: [DeepForm],
   formDefinition: {
     name: null,
     type: "addPrefix",
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
-  components: { ResetAndSave },
-  props: {
-    edit: { type: Boolean, default: false },
-    middleware: { type: Object, default: null }
-  },
+  props: { middleware: { type: Object, default: null } },
   data() {
     const originalForm = {
       name: this.middleware?.name.split("@")[0],
@@ -71,14 +66,10 @@ export default {
       middlewaresTypes,
       cache: {},
       originalForm,
-      loading: false,
       panel: "chooseType"
     };
   },
   computed: {
-    okBtnLabel() {
-      return this.edit ? "Update" : "Create";
-    },
     currentType() {
       return this.form.type;
     },
@@ -97,50 +88,17 @@ export default {
     }
   },
   methods: {
-    async createMiddleware() {
-      this.loading = true;
-      const type = this.form.type;
-      const mutation = api.traefik.middlewares.CREATE_MIDDLEWARE[type];
-      const input = {
-        name: this.form.name,
-        [type]: this.form.extra
-      };
-      await this.mutate({
-        mutation,
-        variables: { input },
+    submit(done) {
+      this.mutate({
+        mutation: api.traefik.middlewares.CREATE_MIDDLEWARE[this.form.type],
+        variables: { name: this.form.name, [type]: this.form.extra },
         refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
         message: `${this.form.name} created.`
-      }).then(() => {
-        this.$emit("ok");
-      });
-    },
-    async updateMiddleware() {
-      const type = this.form.type;
-      const mutation = api.traefik.middlewares.UPDATE_MIDDLEWARE[type];
-      const variables = {
-        nodeId: this.middleware.nodeId,
-        patch: this.form.extra
-      };
-      await this.mutate({
-        mutation,
-        variables,
-        refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
-        message: `${this.middleware.name} updated.`
-      }).then(() => {
-        this.$emit("ok");
-      });
-    },
-    async submit() {
-      this.loading = true;
-      try {
-        if (this.edit) {
-          await this.updateMiddleware();
-        } else {
-          await this.createMiddleware();
-        }
-      } finally {
-        this.loading = false;
-      }
+      })
+        .then(() => {
+          this.$emit("ok");
+        })
+        .finally(done);
     }
   }
 };

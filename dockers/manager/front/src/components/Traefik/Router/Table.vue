@@ -25,8 +25,8 @@
     <template #body-cell-service="{row}">
       <template v-if="row.service">
         <q-badge
-          color="negative"
           :label="row.service.name"
+          color="negative"
           v-if="row.service.type === 'invalid'"
         />
         <service-link :name="row.service.name" v-else />
@@ -36,9 +36,9 @@
       <div class="q-gutter-xs">
         <template v-for="(middleware, idx) of row.middlewares">
           <q-badge
+            :label="middleware.name"
             :key="idx"
             color="negative"
-            :label="middleware.name"
             v-if="middleware.type === 'invalid'"
           />
           <middleware-link :name="middleware.name" :key="idx" v-else />

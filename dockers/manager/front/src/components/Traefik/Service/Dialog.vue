@@ -17,9 +17,7 @@ import CreateService from "./Create.vue";
 
 export default {
   components: { CreateService, BaseDialog },
-  props: {
-    service: { type: Object, default: null }
-  },
+  props: { service: { type: Object, default: null } },
   data: () => ({ subtitle: null }),
   computed: {
     serviceForm() {

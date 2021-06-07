@@ -3,21 +3,21 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
-          v-model="form.name"
           ref="name"
-          :rules="[required('You must enter a name.')]"
           label="Name"
+          :rules="[required('You must enter a name.')]"
+          v-model="form.name"
         />
         <q-select
-          v-model="form.protocol"
           label="Protocol"
           :options="Object.keys(availableTypes)"
+          v-model="form.protocol"
         />
         <q-select
-          :disable="!form.protocol"
-          v-model="form.type"
           label="Type"
+          :disable="!form.protocol"
           :options="availableTypes[form.protocol]"
+          v-model="form.type"
         />
       </q-tab-panel>
       <q-tab-panel name="enterSettings">
@@ -75,18 +75,13 @@ export function getCreateComponent(value) {
 export default {
   components: { ResetAndSave },
   mixins: [DeepForm],
-  props: {
-    edit: { type: Boolean, default: false },
-    service: { type: Object, default: null }
-  },
   formDefinition: {
     name: null,
     protocol: "http",
     type: "loadBalancer",
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
+  props: { service: { type: Object, default: null } },
   data() {
     const availableTypes = {
       http: ["loadBalancer", "weighted", "mirroring"],
@@ -96,18 +91,31 @@ export default {
     const steps = [
       {
         name: "chooseType",
-        validate: () => {
-          return this.$refs.name.validate();
-        }
+        validate: () => this.$refs.name.validate()
       },
       {
         name: "enterSettings",
-        validate: () => {
-          return this.$refs.create.validate();
-        }
+        validate: () => this.$refs.create.validate()
       }
     ];
     return { availableTypes, panel: "chooseType", steps };
+  },
+  computed: {
+    currentProtocol() {
+      return this.form.protocol;
+    },
+    currentType() {
+      return this.form.type;
+    },
+    createComponent() {
+      return getCreateComponent(this.form);
+    },
+    okBtnLabel() {
+      return this.panel === "chooseType" ? "Next" : "Create";
+    },
+    cancelBtnLabel() {
+      return this.panel === "chooseType" ? "Cancel" : "Back";
+    }
   },
   watch: {
     currentProtocol(proto, oldProto) {
@@ -126,23 +134,6 @@ export default {
       );
       this.form.extra = instance.originalForm;
       this.changeSubtitle();
-    }
-  },
-  computed: {
-    currentProtocol() {
-      return this.form.protocol;
-    },
-    currentType() {
-      return this.form.type;
-    },
-    createComponent() {
-      return getCreateComponent(this.form);
-    },
-    okBtnLabel() {
-      return this.panel === "chooseType" ? "Next" : "Create";
-    },
-    cancelBtnLabel() {
-      return this.panel === "chooseType" ? "Cancel" : "Back";
     }
   },
   methods: {
@@ -164,7 +155,7 @@ export default {
         this.$emit("cancel");
       }
     },
-    createService() {
+    submit(done) {
       const protocol = this.form.protocol;
       const type = this.form.type;
       const mutation = api.traefik.services.CREATE_SERVICE[protocol][type];
@@ -177,32 +168,11 @@ export default {
         variables: { input },
         refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
         message: `${this.form.name} created.`
-      }).then(() => this.$emit("ok"));
-    },
-    updateService() {
-      const type = this.form.type;
-      const mutation = api.traefik.services.UPDATE_SERVICE[type];
-      const variables = {
-        nodeId: this.service.nodeId,
-        patch: this.form.extra
-      };
-      this.mutate({
-        mutation,
-        variables,
-        refetchQueries: [{ query: api.traefik.services.LIST_SERVICES }],
-        message: `${this.service.name} updated.`
-      }).then(() => this.$emit("ok"));
-    },
-    submit(done) {
-      try {
-        if (this.edit) {
-          this.updateService();
-        } else {
-          this.createService();
-        }
-      } finally {
-        done();
-      }
+      })
+        .then(() => {
+          this.$emit("ok");
+        })
+        .finally(done);
     }
   }
 };

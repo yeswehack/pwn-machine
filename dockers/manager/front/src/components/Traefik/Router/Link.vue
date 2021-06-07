@@ -1,5 +1,5 @@
 <template>
-  <pm-link path="/traefik/routers" :hash="name" :label="name" />
+  <pm-link :label="name" :hash="name" path="/traefik/routers" />
 </template>
 
 <script>

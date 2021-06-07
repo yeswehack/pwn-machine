@@ -2,8 +2,8 @@
   <div>
     <div class="text-h6">Weighted services</div>
     <base-grid-input
-      :readonly="readonly"
       :titles="['Service', 'Weight']"
+      :readonly="readonly"
       gridFormat="1fr 1fr"
       :entries="form"
       :error="errorMsg"
@@ -12,18 +12,18 @@
     >
       <template #inputs>
         <q-select
+          label="Service"
           flat
+          :options="serviceOptions"
           v-model="model.name"
           @keypress.enter.prevent="addEntry"
-          :options="serviceOptions"
-          label="Service"
         />
         <q-input
-          type="number"
+          label="Weight"
           flat
+          type="number"
           v-model.number="model.weight"
           @keypress.enter.prevent="addEntry"
-          label="Weight"
         />
       </template>
       <template #entry="{entry}">
@@ -33,9 +33,9 @@
             <q-select
               class="col"
               flat
+              :options="serviceOptions"
               v-model="entry.name"
               @keypress.enter.prevent="addEntry"
-              :options="serviceOptions"
             />
           </q-popup-edit>
         </div>
@@ -63,11 +63,6 @@ import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
-  props: {
-    readonly: { type: Boolean, default: false },
-    protocol: { type: String, default: null },
-    label: { type: String, default: null }
-  },
   formDefinition: [],
   apollo: {
     services: {
@@ -78,12 +73,17 @@ export default {
       update: data => data.traefikServices
     }
   },
+  props: {
+    readonly: { type: Boolean, default: false },
+    protocol: { type: String, default: null },
+    label: { type: String, default: null }
+  },
+  data: () => ({ model: { name: null, weight: null }, errorMsg: "" }),
   computed: {
     serviceOptions() {
       return (this.services ?? []).map(s => s.name);
     }
   },
-  data: () => ({ model: { name: null, weight: null }, errorMsg: "" }),
   methods: {
     addEntry() {
       if (!this.model.name || !Number.isFinite(this.model.weight)) return;

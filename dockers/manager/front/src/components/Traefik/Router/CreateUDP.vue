@@ -18,7 +18,6 @@
 import DeepForm from "src/mixins/DeepForm";
 import EntrypointInput from "./EntrypointInput.vue";
 import ServiceInput from "./ServiceInput.vue";
-import { isValidRule } from "src/traefik";
 
 export default {
   mixins: [DeepForm],
@@ -28,7 +27,6 @@ export default {
     tls: null
   },
   methods: {
-    validateRule: v => isValidRule(v) || "Syntax error",
     validate() {
       return this.$refs.service.validate();
     }

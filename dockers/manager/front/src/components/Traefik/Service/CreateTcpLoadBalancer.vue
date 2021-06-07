@@ -2,21 +2,21 @@
   <div class="q-gutter-md">
     <component
       ref="servers"
-      :rules="[required('You must choose at least one server')]"
-      :is="formChildren.servers"
-      v-model="form.servers"
       object-key="address"
       label="Servers address"
+      :is="formChildren.servers"
+      :rules="[required('You must choose at least one server')]"
+      v-model="form.servers"
     />
     <q-select
+      label="Proxy procotol version"
       :options="[1, 2]"
       v-model="form.proxyProtocol.version"
-      label="Proxy procotol version"
     />
     <q-input
+      label="Termination delay (ms)"
       type="number"
       v-model.number="form.terminationDelay"
-      label="Termination delay (ms)"
     />
   </div>
 </template>

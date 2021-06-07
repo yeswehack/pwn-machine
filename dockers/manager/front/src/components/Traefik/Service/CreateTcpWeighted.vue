@@ -2,9 +2,9 @@
   <div class="q-gutter-md">
     <component
       ref="service"
+      protocol="tcp"
       :is="formChildren.services"
       v-model="form.services"
-      protocol="tcp"
     />
   </div>
 </template>

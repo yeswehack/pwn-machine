@@ -1,5 +1,5 @@
 <template>
-  <base-dialog ref="dialog" v-bind="$attrs" title="Create a new router">
+  <base-dialog ref="dialog" title="Create a new router" v-bind="$attrs">
     <template #default="{ok, cancel}">
       <create-router :value="router" @ok="ok" @cancel="cancel" />
     </template>
@@ -12,16 +12,6 @@ import BaseDialog from "src/components/BaseDialog.vue";
 
 export default {
   components: { CreateRouter, BaseDialog },
-  props: {
-    router: { type: Object, default: null }
-  },
-  methods: {
-    show() {
-      this.$refs.dialog.show();
-    },
-    hide() {
-      this.$refs.dialog.hide();
-    },
-  }
+  props: { router: { type: Object, default: null } }
 };
 </script>

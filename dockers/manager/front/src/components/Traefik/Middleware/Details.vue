@@ -9,9 +9,9 @@
 
           <q-card-section>
             <component
+              hide-title
               :is="formChildren.extra"
               v-model="form.extra"
-              hide-title
             />
           </q-card-section>
 
@@ -40,16 +40,12 @@ export default {
   components: { CreateMiddleware, BaseDetails, ResetAndSave },
   mixins: [DeepForm],
   formDefinition: {
-    extra(value) {
-      return getCreateComponent(value);
-    }
+    extra: getCreateComponent
   },
   methods: {
     submit(done) {
-      const mutation =
-        api.traefik.middlewares.UPDATE_MIDDLEWARE[this.value.type];
       this.mutate({
-        mutation,
+        mutation: api.traefik.middlewares.UPDATE_MIDDLEWARE[this.value.type],
         variables: { nodeId: this.value.nodeId, patch: this.form.extra },
         refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
         message: `${this.value.name} updated.`

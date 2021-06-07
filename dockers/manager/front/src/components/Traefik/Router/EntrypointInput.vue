@@ -1,11 +1,11 @@
 <template>
   <q-select
-    v-model="form"
-    multiple
-    use-chips
-    :hint="form.length ? '' : 'all'"
-    :options="relevantEntrypoints"
     label="Entrypoint"
+    :hint="form.length ? '' : 'all'"
+    use-chips
+    :options="relevantEntrypoints"
+    multiple
+    v-model="form"
   />
 </template>
 

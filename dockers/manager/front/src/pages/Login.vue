@@ -12,9 +12,10 @@
               <q-input
                 type="password"
                 label="Password"
+                :rules="[required('Please enter your password')]"
                 v-model="form.password"
               />
-              <div class="row ">
+              <div class="row justify-center">
                 <div class="col col-auto">
                   <component :is="formChildren.otp" v-model="form.otp" @enter="submit" />
                 </div>
@@ -40,7 +41,6 @@
 </template>
 
 <script>
-import _ from "lodash";
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "src/components/Config/OtpInput.vue";
@@ -48,7 +48,7 @@ import OtpInput from "src/components/Config/OtpInput.vue";
 export default {
   mixins: [DeepForm],
   formDefinition: {
-    password: null,
+    password: "",
     otp: OtpInput,
     durationDays: 1
   },

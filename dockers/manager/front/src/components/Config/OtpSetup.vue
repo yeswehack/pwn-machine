@@ -17,7 +17,7 @@
       <p>Type the 6 digits displayed by the app:</p>
       <div class="row justify-center">
         <div class="col col-auto">
-          <component ref="otp" :is="formChildren" v-model="form" />
+          <component :is="formChildren" v-model="form" />
         </div>
       </div>
     </q-card-section>
@@ -42,11 +42,6 @@ export default {
   computed:{
     otpUrl(){
       return `otpauth://totp/Pwn-Machine:admin?secret=${this.otpSecret}&issuer=Pwn-Machine`
-    }
-  },
-  methods: {
-    validate() {
-      return this.$refs.otp.validate();
     }
   }
 };

@@ -23,8 +23,8 @@
           <q-card-section>
             <reset-and-save
               :modified="modified"
-              :validate="validate"
               @save="submit"
+              :validate="validate"
               @reset="reset"
             />
           </q-card-section>
@@ -33,7 +33,7 @@
 
       <div class="col col-6">
         <log-card>
-          <log-list flat :router="[value.name]" short />
+          <log-list flat short :router="[value.name]" />
         </log-card>
       </div>
     </template>
@@ -70,9 +70,6 @@ export default {
         refetchQueries: [{ query: api.traefik.routers.LIST_ROUTERS }],
         message: `${this.value.name} updated.`
       }).finally(done);
-    },
-    validate() {
-      return this.$refs.create.validate();
     }
   }
 };

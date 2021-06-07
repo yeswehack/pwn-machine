@@ -6,21 +6,21 @@
         <q-input v-model="form.cookie.name" label="Name" />
         <div class="row">
           <q-select
+            label="SameSite"
             class="col"
+            :options="sameSiteOptions"
             clearable
             v-model="form.cookie.sameSite"
-            :options="sameSiteOptions"
-            label="SameSite"
           />
           <q-toggle
+            label="http-only"
             class="col col-auto"
             v-model="form.cookie.httpOnly"
-            label="http-only"
           />
           <q-toggle
+            label="secure"
             class="col col-auto"
             v-model="form.cookie.secure"
-            label="secure"
           />
         </div>
       </q-card-section>
@@ -33,7 +33,6 @@ import DeepForm from "src/mixins/DeepForm";
 
 export default {
   mixins: [DeepForm],
-  data: () => ({ sameSiteOptions: ["none", "lax", "strict"] }),
   formDefinition: {
     cookie: {
       name: null,
@@ -41,6 +40,7 @@ export default {
       httpOnly: null,
       secure: null
     }
-  }
+  },
+  data: () => ({ sameSiteOptions: ["none", "lax", "strict"] })
 };
 </script>

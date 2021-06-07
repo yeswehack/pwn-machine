@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item expand-separator icon="lock" label="TLS">
+  <q-expansion-item label="TLS" icon="lock" expand-separator>
     <q-separator />
     <q-card>
       <q-card-section>
@@ -73,6 +73,21 @@ export default {
     ];
     return { resolverOptions, domain: null };
   },
+  computed: {
+    ...mapGetters("certResolver"),
+    dnsResolver() {
+      return ["letsencrypt-staging-dns", "letsencrypt-dns"].includes(
+        this.form.certResolver
+      );
+    }
+  },
+  watch: {
+    resolver(v) {
+      if (v === null) {
+        this.form.domains.splice(0, this.form.domains.length);
+      }
+    }
+  },
   methods: {
     addEntry() {
       if (!this.domain) return;
@@ -89,21 +104,6 @@ export default {
     },
     removeEntry(idx) {
       this.form.domains.splice(idx, 1);
-    }
-  },
-  computed: {
-    ...mapGetters("certResolver"),
-    dnsResolver() {
-      return ["letsencrypt-staging-dns", "letsencrypt-dns"].includes(
-        this.form.certResolver
-      );
-    }
-  },
-  watch: {
-    resolver(v) {
-      if (v === null) {
-        this.form.domains.splice(0, this.form.domains.length);
-      }
     }
   }
 };

@@ -1,20 +1,20 @@
 <template>
   <div class="column">
     <q-select
-      v-bind="$attrs"
-      flat
-      v-model="model"
-      :options="options"
-      @input="addEntry"
       label="Middlewares"
+      flat
+      v-bind="$attrs"
+      :options="options"
+      v-model="model"
+      @input="addEntry"
     >
       <template #after>
         <q-btn
-          dense
           round
+          dense
           size="md"
-          icon="eva-plus"
           color="green"
+          icon="eva-plus"
           @click="createMiddleware"
         />
       </template>
@@ -45,9 +45,9 @@
             <q-btn
               flat
               dense
-              icon="eva-close"
-              color="negative"
               size="sm"
+              color="negative"
+              icon="eva-close"
               @click="removeEntry(idx)"
             />
           </q-item-section>
@@ -81,27 +81,26 @@ function array_move(arr, from, to) {
 
 export default {
   mixins: [DeepForm],
-  props: {
-    label: { type: String, default: null }
-  },
+  formDefinition: [],
   apollo: {
     middlewares: {
       query: api.traefik.middlewares.LIST_MIDDLEWARES,
       update: data => data.traefikMiddlewares
     }
   },
+  props: {
+    label: { type: String, default: null }
+  },
   data: () => ({ model: "", dragging: false }),
-  formDefinition: [],
+  computed: {
+    options() {
+      return (this.middlewares ?? []).map(m => m.name);
+    }
+  },
   methods: {
     createMiddleware() {
       this.$q.dialog({
         component: MiddlewareDialog,
-        root: this
-      });
-    },
-    createService() {
-      this.$q.dialog({
-        component: ServiceDialog,
         root: this
       });
     },
@@ -123,7 +122,7 @@ export default {
     },
     onDrop(evt, newId) {
       const oldId = parseInt(evt.dataTransfer.getData("oldId"));
-      if (newId != oldId && newId != oldId + 1) {
+      if (newId !== oldId && newId !== oldId + 1) {
         array_move(this.form, oldId, newId);
       }
     },
@@ -139,14 +138,10 @@ export default {
       }
       this.dragging = false;
     }
-  },
-  computed: {
-    options() {
-      return (this.middlewares ?? []).map(m => m.name);
-    }
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .drop-container {
   position: relative;

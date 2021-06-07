@@ -16,10 +16,10 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section v-if="value.type != 'internal'">
-            <component :is="createComponent" v-model="form.extra" />
+          <q-card-section v-if="value.type !== 'internal'">
+            <component :is="formChildren.extra" v-model="form.extra" />
           </q-card-section>
-          <q-card-section v-if="value.type != 'internal'">
+          <q-card-section v-if="value.type !== 'internal'">
             <reset-and-save
               :modified="modified"
               @save="submit"
@@ -29,12 +29,9 @@
         </q-card>
       </div>
 
-  
-
-
       <div class="col col-6">
         <log-card>
-          <log-list flat :service="[value.name]" short />
+          <log-list flat short :service="[value.name]" />
         </log-card>
       </div>
     </template>
@@ -48,10 +45,9 @@ import ProtocolBadge from "../ProtocolBadge.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import LogList from "src/components/Traefik/Log/LogList.vue";
-import LogCard from 'src/components/LogCard.vue';
+import LogCard from "src/components/LogCard.vue";
 
 export default {
-  mixins: [DeepForm],
   components: {
     BaseDetails,
     ProtocolBadge,
@@ -59,17 +55,9 @@ export default {
     LogList,
     LogCard
   },
+  mixins: [DeepForm],
   formDefinition: {
-    extra(value) {
-      return getCreateComponent(value);
-    }
-  },
-  computed: {
-    createComponent() {
-      return getCreateComponent(this.service);
-    }
-  },
-  methods: {
+    extra: getCreateComponent
   }
 };
 </script>

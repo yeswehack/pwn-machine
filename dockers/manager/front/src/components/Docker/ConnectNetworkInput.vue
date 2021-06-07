@@ -57,7 +57,7 @@ export default {
     const serviceName = this.container.labels.find(
       l => l.key === "com.docker.compose.service"
     )?.value;
-    if (serviceName && serviceName != this.container.name) {
+    if (serviceName && serviceName !== this.container.name) {
       defaultAliases.push(serviceName);
     }
     return {

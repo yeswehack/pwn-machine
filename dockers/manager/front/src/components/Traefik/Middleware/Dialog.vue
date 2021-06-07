@@ -2,8 +2,8 @@
   <base-dialog
     ref="dialog"
     title="Create a new middleware"
-    size="600"
     :subtitle="subtitle"
+    size="600"
   >
     <template #default="{ok, cancel}">
       <create-middleware
@@ -22,9 +22,7 @@ import CreateMiddleware from "./Create.vue";
 
 export default {
   components: { CreateMiddleware, BaseDialog },
-  props: {
-    middleware: { type: Object, default: null }
-  },
+  props: { middleware: { type: Object, default: null } },
   data: () => ({ form: {}, subtitle: null }),
   methods: {
     updateSubtitle(t) {

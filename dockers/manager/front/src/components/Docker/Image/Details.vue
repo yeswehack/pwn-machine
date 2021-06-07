@@ -35,7 +35,7 @@
             <template #body-cell-argument="{value}">
               <q-td class="ellipsis" style="max-width:300px">
                 {{ value }}
-                <q-popup-edit>
+                <q-popup-edit value="">
                   <q-input readonly :value="value" autofocus />
                 </q-popup-edit>
               </q-td>

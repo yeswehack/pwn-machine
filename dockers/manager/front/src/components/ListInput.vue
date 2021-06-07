@@ -66,7 +66,7 @@ export default {
       this.errorMsg = "";
       for (const rule of this.rules) {
         const msg = rule(this.form);
-        if (msg) {
+        if (typeof msg === "string") {
           this.errorMsg = msg;
           return false;
         }

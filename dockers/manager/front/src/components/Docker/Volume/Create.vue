@@ -27,7 +27,7 @@ export default {
     labels: LabelInput
   },
   methods: {
-    async submit(done) {
+    submit(done) {
       const name = this.form.name ?? "<unnamed>";
       this.mutate({
         mutation: api.docker.volumes.CREATE_VOLUME,
