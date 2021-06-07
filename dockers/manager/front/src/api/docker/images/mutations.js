@@ -24,3 +24,12 @@ export const PULL_IMAGE = gql`
     }
   }
 `;
+
+export const DELETE_IMAGE = gql`
+  mutation deleteDockerImage($id: ID!, $force: Boolean, $pruneParents: Boolean){
+    deleteDockerImage(id: $id, force: $force, pruneParents: $pruneParents ){
+      success
+      error
+    }
+  }
+`

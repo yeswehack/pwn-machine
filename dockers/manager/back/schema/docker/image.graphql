@@ -4,7 +4,7 @@ extend type Query {
 
 extend type Mutation {
   pullDockerImage(name: String!): DockerImagePullResponse!
-  dockerRemoveImage(
+  deleteDockerImage(
     id: ID!
     force: Boolean! = false
     pruneParents: Boolean! = true

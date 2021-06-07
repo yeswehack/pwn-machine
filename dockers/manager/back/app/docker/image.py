@@ -180,7 +180,7 @@ async def resolve_search_tag(*_, repoName, imageName):
     return tags
 
 
-@registerMutation("dockerRemoveImage")
+@registerMutation("deleteDockerImage")
 def resolve_remove_image(*_, id, force, pruneParents):
     try:
         docker_client.api.remove_image(id, force=force, noprune=not pruneParents)

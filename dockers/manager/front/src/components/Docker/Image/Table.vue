@@ -96,8 +96,41 @@ export default {
   },
   methods: {
     deleteImage(image) {
-      this.$api.docker.deleteImage(name.split("@")[0]);
-      this.$emit("refetch");
+      this.$q
+        .dialog({
+          title: "Confirm",
+          options: {
+            model: [],
+            items: [
+              {
+                label: "Force the removal",
+                value: "force",
+
+                color: "primary"
+              },
+              {
+                label: "Do not delete untagged parents",
+                value: "noPruneParents",
+
+                color: "primary"
+              }
+            ],
+            type: "toggle"
+          },
+          message: `Are you sure you want to delete ${image.name}?`,
+          color: "negative",
+          cancel: true
+        })
+        .onOk(result => {
+          const force = result.includes("force");
+          const pruneParent = !result.includes("noPruneParents");
+          this.mutate({
+            mutation: api.docker.images.DELETE_IMAGE,
+            variables: { id: image.id, force, pruneParent },
+            refetchQueries: [{ query: api.docker.images.LIST_IMAGES }],
+            message: `${image.name} deleted.`
+          });
+        });
     },
     createImage() {
       this.$q
@@ -141,9 +174,7 @@ export default {
             refetchQueries: [{ query: api.docker.images.LIST_IMAGES }]
           }).then(result => {
             const deleted = result.deleted;
-            const reclaimed = humanStorageSize(
-              result.spaceReclaimed
-            );
+            const reclaimed = humanStorageSize(result.spaceReclaimed);
             let message = `No image deleted.`;
             if (deleted.length) {
               message = `${deleted.length} ${plural(
