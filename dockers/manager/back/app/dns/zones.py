@@ -28,8 +28,8 @@ def resolve_soa(zone, *_):
 
 
 @DnsZone.field("rules")
-def resolve_rules(zone, *_):
-    return dns_http().get_rules_for_zone(zone["id"])
+async def resolve_rules(zone, *_):
+    return await dns_http().get_rules_for_zone(zone["id"])
 
 
 @registerMutation("createDnsZone")
