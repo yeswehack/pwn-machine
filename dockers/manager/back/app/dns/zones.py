@@ -23,8 +23,8 @@ def resolve_name(zone, *_):
 
 
 @DnsZone.field("soa")
-def resolve_soa(zone, *_):
-    return dns_http().get_soa(zone["id"])
+async def resolve_soa(zone, *_):
+    return await dns_http().get_soa(zone["id"])
 
 
 @DnsZone.field("rules")
