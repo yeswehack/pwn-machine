@@ -6,6 +6,8 @@
           v-model="selectedContainers"
           multiple
           use-chips
+          emit-value
+          map-options
           clearable
           :options="containerOptions"
           filled
@@ -34,7 +36,10 @@ export default {
   },
   computed: {
     containerOptions() {
-      return (this.dockerContainers ?? []).map(c => c.name);
+      return (this.dockerContainers ?? []).map(c => ({
+        label: c.name,
+        value: c.id
+      }));
     }
   }
 };

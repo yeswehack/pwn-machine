@@ -120,7 +120,7 @@
     </div>
     <div class="col">
       <log-card>
-        <log-list :containers="[container.name]" />
+        <log-list :containers="[container.id]" />
       </log-card>
     </div>
 

@@ -52,7 +52,7 @@ export default {
       query: api.docker.logs.LIST_LOGS,
       variables() {
         return {
-          filter: { containerName: this.containers },
+          filter: { containerId: this.containers },
           cursor: { from: 0, size: this.rowsPerPage }
         };
       },
@@ -80,7 +80,7 @@ export default {
     onLoad(index, done) {
       this.$apollo.queries.dockerLogs.fetchMore({
         variables: {
-          filter: { containerName: this.containers },
+          filter: { containerId: this.containers },
           cursor: {
             from: (index - 1) * this.rowsPerPage,
             size: this.rowsPerPage
