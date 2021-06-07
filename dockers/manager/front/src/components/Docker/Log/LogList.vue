@@ -1,18 +1,17 @@
-
 <template>
   <div class="full-width scroll thin-scrollbar">
     <q-infinite-scroll :offset="200" reverse @load="onLoad">
       <div class="docker-log-list">
         <template v-for="(log, idx) of items">
           <div :key="`${idx}-date`" class="text-mono text-no-wrap">
-            {{ formatDate(log.date) }}
+            <span>{{ formatDate(log.date) }}</span>
           </div>
           <div
             :key="`${idx}-name`"
             class="text-mono text-no-wrap"
             :style="{ color: colorHash.hex(log.containerName) }"
           >
-            {{ log.containerName }}
+            <span>{{ log.containerName }}</span>
           </div>
           <div
             :key="`${idx}-msg`"
