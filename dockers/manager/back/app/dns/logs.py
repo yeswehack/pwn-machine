@@ -3,15 +3,7 @@ from functools import wraps
 from fnmatch import fnmatch
 from app.api import es
 
-
-def with_dns_redis(f):
-    @wraps(f)
-    def wrapper(obj, info, *args, **kwargs):
-        dns_redis = info.context["request"].state.dns_redis
-        return f(obj, info, *args, **kwargs, dns_redis=dns_redis)
-
-    return wrapper
-
+DNS_LOG_INDEX = "filebeat-pdns-*"
 
 DnsLog = createType("DnsLog")
 
@@ -44,7 +36,7 @@ async def query_dns_logs(*_, filter={}, cursor={}):
     }
 
     r = await es.search(
-        index="filebeat-pdns-*",
+        index=DNS_LOG_INDEX,
         sort="@timestamp:desc",
         body=body,
         from_=from_,
@@ -66,26 +58,3 @@ async def query_dns_logs(*_, filter={}, cursor={}):
 @DnsLog.field("date")
 def resolve_date(log, _):
     return log["date"]
-
-
-@DnsLog.field("nodeId")
-def resolve_date(log, _):
-    return log["nodeId"]
-
-
-@registerSubscription("dnsLogs")
-@with_dns_redis
-async def dns_logs_subscription(*_, dns_redis, filter={}):
-    domain_filter = filter.get("domain", "*")
-    type_filter = filter.get("type", "*")
-    async with dns_redis.client.pubsub() as sub:
-        await sub.psubscribe(f"__keyspace@0__:dns/data/*")
-        async for event in sub.listen():
-            if event["data"] != "hset":
-                continue
-            key = event["channel"][15:]
-            log = await dns_redis.client.hgetall(key)
-            if fnmatch(log["domain"], domain_filter) and fnmatch(
-                log["type"], type_filter
-            ):
-                yield log
