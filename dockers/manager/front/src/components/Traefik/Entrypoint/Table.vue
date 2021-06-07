@@ -9,7 +9,6 @@
     no-details
     no-new
     no-menu
-    @delete="deleteService"
   >
     <template #body-cell-protocol="{row}">
       <protocol-badge :protocol="row.protocol" />
@@ -67,26 +66,5 @@ export default {
     ];
     return { columns };
   },
-  methods: {
-    getServerStatusColor(row, server) {
-      const serverStatus = row.serverStatus.find(({ url }) => url === server);
-      if (serverStatus === undefined) {
-        return "primary";
-      }
-
-      return serverStatus.status === "UP" ? "positive" : "negative";
-    },
-    getServers(row) {
-      return row.loadBalancer?.servers.map(s => s.url) || [];
-    },
-    serviceCreated() {
-      this.$emit("refetch");
-      this.$refs.table.closePopup();
-    },
-    deleteService(name) {
-      this.$api.docker.deleteService(name.split("@")[0]);
-      this.$emit("refetch");
-    }
-  }
 };
 </script>
