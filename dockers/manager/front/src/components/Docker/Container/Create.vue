@@ -1,8 +1,8 @@
 <template>
   <q-form @submit="submit">
     <q-card-section class="q-gutter-md">
+      <q-input v-if="!readonly" v-model="form.name" label="Name" />
       <image-input v-if="!readonly" ref="image" v-model="image" />
-      <q-input v-if="!readonly" v-model="form.name" label="name" />
       <q-list separator class="rounded-borders" bordered>
         <component
           :is="formChildren.extra"
@@ -23,6 +23,11 @@
           :is="formChildren.ports"
           v-model="form.ports"
           :readonly="readonly"
+        />
+        <component
+          :is="formChildren.network"
+          v-if="!readonly"
+          v-model="form.network"
         />
         <component
           :is="formChildren.mounts"
@@ -60,6 +65,7 @@ import MountsInput from "./Form/MountsInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
 import EnvironInput from "./Form/EnvironInput.vue";
 import LabelInputVue from "../LabelInput.vue";
+import NetworkInput from "./Form/NetworkInput.vue";
 import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
 import api from "src/api";
@@ -90,6 +96,7 @@ export default {
     user: null,
     command: null,
     mounts: MountsInput,
+    network: NetworkInput,
     ports: ExposedPorts
   },
   computed: {

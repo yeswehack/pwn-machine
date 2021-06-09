@@ -70,6 +70,7 @@ def resolve_create_container(
     privileged,
     readonly,
     mounts: list[ContainerMount],
+    network,
     ports: list,
     restartPolicy,
     start=False,
@@ -94,6 +95,7 @@ def resolve_create_container(
         privileged=privileged,
         read_only=readonly,
         mounts=mounts,  #
+        network=network,
         ports=ports,
     )
 
