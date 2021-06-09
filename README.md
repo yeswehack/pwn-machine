@@ -4,6 +4,8 @@ PwnMachine is a self hosting solution based on docker aiming to provide an easy 
 
 The basic install include a web interface, a DNS server and a reverse proxy.
 
+![image](https://user-images.githubusercontent.com/16657045/121333905-80f77b00-c919-11eb-81e1-ae7be5241b4c.png)
+
 ## Requirements
 To use the PwnMachine, you don't need many prerequisites. You just need to have docker on your machine. We do not provide a tutorial for installing Docker, you can find all the useful information here: [https://docs.docker.com/get-started/](https://docs.docker.com/get-started/).
 
