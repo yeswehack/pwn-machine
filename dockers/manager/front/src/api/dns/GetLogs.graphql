@@ -1,0 +1,12 @@
+query getDnsLogs($filter: DnsLogFilter, $cursor: CursorInput!) {
+  dnsLogs(filter: $filter, cursor: $cursor) {
+    total
+    result {
+      nodeId
+      origin
+      date
+      query
+      type
+    }
+  }
+}

@@ -1,0 +1,55 @@
+// app global css in SCSS form
+html {
+  scroll-behavior: smooth;
+}
+
+.bg-grey-10 {
+  background: #2d2d2d !important;
+}
+
+.text-mono {
+  font-family: monospace;
+  white-space: pre;
+}
+
+a {
+  color: var(--q-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+.display-contents {
+  display: contents;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 1.5s linear 0s infinite;
+  width: auto;
+  height: auto;
+}
+
+.thin-scrollbar,
+.thin-scrollbar * {
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $primary;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-corner {
+    background: inherit;
+  }
+}

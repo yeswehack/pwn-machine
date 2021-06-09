@@ -1,0 +1,10 @@
+type PruneResponsePayload {
+  deleted: [String!]!
+  spaceReclaimed: Float!
+}
+
+type PruneResponse implements IMutationResponse{
+  success: Boolean!
+  error: String
+  result: PruneResponsePayload
+}

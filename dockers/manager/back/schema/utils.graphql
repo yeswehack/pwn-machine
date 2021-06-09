@@ -1,0 +1,22 @@
+type KeyValue {
+    key: String!
+    value: String!
+}
+
+input KeyValueInput {
+    key: String!
+    value: String
+}
+
+scalar DateTime
+
+
+interface IMutationResponse {
+    error: String
+    success: Boolean!
+}
+
+type BasicMutationResponse implements IMutationResponse {
+    error: String
+    success: Boolean!
+}

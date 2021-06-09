@@ -1,0 +1,9 @@
+type TraefikHeaderPair {
+  name: String
+  value: String
+}
+enum TraefikProtocol {
+  udp
+  tcp
+  http
+}

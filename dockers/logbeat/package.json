@@ -1,0 +1,29 @@
+{
+  "name": "logbeat",
+  "version": "1.0.0",
+  "description": "logfile parser for pwn-machine",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --ignore-watch node_modules --transpile-only index.ts",
+    "build": "tsc",
+    "serve": "forever index.js"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^15.12.1",
+    "@types/sqlite3": "^3.1.7",
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "forever": "^4.0.0",
+    "generatorify": "^1.1.2",
+    "moment": "^2.29.1",
+    "sqlite3": "^5.0.2",
+    "tail": "^2.2.2",
+    "tail-file": "^1.4.14",
+    "ts-node": "^10.0.0"
+  }
+}

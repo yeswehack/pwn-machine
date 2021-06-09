@@ -1,0 +1,12 @@
+type Query {
+  traefikServices(protocols: [TraefikProtocol!]): [TraefikService!]!
+  traefikMiddlewares: [TraefikMiddleware!]!
+}
+
+type Mutation {
+  _unused: Boolean
+}
+
+type Subscription {
+  _unused: Boolean
+}

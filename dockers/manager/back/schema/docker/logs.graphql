@@ -1,0 +1,23 @@
+
+type DockerLog implements Node {
+
+    nodeId: ID!
+    date: DateTime!
+    log: String!
+    container: String!
+    image: String!
+
+}
+input DockerLogFilter {
+    images: [String!]
+    containers: [String!]
+}
+
+type DockerLogResult implements Paginated {
+    total: Int!
+    result: [DockerLog!]
+}
+
+extend type Query{
+    dockerLogs(filter: DockerLogFilter, cursor: CursorInput): DockerLogResult!
+}

@@ -1,0 +1,351 @@
+interface TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+}
+
+
+extend type Mutation {
+  deleteTraefikService(nodeId: ID!): BasicMutationResponse!
+}
+
+type TraefikInvalidService implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+}
+
+enum TraefikSameSiteCookie {
+  none
+  lax
+  strict
+}
+
+
+
+type TraefikHTTPStickyCookie {
+  httpOnly: Boolean
+  name: String
+  sameSite: TraefikSameSiteCookie
+  secure: Boolean
+}
+
+input TraefikHTTPStickyCookieInput {
+  httpOnly: Boolean
+  name: String
+  sameSite: TraefikSameSiteCookie
+  secure: Boolean
+}
+
+type TraefikHTTPSticky {
+  cookie: TraefikHTTPStickyCookie
+}
+
+input TraefikHTTPStickyInput {
+  cookie: TraefikHTTPStickyCookieInput
+}
+
+type TraefikWeightedService {
+  name: String
+  weight: Int
+}
+
+input TraefikWeightedServiceInput {
+  name: String
+  weight: Int
+}
+
+# HTTP INTERNAL
+
+type TraefikHTTPServiceInternal implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+}
+
+# HTTP LOAD BALANCER
+
+type TraefikServiceLoadBalancerHealthCheck {
+  followRedirects: Boolean
+  headers: [KeyValue!]!
+  hostname: String
+  interval: String
+  path: String
+  port: Int
+  scheme: String
+  timeout: String
+}
+
+input TraefikServiceLoadBalancerHealthCheckInput {
+  followRedirects: Boolean
+  headers: [KeyValueInput!]
+  hostname: String
+  interval: String
+  path: String
+  port: Int
+  scheme: String
+  timeout: String
+}
+
+type TraefikHTTPServiceLoadBalancerServer {
+  url: String!
+}
+
+input TraefikHTTPServiceLoadBalancerServerInput {
+  url: String!
+}
+
+type TraefikHTTPLoadBalancerForwarding {
+  flushInterval: String
+}
+
+input TraefikHTTPLoadBalancerForwardingInput {
+  flushInterval: String
+}
+
+type TraefikHTTPLoadBalancer {
+  healthCheck: TraefikServiceLoadBalancerHealthCheck
+  passHostHeader: Boolean
+  responseForwarding: TraefikHTTPLoadBalancerForwarding
+  servers: [TraefikHTTPServiceLoadBalancerServer!]!
+  serversTransport: String
+  sticky: TraefikHTTPSticky
+}
+
+input TraefikHTTPLoadBalancerInput {
+  healthCheck: TraefikServiceLoadBalancerHealthCheckInput
+  passHostHeader: Boolean
+  responseForwarding: TraefikHTTPLoadBalancerForwardingInput
+  servers: [TraefikHTTPServiceLoadBalancerServerInput!]
+  serversTransport: String
+  sticky: TraefikHTTPStickyInput
+}
+
+type TraefikHTTPServiceLoadBalancer implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  loadBalancer: TraefikHTTPLoadBalancer
+}
+
+input TraefikHTTPServiceLoadBalancerInput {
+  name: String!
+  loadBalancer: TraefikHTTPLoadBalancerInput!
+}
+
+extend type Mutation {
+  createTraefikHTTPServiceLoadBalancer(
+    input: TraefikHTTPServiceLoadBalancerInput!
+  ): BasicMutationResponse!
+}
+
+# HTTP MIRRORING
+
+type TraefikHTTPMirroringMirror {
+  name: String!
+  percent: Float!
+}
+
+input TraefikHTTPMirroringMirrorInput {
+  name: String!
+  percent: Float!
+}
+
+type TraefikHTTPMirroring {
+  maxBodySize: Int
+  mirrors: [TraefikHTTPMirroringMirror!]!
+}
+
+input TraefikHTTPMirroringInput {
+  maxBodySize: Int
+  mirrors: [TraefikHTTPMirroringMirrorInput!]!
+}
+
+type TraefikHTTPServiceMirroring implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  mirroring: TraefikHTTPMirroring
+}
+
+input TraefikHTTPServiceMirroringInput {
+  name: String!
+  mirroring: TraefikHTTPMirroringInput!
+}
+
+extend type Mutation {
+  createTraefikHTTPServiceMirroring(
+    input: TraefikHTTPServiceMirroringInput!
+  ): BasicMutationResponse!
+}
+
+# HTTP WEIGHTED
+
+type TraefikHTTPWeighted {
+  services: [TraefikWeightedService!]!
+  sticky: TraefikHTTPSticky
+}
+
+input TraefikHTTPWeightedInput {
+  services: [TraefikWeightedServiceInput!]!
+  sticky: TraefikHTTPStickyInput
+}
+
+type TraefikHTTPServiceWeighted implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  weighted: TraefikHTTPWeighted
+}
+
+input TraefikHTTPServiceWeightedInput {
+  name: String!
+  weighted: TraefikHTTPWeightedInput!
+}
+
+extend type Mutation {
+  createTraefikHTTPServiceWeighted(
+    input: TraefikHTTPServiceWeightedInput!
+  ): BasicMutationResponse!
+}
+
+# TCP / UDP
+
+type TraefikServiceLoadBalancerServer {
+  address: String
+}
+
+input TraefikServiceLoadBalancerServerInput {
+  address: String
+}
+
+type TraefikWeighted {
+  services: [TraefikWeightedService!]!
+}
+
+input TraefikWeightedInput {
+  services: [TraefikWeightedServiceInput!]!
+}
+
+type TraefikServiceWeighted implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  weighted: TraefikWeighted
+}
+
+input TraefikServiceWeightedInput {
+  name: String!
+  weighted: TraefikWeightedInput!
+}
+
+# TCP LOAD BALANCER
+
+type TraefikTCPLoadBalancerProxyProtocol {
+  version: Int
+}
+
+input TraefikTCPLoadBalancerProxyProtocolInput {
+  version: Int
+}
+
+type TraefikTCPLoadBalancer {
+  proxyProtocol: TraefikTCPLoadBalancerProxyProtocol
+  servers: [TraefikServiceLoadBalancerServer!]!
+  terminationDelay: Int
+}
+
+input TraefikTCPLoadBalancerInput {
+  proxyProtocol: TraefikTCPLoadBalancerProxyProtocolInput
+  servers: [TraefikServiceLoadBalancerServerInput!]!
+  terminationDelay: Int
+}
+
+type TraefikTCPServiceLoadBalancer implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  loadBalancer: TraefikTCPLoadBalancer
+}
+
+input TraefikTCPServiceLoadBalancerInput {
+  name: String!
+  loadBalancer: TraefikTCPLoadBalancerInput!
+}
+
+extend type Mutation {
+  createTraefikTCPServiceLoadBalancer(
+    input: TraefikTCPServiceLoadBalancerInput!
+  ): BasicMutationResponse!
+}
+
+# TCP WEIGHTED
+
+extend type Mutation {
+  createTraefikTCPServiceWeighted(
+    input: TraefikServiceWeightedInput!
+  ): BasicMutationResponse!
+}
+
+# UDP LOAD BALANCER
+
+type TraefikUDPLoadBalancer {
+  servers: [TraefikServiceLoadBalancerServer!]!
+}
+
+input TraefikUDPLoadBalancerInput {
+  servers: [TraefikServiceLoadBalancerServerInput!]!
+}
+
+type TraefikUDPServiceLoadBalancer implements TraefikService {
+  nodeId: ID!
+  type: String!
+  name: String!
+  protocol: TraefikProtocol!
+  enabled: Boolean!
+  usedBy: [TraefikRouter!]!
+  loadBalancer: TraefikUDPLoadBalancer
+}
+
+input TraefikUDPServiceLoadBalancerInput {
+  name: String!
+  loadBalancer: TraefikUDPLoadBalancerInput!
+}
+
+extend type Mutation {
+  createTraefikUDPServiceLoadBalancer(
+    input: TraefikUDPServiceLoadBalancerInput!
+  ): BasicMutationResponse!
+}
+
+# UDP WEIGHTED
+
+extend type Mutation {
+  createTraefikUDPServiceWeighted(
+    input: TraefikServiceWeightedInput!
+  ): BasicMutationResponse!
+}

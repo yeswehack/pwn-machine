@@ -1,0 +1,25 @@
+query overview {
+  traefikEntrypoints {
+    name
+    address
+    usedBy {
+      name
+      protocol
+
+      ... on TraefikHTTPRouter {
+        rule
+        middlewares {
+          name
+        }
+      }
+
+      ... on TraefikTCPRouter {
+        rule
+      }
+
+      service {
+        name
+      }
+    }
+  }
+}

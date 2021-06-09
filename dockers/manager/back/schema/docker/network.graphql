@@ -1,0 +1,64 @@
+extend type Query {
+  dockerNetworks: [DockerNetwork!]!
+}
+
+extend type Mutation {
+  createDockerNetwork(input: DockerNetworkInput!): BasicMutationResponse!
+  deleteDockerNetwork(id: ID!): BasicMutationResponse!
+  pruneDockerNetworks: PruneResponse!
+  connectDockerContainer(
+    input: DockerNetworkConnectionInput
+  ): BasicMutationResponse!
+  disconnectDockerContainer(
+    input: DockerNetworkConnectionInput
+  ): BasicMutationResponse!
+}
+
+
+type DockerNetwork {
+  id: ID!
+  name: String!
+  labels: [KeyValue!]!
+  created: DateTime!
+  driver: String!
+  builtin: Boolean!
+  internal: Boolean!
+  ipams: [DockerNetworkIpam!]!
+  usedBy: [DockerNetworkConnection!]!
+  deleted: Boolean
+}
+
+input DockerNetworkInput {
+  name: String!
+  labels: [KeyValueInput!]! = []
+  driver: String! = "bridge"
+  internal: Boolean! = false
+  ipams: [DockerNetworkIpamInput!]! = []
+}
+
+
+type DockerNetworkIpam {
+  subnet: String!
+  ipRange: String
+  gateway: String
+}
+
+input DockerNetworkIpamInput {
+  subnet: String
+  ipRange: String
+  gateway: String
+}
+
+
+type DockerNetworkConnection {
+  ipAddress: String
+  aliases: [String!]
+  containerName: String!
+  container: DockerContainer!
+}
+
+input DockerNetworkConnectionInput {
+  networkId: ID!
+  containerId: ID!
+  aliases: [String!]
+}

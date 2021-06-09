@@ -1,0 +1,992 @@
+interface TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+}
+
+type InvalidMiddlewareInfo implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+}
+
+extend type Mutation {
+  deleteTraefikMiddleware(nodeId: ID): BasicMutationResponse!
+}
+type TraefikMiddlewareAddPrefixInfo {
+  prefix: String
+}
+
+input TraefikMiddlewareAddPrefixInfoInput {
+  prefix: String
+}
+
+type TraefikMiddlewareAddPrefix implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  addPrefix: TraefikMiddlewareAddPrefixInfo!
+}
+
+input TraefikMiddlewareAddPrefixInput {
+  name: String!
+  addPrefix: TraefikMiddlewareAddPrefixInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareAddPrefix(
+    input: TraefikMiddlewareAddPrefixInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareAddPrefix(
+    nodeId: ID!
+    patch: TraefikMiddlewareAddPrefixInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareBasicAuthInfo {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+input TraefikMiddlewareBasicAuthInfoInput {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+type TraefikMiddlewareBasicAuth implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  basicAuth: TraefikMiddlewareBasicAuthInfo!
+}
+
+input TraefikMiddlewareBasicAuthInput {
+  name: String!
+  basicAuth: TraefikMiddlewareBasicAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareBasicAuth(
+    input: TraefikMiddlewareBasicAuthInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareBasicAuth(
+    nodeId: ID!
+    patch: TraefikMiddlewareBasicAuthInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareBufferingInfo {
+  maxRequestBodyBytes: Int
+  maxResponseBodyBytes: Int
+  memRequestBodyBytes: Int
+  memResponseBodyBytes: Int
+  retryExpression: String
+}
+
+input TraefikMiddlewareBufferingInfoInput {
+  maxRequestBodyBytes: Int
+  maxResponseBodyBytes: Int
+  memRequestBodyBytes: Int
+  memResponseBodyBytes: Int
+  retryExpression: String
+}
+
+type TraefikMiddlewareBuffering implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  buffering: TraefikMiddlewareBufferingInfo!
+}
+
+input TraefikMiddlewareBufferingInput {
+  name: String!
+  buffering: TraefikMiddlewareBufferingInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareBuffering(
+    input: TraefikMiddlewareBufferingInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareBuffering(
+    nodeId: ID!
+    patch: TraefikMiddlewareBufferingInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareChainInfo {
+  middlewares: [String]
+}
+
+input TraefikMiddlewareChainInfoInput {
+  middlewares: [String]
+}
+
+type TraefikMiddlewareChain implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  chain: TraefikMiddlewareChainInfo!
+}
+
+input TraefikMiddlewareChainInput {
+  name: String!
+  chain: TraefikMiddlewareChainInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareChain(
+    input: TraefikMiddlewareChainInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareChain(
+    nodeId: ID!
+    patch: TraefikMiddlewareChainInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareCircuitBreakerInfo {
+  expression: String
+}
+
+input TraefikMiddlewareCircuitBreakerInfoInput {
+  expression: String
+}
+
+type TraefikMiddlewareCircuitBreaker implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  circuitBreaker: TraefikMiddlewareCircuitBreakerInfo!
+}
+
+input TraefikMiddlewareCircuitBreakerInput {
+  name: String!
+  circuitBreaker: TraefikMiddlewareCircuitBreakerInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareCircuitBreaker(
+    input: TraefikMiddlewareCircuitBreakerInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareCircuitBreaker(
+    nodeId: ID!
+    patch: TraefikMiddlewareCircuitBreakerInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareCompressInfo {
+  excludedContentTypes: [String]
+}
+
+input TraefikMiddlewareCompressInfoInput {
+  excludedContentTypes: [String]
+}
+
+type TraefikMiddlewareCompress implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  compress: TraefikMiddlewareCompressInfo!
+}
+
+input TraefikMiddlewareCompressInput {
+  name: String!
+  compress: TraefikMiddlewareCompressInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareCompress(
+    input: TraefikMiddlewareCompressInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareCompress(
+    nodeId: ID!
+    patch: TraefikMiddlewareCompressInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareContentTypeInfo {
+  autoDetect: Boolean
+}
+
+input TraefikMiddlewareContentTypeInfoInput {
+  autoDetect: Boolean
+}
+
+type TraefikMiddlewareContentType implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  contentType: TraefikMiddlewareContentTypeInfo!
+}
+
+input TraefikMiddlewareContentTypeInput {
+  name: String!
+  contentType: TraefikMiddlewareContentTypeInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareContentType(
+    input: TraefikMiddlewareContentTypeInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareContentType(
+    nodeId: ID!
+    patch: TraefikMiddlewareContentTypeInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareDigestAuthInfo {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+input TraefikMiddlewareDigestAuthInfoInput {
+  headerField: String
+  realm: String
+  removeHeader: Boolean
+  users: [String]
+  usersFile: String
+}
+
+type TraefikMiddlewareDigestAuth implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  digestAuth: TraefikMiddlewareDigestAuthInfo!
+}
+
+input TraefikMiddlewareDigestAuthInput {
+  name: String!
+  digestAuth: TraefikMiddlewareDigestAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareDigestAuth(
+    input: TraefikMiddlewareDigestAuthInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareDigestAuth(
+    nodeId: ID!
+    patch: TraefikMiddlewareDigestAuthInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareErrorsInfo {
+  query: String
+  service: String
+  status: [String]
+}
+
+input TraefikMiddlewareErrorsInfoInput {
+  query: String
+  service: String
+  status: [String]
+}
+
+type TraefikMiddlewareErrors implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  errors: TraefikMiddlewareErrorsInfo!
+}
+
+input TraefikMiddlewareErrorsInput {
+  name: String!
+  errors: TraefikMiddlewareErrorsInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareErrors(
+    input: TraefikMiddlewareErrorsInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareErrors(
+    nodeId: ID!
+    patch: TraefikMiddlewareErrorsInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareTlsInfo {
+  ca: String
+  caOptional: Boolean
+  cert: String
+  insecureSkipVerify: Boolean
+  key: String
+}
+
+type TraefikMiddlewareForwardAuthInfo {
+  address: String
+  authRequestHeaders: [String]
+  authResponseHeaders: [String]
+  authResponseHeadersRegex: String
+  tls: TraefikMiddlewareTlsInfo
+  trustForwardHeader: Boolean
+}
+
+input TraefikMiddlewareTlsInfoInput {
+  ca: String
+  caOptional: Boolean
+  cert: String
+  insecureSkipVerify: Boolean
+  key: String
+}
+
+input TraefikMiddlewareForwardAuthInfoInput {
+  address: String
+  authRequestHeaders: [String]
+  authResponseHeaders: [String]
+  authResponseHeadersRegex: String
+  tls: TraefikMiddlewareTlsInfoInput
+  trustForwardHeader: Boolean
+}
+
+type TraefikMiddlewareForwardAuth implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  forwardAuth: TraefikMiddlewareForwardAuthInfo!
+}
+
+input TraefikMiddlewareForwardAuthInput {
+  name: String!
+  forwardAuth: TraefikMiddlewareForwardAuthInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareForwardAuth(
+    input: TraefikMiddlewareForwardAuthInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareForwardAuth(
+    nodeId: ID!
+    patch: TraefikMiddlewareForwardAuthInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareHeadersInfo {
+  accessControlAllowCredentials: Boolean
+  accessControlAllowHeaders: [String]
+  accessControlAllowMethods: [String]
+  accessControlAllowOrigin: String
+  accessControlAllowOriginList: [String]
+  accessControlAllowOriginListRegex: [String]
+  accessControlExposeHeaders: [String]
+  accessControlMaxAge: Int
+  addVaryHeader: Boolean
+  allowedHosts: [String]
+  browserXssFilter: Boolean
+  contentSecurityPolicy: String
+  contentTypeNosniff: Boolean
+  customBrowserXSSValue: String
+  customFrameOptionsValue: String
+  customRequestHeaders: [KeyValue!]!
+  customResponseHeaders: [KeyValue!]!
+  featurePolicy: String
+  forceSTSHeader: Boolean
+  frameDeny: Boolean
+  hostsProxyHeaders: [String]
+  isDevelopment: Boolean
+  publicKey: String
+  referrerPolicy: String
+  sslForceHost: Boolean
+  sslHost: String
+  sslProxyHeaders: [KeyValue!]!
+  sslRedirect: Boolean
+  sslTemporaryRedirect: Boolean
+  stsIncludeSubdomains: Boolean
+  stsPreload: Boolean
+  stsSeconds: Int
+}
+
+input TraefikMiddlewareHeadersInfoInput {
+  accessControlAllowCredentials: Boolean
+  accessControlAllowHeaders: [String]
+  accessControlAllowMethods: [String]
+  accessControlAllowOrigin: String
+  accessControlAllowOriginList: [String]
+  accessControlAllowOriginListRegex: [String]
+  accessControlExposeHeaders: [String]
+  accessControlMaxAge: Int
+  addVaryHeader: Boolean
+  allowedHosts: [String]
+  browserXssFilter: Boolean
+  contentSecurityPolicy: String
+  contentTypeNosniff: Boolean
+  customBrowserXSSValue: String
+  customFrameOptionsValue: String
+  customRequestHeaders: [KeyValueInput!]!
+  customResponseHeaders: [KeyValueInput!]!
+  featurePolicy: String
+  forceSTSHeader: Boolean
+  frameDeny: Boolean
+  hostsProxyHeaders: [String]
+  isDevelopment: Boolean
+  publicKey: String
+  referrerPolicy: String
+  sslForceHost: Boolean
+  sslHost: String
+  sslProxyHeaders: [KeyValueInput!]!
+  sslRedirect: Boolean
+  sslTemporaryRedirect: Boolean
+  stsIncludeSubdomains: Boolean
+  stsPreload: Boolean
+  stsSeconds: Int
+}
+
+type TraefikMiddlewareHeaders implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  headers: TraefikMiddlewareHeadersInfo!
+}
+
+input TraefikMiddlewareHeadersInput {
+  name: String!
+  headers: TraefikMiddlewareHeadersInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareHeaders(
+    input: TraefikMiddlewareHeadersInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareHeaders(
+    nodeId: ID!
+    patch: TraefikMiddlewareHeadersInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareIpStrategyInfo {
+  depth: Int
+  excludedIPs: [String]
+}
+
+type TraefikMiddlewareIpWhiteListInfo {
+  ipStrategy: TraefikMiddlewareIpStrategyInfo
+  sourceRange: [String]
+}
+
+input TraefikMiddlewareIpStrategyInfoInput {
+  depth: Int
+  excludedIPs: [String]
+}
+
+input TraefikMiddlewareIpWhiteListInfoInput {
+  ipStrategy: TraefikMiddlewareIpStrategyInfoInput
+  sourceRange: [String]
+}
+
+type TraefikMiddlewareIpWhiteList implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  ipWhiteList: TraefikMiddlewareIpWhiteListInfo!
+}
+
+input TraefikMiddlewareIpWhiteListInput {
+  name: String!
+  ipWhiteList: TraefikMiddlewareIpWhiteListInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareIpWhiteList(
+    input: TraefikMiddlewareIpWhiteListInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareIpWhiteList(
+    nodeId: ID!
+    patch: TraefikMiddlewareIpWhiteListInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareSourceCriterionInfo {
+  ipStrategy: TraefikMiddlewareIpStrategyInfo
+  requestHeaderName: String
+  requestHost: Boolean
+}
+
+type TraefikMiddlewareInFlightReqInfo {
+  amount: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfo
+}
+
+input TraefikMiddlewareSourceCriterionInfoInput {
+  ipStrategy: TraefikMiddlewareIpStrategyInfoInput
+  requestHeaderName: String
+  requestHost: Boolean
+}
+
+input TraefikMiddlewareInFlightReqInfoInput {
+  amount: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfoInput
+}
+
+type TraefikMiddlewareInFlightReq implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  inFlightReq: TraefikMiddlewareInFlightReqInfo!
+}
+
+input TraefikMiddlewareInFlightReqInput {
+  name: String!
+  inFlightReq: TraefikMiddlewareInFlightReqInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareInFlightReq(
+    input: TraefikMiddlewareInFlightReqInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareInFlightReq(
+    nodeId: ID!
+    patch: TraefikMiddlewareInFlightReqInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareIssuerInfo {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+type TraefikMiddlewareSubjectInfo {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+type TraefikMiddlewareInfoInfo {
+  issuer: TraefikMiddlewareIssuerInfo
+  notAfter: Boolean
+  notBefore: Boolean
+  sans: Boolean
+  serialNumber: Boolean
+  subject: TraefikMiddlewareSubjectInfo
+}
+
+type TraefikMiddlewarePassTLSClientCertInfo {
+  info: TraefikMiddlewareInfoInfo
+  pem: Boolean
+}
+
+input TraefikMiddlewareIssuerInfoInput {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+input TraefikMiddlewareSubjectInfoInput {
+  commonName: Boolean
+  country: Boolean
+  domainComponent: Boolean
+  locality: Boolean
+  organization: Boolean
+  province: Boolean
+  serialNumber: Boolean
+}
+
+input TraefikMiddlewareInfoInfoInput {
+  issuer: TraefikMiddlewareIssuerInfoInput
+  notAfter: Boolean
+  notBefore: Boolean
+  sans: Boolean
+  serialNumber: Boolean
+  subject: TraefikMiddlewareSubjectInfoInput
+}
+
+input TraefikMiddlewarePassTLSClientCertInfoInput {
+  info: TraefikMiddlewareInfoInfoInput
+  pem: Boolean
+}
+
+type TraefikMiddlewarePassTLSClientCert implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  passTLSClientCert: TraefikMiddlewarePassTLSClientCertInfo!
+}
+
+input TraefikMiddlewarePassTLSClientCertInput {
+  name: String!
+  passTLSClientCert: TraefikMiddlewarePassTLSClientCertInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewarePassTLSClientCert(
+    input: TraefikMiddlewarePassTLSClientCertInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewarePassTLSClientCert(
+    nodeId: ID!
+    patch: TraefikMiddlewarePassTLSClientCertInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareRateLimitInfo {
+  average: Int
+  burst: Int
+  period: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfo
+}
+
+input TraefikMiddlewareRateLimitInfoInput {
+  average: Int
+  burst: Int
+  period: Int
+  sourceCriterion: TraefikMiddlewareSourceCriterionInfoInput
+}
+
+type TraefikMiddlewareRateLimit implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  rateLimit: TraefikMiddlewareRateLimitInfo!
+}
+
+input TraefikMiddlewareRateLimitInput {
+  name: String!
+  rateLimit: TraefikMiddlewareRateLimitInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRateLimit(
+    input: TraefikMiddlewareRateLimitInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareRateLimit(
+    nodeId: ID!
+    patch: TraefikMiddlewareRateLimitInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareRedirectRegexInfo {
+  permanent: Boolean
+  regex: String
+  replacement: String
+}
+
+input TraefikMiddlewareRedirectRegexInfoInput {
+  permanent: Boolean
+  regex: String
+  replacement: String
+}
+
+type TraefikMiddlewareRedirectRegex implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  redirectRegex: TraefikMiddlewareRedirectRegexInfo!
+}
+
+input TraefikMiddlewareRedirectRegexInput {
+  name: String!
+  redirectRegex: TraefikMiddlewareRedirectRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRedirectRegex(
+    input: TraefikMiddlewareRedirectRegexInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareRedirectRegex(
+    nodeId: ID!
+    patch: TraefikMiddlewareRedirectRegexInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareRedirectSchemeInfo {
+  permanent: Boolean
+  port: String
+  scheme: String
+}
+
+input TraefikMiddlewareRedirectSchemeInfoInput {
+  permanent: Boolean
+  port: String
+  scheme: String
+}
+
+type TraefikMiddlewareRedirectScheme implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  redirectScheme: TraefikMiddlewareRedirectSchemeInfo!
+}
+
+input TraefikMiddlewareRedirectSchemeInput {
+  name: String!
+  redirectScheme: TraefikMiddlewareRedirectSchemeInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRedirectScheme(
+    input: TraefikMiddlewareRedirectSchemeInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareRedirectScheme(
+    nodeId: ID!
+    patch: TraefikMiddlewareRedirectSchemeInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareReplacePathInfo {
+  path: String
+}
+
+input TraefikMiddlewareReplacePathInfoInput {
+  path: String
+}
+
+type TraefikMiddlewareReplacePath implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  replacePath: TraefikMiddlewareReplacePathInfo!
+}
+
+input TraefikMiddlewareReplacePathInput {
+  name: String!
+  replacePath: TraefikMiddlewareReplacePathInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareReplacePath(
+    input: TraefikMiddlewareReplacePathInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareReplacePath(
+    nodeId: ID!
+    patch: TraefikMiddlewareReplacePathInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareReplacePathRegexInfo {
+  regex: String
+  replacement: String
+}
+
+input TraefikMiddlewareReplacePathRegexInfoInput {
+  regex: String
+  replacement: String
+}
+
+type TraefikMiddlewareReplacePathRegex implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  replacePathRegex: TraefikMiddlewareReplacePathRegexInfo!
+}
+
+input TraefikMiddlewareReplacePathRegexInput {
+  name: String!
+  replacePathRegex: TraefikMiddlewareReplacePathRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareReplacePathRegex(
+    input: TraefikMiddlewareReplacePathRegexInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareReplacePathRegex(
+    nodeId: ID!
+    patch: TraefikMiddlewareReplacePathRegexInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareRetryInfo {
+  attempts: Int
+  initialInterval: Int
+}
+
+input TraefikMiddlewareRetryInfoInput {
+  attempts: Int
+  initialInterval: Int
+}
+
+type TraefikMiddlewareRetry implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  retry: TraefikMiddlewareRetryInfo!
+}
+
+input TraefikMiddlewareRetryInput {
+  name: String!
+  retry: TraefikMiddlewareRetryInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareRetry(
+    input: TraefikMiddlewareRetryInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareRetry(
+    nodeId: ID!
+    patch: TraefikMiddlewareRetryInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareStripPrefixInfo {
+  forceSlash: Boolean
+  prefixes: [String]
+}
+
+input TraefikMiddlewareStripPrefixInfoInput {
+  forceSlash: Boolean
+  prefixes: [String]
+}
+
+type TraefikMiddlewareStripPrefix implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  stripPrefix: TraefikMiddlewareStripPrefixInfo!
+}
+
+input TraefikMiddlewareStripPrefixInput {
+  name: String!
+  stripPrefix: TraefikMiddlewareStripPrefixInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareStripPrefix(
+    input: TraefikMiddlewareStripPrefixInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareStripPrefix(
+    nodeId: ID!
+    patch: TraefikMiddlewareStripPrefixInfoInput!
+  ): BasicMutationResponse!
+}
+
+type TraefikMiddlewareStripPrefixRegexInfo {
+  regex: [String]
+}
+
+input TraefikMiddlewareStripPrefixRegexInfoInput {
+  regex: [String]
+}
+
+type TraefikMiddlewareStripPrefixRegex implements TraefikMiddleware {
+  nodeId: ID!
+  name: String!
+  provider: String!
+  error: [String!]
+  type: String!
+  enabled: Boolean
+  usedBy: [TraefikRouter!]!
+  stripPrefixRegex: TraefikMiddlewareStripPrefixRegexInfo!
+}
+
+input TraefikMiddlewareStripPrefixRegexInput {
+  name: String!
+  stripPrefixRegex: TraefikMiddlewareStripPrefixRegexInfoInput!
+}
+
+extend type Mutation {
+  createTraefikMiddlewareStripPrefixRegex(
+    input: TraefikMiddlewareStripPrefixRegexInput!
+  ): BasicMutationResponse!
+  updateTraefikMiddlewareStripPrefixRegex(
+    nodeId: ID!
+    patch: TraefikMiddlewareStripPrefixRegexInfoInput!
+  ): BasicMutationResponse!
+}
