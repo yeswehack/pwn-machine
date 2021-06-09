@@ -1,116 +1,92 @@
-from app.utils import createType, registerQuery, registerSubscription
-from app.api import es
+from dataclasses import dataclass
+from datetime import datetime
+
+from app.api import logdb
+from app.utils import createType, registerQuery
 
 TraefikLog = createType("TraefikLog")
 
 
+@dataclass
+class TraefikLogEntry:
+    rowid: int
+    date: int
+    origin: str
+    status: int
+    host: str
+    method: str
+    path: str
+    port: int
+    protocol: str
+    scheme: str
+    routerName: str
+    entrypointName: str
+    serviceName: str
+
+    @classmethod
+    def from_row(cls, row):
+        rowid = row[0]
+        date = str(datetime.fromtimestamp(row[1]))
+        return cls(rowid, date, *row[2:])
+
+
+def query_from(entrypoint_filter, router_filter, service_filter, offset, size):
+    cur = logdb.cursor()
+    total = next(cur.execute("SELECT count(rowid) FROM traefik_logs"))[0]
+
+    filters = ["TRUE"]
+    args = []
+    if entrypoint_filter:
+        filters.append(
+            f"entrypoint_name IN ({', '.join('?' * len(entrypoint_filter))})"
+        )
+        args += entrypoint_filter
+    if router_filter:
+        filters.append(f"router_name IN ({', '.join('?' * len(router_filter))})")
+        args += router_filter
+    if service_filter:
+        filters.append(f"service_name IN ({', '.join('?' * len(service_filter))})")
+        args += service_filter
+
+    query = f"""
+    SELECT 
+        rowid, date, origin, status, host, method, path, port, protocol, scheme, router_name, entrypoint_name, service_name
+    FROM 
+        traefik_logs
+    WHERE 
+        {' AND '.join(filters)}
+    ORDER BY date DESC, rowid DESC
+    LIMIT ?, ?
+    ;"""
+
+    rows = cur.execute(query, [*args, offset, size])
+    result = [TraefikLogEntry.from_row(row) for row in rows]
+
+    return {"result": result, "total": total}
+
+
 @registerQuery("traefikLogs")
-async def resolve_traefik_logs(*_, filter={}, cursor={}):
-    from_ = max(cursor["from"], 0)
-    size = max(min(cursor["size"], 100), 0)
+def query_traefik_logs(*_, filter={}, cursor={}):
+    offset = cursor.get("from", 0)
+    size = max(min(cursor.get("size", 20), 100), 1)
 
-    skip_internal = filter.get("skipInternal", False)
+    entrypoints = filter.get("entrypoints") or []
+    routers = filter.get("routers") or []
+    services = filter.get("services") or []
 
-    must = [{"exists": {"field": "json.StartUTC"}}]
-    must_not = []
-
-    if filter.get("skipInternal", False):
-        must_not.append({"match": {"json.entryPointName": "traefik"}})
-    if entrypointName := filter.get("entrypoint"):
-        must.append({"terms": {"json.entryPointName.keyword": entrypointName}})
-    if routerName := filter.get("router"):
-        must.append({"terms": {"json.RouterName.keyword": routerName}})
-    if serviceName := filter.get("service"):
-        must.append({"terms": {"json.ServiceName.keyword": serviceName}})
-
-    body = {"query": {"bool": {"must": must, "must_not": must_not}}}
-
-    r = await es.search(
-        index="filebeat-traefik-*",
-        sort="@timestamp:desc",
-        body=body,
-        from_=from_,
-        size=size,
-    )
-    hits = r["hits"]
-    total = hits["total"]["value"]
-    next_from = from_ + len(hits["hits"])
-    response = {
-        "total": hits["total"]["value"],
-        "result": [h["_source"]["json"] for h in hits["hits"]],
-        "next": None,
-        "prev": None,
-    }
-    return response
+    return query_from(entrypoints, routers, services, offset, size)
 
 
-@TraefikLog.field("date")
-def resolve_time(log, _):
-    return log["StartUTC"]
-
-
-@TraefikLog.field("host")
-def resolve_host(log, _):
-    return log["RequestHost"]
-
-
-@TraefikLog.field("host")
-def resolve_host(log, _):
-    return log["RequestHost"]
-
-
-@TraefikLog.field("status")
-def resolve_status(log, _):
-    return log["DownstreamStatus"]
-
-
-@TraefikLog.field("method")
-def resolve_method(log, _):
-    return log["RequestMethod"]
-
-
-@TraefikLog.field("path")
-def resolve_path(log, _):
-    return log["RequestPath"]
+@TraefikLog.field("nodeId")
+def resolve_nodeid(log, *_):
+    return log.rowid
 
 
 @TraefikLog.field("port")
-def resolve_port(log, _):
-    port = log["RequestPort"]
-    if port == "-":
-        if log["RequestScheme"] == "http":
-            return 80
-        elif log["RequestScheme"] == "https":
+def resolve_port(log, *_):
+    if not isinstance(log.port, int):
+        if log.scheme == "https":
             return 443
-        return 0  # error should be unreachable ?
-    return port
-
-
-@TraefikLog.field("protocol")
-def resolve_protocol(log, _):
-    return log["RequestProtocol"]
-
-
-@TraefikLog.field("scheme")
-def resolve_scheme(log, _):
-    return log["RequestScheme"]
-
-
-@TraefikLog.field("routerName")
-def resolve_router(log, _):
-    return log.get("RouterName")
-
-
-@TraefikLog.field("entrypointName")
-def resolve_entrypoint(log, _):
-    return log.get("entryPointName")
-
-
-@TraefikLog.field("serviceName")
-def resolve_service(log, _):
-    return log.get("ServiceName")
-
-
-@TraefikLog.field("origin")
-def resolve_origin(log, _):
-    return log.get("ClientHost")
+        else:
+            return 80
+    return log.port

@@ -113,7 +113,6 @@ async def init_powerdns():
 
 async def on_startup():
     redis_client = aioredis.from_url(config.PM_REDIS_HOST, decode_responses=True)
-
     ## Auth
     await db.init(redis_client)
 

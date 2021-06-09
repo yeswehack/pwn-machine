@@ -3,23 +3,21 @@ type DockerLog implements Node {
 
     nodeId: ID!
     date: DateTime!
-    message: String!
-    containerName: String!
-    containerId: String!
+    log: String!
+    container: String!
+    image: String!
 
 }
 input DockerLogFilter {
-    containerId: [String!]
-    containerName: [String!]
+    images: [String!]
+    containers: [String!]
 }
 
 type DockerLogResult implements Paginated {
-    next: Cursor
-    prev: Cursor
     total: Int!
     result: [DockerLog!]
 }
 
 extend type Query{
-    dockerLogs(filter: DockerLogFilter, cursor: CursorInput!): DockerLogResult!
+    dockerLogs(filter: DockerLogFilter, cursor: CursorInput): DockerLogResult!
 }

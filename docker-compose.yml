@@ -38,10 +38,8 @@ services:
       MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
     depends_on:
       - powerdns-db
-      - elasticsearch
     networks:
       - dns-net
-      - elasticsearch-net
     volumes:
       - powerdns-logs:/logs/pdns
     restart: unless-stopped
@@ -90,39 +88,20 @@ services:
     restart: unless-stopped
 
   ##
-  # ELASTIC SEARCH
+  # LOGBEAT
   ##
-  elasticsearch:
-    container_name: pm_elasticsearch
-    image: elasticsearch:7.12.1
-    networks:
-      - elasticsearch-net
-    environment:
-      discovery.type: single-node
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-
-  filebeat:
-    container_name: pm_filebeat
+  logbeat:
+    container_name: pm_logbeat
     build:
-      context: ./dockers/filebeat
+      context: ./dockers/logbeat
     user: root
-    depends_on:
-      - elasticsearch
-    networks:
-      - elasticsearch-net
+    network_mode: none
     volumes:
         - /var/lib/docker:/var/lib/docker:ro
         - /var/run/docker.sock:/var/run/docker.sock
         - powerdns-logs:/logs/pdns
         - traefik-logs:/logs/traefik
+        - all-logs:/logs/all
     restart: unless-stopped
 ##
 # Manager
@@ -138,25 +117,22 @@ services:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - all-logs:/logs/all
     environment:
       PM_REDIS_HOST: "redis://redis"
       PM_TRAEFIK_HTTP_API: "http://traefik:8080/api"
       PM_TRAEFIK_REDIS_ROOT: "traefik"
       PM_POWERDNS_HTTP_API: "http://powerdns:8081"
       PM_POWERDNS_HTTP_API_KEY: *PDNS_API_KEY
-      PM_ELASTIC_SEARCH_HTTP_API: "elasticsearch:9200"
     
     networks:
       - redis-net
       - dns-net
-      - elasticsearch-net
       - traefik-net
     restart: unless-stopped
 
 
 volumes:
-  elasticsearch-data:
-    name: elasticsearch-data
   powerdns-logs:
     name: powerdns-logs
   powerdns-data:
@@ -167,13 +143,13 @@ volumes:
     name: traefik-data
   traefik-logs:
     name: traefik-logs
+  all-logs:
+    name: all-logs
 
 networks:
   redis-net:
     name: pm_redis-net
   dns-net:
     name: pm_dns-net
-  elasticsearch-net:
-    name: pm_elasticsearch-net
   traefik-net:
     name: pm_traefik-net

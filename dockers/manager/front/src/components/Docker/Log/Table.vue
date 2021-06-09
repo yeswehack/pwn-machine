@@ -6,8 +6,6 @@
           v-model="selectedContainers"
           multiple
           use-chips
-          emit-value
-          map-options
           clearable
           :options="containerOptions"
           filled
@@ -16,7 +14,7 @@
       </div>
     </div>
     <log-list
-      :key="selectedContainers.toString()"
+      :key="selectedContainers ? selectedContainers.toString() : 'all'"
       :containers="selectedContainers"
     />
   </div>
@@ -36,10 +34,7 @@ export default {
   },
   computed: {
     containerOptions() {
-      return (this.dockerContainers ?? []).map(c => ({
-        label: c.name,
-        value: c.id
-      }));
+      return (this.dockerContainers ?? []).map(c => c.name);
     }
   }
 };

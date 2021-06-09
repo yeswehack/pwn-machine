@@ -1,13 +1,5 @@
 query getDnsLogs($filter: DnsLogFilter, $cursor: CursorInput!) {
   dnsLogs(filter: $filter, cursor: $cursor) {
-    next {
-      from
-      size
-    }
-    prev {
-      from
-      size
-    }
     total
     result {
       nodeId

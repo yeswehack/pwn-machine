@@ -1,60 +1,74 @@
-from app.utils import createType, registerQuery, registerSubscription
-from app.api import es
+from dataclasses import dataclass
+from datetime import datetime
 
-dockerLog = createType("DockerLog")
+from app.api import logdb
+from app.utils import createType, registerQuery
+
+DockerLog = createType("DockerLog")
+
+
+@dataclass
+class DockerLogEntry:
+    rowid: int
+    date: str
+    image: str
+    container: str
+    stream: str
+    log: str
+
+    @classmethod
+    def from_row(cls, row):
+        rowid = row[0]
+        date = str(datetime.fromtimestamp(row[1]))
+        return cls(rowid, date, *row[2:])
+
+
+def query_from(image_filter, container_filter, offset, size):
+    cur = logdb.cursor()
+    total = next(cur.execute("SELECT count(rowid) FROM docker_logs"))[0]
+
+    filters = ["TRUE"]
+    args = []
+    if image_filter:
+        filters.append(f"image IN ({', '.join('?' * len(image_filter))})")
+        args += image_filter
+    if container_filter:
+        filters.append(f"container IN ({', '.join('?' * len(container_filter))})")
+        args += container_filter
+
+    query = f"""
+    SELECT 
+        rowid, date, image, container, stream, log
+    FROM 
+        docker_logs
+    WHERE 
+        {' AND '.join(filters)}
+    ORDER BY date DESC, rowid DESC
+    LIMIT ?, ?
+    ;"""
+
+    rows = cur.execute(query, [*args, offset, size])
+    result = [DockerLogEntry.from_row(row) for row in rows]
+
+    return {"result": result, "total": total}
 
 
 @registerQuery("dockerLogs")
-async def resolve_docker_logs(*_, filter={}, cursor={}):
-    from_ = max(cursor["from"], 0)
-    size = max(min(cursor["size"], 100), 0)
+def query_docker_logs(*_, filter={}, cursor={}):
+    offset = cursor.get("from", 0)
+    size = max(min(cursor.get("size", 20), 100), 1)
 
-    skip_internal = filter.get("skipInternal", False)
+    images = filter.get("images") or []
+    containers = filter.get("containers") or []
 
-    must = [{"term": {"stream": "stdout"}}]
-    must_not = []
-
-    if containerName := filter.get("containerName"):
-        must.append({"terms": {"container.name": containerName}})
-    if containerId := filter.get("containerId"):
-        must.append({"terms": {"container.id": containerId}})
-
-    body = {"query": {"bool": {"must": must, "must_not": must_not}}}
-
-    r = await es.search(
-        index="filebeat-docker-*",
-        sort="@timestamp:desc,log.offset:desc",
-        body=body,
-        from_=from_,
-        size=size,
-    )
-    hits = r["hits"]
-    total = hits["total"]["value"]
-    next_from = from_ + len(hits["hits"])
-    response = {
-        "total": hits["total"]["value"],
-        "result": [{**h["_source"], "nodeId": h["_id"]} for h in hits["hits"]],
-        "next": None,
-        "prev": None,
-    }
-    return response
+    return query_from(images, containers, offset, size)
 
 
-@dockerLog.field("containerName")
-def resolve_container_name(log, _):
-    return log["container"]["name"]
+@DockerLog.field("nodeId")
+def resolve_nodeid(log, *_):
+    return log.rowid
 
 
-@dockerLog.field("containerId")
-def resolve_container_id(log, _):
-    return log["container"]["id"]
-
-
-@dockerLog.field("message")
-def resolve_container_id(log, _):
-    return log["message"]
-
-
-@dockerLog.field("date")
-def resolve_date(log, _):
-    return log["@timestamp"]
+@DockerLog.field("container")
+def resolve_container(log, *_):
+    return log.container[1:]

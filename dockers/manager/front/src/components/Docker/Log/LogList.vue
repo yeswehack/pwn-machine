@@ -9,14 +9,14 @@
           <div
             :key="`${idx}-name`"
             class="text-mono text-no-wrap"
-            :style="{ color: colorHash.hex(log.containerName) }"
+            :style="{ color: colorHash.hex(log.container) }"
           >
-            <span>{{ log.containerName }}</span>
+            <span>{{ log.container }}</span>
           </div>
           <div
             :key="`${idx}-msg`"
             class="text-mono text-no-wrap"
-            v-html="toHtml(log.message)"
+            v-html="toHtml(log.log)"
           />
         </template>
       </div>
@@ -52,7 +52,7 @@ export default {
       query: api.docker.logs.LIST_LOGS,
       variables() {
         return {
-          filter: { containerId: this.containers },
+          filter: { containers: this.containers },
           cursor: { from: 0, size: this.rowsPerPage }
         };
       },
@@ -80,7 +80,7 @@ export default {
     onLoad(index, done) {
       this.$apollo.queries.dockerLogs.fetchMore({
         variables: {
-          filter: { containerId: this.containers },
+          filter: { containers: this.containers },
           cursor: {
             from: (index - 1) * this.rowsPerPage,
             size: this.rowsPerPage

@@ -11,9 +11,8 @@
     <log-list
       bordered
       flat
-      :rows-per-page="20"
       hide-title
-      :domain="domain.slice(0, -1)"
+      :domain="domain"
       :type="type"
     />
   </div>

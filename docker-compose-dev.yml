@@ -38,10 +38,8 @@ services:
       MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
     depends_on:
       - powerdns-db
-      - elasticsearch
     networks:
       - dns-net
-      - elasticsearch-net
     volumes:
       - powerdns-logs:/logs/pdns
 
@@ -89,41 +87,23 @@ services:
       - dns-net
       - redis-net
 
-  ##
-  # ELASTIC SEARCH
-  ##
-  elasticsearch:
-    container_name: pm_elasticsearch
-    image: elasticsearch:7.12.1
-    ports:
-      - 9200:9200
-    networks:
-      - elasticsearch-net
-    environment:
-      discovery.type: single-node
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
-  filebeat:
-    container_name: pm_filebeat
+  ##
+  # LOGBEAT
+  ##
+  logbeat:
+    container_name: pm_logbeat
     build:
-      context: ./dockers/filebeat
+      context: ./dockers/logbeat
     user: root
-    depends_on:
-      - elasticsearch
-    networks:
-      - elasticsearch-net
+    network_mode: none
     volumes:
         - /var/lib/docker:/var/lib/docker:ro
         - /var/run/docker.sock:/var/run/docker.sock
         - powerdns-logs:/logs/pdns
         - traefik-logs:/logs/traefik
+        - all-logs:/logs/all
+    restart: unless-stopped
 ##
 # Manager
 ##
@@ -155,8 +135,6 @@ services:
 
 
 volumes:
-  elasticsearch-data:
-    name: elasticsearch-data
   powerdns-logs:
     name: powerdns-logs
   powerdns-data:
@@ -167,13 +145,14 @@ volumes:
     name: traefik-data
   traefik-logs:
     name: traefik-logs
+  all-logs:
+    name: all-logs
 
 networks:
   redis-net:
-    name: "pm_redis-net"
+    name: pm_redis-net
   dns-net:
-    name: "pm_dns-net"
-  elasticsearch-net:
-    name: "pm_elasticsearch-net"
+    name: pm_dns-net
   traefik-net:
-    name: pm_traefik
+    name: pm_traefik-net
+

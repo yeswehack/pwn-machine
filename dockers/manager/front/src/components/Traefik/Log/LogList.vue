@@ -93,9 +93,9 @@ export default {
         const { page, rowsPerPage } = this.pagination;
         return {
           filter: {
-            router: this.router,
-            entrypoint: this.entrypoint,
-            service: this.service
+            routers: this.router,
+            entrypoints: this.entrypoint,
+            services: this.service
           },
           cursor: { from: (page - 1) * rowsPerPage, size: rowsPerPage }
         };

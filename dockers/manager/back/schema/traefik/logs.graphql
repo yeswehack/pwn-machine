@@ -14,20 +14,17 @@ type TraefikLog implements Node  {
     serviceName: String
 }
 type TraefikLogResult implements Paginated {
-    next: Cursor
-    prev: Cursor
     total: Int!
     result: [TraefikLog!]
 }
 
 
 input TreaefikLogFilterInput{
-    skipInternal: Boolean
-    entrypoint: [String!]
-    router: [String!]
-    service: [String!]
+    entrypoints: [String!]
+    routers: [String!]
+    services: [String!]
 }
 
 extend type Query {
-    traefikLogs(filter: TreaefikLogFilterInput, cursor: CursorInput!): TraefikLogResult!
+    traefikLogs(filter: TreaefikLogFilterInput, cursor: CursorInput): TraefikLogResult!
 }

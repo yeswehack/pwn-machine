@@ -35,6 +35,8 @@ def resolve_refresh_token(*_, token):
     response = {"isFirstRun": db.is_first_run}
     if token := db.verify_token(token):
         response["token"] = db.refresh_token(token)
+    if AUTH_DISABLED:
+        response["token"] = db.make_jwt_token()
 
     return response
 
@@ -87,7 +89,7 @@ def verify_auth(info):
 
 
 async def auth_middleware(resolver, obj, info, **args):
-    if not verify_auth(info):
+    if not AUTH_DISABLED and not verify_auth(info):
         raise Exception("Unauthorized")
 
     if asyncio.iscoroutinefunction(resolver):
