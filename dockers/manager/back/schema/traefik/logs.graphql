@@ -3,7 +3,7 @@ type TraefikLog implements Node  {
     origin: String!
     date: DateTime!
     status: Int!
-    host: String!
+    host: String
     method: String!
     path: String!
     port: Int!
