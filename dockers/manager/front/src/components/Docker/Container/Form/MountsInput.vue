@@ -125,6 +125,7 @@
             color="positive"
             icon="eva-plus"
             label="Create a new volume"
+            @click="createVolume"
           />
         </div>
       </q-card-section>
@@ -137,6 +138,7 @@ import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
 import VolumeLink from "../../Volume/Link.vue";
 import BaseGridInput from "src/components/BaseGridInput.vue";
+import VolumeDialog from "../../Volume/Dialog.vue";
 
 const defaultModel = {
   type: "volume",
@@ -180,6 +182,12 @@ export default {
     addEntry() {
       this.form.unshift(this.model);
       this.model = defaultModel;
+    },
+    createVolume() {
+      this.$q.dialog({
+        component: VolumeDialog,
+        parent: this
+      });
     }
   }
 };
