@@ -89,9 +89,10 @@ export default {
   },
   methods: {
     submit(done) {
+      const input = { name: this.form.name, [this.form.type]: this.form.extra };
       this.mutate({
         mutation: api.traefik.middlewares.CREATE_MIDDLEWARE[this.form.type],
-        variables: { name: this.form.name, [type]: this.form.extra },
+        variables: { input },
         refetchQueries: [{ query: api.traefik.middlewares.LIST_MIDDLEWARES }],
         message: `${this.form.name} created.`
       })
