@@ -1,3 +1,3 @@
 import sqlite3
-
-logdb = sqlite3.connect("file:/logs/all/logs.db", uri=True)
+from app.config import PM_LOG_FILE
+logdb = sqlite3.connect(PM_LOG_FILE)
