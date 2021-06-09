@@ -15,12 +15,12 @@ const CONTAINERS_PATH = "/var/lib/docker/containers";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function startFileReader(filename: string, watcher: ILogfileWatcher) {
+async function startFileReader(filename: string, watcher: ILogfileWatcher, startPos: string = "start") {
   for (;;) {
     try {
       const tail = new Tail(path.resolve(filename), {
         force: true,
-        startPos: 0,
+        startPos,
       });
       tail.on("line", async (line: string) => {
         try {
@@ -139,7 +139,7 @@ async function main() {
 
   const pdns = await new PowerdnsLogfileWatcher().setup(db);
 
-  startFileReader("/logs/pdns/pdns.log", pdns);
+  startFileReader("/logs/pdns/pdns.log", pdns, "end");
 
   const traefik = await new TraefikLogfileWatcher().setup(db);
   startFileReader("/logs/traefik/traefik.json", traefik);
