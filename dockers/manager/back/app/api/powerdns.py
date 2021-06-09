@@ -240,6 +240,13 @@ class PowerdnsHTTPApi:
 
     async def update_rule(self, nodeId, ttl, records):
         zone, name, type = validate_node_id(nodeId, "DNS_RULE")
+
+        if type == "LUA":
+            record = records[0]
+            escaped_content = escape_lua(record["content"])
+            formated = f'A "{escaped_content}"'
+            records = [{"content": formated, "enabled": record["enabled"]}]
+            type = "LUA"
         return await self.rule_replace(zone, name, type, ttl, records)
 
     async def delete_rule(self, nodeId):
