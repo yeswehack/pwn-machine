@@ -68,7 +68,3 @@ def query_docker_logs(*_, filter={}, cursor={}):
 def resolve_nodeid(log, *_):
     return log.rowid
 
-
-@DockerLog.field("container")
-def resolve_container(log, *_):
-    return log.container[1:]
