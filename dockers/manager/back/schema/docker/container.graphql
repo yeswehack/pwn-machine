@@ -21,7 +21,6 @@ extend type Mutation {
   pruneDockerContainers: PruneResponse!
 }
 
-
 type DockerContainerProcess {
   user: String!
   pid: String!
@@ -114,20 +113,20 @@ input DockerContainerInput {
   privileged: Boolean! = false
   readonly: Boolean! = false
   mounts: [DockerContainerMountInput!]! = []
+  network: ID
   ports: [DockerContainerPortInput!]! = []
   restartPolicy: DockerRestartPolicyInput
 }
 
-type DockerRestartPolicy{
+type DockerRestartPolicy {
   name: String!
   maximumRetryCount: Int
 }
 
-input DockerRestartPolicyInput{
+input DockerRestartPolicyInput {
   name: String!
   maximumRetryCount: Int
 }
-
 
 type DockerContainerMount {
   type: DockerContainerMountType!
