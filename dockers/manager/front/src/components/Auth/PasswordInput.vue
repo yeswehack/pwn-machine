@@ -14,6 +14,7 @@
       type="password"
       :rules="[matchesNew]"
       reactive-rules
+      lazy-rules
     />
   </div>
 </template>

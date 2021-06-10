@@ -19,6 +19,7 @@ extend type Mutation {
   login(input: LoginInput!): LoginResponse!
   refreshToken(token: String!): RefreshTokenResponse!
   updatePassword(old: String!, new: String!): BasicMutationResponse!
+  resetJWTSecret: BasicMutationResponse!
 }
 
 type RefreshTokenPayload {

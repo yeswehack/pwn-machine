@@ -92,3 +92,7 @@ class Database:
 
     def refresh_token(self, token):
         return self.make_jwt_token(token.get("duration_days", 1))
+
+    async def reset_jwt_secret(self):
+        self.jwt_secret = os.urandom(32).hex()
+        await self.redis.set(JWT_SECRET_KEY, self.jwt_secret)

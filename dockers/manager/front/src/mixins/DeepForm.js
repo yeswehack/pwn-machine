@@ -31,6 +31,10 @@ export function mapGetters(...names) {
   return getters;
 }
 
+export function required(msg) {
+  return v => v != false || msg;
+}
+
 function isBasicType(obj) {
   return obj === null || ["number", "string", "boolean"].includes(typeof obj);
 }
@@ -50,7 +54,7 @@ export default {
   },
   methods: {
     renderForm: f => f,
-    required: msg => v => v != false || msg,
+    required,
     validate: () => true,
     reset() {
       this.form = _.cloneDeep(this.originalForm);

@@ -43,7 +43,7 @@
 <script>
 import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
-import OtpInput from "src/components/Config/OtpInput.vue";
+import OtpInput from "src/components/Auth/OtpInput.vue";
 
 export default {
   mixins: [DeepForm],

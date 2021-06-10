@@ -41,3 +41,12 @@ export const UPDATE_PASSWORD = gql`
     }
   }
 `;
+
+export const RESET_JWT_SECRET = gql`
+  mutation resetJwtSecret {
+    resetJWTSecret {
+      success
+      error
+    }
+  }
+`;
