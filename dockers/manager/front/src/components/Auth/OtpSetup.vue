@@ -17,7 +17,7 @@
       <p>Type the 6 digits displayed by the app:</p>
       <div class="row justify-center">
         <div class="col col-auto">
-          <component :is="formChildren" v-model="form" />
+          <component :is="formChildren" v-model="form" @enter="$emit('enter')" />
         </div>
       </div>
     </q-card-section>
