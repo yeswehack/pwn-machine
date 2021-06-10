@@ -51,10 +51,10 @@
 </template>
 
 <script>
-import PasswordInput from "src/components/Config/PasswordInput.vue";
+import PasswordInput from "src/components/Auth/PasswordInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import DeepForm from "src/mixins/DeepForm";
-import OtpSetup from "src/components/Config/OtpSetup.vue";
+import OtpSetup from "src/components/Auth/OtpSetup.vue";
 import api from "src/api";
 
 export default {

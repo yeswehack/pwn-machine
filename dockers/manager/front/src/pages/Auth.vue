@@ -6,6 +6,7 @@
       :to="{ name: 'configPassword' }"
     />
     <q-route-tab
+      v-if="0"
       label="2-factor auth"
       icon="eva-keypad"
       :to="{ name: 'config2fa' }"

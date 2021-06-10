@@ -135,12 +135,12 @@ const configRoute = {
     {
       path: "password",
       name: "configPassword",
-      component: () => import("components/Config/Password.vue")
+      component: () => import("components/Auth/Password.vue")
     },
     {
       path: "2fa",
       name: "config2fa",
-      component: () => import("components/Config/2FA.vue")
+      component: () => import("components/Auth/2FA.vue")
     },
     {
       path: "totp",

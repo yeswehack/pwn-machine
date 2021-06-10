@@ -48,6 +48,10 @@ async def resolve_update_password(*_, old, new):
 
     await db.save_password(new)
 
+@registerMutation("resetJWTSecret")
+async def resolve_reset_jwt_secret(*_):
+    await db.reset_jwt_secret()
+    return True
 
 @auth_mutation("initializeAuth")
 async def resolve_initialize_auth(*_, password, otp):
