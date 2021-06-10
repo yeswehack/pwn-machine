@@ -22,6 +22,7 @@
             color="positive"
             icon="eva-plus"
             label="Create a new network"
+            @click="createNetwork"
           />
         </div>
       </q-card-section>
@@ -32,6 +33,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
 import api from "src/api";
+import NetworkDialog from "../../Network/Dialog.vue";
 
 export default {
   mixins: [DeepForm],
@@ -50,6 +52,14 @@ export default {
   watch: {
     network(selected) {
       this.form = selected?.id;
+    }
+  },
+  methods: {
+    createNetwork() {
+      this.$q.dialog({
+        component: NetworkDialog,
+        parent: this
+      });
     }
   }
 };
