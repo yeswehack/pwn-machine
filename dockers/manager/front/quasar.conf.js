@@ -79,6 +79,9 @@ module.exports = function(/* ctx */) {
       https: false,
       port: 5001,
       proxy: {
+        "/file": {
+          target: "http://localhost:8000",
+        },
         "/api": {
           target: "http://localhost:8000",
           ws: true

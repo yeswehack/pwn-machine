@@ -31,3 +31,13 @@ export const PRUNE_VOLUMES = gql`
     }
   }
 `;
+
+
+export const DELETE_FILE = gql`
+mutation deleteDockerVolumeFile($input: DeleteDockerVolumeFileInput!){
+  deleteDockerVolumeFile(input:$input){
+    success
+    error
+  }
+}
+`

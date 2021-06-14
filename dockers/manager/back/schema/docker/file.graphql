@@ -1,0 +1,65 @@
+
+
+enum FileType {
+  DIR
+  REG
+  CHR 
+  BLK 
+  FIFO 
+  LNK 
+  SOCK 
+  DOOR 
+  PORT 
+  WHT 
+  UNK
+}
+
+interface DockerVolumeExploreEntry {
+  name: String!
+  fullpath: String!
+}
+
+type DockerVolumeUnkownFile implements DockerVolumeExploreEntry{
+  name: String!
+  fullpath: String!
+}
+
+type DockerVolumeFile implements DockerVolumeExploreEntry {
+  name: String!
+  fullpath: String!
+
+  size: Int!
+  mime: String!
+}
+
+type DockerVolumeFolder implements DockerVolumeExploreEntry {
+  name: String!
+  fullpath: String!
+}
+
+type DockerVolumeLink implements DockerVolumeExploreEntry {
+  name: String!
+  fullpath: String!
+
+  target: String!
+}
+
+
+input DockerExploreVolumeInput {
+  volumeName: String!
+  path: String
+}
+
+input DeleteDockerVolumeFileInput{
+  volumeName: String!
+  path: String
+}
+
+
+extend type Query {
+  dockerExploreVolume(input: DockerExploreVolumeInput!): [DockerVolumeExploreEntry!]!
+}
+
+extend type Mutation {
+  deleteDockerVolumeFile(input: DeleteDockerVolumeFileInput!) : BasicMutationResponse!
+}

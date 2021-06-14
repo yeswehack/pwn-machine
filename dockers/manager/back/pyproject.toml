@@ -16,8 +16,9 @@ websockets = "^9"
 aioredis = "^2a"
 docker = "^5"
 starlette-context = "^0.3.2"
-elasticsearch = {extras = ["async"], version = "^7.12.1"}
 psutil = "^5.8.0"
+python-magic = "^0.4.24"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"

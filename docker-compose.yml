@@ -117,6 +117,7 @@ services:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/lib/docker/volumes:/var/lib/docker/volumes"
       - all-logs:/logs/all
     environment:
       PM_REDIS_HOST: "redis://redis"

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import {VOLUME_FRAGMENT} from "./fragments.js";
+import { VOLUME_FRAGMENT } from "./fragments.js";
 
 export const LIST_VOLUMES = gql`
   query listVolumes {
@@ -8,4 +8,20 @@ export const LIST_VOLUMES = gql`
     }
   }
   ${VOLUME_FRAGMENT}
+`;
+
+export const EXPLORE_VOLUME = gql`
+  query exploreVolume($input: DockerExploreVolumeInput!) {
+    dockerExploreVolume(input: $input) {
+      fullpath
+      name
+      ... on DockerVolumeFile {
+        size
+        mime
+      }
+      ... on DockerVolumeLink {
+        target
+      }
+    }
+  }
 `;

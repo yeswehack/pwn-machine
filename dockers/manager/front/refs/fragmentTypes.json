@@ -50,6 +50,16 @@
           { "name": "TraefikTCPRouter" },
           { "name": "TraefikUDPRouter" }
         ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "DockerVolumeExploreEntry",
+        "possibleTypes": [
+          { "name": "DockerVolumeUnkownFile" },
+          { "name": "DockerVolumeFile" },
+          { "name": "DockerVolumeFolder" },
+          { "name": "DockerVolumeLink" }
+        ]
       }
     ]
   }
