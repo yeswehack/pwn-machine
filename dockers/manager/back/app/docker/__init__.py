@@ -23,3 +23,4 @@ from . import volume
 from . import shell
 from . import logs
 from . import image_pull
+from . import files

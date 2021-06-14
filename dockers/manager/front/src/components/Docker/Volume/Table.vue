@@ -6,7 +6,6 @@
     :query="$apollo.queries.volumes"
     :data="volumes"
     :columns="columns"
-    no-details
     @create="createVolume"
     @clone="cloneVolume"
     @delete="deleteVolume"
@@ -30,19 +29,23 @@
         />
       </div>
     </template>
+    <template #details="{row}">
+      <volume-details :volume="row"/>
+    </template>
   </base-table>
 </template>
 
 <script>
 import BaseTable from "src/components/BaseTable.vue";
 import ContainerDialog from "./Dialog.vue";
+import VolumeDetails from "./Details.vue"
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 import { format } from "quasar";
 const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ContainerLink },
+  components: { BaseTable, ContainerLink,VolumeDetails },
   apollo: {
     volumes: {
       query: api.docker.volumes.LIST_VOLUMES,

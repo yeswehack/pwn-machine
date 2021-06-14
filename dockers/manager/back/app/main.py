@@ -9,6 +9,7 @@ from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.routing import Mount, Route, Router, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 from starlette_context import context
@@ -17,6 +18,7 @@ from starlette_context.middleware import RawContextMiddleware
 from app import config
 
 from app.api import PowerdnsHTTPApi, TraefikHTTPApi, TraefikRedisApi
+from app.docker.files import download_file, upload_file
 from app.auth import auth_middleware, db
 from app.docker.shell import handle_shell
 from app.utils.registration import (
@@ -154,6 +156,8 @@ graphql_route = GraphQL(schema, middleware=[auth_middleware])
 app = Starlette(
     routes=[
         WebSocketRoute("/ws/shell/{uuid:str}", handle_shell),
+        Route("/file/download", download_file),
+        Route("/file/upload", upload_file, methods=["POST"]),
         Route("/api", graphql_route),
         Route("/api/", graphql_route),
         WebSocketRoute("/api", GraphQL(schema=schema)),
@@ -161,5 +165,9 @@ app = Starlette(
     ],
     on_startup=[on_startup],
     on_shutdown=[on_shutdown],
-    middleware=[Middleware(RawContextMiddleware), Middleware(RequestCacheMiddleware)],
+    middleware=[
+        Middleware(RawContextMiddleware),
+        Middleware(RequestCacheMiddleware),
+        Middleware(GZipMiddleware, minimum_size=1000),
+    ],
 )

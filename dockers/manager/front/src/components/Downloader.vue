@@ -26,9 +26,7 @@ import { DownloaderBus } from "src/eventBus.js";
 export default {
   data: () => ({ value: 0, downloading: [] }),
   created() {
-    DownloaderBus.$on("startDownload", ({ volume, path }) => {
-      this.downloadFile(volume, path);
-    });
+    DownloaderBus.$on("startDownload", (info) => this.downloadFile(info));
   },
   methods: {
     downloadBlob(blob, downloadInfo) {
@@ -66,13 +64,18 @@ export default {
       this.downloadBlob(blob, downloadInfo);
     },
 
-    async downloadFile(volume, path) {
-      const response = await this.$api.docker.downloadFromVolume(volume, path);
-
+    async downloadFile({volume, path, file}) {
+      const params = new URLSearchParams({ volume, path });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/file/download?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const downloadInfo = {
         name: path.split("/").pop(),
-        size: parseInt(response.headers.get("Content-Length")),
-        mime: response.headers.get("Content-Type"),
+        size: file.size,
+        mime: file.mime,
         progress: 0,
         chunks: []
       };

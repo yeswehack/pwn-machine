@@ -10,6 +10,7 @@
           multiple
           :headers="headers"
           auto-upload
+          @finish="$root.refresh"
         />
       </q-card>
     </q-dialog>
@@ -17,7 +18,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { UploaderBus } from "src/eventBus.js";
 
 export default {
@@ -32,18 +32,14 @@ export default {
     ]
   },
   created() {
-    UploaderBus.$on("startUpload", ({ title, url }) => {
-      this.startUpload(title, url);
-    });
+    UploaderBus.$on("startUpload", info => this.startUpload(info));
   },
   methods: {
-    startUpload(title, url) {
-      this.title = title;
-      this.url = url;
+    startUpload({ volume, path }) {
+      const params = new URLSearchParams({ volume, path });
+      this.url = `/file/upload?${params}`;
+      this.title = `Upload in ${path}`;
       this.isOpen = true;
-      Vue.nextTick(() => {
-        this.$refs.uploader.pickFiles();
-      });
     }
   }
 };
