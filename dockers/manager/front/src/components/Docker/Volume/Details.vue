@@ -89,7 +89,6 @@ export default {
 
     toggleDir(node) {
       const nodeIdx = this.expanded.indexOf(node.fullpath);
-      console.log(this.expanded);
       if (nodeIdx < 0) {
         this.$refs.tree.setExpanded(node.fullpath, true);
       } else {
