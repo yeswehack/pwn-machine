@@ -19,6 +19,7 @@ starlette-context = "^0.3.2"
 psutil = "^5.8.0"
 python-magic = "^0.4.24"
 python-multipart = "^0.0.5"
+dnspython = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.13.4"

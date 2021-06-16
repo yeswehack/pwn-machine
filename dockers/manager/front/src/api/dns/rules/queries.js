@@ -9,3 +9,12 @@ export const LIST_RULES = gql`
   }
   ${RULE_FRAGMENT}
 `;
+
+export const CHECK_PROPAGATION = gql`
+  query dnsRuleCheckPropagation($nodeId: ID!) {
+    dnsRuleCheckPropagation(nodeId: $nodeId) {
+      name
+      records
+    }
+  }
+`;

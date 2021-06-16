@@ -137,3 +137,7 @@ async def enable_dns_rule_mutation(*_, nodeId, enabled):
         await dns_http().enable_rule(nodeId, enabled)
     except Exception as e:
         raise PMException(str(e))
+
+@registerQuery("dnsRuleCheckPropagation")
+async def resolve_rule_check(*_, nodeId):
+    return await dns_http().check_rule(nodeId)
