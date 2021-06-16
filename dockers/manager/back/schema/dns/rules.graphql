@@ -70,8 +70,17 @@ input UpdateDnsRuleInput {
   records: [DnsRecordInput!]!
 }
 
+
+type DnsRulePropagationResult {
+  name: String!
+  records: [String!]!
+}
+
+
+
 extend type Query {
   dnsRules: [DnsRule!]!
+  dnsRuleCheckPropagation(nodeId: ID!) : [DnsRulePropagationResult!]!
 }
 
 extend type Mutation {
