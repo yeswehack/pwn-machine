@@ -19,6 +19,7 @@
 
 <script>
 import { UploaderBus } from "src/eventBus.js";
+import Config from 'src/config';
 
 export default {
   props: {},
@@ -26,7 +27,7 @@ export default {
   computed: {
     headers: () => [
       {
-        name: "Authorization",
+        name: Config.AuthenticationHeader,
         value: `Bearer ${localStorage.getItem("token")}`
       }
     ]

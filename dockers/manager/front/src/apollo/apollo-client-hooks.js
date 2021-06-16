@@ -5,11 +5,13 @@ import { getMainDefinition } from "apollo-utilities";
 import { onError } from "apollo-link-error";
 import { Notify } from "quasar";
 import router from "src/router";
+import Config from "src/config";
+
 
 function withAuthToken(params = {}) {
   const token = localStorage.getItem("token");
   if (token) {
-    params.authorization = `Bearer ${token}`;
+    params[Config.AuthenticationHeader] = `Bearer ${token}`;
   }
   return params;
 }
