@@ -48,7 +48,7 @@
       />
     </template>
     <template #body-cell-volumes="{row}">
-      <div class="q-gutter-sm">
+      <div class="row q-gutter-sm">
         <volume-link
           v-for="{ name } of row.mounts.filter(n => n.type === 'volume')"
           :key="name"
