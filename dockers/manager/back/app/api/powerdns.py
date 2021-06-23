@@ -196,8 +196,8 @@ class PowerdnsHTTPApi:
             "nameservers": [soa["nameserver"]],
             "kind": "native",
             "rrsets": [rule],
-            "soa_edit": "INCEPTION-EPOCH",
-            "soa_edit_api": "INCEPTION-EPOCH",
+            "soa_edit": "EPOCH",
+            "soa_edit_api": "EPOCH",
         }
         r = await self.post("/api/v1/servers/localhost/zones", data)
         zone = await r.json()
