@@ -32,7 +32,7 @@ export function mapGetters(...names) {
 }
 
 export function required(msg) {
-  return v => v != false || msg;
+  return v => v && v != false || msg;
 }
 
 function isBasicType(obj) {
