@@ -7,6 +7,7 @@
         clearable
         label="Search"
         class="full-width"
+        autofocus
         @input="doSearch"
       />
     </q-card-section>

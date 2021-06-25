@@ -10,30 +10,38 @@
         <base-grid-input
           :readonly="readonly"
           :titles="['Container port', 'Protocol', 'Targets']"
-          grid-format="3fr 2fr  6fr"
+          grid-format="150px 85px auto"
           :entries="form"
           @addEntry="addEntry"
           @removeEntry="removeEntry"
         >
           <template #inputs>
             <q-input
+              ref="port"
               v-model.number="model.containerPort"
+              mask="#####"
+              :rules="[validatePort]"
+              lazy-rules="ondemand"
               label="Container port"
+              @input="$refs.port.resetValidation()"
               @keypress.enter.prevent="addEntry"
-              @input="addPort"
+              @change="addPort(model.containerPort)"
             />
             <q-select
               v-model="model.protocol"
+              class="fit"
               label="Protocol"
               :options="['tcp', 'udp']"
             />
             <q-select
               v-model="model.targets"
+              class="fit"
               use-chips
               new-value-mode="add"
               use-input
               hide-dropdown-icon
               multiple
+              outlined
               label="Targets"
             />
           </template>
@@ -41,22 +49,31 @@
             <div class="ellipsis">
               {{ entry.containerPort }}
 
-              <q-popup-edit v-model="entry.containerPort">
-                <q-input
-                  v-model.number="entry.containerPort"
-                  :readonly="readonly"
-                  label="Container port"
-                />
+              <q-popup-edit
+                v-model="entry.containerPort"
+                :validate="validatePort"
+              >
+                <template #default="{validate}">
+                  <q-input
+                    v-model.number="entry.containerPort"
+                    mask="#####"
+                    :rules="[validate]"
+                    :readonly="readonly"
+                    dense
+                    autofocus
+                  />
+                </template>
               </q-popup-edit>
             </div>
             <div class="ellipsis">
               {{ entry.protocol }}
-              <q-popup-edit v-model="entry.protocol">
+              <q-popup-edit v-model="entry.protocol" :validate="required()">
                 <q-select
                   v-model="entry.protocol"
                   :readonly="readonly"
-                  label="Protocol"
                   :options="['tcp', 'udp']"
+                  dense
+                  autofocus
                 />
               </q-popup-edit>
             </div>
@@ -72,7 +89,7 @@
                   use-input
                   hide-dropdown-icon
                   multiple
-                  label="Targets"
+                  outlined
                 />
               </q-popup-edit>
             </div>
@@ -101,17 +118,27 @@ export default {
     container: { type: Object, default: null }
   },
   formDefinition: [],
-  data: () => ({ model: defaultModel }),
+  data: () => ({ model: { ...defaultModel } }),
   methods: {
+    validatePort(p) {
+      const max = 2 ** 16 - 1;
+      return (
+        (Number.isInteger(p) && p >= 0 && p <= max) ||
+        `Must be in range 0 - ${max}`
+      );
+    },
     addPort(port) {
-      this.model.targets = [`0.0.0.0:${port}`];
+      this.model.targets = port ? [`0.0.0.0:${port}`] : [];
+    },
+    addEntry() {
+      if (!this.model.protocol) return;
+      if (this.$refs.port.validate()) {
+        this.form.unshift(this.model);
+        this.model = { ...defaultModel };
+      }
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);
-    },
-    addEntry() {
-      this.form.unshift(this.model);
-      this.model = defaultModel;
     }
   }
 };

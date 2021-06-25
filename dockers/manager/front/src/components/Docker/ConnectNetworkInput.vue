@@ -22,6 +22,7 @@
         multiple
         new-value-mode="add"
         :loading="loading"
+        outlined
         hide-dropdown-icon
         style="grid-column-start:2;grid-column-end:4;"
       />

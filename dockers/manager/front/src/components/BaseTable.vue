@@ -36,6 +36,7 @@
             label="Search"
             dense
             outlined
+            autofocus
             debounce="200"
           >
             <template #append>
