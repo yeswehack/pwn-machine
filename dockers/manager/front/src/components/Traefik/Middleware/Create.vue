@@ -52,7 +52,9 @@ export default {
     type: "addPrefix",
     extra: getCreateComponent
   },
-  props: { middleware: { type: Object, default: null } },
+  props: {
+    middleware: { type: Object, default: null }
+  },
   data() {
     const originalForm = {
       name: this.middleware?.name.split("@")[0],

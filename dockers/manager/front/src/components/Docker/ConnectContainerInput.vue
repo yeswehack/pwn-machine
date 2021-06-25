@@ -35,7 +35,7 @@
         {{ entry.aliases ? entry.aliases.join(", ") : "-" }}
       </div>
       <div class="ellipsis text-right">
-        {{ entry.ipAddress || "Off-line" }}
+        {{ entry.ipAddress || "offline" }}
       </div>
     </template>
   </base-grid-input>

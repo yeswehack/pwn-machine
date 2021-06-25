@@ -26,7 +26,9 @@ export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
   formDefinition: [],
-  props: { imageId: { type: String, required: true } },
+  props: {
+    imageId: { type: String, required: true }
+  },
   data: () => ({ model: null, loading: false }),
   methods: {
     doRemoveTag(tag) {

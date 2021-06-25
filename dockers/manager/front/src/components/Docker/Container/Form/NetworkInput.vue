@@ -2,7 +2,7 @@
   <q-expansion-item
     label="Network"
     :caption="selectedName"
-    icon="eva-hard-drive-outline"
+    icon="eva-globe-outline"
   >
     <q-separator />
     <q-card>

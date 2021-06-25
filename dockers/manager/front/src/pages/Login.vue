@@ -17,7 +17,11 @@
               />
               <div class="row justify-center">
                 <div class="col col-auto">
-                  <component :is="formChildren.otp" v-model="form.otp" @enter="submit" />
+                  <component
+                    :is="formChildren.otp"
+                    v-model="form.otp"
+                    @enter="submit"
+                  />
                 </div>
               </div>
               <q-select
@@ -45,6 +49,25 @@ import api from "src/api";
 import DeepForm from "src/mixins/DeepForm";
 import OtpInput from "src/components/Auth/OtpInput.vue";
 
+const expireOptions = [
+  {
+    label: "One day",
+    value: 1
+  },
+  {
+    label: "One week",
+    value: 7
+  },
+  {
+    label: "One month",
+    value: 30
+  },
+  {
+    label: "Forever",
+    value: 0
+  }
+];
+
 export default {
   mixins: [DeepForm],
   formDefinition: {
@@ -52,27 +75,7 @@ export default {
     otp: OtpInput,
     durationDays: 1
   },
-  data: () => {
-    const expireOptions = [
-      {
-        label: "One day",
-        value: 1
-      },
-      {
-        label: "One week",
-        value: 7
-      },
-      {
-        label: "One month",
-        value: 30
-      },
-      {
-        label: "Forever",
-        value: 0
-      }
-    ];
-    return { expireOptions };
-  },
+  data: () => ({ expireOptions }),
   methods: {
     submit() {
       this.mutate({

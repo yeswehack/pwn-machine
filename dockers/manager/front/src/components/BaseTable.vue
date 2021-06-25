@@ -93,7 +93,7 @@
           v-if="props.expand"
           :props="props"
           no-hover
-          class="expand  bg-grey-10"
+          class="expand bg-grey-10"
         >
           <q-td colspan="100%">
             <slot name="details" v-bind="{ row: props.row }"></slot>

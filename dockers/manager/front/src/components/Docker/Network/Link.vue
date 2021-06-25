@@ -28,7 +28,9 @@ import PmLink from "src/components/PMLink.vue";
 
 export default {
   components: { PmLink },
-  props: { network: { type: Object, required: true } }
+  props: {
+    network: { type: Object, required: true }
+  }
 };
 </script>
 <style lang="scss" scoped>

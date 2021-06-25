@@ -81,7 +81,9 @@ export default {
     type: "loadBalancer",
     extra: getCreateComponent
   },
-  props: { service: { type: Object, default: null } },
+  props: {
+    service: { type: Object, default: null }
+  },
   data() {
     const availableTypes = {
       http: ["loadBalancer", "weighted", "mirroring"],

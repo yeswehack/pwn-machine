@@ -7,6 +7,8 @@ import PmLink from "src/components/PMLink.vue";
 
 export default {
   components: { PmLink },
-  props: { image: { type: Object, required: true } },
+  props: {
+    image: { type: Object, required: true }
+  }
 };
 </script>

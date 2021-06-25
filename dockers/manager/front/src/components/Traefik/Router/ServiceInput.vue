@@ -38,7 +38,9 @@ export default {
       update: data => data.traefikServices
     }
   },
-  props: { protocol: { type: String, default: null } },
+  props: {
+    protocol: { type: String, default: null }
+  },
   computed: {
     serviceNames() {
       return (this.services ?? []).map(s => s.name);

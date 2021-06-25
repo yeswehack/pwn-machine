@@ -107,9 +107,11 @@ const defaultModel = {
 export default {
   components: { HelpLink, BaseGridInput },
   mixins: [DeepForm],
-  props: { readonly: { type: Boolean, default: false } },
+  props: {
+    readonly: { type: Boolean, default: false }
+  },
   formDefinition: [],
-  data: () => ({ model: defaultModel }),
+  data: () => ({ model: { ...defaultModel } }),
   computed: {
     caption() {
       if (this.form.length === 0) {
@@ -125,7 +127,7 @@ export default {
     addEntry() {
       if (!this.model.subnet) return;
       this.form.unshift(this.model);
-      this.model = defaultModel;
+      this.model = { ...defaultModel };
     }
   }
 };

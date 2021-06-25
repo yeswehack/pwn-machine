@@ -55,7 +55,9 @@ import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
-  props: { readonly: { type: Boolean, default: false } },
+  props: {
+    readonly: { type: Boolean, default: false }
+  },
   formDefinition: {
     subnet: null,
     ipRange: null,

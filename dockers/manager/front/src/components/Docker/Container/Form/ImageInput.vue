@@ -33,7 +33,9 @@ import DeepForm from "src/mixins/DeepForm";
 
 export default {
   mixins: [DeepForm],
-  props: { readonly: { type: Boolean, default: false } },
+  props: {
+    readonly: { type: Boolean, default: false }
+  },
   formDefinition: null,
   data: () => ({ filter: null }),
   apollo: {
