@@ -1,9 +1,5 @@
 <template>
-  <q-expansion-item
-    icon="label"
-    label="Labels"
-    :caption="`${form.length} label(s)`"
-  >
+  <q-expansion-item v-bind="$attrs">
     <q-separator />
     <q-card>
       <q-card-section>
@@ -17,15 +13,19 @@
         >
           <template #inputs>
             <q-input
+              ref="key"
               v-model="model.key"
+              :rules="[required('Name cannot be empty')]"
+              lazy-rules="ondemand"
               class="col"
               flat
               label="Name"
+              @input="$refs.key.resetValidation()"
               @keypress.enter.prevent="addEntry"
             />
             <q-input
               v-model="model.value"
-              class="col"
+              class="col fit"
               flat
               label="Value"
               @keypress.enter.prevent="addEntry"
@@ -34,21 +34,26 @@
           <template #entry="{entry}">
             <div class="ellipsis">
               {{ entry.key }}
-              <q-popup-edit v-model="entry.key">
-                <q-input
-                  v-model.number="entry.key"
-                  :readonly="readonly"
-                  dense
-                  autofocus
-                />
+              <q-popup-edit
+                v-model="entry.key"
+                :validate="required('Name cannot be empty')"
+              >
+                <template #default="{validate}">
+                  <q-input
+                    v-model="entry.key"
+                    :rules="[validate]"
+                    :readonly="readonly"
+                    dense
+                    autofocus
+                  />
+                </template>
               </q-popup-edit>
             </div>
-            <div class="col ellipsis">
+            <div class="ellipsis fit">
               {{ entry.value }}
-
               <q-popup-edit v-model="entry.value">
                 <q-input
-                  v-model.number="entry.value"
+                  v-model="entry.value"
                   :readonly="readonly"
                   dense
                   autofocus
@@ -69,17 +74,18 @@ import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
+  formDefinition: [],
   props: {
-    label: { type: String, default: null },
     readonly: { type: Boolean, default: false }
   },
   data: () => ({ model: { key: "", value: "" } }),
-  formDefinition: [],
   methods: {
     addEntry() {
-      if (!this.model.key) return;
-      this.form.unshift(this.model);
-      this.model = { key: "", value: "" };
+      if (this.$refs.key.validate()) {
+        this.form.unshift(this.model);
+        this.model = { key: "", value: "" };
+        this.$refs.key.resetValidation();
+      }
     },
     removeEntry(idx) {
       this.form.splice(idx, 1);
@@ -87,9 +93,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-label {
-  font-size: 1.2em;
-}
-</style>
