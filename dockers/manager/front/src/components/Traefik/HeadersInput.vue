@@ -35,14 +35,14 @@
             <div class="col col-6">
               {{ entry.key }}
               <q-popup-edit v-model="form[idx].key">
-                <q-input v-model.number="form[idx].key" dense autofocus />
+                <q-input v-model="form[idx].key" dense autofocus />
               </q-popup-edit>
             </div>
             <div class="col ">
               {{ entry.value }}
 
               <q-popup-edit v-model="form[idx].value">
-                <q-input v-model.number="form[idx].value" dense autofocus />
+                <q-input v-model="form[idx].value" dense autofocus />
               </q-popup-edit>
             </div>
             <div class="col col-auto">
