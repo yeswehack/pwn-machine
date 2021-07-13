@@ -10,7 +10,14 @@
           {{ title }}
         </div>
       </template>
-      <template v-else>
+      <q-form
+        v-else
+        ref="form"
+        style="display: contents"
+        greedy
+        @input="$refs.form.resetValidation()"
+        @submit="$emit('addEntry')"
+      >
         <slot name="inputs" />
         <div v-if="!readonly" class="text-center">
           <q-btn
@@ -21,17 +28,19 @@
             icon="eva-plus"
             color="positive"
             :loading="loading"
-            @click="$emit('addEntry')"
+            type="submit"
           />
         </div>
-      </template>
+      </q-form>
       <div v-if="!readonly" class="spacing" />
       <div v-if="readonly && entries.length === 0" style="display: contents">
         <div v-for="(title, idx) of titles" :key="`title-${idx}`">-</div>
       </div>
       <div v-for="(entry, idx) of entries" :key="idx" style="display: contents">
         <div v-if="idx > 0" class="separator"></div>
-        <slot name="entry" :entry="entry" />
+        <slot name="entry" :entry="entry">
+          <div class="ellipsis">{{ entry }}</div>
+        </slot>
         <div v-if="!readonly" class="text-center">
           <q-btn
             dense
@@ -60,7 +69,7 @@ export default {
   },
   computed: {
     style() {
-      const columnEnd = this.gridFormat.split(/\s+/).length + 1;
+      const columnEnd = this.gridFormat.trim().split(/\s+/).length + 1;
       if (this.readonly) {
         return {
           "grid-template-columns": this.gridFormat,
@@ -75,6 +84,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .input-grid {
   width: 100%;

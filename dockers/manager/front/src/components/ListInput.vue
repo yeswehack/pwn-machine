@@ -1,33 +1,32 @@
 <template>
   <base-grid-input
-    :readonly="readonly"
-    :titles="[label]"
-    grid-format="1fr"
+    v-bind="$attrs"
     :entries="form"
-    :error="errorMsg"
+    :readonly="readonly"
+    :grid-format="gridFormat"
     @addEntry="addEntry"
     @removeEntry="removeEntry"
   >
     <template #inputs>
-      <q-input
-        v-model="model"
-        v-bind="$attrs"
-        flat
-        :label="label"
-        @keypress.enter.prevent="addEntry"
-      />
-    </template>
-    <template #entry="props">
-      <div v-if="objectKey" class="ellipsis">
-        {{ props.entry[objectKey] }}
-        <q-popup-edit v-model="props.entry[objectKey]">
-          <q-input v-model="props.entry[objectKey]" dense autofocus />
-        </q-popup-edit>
+      <div v-for="key of cols" :key="key" class="fit">
+        <slot :name="key" :model="model" lazy-rules="ondemand" />
       </div>
-      <div v-else class="ellipsis">
-        {{ props.entry }}
-        <q-popup-edit v-model="props.entry">
-          <q-input v-model="props.entry" dense autofocus />
+    </template>
+
+    <template #entry="{ entry }">
+      <div v-for="key of cols" :key="key" class="ellipsis">
+        {{ entry[key] || "&ZeroWidthSpace;" }}
+
+        <q-popup-edit v-model="entry[key]">
+          <q-form greedy @keyup.enter="onenter" @submit="submit">
+            <slot
+              :name="key"
+              :model="entry"
+              :readonly="readonly"
+              dense
+              autofocus
+            />
+          </q-form>
         </q-popup-edit>
       </div>
     </template>
@@ -41,41 +40,37 @@ import BaseGridInput from "src/components/BaseGridInput.vue";
 export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
-  props: {
-    objectKey: { type: String, default: null },
-    rules: { type: Array, default: () => [] },
-    readonly: { type: Boolean, default: false },
-    label: { type: String, default: null }
-  },
-  data: () => ({ model: "", errorMsg: null }),
   formDefinition: [],
+  props: {
+    readonly: { type: Boolean, default: false },
+    default: { type: Object, default: () => ({}) }
+  },
+  data() {
+    return { model: { ...this.default }, onenter: null };
+  },
+  computed: {
+    cols() {
+      return Object.keys(this.$scopedSlots);
+    },
+    emptyModel() {
+      return Object.fromEntries(this.cols.map(col => [col, null]));
+    },
+    gridFormat() {
+      return "1fr ".repeat(this.cols.length);
+    }
+  },
   methods: {
     addEntry() {
-      if (!this.model) {
-        return;
-      }
-      if (this.objectKey) {
-        this.form.unshift({ [this.objectKey]: this.model });
-      } else {
-        this.form.unshift(this.model);
-      }
-      this.model = null;
-      this.validate();
+      this.form.unshift({ ...this.emptyModel, ...this.model });
+      this.model = { ...this.default };
     },
-    validate() {
-      this.errorMsg = "";
-      for (const rule of this.rules) {
-        const msg = rule(this.form);
-        if (typeof msg === "string") {
-          this.errorMsg = msg;
-          return false;
-        }
-      }
-      return true;
+    removeEntry(i) {
+      this.form.splice(i, 1);
     },
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
-      this.validate();
+    submit() {
+      this.onenter = () => {
+        this.onenter = e => e.stopPropagation();
+      };
     }
   }
 };

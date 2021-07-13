@@ -21,11 +21,6 @@
         </template>
       </q-select>
     </template>
-    <template #entry="props">
-      <div class="ellipsis">
-        {{ props.entry }}
-      </div>
-    </template>
   </base-grid-input>
 </template>
 

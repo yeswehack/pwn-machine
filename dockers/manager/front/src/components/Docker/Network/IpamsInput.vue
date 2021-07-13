@@ -21,73 +21,38 @@
     <q-separator />
     <q-card>
       <q-card-section>
-        <base-grid-input
-          :readonly="readonly"
+        <component
+          :is="formChildren"
+          v-model="form"
           :titles="['Subnet', 'Gateway', 'IP Range']"
-          grid-format="1fr 1fr 1fr"
-          :entries="form"
-          @addEntry="addEntry"
-          @removeEntry="removeEntry"
+          :readonly="readonly"
         >
-          <template #inputs>
+          <template #subnet="props">
             <q-input
-              v-model="model.subnet"
-              class="col"
-              flat
+              v-model.number="props.model.subnet"
+              :rules="[required()]"
               label="Subnet"
-              @keypress.enter.prevent="addEntry"
-            />
-            <q-input
-              v-model="model.gateway"
-              class="col"
               flat
+              v-bind="props"
+            />
+          </template>
+          <template #gateway="props">
+            <q-input
+              v-model.number="props.model.gateway"
               label="Gateway"
-              @keypress.enter.prevent="addEntry"
-            />
-            <q-input
-              v-model="model.ipRange"
-              class="col"
               flat
-              label="IP Range"
-              @keypress.enter.prevent="addEntry"
+              v-bind="props"
             />
           </template>
-          <template #entry="{entry}">
-            <div class="ellipsis">
-              {{ entry.subnet }}
-              <q-popup-edit v-model="entry.subnet">
-                <q-input
-                  v-model.number="entry.subnet"
-                  :readonly="readonly"
-                  dense
-                  autofocus
-                />
-              </q-popup-edit>
-            </div>
-            <div class="ellipsis">
-              {{ entry.gateway }}
-              <q-popup-edit v-model="entry.gateway">
-                <q-input
-                  v-model.number="entry.gateway"
-                  :readonly="readonly"
-                  dense
-                  autofocus
-                />
-              </q-popup-edit>
-            </div>
-            <div class="ellipsis">
-              {{ entry.ipRange }}
-              <q-popup-edit v-model="entry.ipRange">
-                <q-input
-                  v-model.number="entry.ipRange"
-                  :readonly="readonly"
-                  dense
-                  autofocus
-                />
-              </q-popup-edit>
-            </div>
+          <template #ipRange="props">
+            <q-input
+              v-model.number="props.model.ipRange"
+              label="IP Range"
+              flat
+              v-bind="props"
+            />
           </template>
-        </base-grid-input>
+        </component>
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -96,38 +61,21 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import HelpLink from "src/components/HelpLink.vue";
-import BaseGridInput from "src/components/BaseGridInput.vue";
-
-const defaultModel = {
-  subnet: null,
-  gateway: null,
-  ipRange: null
-};
+import ListInput from "src/components/ListInput.vue";
 
 export default {
-  components: { HelpLink, BaseGridInput },
+  components: { HelpLink },
   mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false }
   },
-  formDefinition: [],
-  data: () => ({ model: { ...defaultModel } }),
+  formDefinition: ListInput,
   computed: {
     caption() {
       if (this.form.length === 0) {
         return "Automatic";
       }
       return `${this.form.length} setting(s)`;
-    }
-  },
-  methods: {
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
-    },
-    addEntry() {
-      if (!this.model.subnet) return;
-      this.form.unshift(this.model);
-      this.model = { ...defaultModel };
     }
   }
 };

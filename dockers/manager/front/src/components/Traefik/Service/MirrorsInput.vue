@@ -1,69 +1,45 @@
 <template>
   <div>
     <div class="text-h6">Mirrors</div>
-    <base-grid-input
+    <component
+      :is="formChildren"
+      v-model="form"
       :titles="['Service', 'Percent']"
       :readonly="readonly"
-      grid-format="1fr 1fr"
-      :entries="form"
-      :error="errorMsg"
-      @addEntry="addEntry"
-      @removeEntry="removeEntry"
+      :error="error"
     >
-      <template #inputs>
+      <template #name="props">
         <q-select
-          v-model="model.name"
+          v-model="props.model.name"
+          :options="serviceOptions"
+          :rules="[required()]"
           label="Service"
           flat
-          :options="serviceOptions"
-          @keypress.enter.prevent="addEntry"
+          v-bind="props"
         />
+      </template>
+      <template #percent="props">
         <q-input
-          v-model.number="model.percent"
+          v-model.number="props.model.percent"
+          type="number"
+          :rules="[required()]"
           label="Percent"
           flat
-          type="number"
-          @keypress.enter.prevent="addEntry"
+          v-bind="props"
         />
       </template>
-      <template #entry="{entry}">
-        <div class="ellipsis">
-          {{ entry.name }}
-          <q-popup-edit v-model="entry.name">
-            <q-select
-              v-model="entry.name"
-              class="col"
-              flat
-              :options="serviceOptions"
-              @keypress.enter.prevent="addEntry"
-            />
-          </q-popup-edit>
-        </div>
-        <div class="ellipsis">
-          {{ entry.percent }}
-          <q-popup-edit v-model="entry.percent">
-            <q-input
-              v-model.number="entry.percent"
-              class="col"
-              flat
-              @keypress.enter.prevent="addEntry"
-            />
-          </q-popup-edit>
-        </div>
-      </template>
-    </base-grid-input>
+    </component>
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+import ListInput from "src/components/ListInput.vue";
 import api from "src/api";
-import BaseGridInput from "src/components/BaseGridInput.vue";
 
 export default {
-  components: { BaseGridInput },
   mixins: [DeepForm],
-  formDefinition: [],
+  formDefinition: ListInput,
   apollo: {
     services: {
       query: api.traefik.services.LIST_SERVICES,
@@ -78,25 +54,17 @@ export default {
     protocol: { type: String, default: null },
     label: { type: String, default: null }
   },
-  data: () => ({ model: { name: null, percent: null }, errorMsg: "" }),
+  data: () => ({ error: "" }),
   computed: {
     serviceOptions() {
       return (this.services ?? []).map(s => s.name);
     }
   },
   methods: {
-    addEntry() {
-      if (!this.model.name || !Number.isFinite(this.model.percent)) return;
-      this.form.unshift(this.model);
-      this.model = { name: null, percent: null };
-    },
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
-    },
     validate() {
-      this.errorMsg = "";
-      if (!Array.isArray(this.form) || this.form.length === 0) {
-        this.errorMsg = "You must create at least one mirror.";
+      this.error = "";
+      if (this.form.length === 0) {
+        this.error = "You must create at least one mirror.";
         return false;
       }
       return true;

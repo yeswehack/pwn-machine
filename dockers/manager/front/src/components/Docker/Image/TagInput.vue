@@ -8,12 +8,7 @@
     @removeEntry="removeTag"
   >
     <template #inputs>
-      <q-input v-model="model" label="New tag" @keypress.enter="addTag" />
-    </template>
-    <template #entry="{entry}">
-      <div class="ellipsis">
-        {{ entry }}
-      </div>
+      <q-input v-model="model" label="New tag" />
     </template>
   </base-grid-input>
 </template>

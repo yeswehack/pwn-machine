@@ -1,69 +1,45 @@
 <template>
   <div>
     <div class="text-h6">Weighted services</div>
-    <base-grid-input
+    <component
+      :is="formChildren"
+      v-model="form"
       :titles="['Service', 'Weight']"
       :readonly="readonly"
-      grid-format="1fr 1fr"
-      :entries="form"
-      :error="errorMsg"
-      @addEntry="addEntry"
-      @removeEntry="removeEntry"
+      :error="error"
     >
-      <template #inputs>
+      <template #name="props">
         <q-select
-          v-model="model.name"
+          v-model="props.model.name"
+          :options="serviceOptions"
+          :rules="[required()]"
           label="Service"
           flat
-          :options="serviceOptions"
-          @keypress.enter.prevent="addEntry"
+          v-bind="props"
         />
+      </template>
+      <template #weight="props">
         <q-input
-          v-model.number="model.weight"
+          v-model.number="props.model.weight"
+          type="number"
+          :rules="[required()]"
           label="Weight"
           flat
-          type="number"
-          @keypress.enter.prevent="addEntry"
+          v-bind="props"
         />
       </template>
-      <template #entry="{entry}">
-        <div class="ellipsis">
-          {{ entry.name }}
-          <q-popup-edit v-model="entry.name">
-            <q-select
-              v-model="entry.name"
-              class="col"
-              flat
-              :options="serviceOptions"
-              @keypress.enter.prevent="addEntry"
-            />
-          </q-popup-edit>
-        </div>
-        <div class="ellipsis">
-          {{ entry.weight }}
-          <q-popup-edit v-model="entry.weight">
-            <q-input
-              v-model.number="entry.weight"
-              class="col"
-              flat
-              @keypress.enter.prevent="addEntry"
-            />
-          </q-popup-edit>
-        </div>
-      </template>
-    </base-grid-input>
+    </component>
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
+import ListInput from "src/components/ListInput.vue";
 import api from "src/api";
-import BaseGridInput from "src/components/BaseGridInput.vue";
 
 export default {
-  components: { BaseGridInput },
   mixins: [DeepForm],
-  formDefinition: [],
+  formDefinition: ListInput,
   apollo: {
     services: {
       query: api.traefik.services.LIST_SERVICES,
@@ -75,28 +51,19 @@ export default {
   },
   props: {
     readonly: { type: Boolean, default: false },
-    protocol: { type: String, default: null },
-    label: { type: String, default: null }
+    protocol: { type: String, default: null }
   },
-  data: () => ({ model: { name: null, weight: null }, errorMsg: "" }),
+  data: () => ({ error: "" }),
   computed: {
     serviceOptions() {
       return (this.services ?? []).map(s => s.name);
     }
   },
   methods: {
-    addEntry() {
-      if (!this.model.name || !Number.isFinite(this.model.weight)) return;
-      this.form.unshift(this.model);
-      this.model = { name: null, weight: null };
-    },
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
-    },
     validate() {
-      this.errorMsg = "";
-      if (!Array.isArray(this.form) || this.form.length === 0) {
-        this.errorMsg = "You must choose at least one service";
+      this.error = "";
+      if (this.form.length === 0) {
+        this.error = "You must choose at least one service";
         return false;
       }
       return true;
