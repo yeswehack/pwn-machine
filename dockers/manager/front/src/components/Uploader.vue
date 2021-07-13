@@ -21,7 +21,6 @@
 import { UploaderBus } from "src/eventBus.js";
 
 export default {
-  props: {},
   data: () => ({ isOpen: false, url: null, title: "Upload" }),
   computed: {
     headers: () => [

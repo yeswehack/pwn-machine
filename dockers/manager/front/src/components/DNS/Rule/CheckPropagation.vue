@@ -59,7 +59,7 @@ export default {
     },
     expected() {
       const local = (this.dnsRuleCheckPropagation ?? []).find(
-        r => r.name == "Local"
+        r => r.name === "Local"
       );
       return local?.records ?? [];
     }

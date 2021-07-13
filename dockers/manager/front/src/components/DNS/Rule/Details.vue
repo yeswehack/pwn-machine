@@ -28,7 +28,6 @@
               :is="formChildren.records"
               v-else
               v-model="form.records"
-              object-key="content"
               label="Records"
             />
           </q-card-section>

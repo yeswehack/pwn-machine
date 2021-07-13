@@ -77,11 +77,7 @@ import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export default {
-  components: {
-    ExtraConfig,
-    ImageInput,
-    ResetAndSave
-  },
+  components: { ExtraConfig, ImageInput, ResetAndSave },
   mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false }

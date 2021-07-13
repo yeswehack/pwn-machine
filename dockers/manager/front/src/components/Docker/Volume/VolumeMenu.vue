@@ -8,7 +8,7 @@
         <q-item-section> Upload in {{ folderPath }} </q-item-section>
       </q-item>
       <q-item
-        v-if="node.header == 'file'"
+        v-if="node.header === 'file'"
         v-close-popup
         clickable
         @click="downloadFile"
@@ -41,7 +41,7 @@ export default {
       return this.node.file;
     },
     folderPath() {
-      return this.node.header == "folder"
+      return this.node.header === "folder"
         ? this.node.fullpath
         : this.node.parent.fullpath;
     }

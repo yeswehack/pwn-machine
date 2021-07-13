@@ -50,7 +50,6 @@ export default {
   components: { BaseGridInput, NetworkLink },
   props: {
     readonly: { type: Boolean, default: false },
-    network: { type: Object, default: null },
     container: { type: Object, default: null }
   },
   data() {

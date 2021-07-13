@@ -51,8 +51,7 @@ export default {
   components: { BaseGridInput, ContainerLink },
   props: {
     readonly: { type: Boolean, default: false },
-    network: { type: Object, default: null },
-    container: { type: Object, default: null }
+    network: { type: Object, default: null }
   },
   data: () => ({ model: { container: null, aliases: [] }, loading: false }),
   apollo: {
