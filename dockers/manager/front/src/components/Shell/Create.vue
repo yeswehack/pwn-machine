@@ -71,15 +71,17 @@ export default {
     environment: KeyValueListInput
   },
   methods: {
-    submit() {
+    submit(done) {
       this.mutate({
         mutation: api.docker.shells.SPAWN_SHELL,
         variables: { input: this.form },
         refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
-      }).then(result => {
-        const id = result.nodeId;
-        this.$router.push({ name: "shellId", params: { id } });
-      });
+      })
+        .then(result => {
+          const id = result.nodeId;
+          this.$router.push({ name: "shellId", params: { id } });
+        })
+        .finally(done);
     },
     validate() {
       return this.$refs.containerName.validate();

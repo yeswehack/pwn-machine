@@ -75,15 +75,17 @@ export default {
     validate() {
       return this.$refs.name.validate();
     },
-    async submit() {
+    submit(done) {
       this.mutate({
         mutation: api.docker.networks.CREATE_NETWORK,
         variables: { input: this.form },
         refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
         message: `Network ${this.form.name} created.`
-      }).then(r => {
-        this.$emit("ok", this.form.name);
-      });
+      })
+        .then(() => {
+          this.$emit("ok", this.form.name);
+        })
+        .finally(done);
     }
   }
 };
