@@ -9,7 +9,8 @@
     mask="######"
     fill-mask
     :rules="[isTotp]"
-    @keypress.enter="$emit('enter')"
+    lazy-rules
+    v-on="$listeners"
   />
 </template>
 

@@ -20,7 +20,7 @@
                   <component
                     :is="formChildren.otp"
                     v-model="form.otp"
-                    @enter="submit"
+                    @keyup.enter="submit"
                   />
                 </div>
               </div>

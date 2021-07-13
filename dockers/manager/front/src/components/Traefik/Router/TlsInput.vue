@@ -23,19 +23,19 @@
               ref="dnsdomain"
               v-model="domain"
               :disable="certResolver === null"
-              @input="addEntry"
+              @keyup.enter="addEntry"
             />
             <q-input
               v-else
               v-model="domain"
               label="Domain"
               :disable="certResolver === null"
-              @keypress.enter="addEntry"
+              @keyup.enter="addEntry"
             />
           </template>
           <template #entry="{entry}">
             <div class="ellipsis">
-              {{ entry.sans ? entry.sans : entry.main }}
+              {{ entry.sans || entry.main }}
             </div>
           </template>
         </base-grid-input>
