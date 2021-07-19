@@ -1,41 +1,38 @@
 <template>
-  <div>
-    <base-table
-      name="volume"
-      row-key="name"
-      :expendable="true"
-      :query="$apollo.queries.volumes"
-      :data="volumes"
-      :columns="columns"
-      @create="createVolume"
-      @clone="cloneVolume"
-      @delete="deleteVolume"
-      @refresh="$apollo.queries.volumes.refetch"
-    >
-      <template #header-button>
-        <q-btn
-          rounded
-          label="Prune"
-          color="negative"
-          icon="eva-trash-outline"
-          @click="pruneVolumes"
+  <base-table
+    name="volume"
+    row-key="name"
+    :expendable="true"
+    :query="$apollo.queries.volumes"
+    :data="volumes"
+    :columns="columns"
+    @create="createVolume"
+    @clone="cloneVolume"
+    @delete="deleteVolume"
+    @refresh="$apollo.queries.volumes.refetch"
+  >
+    <template #header-button>
+      <q-btn
+        rounded
+        label="Prune"
+        color="negative"
+        icon="eva-trash-outline"
+        @click="pruneVolumes"
+      />
+    </template>
+    <template #body-cell-usedBy="{ row }">
+      <div class="q-gutter-sm row">
+        <container-link
+          v-for="{ name } of row.usedBy"
+          :key="name"
+          :name="name"
         />
-      </template>
-      <template #body-cell-usedBy="{ row }">
-        <div class="q-gutter-sm row">
-          <container-link
-            v-for="{ name } of row.usedBy"
-            :key="name"
-            :name="name"
-          />
-        </div>
-      </template>
-      <template #details="{ row }">
-        <volume-details :volume="row" />
-      </template>
-    </base-table>
-
-  </div>
+      </div>
+    </template>
+    <template #details="{ row }">
+      <volume-details :volume="row" />
+    </template>
+  </base-table>
 </template>
 
 <script>
