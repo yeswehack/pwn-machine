@@ -23,6 +23,7 @@ services:
 
   powerdns:
     container_name: pm_powerdns
+    image: pm-powerdns
     build:
       context: ./dockers/powerdns
       args:
@@ -59,7 +60,7 @@ services:
 
   traefik:
     container_name: pm_traefik
-    image: traefik
+    image: pm-traefik
     build:
       context: ./dockers/traefik
       args:
@@ -93,6 +94,7 @@ services:
   ##
   logbeat:
     container_name: pm_logbeat
+    image: pm-logbeat
     build:
       context: ./dockers/logbeat
     user: root
