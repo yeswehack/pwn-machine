@@ -27,7 +27,7 @@
     </q-page-container>
     <Downloader />
     <Uploader />
-    <image-puller />
+    <stream-popup />
     <q-page-sticky class="refresh-btn" position="top-right" :offset="[16, 16]">
       <q-btn
         round
@@ -44,11 +44,11 @@
 <script>
 import Downloader from "src/components/Downloader.vue";
 import Uploader from "src/components/Uploader.vue";
-import ImagePuller from "src/components/Docker/ImagePuller.vue";
+import StreamPopup from "src/components/Docker/Streams/Popup.vue";
 
 export default {
   name: "MainLayout",
-  components: { Downloader, Uploader, ImagePuller },
+  components: { Downloader, Uploader, StreamPopup },
   data: () => ({ loading: false }),
   computed: {
     showMenu() {
