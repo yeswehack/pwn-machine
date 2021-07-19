@@ -28,7 +28,7 @@
 
 <script>
 import api from "src/api";
-import ImageSearchVue from "./ImageSearch.vue";
+import ImageDialog from "../../Image/Dialog.vue";
 import DeepForm from "src/mixins/DeepForm";
 
 export default {
@@ -61,14 +61,14 @@ export default {
       return this.$refs.select.validate();
     },
     searchImage() {
-      this.$q
+      const dialog = this.$q
         .dialog({
-          component: ImageSearchVue,
+          component: ImageDialog,
           parent: this,
           input: this.filter,
-          chooseImage: true
         })
         .onOk(tag => {
+          dialog.hide()
           this.$refs.select.add(tag);
           this.$refs.select.blur();
           this.form = tag;

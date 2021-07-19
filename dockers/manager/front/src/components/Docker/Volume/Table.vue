@@ -1,38 +1,41 @@
 <template>
-  <base-table
-    name="volume"
-    row-key="name"
-    :expendable="true"
-    :query="$apollo.queries.volumes"
-    :data="volumes"
-    :columns="columns"
-    @create="createVolume"
-    @clone="cloneVolume"
-    @delete="deleteVolume"
-    @refresh="$apollo.queries.volumes.refetch"
-  >
-    <template #header-button>
-      <q-btn
-        rounded
-        label="Prune"
-        color="negative"
-        icon="eva-trash-outline"
-        @click="pruneVolumes"
-      />
-    </template>
-    <template #body-cell-usedBy="{row}">
-      <div class="q-gutter-sm row">
-        <container-link
-          v-for="{ name } of row.usedBy"
-          :key="name"
-          :name="name"
+  <div>
+    <base-table
+      name="volume"
+      row-key="name"
+      :expendable="true"
+      :query="$apollo.queries.volumes"
+      :data="volumes"
+      :columns="columns"
+      @create="createVolume"
+      @clone="cloneVolume"
+      @delete="deleteVolume"
+      @refresh="$apollo.queries.volumes.refetch"
+    >
+      <template #header-button>
+        <q-btn
+          rounded
+          label="Prune"
+          color="negative"
+          icon="eva-trash-outline"
+          @click="pruneVolumes"
         />
-      </div>
-    </template>
-    <template #details="{row}">
-      <volume-details :volume="row"/>
-    </template>
-  </base-table>
+      </template>
+      <template #body-cell-usedBy="{ row }">
+        <div class="q-gutter-sm row">
+          <container-link
+            v-for="{ name } of row.usedBy"
+            :key="name"
+            :name="name"
+          />
+        </div>
+      </template>
+      <template #details="{ row }">
+        <volume-details :volume="row" />
+      </template>
+    </base-table>
+
+  </div>
 </template>
 
 <script>
@@ -45,14 +48,14 @@ import { format } from "quasar";
 const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ContainerLink,VolumeDetails },
+  components: { BaseTable, ContainerLink, VolumeDetails },
   apollo: {
     volumes: {
       query: api.docker.volumes.LIST_VOLUMES,
       update: data => data.dockerVolumes
     }
   },
-  data() {
+  data () {
     const col = (name, opts = {}) => ({
       name,
       align: "left",
@@ -72,7 +75,7 @@ export default {
     return { columns };
   },
   methods: {
-    pruneVolumes() {
+    pruneVolumes () {
       this.$q
         .dialog({
           title: "Prune volumes ?",
@@ -91,8 +94,8 @@ export default {
             const reclaimed = humanStorageSize(result.spaceReclaimed);
             const message = deleted.length
               ? `${deleted.length} volume(s) deleted: ${deleted.join(
-                  ", "
-                )} (${reclaimed})`
+                ", "
+              )} (${reclaimed})`
               : `No volume deleted.`;
 
             this.$q.notify({
@@ -102,20 +105,20 @@ export default {
           });
         });
     },
-    createVolume() {
+    createVolume () {
       this.$q.dialog({
         component: ContainerDialog,
         parent: this
       });
     },
-    cloneVolume(volume) {
+    cloneVolume (volume) {
       this.$q.dialog({
         component: ContainerDialog,
         parent: this,
         volume
       });
     },
-    deleteVolume(volume) {
+    deleteVolume (volume) {
       this.$q
         .dialog({
           title: "Confirm",

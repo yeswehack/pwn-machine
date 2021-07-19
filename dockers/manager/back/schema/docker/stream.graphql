@@ -1,0 +1,30 @@
+type DockerStreamPullLogEntry {
+  done: Boolean!
+  status: String
+  id: String
+  progressDetail: DockerImagePullProgressDetail
+  progress: String
+}
+
+type DockerSteamBuildLogEntry {
+    done: Boolean!
+    stream: String
+}
+
+
+type DockerStream {
+    id: ID!
+    type: String!
+    name: String!
+}
+
+
+extend type Query {
+    dockerStreams: [DockerStream!]!
+}
+
+extend type Subscription {
+  dockerStreamStart: DockerStream!
+  dockerStreamPull(id: ID!): DockerStreamPullLogEntry
+  dockerStreamBuild(id: ID!): DockerSteamBuildLogEntry
+}

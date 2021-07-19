@@ -9,7 +9,7 @@ from uuid import uuid4
 import asyncio
 import re
 from app.exception import PMException
-
+from .streams import StreamFollower
 DockerImage = createType("DockerImage")
 
 # A tag name must be valid ASCII and may contain lowercase and uppercase letters, digits, underscores, periods and dashes.
@@ -209,3 +209,19 @@ def resolve_tag_image(*_, id, repository, tag=None):
         raise PMException(e.explanation)
     except Exception as e:
         raise PMException(str(e))
+
+
+
+@registerMutation("buildDockerImage")
+def build_docker_image(*_, input):
+    url = input["url"]
+    tag = input["tag"]
+    stream = docker_client.api.build(url, tag, decode=True, rm=True, forcerm=True)
+    return StreamFollower.create(stream, {"name": tag, "type": "BUILD"})
+
+@registerMutation("pullDockerImage")
+async def mutation_pull_image(*_, name):
+    name = name if ":" in name else f"{name}:latest" 
+    stream = docker_client.api.pull(name, stream=True, decode=True)
+    return StreamFollower.create(stream, {"name": name, "type": "PULL"})
+
