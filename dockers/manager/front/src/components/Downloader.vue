@@ -21,12 +21,15 @@
 </template>
 
 <script>
-import { DownloaderBus } from "src/eventBus.js";
+import { GlobalBus } from "src/eventBus.js";
 
 export default {
   data: () => ({ value: 0, downloading: [] }),
   created() {
-    DownloaderBus.$on("startDownload", (info) => this.downloadFile(info));
+    GlobalBus.$on("startFileDownload", this.downloadFile);
+  },
+  destroyed() {
+    GlobalBus.$off("startFileDownload", this.downloadFile);
   },
   methods: {
     downloadBlob(blob, downloadInfo) {
