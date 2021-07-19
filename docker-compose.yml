@@ -59,7 +59,6 @@ services:
 
   traefik:
     container_name: pm_traefik
-    image: traefik
     build:
       context: ./dockers/traefik
       args:
@@ -108,7 +107,7 @@ services:
 ##
   manager:
     container_name: pm_manager
-    image: "pm_manager"
+    image: "pm-manager"
     build:
       context: ./dockers/manager
     depends_on:
