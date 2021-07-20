@@ -81,10 +81,6 @@ type DockerSearchImageTagResult {
   lastUpdated: DateTime!
 }
 
-type DockerImagePullProgressDetail {
-  current: Int
-  total: Int
-}
 
 input BuildDockerImageInput {
   url: String!

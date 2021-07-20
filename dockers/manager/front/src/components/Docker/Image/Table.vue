@@ -141,10 +141,6 @@ export default {
           component: ImageDialog,
           parent: this
         })
-        .onOk(tag => {
-          this.$refs.select.add(tag);
-          this.form = tag;
-        });
     },
     pruneImages () {
       this.$q

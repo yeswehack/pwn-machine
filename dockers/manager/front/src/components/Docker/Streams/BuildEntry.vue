@@ -3,10 +3,7 @@
     <div class="row q-gutter-md items-center">
       <div class="col col-auto text-h6">Building {{ name }}</div>
       <div class="col">
-        <q-badge
-          :label="done ? 'done' : 'running'"
-          :color="done ? 'positive' : 'warning'"
-        />
+        <q-badge :label="badgeLabel" :color="badgeColor" />
       </div>
     </div>
     <div class="row">
@@ -22,10 +19,30 @@ import api from "src/api";
 
 export default {
   props: {
-    id: {type: String, required: true},
-    name: {type: String, required: true},
+    id: { type: String, required: true },
+    name: { type: String, required: true },
   },
-  data: () => ({ logText: "", done: false }),
+  data: () => ({ logText: "", done: false, error: false }),
+  computed: {
+    badgeColor () {
+      if (this.error) {
+        return "negative"
+      }
+      if (this.done) {
+        return "positive"
+      }
+      return "warning"
+    },
+    badgeLabel () {
+      if (this.error) {
+        return "error"
+      }
+      if (this.done) {
+        return "done"
+      }
+      return "running"
+    }
+  },
   apollo: {
     $subscribe: {
       dockerProgresBuild: {
@@ -35,6 +52,10 @@ export default {
         },
         result ({ data }) {
           const log = data.dockerStreamBuild;
+          if (log.error) {
+            this.error = true
+            this.logText += `\n\n${log.error}`
+          }
           if (log.stream) {
             this.logText += log.stream
             this.$nextTick(() => {

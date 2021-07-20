@@ -65,14 +65,19 @@ class StreamFollower:
         cls.runners[id] = runner
 
         async def start():
-            for message in stream:
-                runner.messages.append(message)
-                for queue in runner.queues:
-                    await queue.put(message)
-                await asyncio.sleep(0)  # release loop
+            try:
+                for message in stream:
+                    runner.messages.append(message)
+                    for queue in runner.queues:
+                        await queue.put(message)
+                    await asyncio.sleep(0)  # release loop
+            except docker.errors.APIError as e:
+                runner.messages.append({"error": e.explanation})
+            except Exception as e:
+                runner.messages.append({"error": str(e)})
             runner.done = True
 
-            await asyncio.sleep(10) # Keep the task 10s
+            await asyncio.sleep(10)  # Keep the task 10s
             cls.runners.pop(id)
 
         for sub in cls.subscribers:

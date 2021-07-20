@@ -4,6 +4,7 @@ import { STREAM_FRAGMENT } from "./fragments";
 export const STREAM_PULL = gql`
   subscription dockerStreamPull($id: ID!) {
     dockerStreamPull(id: $id) {
+      error
       done
       status
       id
@@ -18,6 +19,7 @@ export const STREAM_PULL = gql`
 export const STREAM_BUILD = gql`
   subscription dockerStreamBuild($id: ID!) {
     dockerStreamBuild(id: $id) {
+      error
       done
       stream
     }
