@@ -31,12 +31,3 @@ export const SEARCH_IMAGE_TAG = gql`
     }
   }
 `;
-
-export const LIST_IMAGE_PULLS = gql`
-  query dockerImagePulls {
-    dockerImagePulls {
-      id
-      name
-    }
-  }
-`;

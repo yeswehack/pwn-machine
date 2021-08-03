@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { DownloaderBus, UploaderBus } from "src/eventBus.js";
+import { GlobalBus } from "src/eventBus.js";
 import api from "src/api";
 export default {
   props: {
@@ -47,21 +47,21 @@ export default {
     }
   },
   methods: {
-    async downloadFile() {
+    downloadFile() {
       const info = {
         volume: this.volumeName,
         path: this.node.fullpath,
         file: this.node.file
       };
-      await DownloaderBus.$emit("startDownload", info);
+      GlobalBus.$emit("startFileDownload", info);
     },
-    async uploadFile() {
+    uploadFile() {
       const info = {
         volume: this.volumeName,
         path: this.folderPath
       };
 
-      UploaderBus.$emit("startUpload", info);
+      GlobalBus.$emit("startFileUpload", info);
     },
     async deleteFile() {
       const input = {

@@ -1,7 +1,7 @@
 <template>
   <div class="q-gutter-xs">
     <div class="row q-gutter-md items-center">
-      <div class="col col-auto text-h6">Pulling {{ pull.name }}</div>
+      <div class="col col-auto text-h6">Pulling {{ name }}</div>
       <div class="col">
         <q-badge
           :label="done ? 'done' : 'running'"
@@ -22,7 +22,7 @@
           size="4px"
           :value="
             lastLogs[id].progressDetail.current /
-              lastLogs[id].progressDetail.total
+            lastLogs[id].progressDetail.total
           "
         />
       </div>
@@ -43,28 +43,29 @@ import Vue from "vue";
 
 export default {
   props: {
-    pull: { type: Object, required: true }
+    id: { type: String, required: true },
+    name: { type: String, required: true },
   },
   data: () => ({ logIds: [], lastLogs: {}, done: false }),
   apollo: {
     $subscribe: {
-      pullImageProgress: {
-        query: api.docker.images.PULL_IMAGE_SUBSCRIBE,
-        variables() {
-          return { id: this.pull.id };
+      dockerProgressPull: {
+        query: api.docker.streams.STREAM_PULL,
+        variables () {
+          return { id: this.id };
         },
-        result({ data }) {
-          const log = data.pullImageProgress;
-          if (!log) {
-            this.done = true;
-            this.pull.done?.();
-            return;
+        result ({ data }) {
+          const log = data.dockerStreamPull;
+          if (log.done) {
+            this.done = true
+            this.$emit("done")
+            return
           }
-          const id = log.id ?? "info-" + Math.random().toString();
-          if (!this.logIds.includes(id)) {
-            this.logIds.push(id);
+          const logId = log.id ?? "info-" + Math.random().toString();
+          if (!this.logIds.includes(logId)) {
+            this.logIds.push(logId);
           }
-          Vue.set(this.lastLogs, id, log);
+          Vue.set(this.lastLogs, logId, log);
         }
       }
     }

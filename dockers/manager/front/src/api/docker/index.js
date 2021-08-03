@@ -3,6 +3,7 @@ import images from "./images";
 import logs from "./logs";
 import networks from "./networks";
 import shells from "./shells";
+import streams from "./streams";
 import volumes from "./volumes";
 
 export default {
@@ -11,5 +12,6 @@ export default {
   logs,
   networks,
   shells,
+  streams,
   volumes
 };
