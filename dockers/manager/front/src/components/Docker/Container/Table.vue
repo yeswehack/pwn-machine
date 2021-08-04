@@ -77,7 +77,7 @@
       <port-list :ports="row.ports" />
     </template>
 
-    <template #details="{ row }" auto-width>
+    <template #details="{row}" auto-width>
       <container-details :container="row" />
     </template>
   </base-table>

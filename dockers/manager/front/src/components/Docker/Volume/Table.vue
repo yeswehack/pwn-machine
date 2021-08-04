@@ -20,7 +20,7 @@
         @click="pruneVolumes"
       />
     </template>
-    <template #body-cell-usedBy="{ row }">
+    <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row">
         <container-link
           v-for="{ name } of row.usedBy"
@@ -29,7 +29,7 @@
         />
       </div>
     </template>
-    <template #details="{ row }">
+    <template #details="{row}">
       <volume-details :volume="row" />
     </template>
   </base-table>

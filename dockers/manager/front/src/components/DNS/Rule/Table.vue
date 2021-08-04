@@ -26,7 +26,7 @@
         @input="v => toggleRule(row, v)"
       />
     </template>
-    <template #details="{ row }">
+    <template #details="{row}">
       <rule-details :value="row" />
     </template>
   </base-table>

@@ -81,7 +81,7 @@
           row-key="name"
           :rows-per-page-options="[0]"
         >
-          <template #body-cell-pull="{ row }">
+          <template #body-cell-pull="{row}">
             <q-td align="right">
               <q-btn
                 :label="isAvailable(row) ? 'update' : 'pull'"

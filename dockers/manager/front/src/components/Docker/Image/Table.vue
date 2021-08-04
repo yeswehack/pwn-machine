@@ -19,7 +19,7 @@
       />
       <q-checkbox v-model="showIntermediate" label="Show intermediate images" />
     </template>
-    <template #body-cell-usedBy="{ row }">
+    <template #body-cell-usedBy="{row}">
       <div class="q-gutter-sm row" style="max-width: 20vw">
         <container-link
           v-for="{ name } of row.usedBy"
@@ -28,10 +28,10 @@
         />
       </div>
     </template>
-    <template #body-cell-shortId="{ row }">
+    <template #body-cell-shortId="{row}">
       <div class="text-mono">{{ row.shortId }}</div>
     </template>
-    <template #body-cell-tags="{ row }">
+    <template #body-cell-tags="{row}">
       <div class="row q-gutter-sm">
         <div
           v-for="tag of row.tags"
@@ -50,7 +50,7 @@
       </div>
     </template>
 
-    <template #details="{ row }">
+    <template #details="{row}">
       <image-details :image="row" />
     </template>
   </base-table>

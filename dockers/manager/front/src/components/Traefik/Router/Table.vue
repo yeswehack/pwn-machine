@@ -51,7 +51,7 @@
       </div>
     </template>
 
-    <template #details="{ row }">
+    <template #details="{row}">
       <router-details :value="extraForm(row)" />
     </template>
   </base-table>

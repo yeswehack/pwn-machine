@@ -26,7 +26,7 @@
     <template #body-cell-enabled="{row}">
       <status-badge :status="row.enabled" />
     </template>
-    <template #details="{ row }">
+    <template #details="{row}">
       <service-details :value="extraForm(row)" />
     </template>
   </base-table>

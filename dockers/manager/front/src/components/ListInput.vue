@@ -13,7 +13,7 @@
       </div>
     </template>
 
-    <template #entry="{ entry }">
+    <template #entry="{entry}">
       <div v-for="key of cols" :key="key" class="ellipsis">
         {{ entry[key] || "&ZeroWidthSpace;" }}
 

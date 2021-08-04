@@ -62,7 +62,7 @@
       </div>
     </template>
 
-    <template #details="{ row }">
+    <template #details="{row}">
       <network-details :network="row" />
     </template>
   </base-table>

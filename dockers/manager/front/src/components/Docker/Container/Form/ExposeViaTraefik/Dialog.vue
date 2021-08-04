@@ -178,11 +178,6 @@ export default {
         "create"
       ];
       return steps;
-    },
-    portOptions() {
-      return (this.container?.ports ?? [])
-        .filter(p => p.protocol === "TCP")
-        .map(p => p.containerPort);
     }
   },
   watch: {

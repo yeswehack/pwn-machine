@@ -110,7 +110,7 @@
         size="xs"
         icon="eva-loader-outline"
         :loading="loading"
-        class=" q-mr-md no-pointer-events"
+        class="q-mr-md no-pointer-events"
       />
       {{ props.message }}
     </template>
