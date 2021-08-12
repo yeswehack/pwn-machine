@@ -64,21 +64,16 @@ export default {
     readonly: { type: Boolean, default: false },
     titles: { type: Array, default: () => [] },
     entries: { type: Array, default: () => [] },
-    gridFormat: { type: String, default: "" },
+    gridFormat: { type: String, default: null },
     error: { type: String, default: null }
   },
   computed: {
     style() {
-      const columnEnd = this.gridFormat.trim().split(/\s+/).length + 1;
-      if (this.readonly) {
-        return {
-          "grid-template-columns": this.gridFormat,
-          "--column-end": columnEnd
-        };
-      }
+      let gridFormat = this.gridFormat ?? "1fr ".repeat(this.titles.length);
+      if (!this.readonly) gridFormat += " 34px";
       return {
-        "grid-template-columns": this.gridFormat + " 34px",
-        "--column-end": columnEnd + 1
+        "grid-template-columns": gridFormat,
+        "--column-end": gridFormat.trim().split(/\s+/).length + 1
       };
     }
   }

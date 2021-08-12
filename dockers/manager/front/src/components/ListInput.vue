@@ -3,32 +3,48 @@
     v-bind="$attrs"
     :entries="form"
     :readonly="readonly"
-    :grid-format="gridFormat"
     @addEntry="addEntry"
-    @removeEntry="removeEntry"
+    @removeEntry="form.splice($event, 1)"
   >
     <template #inputs>
-      <div v-for="key of cols" :key="key" class="fit">
-        <slot :name="key" :model="model" lazy-rules="ondemand" />
-      </div>
+      <template v-for="{ slot } of cols">
+        <div v-if="!isEmpty(slot, model)" :key="slot" class="fit">
+          <slot :name="slot" :model="model" lazy-rules="ondemand" />
+        </div>
+      </template>
     </template>
 
     <template #entry="{entry}">
-      <div v-for="key of cols" :key="key" class="ellipsis">
-        {{ entry[key] || "&ZeroWidthSpace;" }}
+      <template v-for="{ slot, key, mods } of cols">
+        <div v-if="!isEmpty(slot, entry)" :key="key" class="ellipsis">
+          <template v-if="!mods.includes('nopopup')">
+            <slot :name="`display-${key}`" v-bind="entry">
+              {{ entry[key] || "&ZeroWidthSpace;" }}
+            </slot>
 
-        <q-popup-edit v-model="entry[key]">
-          <q-form greedy @keyup.enter="onenter" @submit="submit">
-            <slot
-              :name="key"
-              :model="entry"
-              :readonly="readonly"
-              dense
-              autofocus
-            />
-          </q-form>
-        </q-popup-edit>
-      </div>
+            <q-popup-edit
+              v-if="!mods.includes('noedit')"
+              v-model="entry[key]"
+              auto-save
+              @save="save(entry, key, arguments[1])"
+            >
+              <q-form :ref="key" greedy @submit.stop>
+                <slot
+                  :name="slot"
+                  :model="entry"
+                  :readonly="readonly"
+                  dense
+                  autofocus
+                />
+              </q-form>
+            </q-popup-edit>
+          </template>
+
+          <template v-else>
+            <slot :name="slot" :model="entry" :readonly="readonly" dense />
+          </template>
+        </div>
+      </template>
     </template>
   </base-grid-input>
 </template>
@@ -46,31 +62,32 @@ export default {
     default: { type: Object, default: () => ({}) }
   },
   data() {
-    return { model: { ...this.default }, onenter: null };
+    return { model: { ...this.default } };
   },
   computed: {
     cols() {
-      return Object.keys(this.$scopedSlots);
+      return Object.keys(this.$scopedSlots)
+        .filter(slot => !slot.startsWith("display-"))
+        .map(slot => {
+          const [key, ...mods] = slot.split(".");
+          return { slot, key, mods };
+        });
     },
     emptyModel() {
-      return Object.fromEntries(this.cols.map(col => [col, null]));
-    },
-    gridFormat() {
-      return "1fr ".repeat(this.cols.length);
+      return Object.fromEntries(this.cols.map(({ key }) => [key, null]));
     }
   },
   methods: {
+    isEmpty(slot, model) {
+      return this.$scopedSlots[slot]({ model }) === undefined;
+    },
     addEntry() {
       this.form.unshift({ ...this.emptyModel, ...this.model });
       this.model = { ...this.default };
     },
-    removeEntry(i) {
-      this.form.splice(i, 1);
-    },
-    submit() {
-      this.onenter = () => {
-        this.onenter = e => e.stopPropagation();
-      };
+    async save(entry, key, oldValue) {
+      const valid = await this.$refs[key][0].validate();
+      if (!valid) entry[key] = oldValue;
     }
   }
 };
