@@ -41,7 +41,7 @@
           </template>
 
           <template v-else>
-            <slot :name="slot" :model="entry" :readonly="readonly" dense />
+            <slot :name="slot" :model="entry" :disable="readonly" dense />
           </template>
         </div>
       </template>

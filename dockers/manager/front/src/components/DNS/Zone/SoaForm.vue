@@ -1,11 +1,13 @@
 <template>
   <div class="column q-col-gutter-md">
     <q-input
+      ref="nameserver"
       v-model="form.nameserver"
       label="Nameserver"
       :rules="[endsWithDot]"
     />
     <q-input
+      ref="postmaster"
       v-model="form.postmaster"
       label="Postmaster"
       :rules="[endsWithDot]"
@@ -56,7 +58,14 @@ export default {
     zone: { type: String, default: null }
   },
   methods: {
-    endsWithDot: v => v?.endsWith(".") || "Must end with a dot."
+    endsWithDot: v => v?.endsWith(".") || "Must end with a dot.",
+    validate() {
+      const validators = [
+        this.$refs.nameserver.validate(),
+        this.$refs.postmaster.validate()
+      ];
+      return validators.every(x => x);
+    }
   }
 };
 </script>

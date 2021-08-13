@@ -2,16 +2,21 @@
   <q-form @submit="submit">
     <q-card-section>
       <q-input
+        ref="name"
         v-model="form.name"
-        required
         label="Name"
         class="q-pb-md"
         :rules="[endsWithDot]"
       />
-      <component :is="formChildren.soa" v-model="form.soa" />
+      <component :is="formChildren.soa" ref="soa" v-model="form.soa" />
     </q-card-section>
     <q-card-section>
-      <reset-and-save :modified="modified" @reset="reset" @save="submit" />
+      <reset-and-save
+        :modified="modified"
+        :validate="validate"
+        @reset="reset"
+        @save="submit"
+      />
     </q-card-section>
   </q-form>
 </template>
@@ -31,6 +36,13 @@ export default {
   },
   methods: {
     endsWithDot: v => v?.endsWith(".") || "Must end with a dot.",
+    validate() {
+      const validators = [
+        this.$refs.name.validate(),
+        this.$refs.soa.validate()
+      ];
+      return validators.every(x => x);
+    },
     submit(done) {
       this.mutate({
         mutation: api.dns.zones.CREATE_ZONE,

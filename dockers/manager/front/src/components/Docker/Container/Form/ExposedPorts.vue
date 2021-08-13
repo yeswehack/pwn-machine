@@ -49,7 +49,7 @@
             />
           </template>
           <template #display-targets="{targets}">
-            {{ targets.join(", ") || "Not forwarded" }}
+            {{ targets && targets.join(", ") || "Not forwarded" }}
           </template>
         </component>
       </q-card-section>

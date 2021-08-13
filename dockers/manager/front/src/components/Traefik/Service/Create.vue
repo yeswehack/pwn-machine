@@ -34,6 +34,7 @@
         :steps="steps"
         :step.sync="panel"
         :modified="modified"
+        :validate="validate"
         @reset="reset"
         @save="submit"
       />
@@ -156,6 +157,9 @@ export default {
       } else {
         this.$emit("cancel");
       }
+    },
+    validate() {
+      return this.$refs.name.validate();
     },
     submit(done) {
       const protocol = this.form.protocol;

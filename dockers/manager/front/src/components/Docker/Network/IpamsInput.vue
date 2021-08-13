@@ -29,7 +29,7 @@
         >
           <template #subnet="props">
             <q-input
-              v-model.number="props.model.subnet"
+              v-model="props.model.subnet"
               :rules="[required()]"
               label="Subnet"
               flat
@@ -38,7 +38,7 @@
           </template>
           <template #gateway="props">
             <q-input
-              v-model.number="props.model.gateway"
+              v-model="props.model.gateway"
               label="Gateway"
               flat
               v-bind="props"
@@ -46,7 +46,7 @@
           </template>
           <template #ipRange="props">
             <q-input
-              v-model.number="props.model.ipRange"
+              v-model="props.model.ipRange"
               label="IP Range"
               flat
               v-bind="props"
