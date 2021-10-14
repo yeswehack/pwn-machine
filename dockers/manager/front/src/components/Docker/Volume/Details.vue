@@ -50,11 +50,7 @@ export default {
   props: {
     volume: { type: Object, required: true }
   },
-  data: () => ({
-    files: [],
-    selected: [],
-    expanded: ["/"]
-  }),
+  data: () => ({ files: [], selected: [], expanded: ["/"] }),
   mounted() {
     this.init();
   },

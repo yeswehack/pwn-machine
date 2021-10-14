@@ -1,5 +1,5 @@
 <template>
-  <base-dialog ref="dialog" title="Search image" class="searchImage">
+  <div>
     <q-card-section>
       <q-input
         v-model="search"
@@ -7,6 +7,7 @@
         clearable
         label="Search"
         class="full-width"
+        autofocus
         @input="doSearch"
       />
     </q-card-section>
@@ -82,45 +83,31 @@
         >
           <template #body-cell-pull="{row}">
             <q-td align="right">
-              <div v-if="chooseImage">
-                <q-btn
-                  label="select"
-                  class="q-px-sm"
-                  :color="isAvailable(row) ? 'positive' : 'primary'"
-                  :loading="!!loadings[row.name]"
-                  dense
-                  @click="pullImage(row.name, true)"
-                />
-              </div>
-              <div v-else>
-                <q-btn
-                  :label="isAvailable(row) ? 'update' : 'pull'"
-                  class="q-px-sm"
-                  :color="isAvailable(row) ? 'positive' : 'primary'"
-                  :loading="!!loadings[row.name]"
-                  dense
-                  @click="pullImage(row.name)"
-                />
-              </div>
+              <q-btn
+                :label="isAvailable(row) ? 'update' : 'pull'"
+                class="q-px-sm"
+                :color="isAvailable(row) ? 'positive' : 'primary'"
+                :loading="!!loadings[row.name]"
+                dense
+                @click="pullImage(row.name)"
+              />
             </q-td>
           </template>
         </q-table>
       </q-tab-panel>
     </q-tab-panels>
-  </base-dialog>
+  </div>
 </template>
 
 <script>
-import BaseDialog from "src/components/BaseDialog.vue";
 import api from "src/api";
-import { PullImageBus } from "src/eventBus.js";
 import { format } from "quasar";
 import Vue from "vue";
+import { GlobalBus } from 'src/eventBus';
 
 export default {
-  components: { BaseDialog },
+  components: {},
   props: {
-    chooseImage: { type: Boolean, default: false },
     input: { type: String, default: null }
   },
   apollo: {
@@ -128,10 +115,10 @@ export default {
       query: api.docker.images.SEARCH_IMAGE,
       debounce: 250,
       throttle: 250,
-      skip() {
+      skip () {
         return !Boolean(this.search);
       },
-      variables() {
+      variables () {
         return { search: this.search };
       },
       update: data => data.dockerSearchImage,
@@ -141,7 +128,7 @@ export default {
       query: api.docker.images.SEARCH_IMAGE_TAG,
       skip: true,
       update: data => data.dockerSearchImageTag,
-      variables() {
+      variables () {
         const partition = (s, needle) => {
           const pos = s.indexOf(needle);
           if (pos < 0) {
@@ -159,7 +146,7 @@ export default {
       update: data => new Set(data.dockerImages.map(i => i.name))
     }
   },
-  data() {
+  data () {
     const col = (name, opts = {}) => ({
       name,
       label: name,
@@ -188,43 +175,37 @@ export default {
     };
   },
   methods: {
-    show() {
+    show () {
       this.$refs.dialog.show();
     },
-    hide() {
+    hide () {
       this.$refs.dialog.hide();
     },
-    isAvailable(tag) {
+    isAvailable (tag) {
       return this.dockerImages.has(tag.name);
     },
-    selectImage(evt, row) {
+    selectImage (evt, row) {
       this.search = row.name;
       this.$apollo.queries.tagsSeachResults.skip = false;
       this.panel = "tag";
     },
-    pullImage(name, close = false) {
+    pullImage (name) {
       Vue.set(this.loadings, name, true);
-      if (close) {
-        this.$emit("ok", name);
-        this.$refs.dialog.hide();
-      }
-      PullImageBus.$emit("pullImage", {
-        name,
-        done: () => {
+      GlobalBus.$emit("pullDockerImage", {
+        name, done: () => {
           Vue.set(this.loadings, name, false);
-          this.$apollo.queries.dockerImages.refetch();
-          if (this.chooseImage) {
-          }
+          this.$emit("done")
         }
-      });
+      })
+      this.$emit("ok", name)
     },
-    dockerLink(image) {
+    dockerLink (image) {
       if (image.isOfficial) {
         return `https://hub.docker.com/_/${image.name}`;
       }
       return `https://hub.docker.com/r/${image.name}`;
     },
-    doSearch(search) {
+    doSearch (search) {
       this.panel = "image";
       this.$apollo.queries.tagsSeachResults.skip = true;
     }

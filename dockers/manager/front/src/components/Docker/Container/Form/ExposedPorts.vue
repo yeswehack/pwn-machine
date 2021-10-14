@@ -7,77 +7,51 @@
     <q-separator />
     <q-card>
       <q-card-section>
-        <base-grid-input
-          :readonly="readonly"
+        <component
+          :is="formChildren"
+          v-model="form"
+          :default="{ protocol: 'tcp', targets: [] }"
           :titles="['Container port', 'Protocol', 'Targets']"
-          grid-format="3fr 2fr  6fr"
-          :entries="form"
-          @addEntry="addEntry"
-          @removeEntry="removeEntry"
+          grid-format="150px 100px auto"
+          :readonly="readonly"
         >
-          <template #inputs>
+          <template #containerPort="props">
             <q-input
-              v-model.number="model.containerPort"
+              v-model.number="props.model.containerPort"
+              mask="#####"
+              :rules="[validatePort]"
               label="Container port"
-              @keypress.enter.prevent="addEntry"
-              @input="addPort"
+              v-bind="props"
+              @input="addPort(props.model)"
             />
+          </template>
+          <template #protocol="props">
             <q-select
-              v-model="model.protocol"
-              label="Protocol"
+              v-model="props.model.protocol"
               :options="['tcp', 'udp']"
+              :rules="[required()]"
+              label="Protocol"
+              v-bind="props"
             />
+          </template>
+
+          <template #targets="props">
             <q-select
-              v-model="model.targets"
+              v-model="props.model.targets"
+              label="Targets"
               use-chips
               new-value-mode="add"
               use-input
               hide-dropdown-icon
               multiple
-              label="Targets"
+              outlined
+              v-bind="props"
             />
           </template>
-          <template #entry="{entry}">
-            <div class="ellipsis">
-              {{ entry.containerPort }}
-
-              <q-popup-edit v-model="entry.containerPort">
-                <q-input
-                  v-model.number="entry.containerPort"
-                  :readonly="readonly"
-                  label="Container port"
-                />
-              </q-popup-edit>
-            </div>
-            <div class="ellipsis">
-              {{ entry.protocol }}
-              <q-popup-edit v-model="entry.protocol">
-                <q-select
-                  v-model="entry.protocol"
-                  :readonly="readonly"
-                  label="Protocol"
-                  :options="['tcp', 'udp']"
-                />
-              </q-popup-edit>
-            </div>
-            <div class="ellipsis">
-              {{ entry.targets ? entry.targets.join(", ") : "Not forwarded" }}
-
-              <q-popup-edit v-model="entry.targets">
-                <q-select
-                  v-model="entry.targets"
-                  :readonly="readonly"
-                  use-chips
-                  new-value-mode="add"
-                  use-input
-                  hide-dropdown-icon
-                  multiple
-                  label="Targets"
-                />
-              </q-popup-edit>
-            </div>
+          <template #display-targets="{targets}">
+            {{ targets && targets.join(", ") || "Not forwarded" }}
           </template>
-        </base-grid-input>
+        </component>
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -85,33 +59,28 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import BaseGridInput from "src/components/BaseGridInput.vue";
-
-const defaultModel = {
-  containerPort: null,
-  protocol: "tcp",
-  targets: []
-};
+import ListInput from "src/components/ListInput.vue";
 
 export default {
-  components: { BaseGridInput },
   mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false },
     container: { type: Object, default: null }
   },
-  formDefinition: [],
-  data: () => ({ model: defaultModel }),
+  formDefinition: ListInput,
   methods: {
-    addPort(port) {
-      this.model.targets = [`0.0.0.0:${port}`];
+    validatePort(p) {
+      const max = 2 ** 16 - 1;
+      return (
+        (Number.isInteger(p) && p >= 0 && p <= max) ||
+        `Must be in range 0 - ${max}`
+      );
     },
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
-    },
-    addEntry() {
-      this.form.unshift(this.model);
-      this.model = defaultModel;
+    addPort(model) {
+      model.targets =
+        this.validatePort(model.containerPort) === true
+          ? [`0.0.0.0:${model.containerPort}`]
+          : [];
     }
   }
 };

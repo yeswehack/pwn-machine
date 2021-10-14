@@ -18,11 +18,10 @@
 </template>
 
 <script>
-import { UploaderBus } from "src/eventBus.js";
+import { UploaderBus, GlobalBus } from "src/eventBus.js";
 import Config from 'src/config';
 
 export default {
-  props: {},
   data: () => ({ isOpen: false, url: null, title: "Upload" }),
   computed: {
     headers: () => [
@@ -32,11 +31,14 @@ export default {
       }
     ]
   },
-  created() {
-    UploaderBus.$on("startUpload", info => this.startUpload(info));
+  created () {
+    GlobalBus.$on("startFileUpload", this.startUpload);
+  },
+  destroyed () {
+    GlobalBus.$off("startFileUpload", this.startUpload);
   },
   methods: {
-    startUpload({ volume, path }) {
+    startUpload ({ volume, path }) {
       const params = new URLSearchParams({ volume, path });
       this.url = `/file/upload?${params}`;
       this.title = `Upload in ${path}`;

@@ -3,12 +3,19 @@
     <div class="col">
       <component
         :is="formChildren.servers"
-        ref="servers"
         v-model="form.servers"
-        object-key="url"
-        label="Servers url"
-        :rules="[required('You must choose at least one server')]"
-      />
+        :titles="['Servers url']"
+        :error="error"
+      >
+        <template #url="props">
+          <q-input
+            v-model="props.model.url"
+            label="Servers url"
+            flat
+            v-bind="props"
+          />
+        </template>
+      </component>
     </div>
 
     <div class="col">
@@ -54,9 +61,15 @@ export default {
     passHostHeader: true,
     serversTransport: null
   },
+  data: () => ({ error: null }),
   methods: {
     validate() {
-      return this.$refs.servers.validate();
+      this.error = "";
+      if (this.form.servers.length === 0) {
+        this.error = "You must choose at least one server";
+        return false;
+      }
+      return true;
     }
   }
 };

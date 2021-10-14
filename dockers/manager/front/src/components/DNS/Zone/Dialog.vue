@@ -15,7 +15,7 @@ import CreateZone from "./Create.vue";
 import BaseDialog from "src/components/BaseDialog.vue";
 
 export default {
-  components: { CreateZone,  BaseDialog },
+  components: { CreateZone, BaseDialog },
   props: {
     zone: { type: Object, default: null }
   },
@@ -25,7 +25,7 @@ export default {
     },
     hide() {
       this.$refs.dialog.hide();
-    },
+    }
   }
 };
 </script>

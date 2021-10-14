@@ -80,7 +80,6 @@ import DeepForm from "src/mixins/DeepForm";
 import NetworkDialog from "src/components/Docker/Network/Dialog.vue";
 
 export default {
-  components: {},
   mixins: [DeepForm],
   formDefinition: null,
   props: {

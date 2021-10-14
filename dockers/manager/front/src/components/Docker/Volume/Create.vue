@@ -3,7 +3,13 @@
     <q-card-section class="q-gutter-md">
       <q-input v-model="form.name" required label="Name" />
       <q-list separator class="rounded-borders" bordered>
-        <component :is="formChildren.labels" v-model="form.labels" />
+        <component
+          :is="formChildren.labels"
+          v-model="form.labels"
+          icon="label"
+          label="Labels"
+          :caption="`${form.labels.length} label(s)`"
+        />
       </q-list>
     </q-card-section>
 
@@ -14,7 +20,7 @@
 </template>
 
 <script>
-import LabelInput from "../LabelInput.vue";
+import KeyValueListInput from "../KeyValueListInput.vue";
 import DeepForm from "src/mixins/DeepForm";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
@@ -24,7 +30,7 @@ export default {
   mixins: [DeepForm],
   formDefinition: {
     name: null,
-    labels: LabelInput
+    labels: KeyValueListInput
   },
   methods: {
     submit(done) {

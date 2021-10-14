@@ -78,6 +78,7 @@ def resolve_create_container(
 ):
 
     labels = kv_to_dict(labels)
+    env = kv_to_dict(environment)
     mounts = graphql_to_docker_mounts(mounts)
     ports = graphql_to_docker_ports(ports)
     if start:
@@ -91,7 +92,7 @@ def resolve_create_container(
         labels=labels,
         command=command,
         user=user,
-        environment=dict(environment),
+        environment=env,
         privileged=privileged,
         read_only=readonly,
         mounts=mounts,  #

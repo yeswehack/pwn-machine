@@ -32,11 +32,7 @@ import ProtocolBadge from "src/components/Traefik/ProtocolBadge.vue";
 import api from "src/api";
 
 export default {
-  components: {
-    BaseTable,
-    ProtocolBadge,
-    RouterLink
-  },
+  components: { BaseTable, ProtocolBadge, RouterLink },
   apollo: {
     entrypoints: {
       query: api.traefik.GET_ENTRYPOINTS,
@@ -65,6 +61,6 @@ export default {
       col("usedBy", { autoWidth: false })
     ];
     return { columns };
-  },
+  }
 };
 </script>

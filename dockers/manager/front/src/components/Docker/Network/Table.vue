@@ -62,7 +62,7 @@
       </div>
     </template>
 
-    <template #details="{ row }">
+    <template #details="{row}">
       <network-details :network="row" />
     </template>
   </base-table>
@@ -76,11 +76,7 @@ import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
 
 export default {
-  components: {
-    BaseTable,
-    NetworkDetails,
-    ContainerLink
-  },
+  components: { BaseTable, NetworkDetails, ContainerLink },
   apollo: {
     networks: {
       query: api.docker.networks.LIST_NETWORKS,

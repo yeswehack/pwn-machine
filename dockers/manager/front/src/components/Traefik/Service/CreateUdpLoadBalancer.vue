@@ -1,14 +1,19 @@
 <template>
-  <div class="q-gutter-md">
-    <component
-      :is="formChildren.servers"
-      ref="servers"
-      v-model="form.servers"
-      object-key="address"
-      label="Servers"
-      :rules="[required('You must choose at least one server')]"
-    />
-  </div>
+  <component
+    :is="formChildren.servers"
+    v-model="form.servers"
+    :titles="['Servers address']"
+    :error="error"
+  >
+    <template #address="props">
+      <q-input
+        v-model="props.model.address"
+        label="Servers address"
+        flat
+        v-bind="props"
+      />
+    </template>
+  </component>
 </template>
 
 <script>
@@ -20,9 +25,15 @@ export default {
   formDefinition: {
     servers: ListInput
   },
+  data: () => ({ error: null }),
   methods: {
     validate() {
-      return this.$refs.servers.validate();
+      this.error = "";
+      if (this.form.servers.length === 0) {
+        this.error = "You must choose at least one server";
+        return false;
+      }
+      return true;
     }
   }
 };

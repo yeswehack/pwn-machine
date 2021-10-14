@@ -15,7 +15,9 @@ import api from "src/api";
 
 export default {
   mixins: [DeepForm],
-  props: { protocol: { type: String, default: null } },
+  props: {
+    protocol: { type: String, default: null }
+  },
   formDefinition: [],
   apollo: {
     entrypoints: {

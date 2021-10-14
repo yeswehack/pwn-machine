@@ -1,7 +1,7 @@
 <template>
   <q-form @submit="submit">
     <q-card-section class="q-gutter-md">
-      <q-input v-if="!readonly" v-model="form.name" label="Name" />
+      <q-input v-if="!readonly" v-model="form.name" autofocus label="Name" />
       <image-input v-if="!readonly" ref="image" v-model="image" />
       <q-list separator class="rounded-borders" bordered>
         <component
@@ -13,11 +13,17 @@
           :is="formChildren.environment"
           v-model="form.environment"
           :readonly="readonly"
+          icon="attach_money"
+          label="Environment"
+          :caption="`${form.environment.length} variable(s)`"
         />
         <component
           :is="formChildren.labels"
           v-model="form.labels"
           :readonly="readonly"
+          icon="label"
+          label="Labels"
+          :caption="`${form.labels.length} label(s)`"
         />
         <component
           :is="formChildren.ports"
@@ -63,8 +69,7 @@
 import ExtraConfig from "./Form/ExtraConfig.vue";
 import MountsInput from "./Form/MountsInput.vue";
 import DeepForm from "src/mixins/DeepForm.js";
-import EnvironInput from "./Form/EnvironInput.vue";
-import LabelInputVue from "../LabelInput.vue";
+import KeyValueListInput from "../KeyValueListInput.vue";
 import NetworkInput from "./Form/NetworkInput.vue";
 import ExposedPorts from "./Form/ExposedPorts.vue";
 import ImageInput from "./Form/ImageInput.vue";
@@ -72,12 +77,7 @@ import api from "src/api";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 
 export default {
-  components: {
-    EnvironInput,
-    ExtraConfig,
-    ImageInput,
-    ResetAndSave
-  },
+  components: { ExtraConfig, ImageInput, ResetAndSave },
   mixins: [DeepForm],
   props: {
     readonly: { type: Boolean, default: false }
@@ -86,8 +86,8 @@ export default {
     start: true,
     name: null,
     image: null,
-    labels: LabelInputVue,
-    environment: EnvironInput,
+    labels: KeyValueListInput,
+    environment: KeyValueListInput,
     extra: ExtraConfig,
     ports: null,
     capAdd: null,

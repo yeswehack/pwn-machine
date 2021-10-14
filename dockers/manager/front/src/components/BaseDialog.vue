@@ -3,7 +3,7 @@
     <q-card bordered :style="style">
       <q-card-section>
         <div class="row q-gutter-sm items-center">
-          <div class="col col-auto title text-h6  ">
+          <div class="col col-auto title text-h6">
             {{ title }} {{ subtitle ? ":" : "" }}
           </div>
           <div class="col col-auto text-h6 subtitle">

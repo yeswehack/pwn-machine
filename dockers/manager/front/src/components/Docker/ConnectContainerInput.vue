@@ -23,6 +23,7 @@
         multiple
         new-value-mode="add"
         :loading="loading"
+        outlined
         hide-dropdown-icon
         style="grid-column-start:2;grid-column-end:4;"
       />
@@ -35,7 +36,7 @@
         {{ entry.aliases ? entry.aliases.join(", ") : "-" }}
       </div>
       <div class="ellipsis text-right">
-        {{ entry.ipAddress || "Off-line" }}
+        {{ entry.ipAddress || "offline" }}
       </div>
     </template>
   </base-grid-input>
@@ -50,8 +51,7 @@ export default {
   components: { BaseGridInput, ContainerLink },
   props: {
     readonly: { type: Boolean, default: false },
-    network: { type: Object, default: null },
-    container: { type: Object, default: null }
+    network: { type: Object, default: null }
   },
   data: () => ({ model: { container: null, aliases: [] }, loading: false }),
   apollo: {

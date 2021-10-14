@@ -34,6 +34,9 @@
           <component
             :is="formChildren.environment"
             v-model="form.environment"
+            icon="attach_money"
+            label="Environment"
+            :caption="`${form.environment.length} variable(s)`"
           />
         </q-list>
       </div>
@@ -52,7 +55,7 @@
 <script>
 import DeepForm from "src/mixins/DeepForm";
 import ContainerSelect from "../Docker/Container/Form/ContainerSelect.vue";
-import EnvironInputVue from "../Docker/Container/Form/EnvironInput.vue";
+import KeyValueListInput from "../Docker/KeyValueListInput.vue";
 import ResetAndSave from "../ResetAndSave.vue";
 import api from "src/api";
 
@@ -65,18 +68,20 @@ export default {
     privileged: false,
     cmd: "/bin/sh -c 'if which bash; then bash ; else sh ; fi'",
     containerName: ContainerSelect,
-    environment: EnvironInputVue
+    environment: KeyValueListInput
   },
   methods: {
-    submit() {
+    submit(done) {
       this.mutate({
         mutation: api.docker.shells.SPAWN_SHELL,
         variables: { input: this.form },
         refetchQueries: [{ query: api.docker.shells.LIST_SHELLS }]
-      }).then(result => {
-        const id = result.nodeId;
-        this.$router.push({ name: "shellId", params: { id } });
-      });
+      })
+        .then(result => {
+          const id = result.nodeId;
+          this.$router.push({ name: "shellId", params: { id } });
+        })
+        .finally(done);
     },
     validate() {
       return this.$refs.containerName.validate();

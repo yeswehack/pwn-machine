@@ -48,7 +48,6 @@
         ref="records"
         v-model="form.records"
         :disable="!form.zone"
-        object-key="content"
         label="Records"
       />
     </q-card-section>

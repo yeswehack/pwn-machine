@@ -7,8 +7,18 @@ import time
 from app.utils.cached import cacheMethodForQuery, no_cache
 from fnmatch import fnmatch
 from app.utils import validate_node_id
+import dns.resolver
+from collections.abc import Sequence
 
 ZONE_MARKER = "DNS_ZONE"
+
+PROPAGATION_RESOLVERS = {
+    "Cloudflare": "1.1.1.1",
+    "Google": "8.8.8.8",
+    "OpenDNS": "208.67.222.222",
+    "Quad9": "9.9.9.9",
+}
+
 
 logger = logging.getLogger("uvicorn")
 
@@ -70,6 +80,15 @@ def get_soa(zone):
         if rule["type"] == "SOA":
             return string_to_soa(rule["records"][0]["content"])
     return None
+
+
+def resolve_rule(name: str, type: str, resolver_ip: str):
+    rsvr = dns.resolver.Resolver()
+    rsvr.nameservers = [resolver_ip]
+    rsvr.lifetime = 5
+    rsvr.timeout = 5
+    result = rsvr.query(name, type)
+    return sorted([r.to_text() for r in result])
 
 
 class PowerdnsHTTPApi:
@@ -177,8 +196,8 @@ class PowerdnsHTTPApi:
             "nameservers": [soa["nameserver"]],
             "kind": "native",
             "rrsets": [rule],
-            "soa_edit": "INCEPTION-EPOCH",
-            "soa_edit_api": "INCEPTION-EPOCH",
+            "soa_edit": "EPOCH",
+            "soa_edit_api": "EPOCH",
         }
         r = await self.post("/api/v1/servers/localhost/zones", data)
         zone = await r.json()
@@ -256,3 +275,18 @@ class PowerdnsHTTPApi:
             f"/api/v1/servers/localhost/zones/{zone}", {"rrsets": [rrset]}
         )
         return 200 <= r.status < 300
+
+    async def check_rule(self, nodeId):
+        zone, name, type = validate_node_id(nodeId, "DNS_RULE")
+        local_rule = await self.get_rule(zone, name, type)
+        local_records = sorted(
+            [r["content"] for r in local_rule["records"] if not r["disabled"]]
+        )
+
+        results = [{"name": "Local", "records": local_records}]
+        for resolver_name, resolver_ip in PROPAGATION_RESOLVERS.items():
+            results.append({
+                "name": f"{resolver_name} ({resolver_ip})",
+                "records": resolve_rule(name, type, resolver_ip)
+            })
+        return results

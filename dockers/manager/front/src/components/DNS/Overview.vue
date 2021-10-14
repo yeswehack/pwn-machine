@@ -12,7 +12,6 @@
 import api from "src/api";
 
 export default {
-  components: {},
   apollo: {
     overviewTree: {
       query: api.dns.OVERVIEW,

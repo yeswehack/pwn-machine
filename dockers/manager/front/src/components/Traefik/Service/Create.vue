@@ -34,6 +34,7 @@
         :steps="steps"
         :step.sync="panel"
         :modified="modified"
+        :validate="validate"
         @reset="reset"
         @save="submit"
       />
@@ -81,7 +82,9 @@ export default {
     type: "loadBalancer",
     extra: getCreateComponent
   },
-  props: { service: { type: Object, default: null } },
+  props: {
+    service: { type: Object, default: null }
+  },
   data() {
     const availableTypes = {
       http: ["loadBalancer", "weighted", "mirroring"],
@@ -154,6 +157,9 @@ export default {
       } else {
         this.$emit("cancel");
       }
+    },
+    validate() {
+      return this.$refs.name.validate();
     },
     submit(done) {
       const protocol = this.form.protocol;

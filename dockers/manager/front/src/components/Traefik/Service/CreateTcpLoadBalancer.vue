@@ -2,12 +2,19 @@
   <div class="q-gutter-md">
     <component
       :is="formChildren.servers"
-      ref="servers"
       v-model="form.servers"
-      object-key="address"
-      label="Servers address"
-      :rules="[required('You must choose at least one server')]"
-    />
+      :titles="['Servers address']"
+      :error="error"
+    >
+      <template #address="props">
+        <q-input
+          v-model="props.model.address"
+          label="Servers address"
+          flat
+          v-bind="props"
+        />
+      </template>
+    </component>
     <q-select
       v-model="form.proxyProtocol.version"
       label="Proxy procotol version"
@@ -34,9 +41,15 @@ export default {
     },
     terminationDelay: 100
   },
+  data: () => ({ error: null }),
   methods: {
     validate() {
-      return this.$refs.servers.validate();
+      this.error = "";
+      if (this.form.servers.length === 0) {
+        this.error = "You must choose at least one server";
+        return false;
+      }
+      return true;
     }
   }
 };

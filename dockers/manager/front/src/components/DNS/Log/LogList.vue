@@ -34,7 +34,7 @@
         size="xs"
         icon="eva-loader-outline"
         :loading="$apollo.queries.dnsLogs.loading"
-        class=" q-mr-md no-pointer-events"
+        class="q-mr-md no-pointer-events"
       />
       {{ props.message }}
     </template>

@@ -54,7 +54,7 @@ export default {
   },
   data: () => ({ totp: "" }),
   methods: {
-    async submit() {
+    submit() {
       if (!+this.totp) return;
 
       this.mutate({

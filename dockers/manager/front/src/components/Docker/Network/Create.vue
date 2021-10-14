@@ -9,6 +9,7 @@
             :readonly="readonly"
             :rules="[required('Name is required')]"
             required
+            autofocus
             label="Name"
           />
         </div>
@@ -33,6 +34,9 @@
           :is="formChildren.labels"
           v-model="form.labels"
           :readonly="readonly"
+          icon="label"
+          label="Labels"
+          :caption="`${form.labels.length} label(s)`"
         />
       </q-list>
     </q-card-section>
@@ -50,34 +54,38 @@
 
 <script>
 import DeepForm from "src/mixins/DeepForm.js";
-import LabelInput from "../LabelInput.vue";
+import KeyValueListInput from "../KeyValueListInput.vue";
 import IpamsInput from "./IpamsInput.vue";
 import ResetAndSave from "src/components/ResetAndSave.vue";
 import api from "src/api";
 
 export default {
-  components: { ResetAndSave, LabelInput },
+  components: { ResetAndSave },
   mixins: [DeepForm],
-  props: { readonly: { type: Boolean, default: false } },
+  props: {
+    readonly: { type: Boolean, default: false }
+  },
   formDefinition: {
     internal: false,
     name: null,
     ipams: IpamsInput,
-    labels: LabelInput
+    labels: KeyValueListInput
   },
   methods: {
     validate() {
       return this.$refs.name.validate();
     },
-    async submit() {
+    submit(done) {
       this.mutate({
         mutation: api.docker.networks.CREATE_NETWORK,
         variables: { input: this.form },
         refetchQueries: [{ query: api.docker.networks.LIST_NETWORKS }],
         message: `Network ${this.form.name} created.`
-      }).then(r => {
-        this.$emit("ok", this.form.name);
-      });
+      })
+        .then(() => {
+          this.$emit("ok", this.form.name);
+        })
+        .finally(done);
     }
   }
 };

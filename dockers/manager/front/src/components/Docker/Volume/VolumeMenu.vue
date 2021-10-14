@@ -8,7 +8,7 @@
         <q-item-section> Upload in {{ folderPath }} </q-item-section>
       </q-item>
       <q-item
-        v-if="node.header == 'file'"
+        v-if="node.header === 'file'"
         v-close-popup
         clickable
         @click="downloadFile"
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { DownloaderBus, UploaderBus } from "src/eventBus.js";
+import { GlobalBus } from "src/eventBus.js";
 import api from "src/api";
 export default {
   props: {
@@ -41,27 +41,27 @@ export default {
       return this.node.file;
     },
     folderPath() {
-      return this.node.header == "folder"
+      return this.node.header === "folder"
         ? this.node.fullpath
         : this.node.parent.fullpath;
     }
   },
   methods: {
-    async downloadFile() {
+    downloadFile() {
       const info = {
         volume: this.volumeName,
         path: this.node.fullpath,
         file: this.node.file
       };
-      await DownloaderBus.$emit("startDownload", info);
+      GlobalBus.$emit("startFileDownload", info);
     },
-    async uploadFile() {
+    uploadFile() {
       const info = {
         volume: this.volumeName,
         path: this.folderPath
       };
 
-      UploaderBus.$emit("startUpload", info);
+      GlobalBus.$emit("startFileUpload", info);
     },
     async deleteFile() {
       const input = {

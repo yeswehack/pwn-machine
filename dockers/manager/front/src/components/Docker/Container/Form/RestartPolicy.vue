@@ -17,7 +17,11 @@
       </q-select>
     </div>
     <div v-if="form.name === 'on-failure'" class="col col-3 q-ml-sm">
-      <q-input v-model="form.maximumRetryCount" type="number" label="Max-retry">
+      <q-input
+        v-model.number="form.maximumRetryCount"
+        type="number"
+        label="Max-retry"
+      >
         <template #after>
           <help-link
             href="https://docs.docker.com/engine/reference/run/#restart-policies---restart"

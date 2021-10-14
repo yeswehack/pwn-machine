@@ -12,6 +12,20 @@ export const PRUNE_IMAGES = gql`
     }
   }
 `;
+
+export const BUILD_IMAGE = gql`
+  mutation buildDockerImage($input: BuildDockerImageInput!) {
+    buildDockerImage(input: $input) {
+      success
+      error
+      result {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const PULL_IMAGE = gql`
   mutation pullDockerImage($name: String!) {
     pullDockerImage(name: $name) {
@@ -26,20 +40,23 @@ export const PULL_IMAGE = gql`
 `;
 
 export const DELETE_IMAGE = gql`
-  mutation deleteDockerImage($id: ID!, $force: Boolean, $pruneParents: Boolean){
-    deleteDockerImage(id: $id, force: $force, pruneParents: $pruneParents ){
+  mutation deleteDockerImage(
+    $id: ID!
+    $force: Boolean
+    $pruneParents: Boolean
+  ) {
+    deleteDockerImage(id: $id, force: $force, pruneParents: $pruneParents) {
       success
       error
     }
   }
-`
+`;
 
 export const TAG_IMAGE = gql`
-mutation tagDockerImage($id: ID!, $repository: String!, $tag: String){
-  tagDockerImage(id: $id, repository: $repository, tag: $tag ){
-    success
-    error
+  mutation tagDockerImage($id: ID!, $repository: String!, $tag: String) {
+    tagDockerImage(id: $id, repository: $repository, tag: $tag) {
+      success
+      error
+    }
   }
-}
-
-`
+`;

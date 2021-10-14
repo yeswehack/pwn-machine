@@ -77,20 +77,17 @@ def resolve_create_network(*_, input):
     name = input.get("name")
     labels = kv_to_dict(input.get("labels"))
     internal = input.get("internal")
-    pool_configs = []
-    ipams = input.get("ipams", [])
-    ipam = None
-    if ipams:
-        pool_configs = []
-        for entry in ipams:
-            pool_configs.append(
-                IPAMPool(
-                    entry.get("subnet", None),
-                    entry.get("ipRange", None),
-                    entry.get("gateway", None),
-                )
+
+    ipam = IPAMConfig(
+        pool_configs=[
+            IPAMPool(
+                entry.get("subnet"),
+                entry.get("ipRange"),
+                entry.get("gateway"),
             )
-        ipam = IPAMConfig(pool_configs)
+            for entry in input.get("ipams") or []
+        ]
+    )
 
     try:
         docker_client.networks.create(

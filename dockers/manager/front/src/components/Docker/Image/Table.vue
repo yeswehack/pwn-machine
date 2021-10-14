@@ -42,7 +42,7 @@
             dense
             class="q-px-sm"
             outline
-            style="border-color:var(--q-color-primary)"
+            style="border-color: var(--q-color-primary)"
           >
             {{ tag }}
           </q-badge>
@@ -61,8 +61,9 @@ import BaseTable from "src/components/BaseTable.vue";
 import { format } from "quasar";
 import ContainerLink from "src/components/Docker/Container/Link.vue";
 import api from "src/api";
-import ImageSearchVue from "../Container/Form/ImageSearch.vue";
+import ImageDialog from "./Dialog.vue";
 import ImageDetails from "./Details.vue";
+import { GlobalBus } from 'src/eventBus';
 const { humanStorageSize } = format;
 
 export default {
@@ -70,13 +71,13 @@ export default {
   apollo: {
     images: {
       query: api.docker.images.LIST_IMAGES,
-      variables() {
+      variables () {
         return { onlyFinal: !this.showIntermediate };
       },
       update: ({ dockerImages }) => dockerImages
     }
   },
-  data() {
+  data () {
     const col = (name, opts = {}) => ({
       name,
       align: "left",
@@ -94,8 +95,17 @@ export default {
     ];
     return { columns, showIntermediate: false };
   },
+  created () {
+    GlobalBus.$on("refetchDockerImages", this.refresh)
+  },
+  destroyed(){
+    GlobalBus.$off("refetchDockerImages", this.refresh)
+  },
   methods: {
-    deleteImage(image) {
+    refresh () {
+      this.$apollo.queries.images.refetch()
+    },
+    deleteImage (image) {
       this.$q
         .dialog({
           title: "Confirm",
@@ -125,18 +135,14 @@ export default {
           });
         });
     },
-    createImage() {
+    createImage () {
       this.$q
         .dialog({
-          component: ImageSearchVue,
+          component: ImageDialog,
           parent: this
         })
-        .onOk(tag => {
-          this.$refs.select.add(tag);
-          this.form = tag;
-        });
     },
-    pruneImages() {
+    pruneImages () {
       this.$q
         .dialog({
           title: "Prune images ?",

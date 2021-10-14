@@ -36,6 +36,7 @@
             label="Search"
             dense
             outlined
+            autofocus
             debounce="200"
           >
             <template #append>
@@ -93,7 +94,7 @@
           v-if="props.expand"
           :props="props"
           no-hover
-          class="expand  bg-grey-10"
+          class="expand bg-grey-10"
         >
           <q-td colspan="100%">
             <slot name="details" v-bind="{ row: props.row }"></slot>
@@ -109,7 +110,7 @@
         size="xs"
         icon="eva-loader-outline"
         :loading="loading"
-        class=" q-mr-md no-pointer-events"
+        class="q-mr-md no-pointer-events"
       />
       {{ props.message }}
     </template>

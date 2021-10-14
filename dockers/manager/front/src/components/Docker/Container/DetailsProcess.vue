@@ -22,8 +22,6 @@
             style="max-width: 40vw;"
             align="left"
           >
-  
-  
             {{ props.value }}
             <q-popup-edit :value="props.value">
               <q-input :value="props.value" readonly dense autofocus counter />

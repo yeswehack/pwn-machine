@@ -28,7 +28,7 @@
                   :is="formChildren.otp"
                   ref="otp"
                   v-model="form.otp"
-                  @enter="submit"
+                  @keyup.enter="submit"
                 />
               </q-step>
 

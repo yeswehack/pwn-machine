@@ -1,5 +1,5 @@
 from app.utils import registerQuery, registerMutation, createType
-from . import docker_client, KeyValue, formatTime
+from . import docker_client, KeyValue, formatTime, kv_to_dict
 from docker.errors import APIError
 from app.exception import PMException
 
@@ -36,7 +36,8 @@ def resolve_volume_used_by(volume, _, onlyRunning):
 @registerMutation("createDockerVolume")
 def resolve_create_volume(*_, input):
     try:
-        docker_client.volumes.create(input.get("name"), labels=dict(input["labels"]))
+        labels = kv_to_dict(input["labels"])
+        docker_client.volumes.create(input.get("name"), labels=labels)
     except APIError as e:
         raise PMException(e.explanation)
     except Exception as e:

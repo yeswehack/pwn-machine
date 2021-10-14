@@ -1,69 +1,49 @@
 <template>
   <div class="q-mb-md">
     <div class="text-h6">Records</div>
-    <base-grid-input
+    <component
+      :is="formChildren"
+      v-model="form"
+      :default="{ enabled: true }"
       :titles="['Record', 'Enabled']"
       grid-format="1fr auto"
-      :entries="form"
       :error="error"
-      @addEntry="addEntry"
-      @removeEntry="removeEntry"
     >
-      <template #inputs>
+      <template #content="props">
         <q-input
-          v-model="model.content"
-          class="col"
-          flat
+          v-model="props.model.content"
+          :rules="[required()]"
           label="New record"
-          @keypress.enter.prevent="addEntry"
+          flat
+          v-bind="props"
         />
-        <div>
-          <q-toggle
-            v-model="model.enabled"
-            title="Enabled"
-            :color="model.enabled ? 'positive' : 'negative'"
-          />
-
-          <q-tooltip anchor="top middle" self="bottom middle">
-            {{ model.enabled ? "Enabled" : "Disabled" }}
-          </q-tooltip>
-        </div>
       </template>
-      <template #entry="{entry}">
-        <div class="ellipsis">
-          {{ entry.content }}
-          <q-popup-edit v-model="entry.content">
-            <q-input v-model="entry.content" class="col" flat label="Content" />
-          </q-popup-edit>
-        </div>
-        <div class="ellipsis">
-          <q-toggle
-            v-model="entry.enabled"
-            title="Enabled"
-            :color="entry.enabled ? 'positive' : 'negative'"
-          />
-
-          <q-tooltip anchor="top middle" self="bottom middle">
-            {{ entry.enabled ? "Enabled" : "Disabled" }}
-          </q-tooltip>
-        </div>
+      <template #enabled.nopopup="props">
+        <q-toggle
+          v-model="props.model.enabled"
+          :color="props.model.enabled ? 'positive' : 'negative'"
+          class="fit"
+          v-bind="props"
+        />
+        <q-tooltip anchor="top middle" self="bottom middle">
+          {{ props.model.enabled ? "Enabled" : "Disabled" }}
+        </q-tooltip>
       </template>
-    </base-grid-input>
+    </component>
   </div>
 </template>
 
 <script>
 import DeepForm from "src/mixins/DeepForm";
-import BaseGridInput from "src/components/BaseGridInput.vue";
+import ListInput from "src/components/ListInput.vue";
 
 export default {
-  components: { BaseGridInput },
   mixins: [DeepForm],
   props: {
     label: { type: String, default: null }
   },
-  data: () => ({ model: { content: null, enabled: true }, error: null }),
-  formDefinition: [],
+  data: () => ({ error: null }),
+  formDefinition: ListInput,
   methods: {
     validate() {
       if (this.form.length < 1) {
@@ -71,14 +51,6 @@ export default {
         return false;
       }
       return true;
-    },
-    addEntry() {
-      if (!this.model.content) return;
-      this.form.unshift(this.model);
-      this.model = { content: null, enabled: true };
-    },
-    removeEntry(idx) {
-      this.form.splice(idx, 1);
     }
   }
 };

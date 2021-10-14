@@ -30,7 +30,7 @@
       </div>
     </template>
     <template #details="{row}">
-      <volume-details :volume="row"/>
+      <volume-details :volume="row" />
     </template>
   </base-table>
 </template>
@@ -45,14 +45,14 @@ import { format } from "quasar";
 const { humanStorageSize } = format;
 
 export default {
-  components: { BaseTable, ContainerLink,VolumeDetails },
+  components: { BaseTable, ContainerLink, VolumeDetails },
   apollo: {
     volumes: {
       query: api.docker.volumes.LIST_VOLUMES,
       update: data => data.dockerVolumes
     }
   },
-  data() {
+  data () {
     const col = (name, opts = {}) => ({
       name,
       align: "left",
@@ -72,7 +72,7 @@ export default {
     return { columns };
   },
   methods: {
-    pruneVolumes() {
+    pruneVolumes () {
       this.$q
         .dialog({
           title: "Prune volumes ?",
@@ -91,8 +91,8 @@ export default {
             const reclaimed = humanStorageSize(result.spaceReclaimed);
             const message = deleted.length
               ? `${deleted.length} volume(s) deleted: ${deleted.join(
-                  ", "
-                )} (${reclaimed})`
+                ", "
+              )} (${reclaimed})`
               : `No volume deleted.`;
 
             this.$q.notify({
@@ -102,20 +102,20 @@ export default {
           });
         });
     },
-    createVolume() {
+    createVolume () {
       this.$q.dialog({
         component: ContainerDialog,
         parent: this
       });
     },
-    cloneVolume(volume) {
+    cloneVolume (volume) {
       this.$q.dialog({
         component: ContainerDialog,
         parent: this,
         volume
       });
     },
-    deleteVolume(volume) {
+    deleteVolume (volume) {
       this.$q
         .dialog({
           title: "Confirm",

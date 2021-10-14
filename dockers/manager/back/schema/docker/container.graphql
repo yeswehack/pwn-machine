@@ -94,7 +94,7 @@ type DockerContainer {
   ports: [DockerContainerPort!]!
   status: DockerContainerStatus!
   privileged: Boolean!
-  ps: [DockerContainerProcess]
+  ps: [DockerContainerProcess!]
   restartPolicy: DockerRestartPolicy
 }
 

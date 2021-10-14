@@ -9,13 +9,18 @@ extend type Mutation {
     force: Boolean! = false
     pruneParents: Boolean! = true
   ): BasicMutationResponse!
-  tagDockerImage(id: ID!, repository: String!, tag: String): BasicMutationResponse!
+  tagDockerImage(
+    id: ID!
+    repository: String!
+    tag: String
+  ): BasicMutationResponse!
   pruneDockerImages(onlyDangling: Boolean! = true): PruneResponse!
+  buildDockerImage(input: BuildDockerImageInput): DockerImageBuildResponse!
 }
 
 type DockerImageHistoryEntry {
-  operation: String !
-  argument: String !
+  operation: String!
+  argument: String!
   comment: String!
   tags: [String!]!
   date: DateTime
@@ -76,21 +81,20 @@ type DockerSearchImageTagResult {
   lastUpdated: DateTime!
 }
 
-type DockerImagePullProgressDetail {
-  current: Int
-  total: Int
-}
 
-type DockerImagePullLogEntry {
-  status: String!
-  id: String
-  progressDetail: DockerImagePullProgressDetail
-  progress: String
+input BuildDockerImageInput {
+  url: String!
+  tag: String!
 }
 
 type DockerImagePull {
   id: ID!
-  name: String
+  name: String!
+}
+
+type DockerImageBuild {
+  id: ID!
+  name: String!
 }
 
 type DockerImagePullResponse implements IMutationResponse {
@@ -99,10 +103,8 @@ type DockerImagePullResponse implements IMutationResponse {
   result: DockerImagePull
 }
 
-extend type Query {
-  dockerImagePulls: [DockerImagePull!]!
-}
-
-extend type Subscription {
-  pullImageProgress(id: ID!): DockerImagePullLogEntry
+type DockerImageBuildResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerImageBuild
 }

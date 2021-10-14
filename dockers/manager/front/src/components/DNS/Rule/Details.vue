@@ -28,7 +28,6 @@
               :is="formChildren.records"
               v-else
               v-model="form.records"
-              object-key="content"
               label="Records"
             />
           </q-card-section>
@@ -43,6 +42,11 @@
           </q-card-section>
         </q-card>
       </div>
+      <div class="col">
+        <check-propagation :rule="value" />
+      </div>
+    </div>
+    <div class="row">
       <div class="col">
         <log-card>
           <log-list
@@ -62,13 +66,21 @@ import LogList from "src/components/DNS/Log/LogList.vue";
 import RuleInput from "./RuleInput.vue";
 
 import ResetAndSave from "src/components/ResetAndSave.vue";
+import CheckPropagation from "./CheckPropagation.vue";
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
 import LuaEditor from "./LuaEditor.vue";
 import LogCard from "src/components/LogCard.vue";
 
 export default {
-  components: { ResetAndSave, HelpLink, LogList, LuaEditor, LogCard },
+  components: {
+    ResetAndSave,
+    HelpLink,
+    LogList,
+    LuaEditor,
+    LogCard,
+    CheckPropagation
+  },
   mixins: [DeepForm],
   formDefinition: {
     records: RuleInput,

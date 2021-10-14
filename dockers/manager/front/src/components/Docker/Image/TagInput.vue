@@ -8,12 +8,7 @@
     @removeEntry="removeTag"
   >
     <template #inputs>
-      <q-input v-model="model" label="New tag" @keypress.enter="addTag" />
-    </template>
-    <template #entry="{entry}">
-      <div class="ellipsis">
-        {{ entry }}
-      </div>
+      <q-input v-model="model" label="New tag" />
     </template>
   </base-grid-input>
 </template>
@@ -26,7 +21,9 @@ export default {
   components: { BaseGridInput },
   mixins: [DeepForm],
   formDefinition: [],
-  props: { imageId: { type: String, required: true } },
+  props: {
+    imageId: { type: String, required: true }
+  },
   data: () => ({ model: null, loading: false }),
   methods: {
     doRemoveTag(tag) {
@@ -75,5 +72,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

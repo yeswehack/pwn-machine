@@ -3,12 +3,13 @@
     <q-tab-panels v-model="panel" animated>
       <q-tab-panel name="chooseType">
         <q-input
+          ref="name"
           v-model="form.name"
           label="Name"
-          required
-          :rule="[required('You must make a selection.')]"
+          :rules="[required('Please enter a name.')]"
         />
         <q-select
+          ref="type"
           v-model="form.type"
           label="Type"
           use-input
@@ -26,6 +27,7 @@
         :steps="['chooseType', 'enterSettings']"
         :step.sync="panel"
         :modified="modified"
+        :validate="validate"
         @reset="reset"
         @save="submit"
       />
@@ -52,7 +54,9 @@ export default {
     type: "addPrefix",
     extra: getCreateComponent
   },
-  props: { middleware: { type: Object, default: null } },
+  props: {
+    middleware: { type: Object, default: null }
+  },
   data() {
     const originalForm = {
       name: this.middleware?.name.split("@")[0],
@@ -88,6 +92,13 @@ export default {
     }
   },
   methods: {
+    validate() {
+      const validators = [
+        this.$refs.name.validate(),
+        this.$refs.type.validate()
+      ];
+      return validators.every(x => x);
+    },
     submit(done) {
       const input = { name: this.form.name, [this.form.type]: this.form.extra };
       this.mutate({

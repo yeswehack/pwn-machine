@@ -69,7 +69,7 @@ export default {
       return this.currentStep === this.lastStep;
     },
     isValidStep() {
-      return this.currentStep?.validate?.() ?? true;
+      return this.validate?.() ?? true;
     },
     saveColor() {
       return this.isLastStep ? "positive" : "grey";

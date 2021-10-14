@@ -73,7 +73,6 @@
 import DeepForm from "src/mixins/DeepForm";
 import api from "src/api";
 import MiddlewareDialog from "../Middleware/Dialog.vue";
-import ServiceDialog from "../Service/Dialog.vue";
 
 function array_move(arr, from, to) {
   arr.splice(to, 0, arr.splice(from, 1)[0]);

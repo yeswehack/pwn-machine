@@ -31,8 +31,8 @@ export function mapGetters(...names) {
   return getters;
 }
 
-export function required(msg) {
-  return v => v != false || msg;
+export function required(msg = "Required") {
+  return v => (v && v != false) || msg;
 }
 
 function isBasicType(obj) {
@@ -82,7 +82,7 @@ export default {
       } else {
         const originalForm = {};
         for (let [name, defaultValue] of Object.entries(definition)) {
-          if (typeof defaultValue == "function") {
+          if (typeof defaultValue === "function") {
             defaultValue = defaultValue(value);
           }
           if (isDeepForm(defaultValue)) {
