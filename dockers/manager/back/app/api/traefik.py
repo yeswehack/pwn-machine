@@ -42,7 +42,7 @@ async def create_from_object(client, obj, prefix=""):
 async def delete_pattern(client, pattern):
     async with client.pipeline(transaction=True) as pipe:
         for key in await client.keys(pattern):
-            pipe = pipe.delete(key)
+            pipe = pipe.delete(key.lower())
         await pipe.execute()
 
 
