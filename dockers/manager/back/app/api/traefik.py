@@ -9,7 +9,7 @@ import aiohttp
 from app.utils import base64_decode, validate_node_id
 from app.utils.cached import cacheMethodForQuery, no_cache
 from app.exception import PMException
-
+    
 entrypoint_re = re.compile(
     r"(?P<ip>\d+\.\d+\.\d+\.\d+)?:(?P<port>\d+)(?:/(?P<protocol>[a-z]+))?"
 )
@@ -19,6 +19,7 @@ ROOT = "http://127.0.0.1:8080/api"
 
 def settings_to_kv(settings, prefix=""):
     for k, v in settings.items():
+        k = k.lower() if isinstance(k, str) else k
         if v == None:
             continue
         if isinstance(v, dict):
@@ -26,9 +27,9 @@ def settings_to_kv(settings, prefix=""):
         elif isinstance(v, list):
             yield from settings_to_kv(dict(enumerate(v)), f"{prefix}/{k}")
         elif isinstance(v, bool):
-            yield f"{prefix}/{k.lower()}", str(v).lower()
+            yield f"{prefix}/{k}", str(v).lower()
         else:
-            yield f"{prefix}/{k.lower()}", v
+            yield f"{prefix}/{k}", v
 
 
 async def create_from_object(client, obj, prefix=""):
