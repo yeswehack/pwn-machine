@@ -26,9 +26,9 @@ def settings_to_kv(settings, prefix=""):
         elif isinstance(v, list):
             yield from settings_to_kv(dict(enumerate(v)), f"{prefix}/{k}")
         elif isinstance(v, bool):
-            yield f"{prefix}/{k}", str(v).lower()
+            yield f"{prefix}/{k.lower()}", str(v).lower()
         else:
-            yield f"{prefix}/{k}", v
+            yield f"{prefix}/{k.lower()}", v
 
 
 async def create_from_object(client, obj, prefix=""):
