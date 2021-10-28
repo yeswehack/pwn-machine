@@ -24,7 +24,10 @@ const AuthLink = new ApolloLink((operation, forward) => {
 const ErrorLink = onError(({ graphQLErrors = [] }) => {
   graphQLErrors.forEach(({ message }) => {
     if (message === "Unauthorized") {
-      router.push("/login");
+      const route = router.match(document.location.pathname)
+      if (!route.meta.public){
+        router.push("/login");
+      }
     }
     Notify.create({
       message,

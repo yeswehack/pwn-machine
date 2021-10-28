@@ -161,6 +161,7 @@ const routes = [
         name: "login",
         meta: {
           hideMenu: true,
+          public: true,
         },
         component: () => import("pages/Login.vue")
       },
@@ -169,6 +170,7 @@ const routes = [
         name: "firstRun",
         meta: {
           hideMenu: true,
+          public: true,
         },
         component: () => import("pages/FirstRun.vue")
       },
