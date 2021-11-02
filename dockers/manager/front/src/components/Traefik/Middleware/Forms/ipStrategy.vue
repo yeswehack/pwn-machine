@@ -7,7 +7,7 @@
         <q-card-section>
         <div class="column q-gutter-sm">
       <q-input v-model.number="form.depth" type="number" label="Depth" />
-      <list-input v-model="form.excludedIPs" label="Excludedi ps" />
+      <component :is="formChildren.excludedIPs" v-model="form.excludedIPs" label="Excludedi ps" />
 </div>
         </q-card-section>
       </q-card>
@@ -16,14 +16,13 @@
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import ListInput from 'src/components/ListInput.vue';
-
+import StringListInput from 'src/components/StringListInput.vue';
 export default {
-    components: {  ListInput },
+    components: {  },
     mixins: [DeepForm],
     formDefinition: {
   depth: null,
-  excludedIPs: [],
+  excludedIPs: StringListInput,
 },
 }
 </script>

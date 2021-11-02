@@ -5,16 +5,15 @@
       <q-input v-model="form.headerField" label="Header field" />
       <q-input v-model="form.realm" label="Realm" />
       <q-toggle v-model="form.removeHeader" label="Remove header" />
-      <list-input v-model="form.users" label="Users" />
+      <component :is="formChildren.users" v-model="form.users" label="Users" />
       <q-input v-model="form.usersFile" label="Users file" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import ListInput from 'src/components/ListInput.vue';
-
+import StringListInput from 'src/components/StringListInput.vue';
 export default {
-    components: {  ListInput },
+    components: {  },
     mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
@@ -23,7 +22,7 @@ export default {
   headerField: null,
   realm: null,
   removeHeader: null,
-  users: [],
+  users: StringListInput,
   usersFile: null,
 },
 }

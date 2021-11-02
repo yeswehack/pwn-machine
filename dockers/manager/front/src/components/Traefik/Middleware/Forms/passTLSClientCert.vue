@@ -8,8 +8,7 @@
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import info from './info.vue';
-
+import info from './info.vue';
 export default {
     components: {  info },
     mixins: [DeepForm],

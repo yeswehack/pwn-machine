@@ -10,8 +10,7 @@
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import sourceCriterion from './sourceCriterion.vue';
-
+import sourceCriterion from './sourceCriterion.vue';
 export default {
     components: {  sourceCriterion },
     mixins: [DeepForm],

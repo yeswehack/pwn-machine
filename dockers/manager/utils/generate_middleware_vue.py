@@ -9,23 +9,19 @@ def uncamel(s):
 
 
 def generate_bool(name):
-    return f"""<q-toggle label="{uncamel(name)}" v-model="form.{name}" />"""
+    return f"""<q-toggle v-model="form.{name}" label="{uncamel(name)}" />"""
 
 
 def generate_number(name):
-    return f"""<q-input type="number" label="{uncamel(name)}" v-model.number="form.{name}" />"""
+    return f"""<q-input v-model.number="form.{name}" type="number" label="{uncamel(name)}" />"""
 
 
 def generate_string(name):
-    return f"""<q-input label="{uncamel(name)}" v-model="form.{name}" />"""
-
-
-def generate_list(name):
-    return f"""<list-input label="{uncamel(name)}" v-model="form.{name}" />"""
+    return f"""<q-input v-model="form.{name}" label="{uncamel(name)}" />"""
 
 
 def generate_component(name):
-    return f"""<component :is="formChildren.{name}" label="{uncamel(name)}" v-model="form.{name}" />"""
+    return f"""<component :is="formChildren.{name}" v-model="form.{name}" label="{uncamel(name)}" />"""
 
 
 def fake_json(dict):
@@ -35,7 +31,7 @@ def fake_json(dict):
         if value in ["String", "Boolean", "Int"]:
             out += "null"
         elif value in ["[String]"]:
-            out += "[]"
+            out += "StringListInput"
         elif value == "KV":
             out += "HeadersInput"
         else:
@@ -48,7 +44,7 @@ def fake_json(dict):
 base_tpl = """
 <template>
   <div class="column q-gutter-md">
-  <div class="text-h6" v-if="!hideTitle">{LABEL}</div>
+  <div v-if="!hideTitle" class="text-h6">{LABEL}</div>
 {HTML}
   </div>
 </template>
@@ -56,11 +52,11 @@ base_tpl = """
 import DeepForm from "src/mixins/DeepForm";
 {IMPORTS}
 export default {{
+    components: {{ {COMPONENTS} }},
+    mixins: [DeepForm],
     props: {{
         hideTitle: {{type: Boolean, default: false}}
     }},
-    components: {{ {COMPONENTS} }},
-    mixins: [DeepForm],
     formDefinition: {FORM_DEF},
 }}
 </script>
@@ -118,9 +114,8 @@ def generate_vue_form_for_type(name, definition, depth=0):
         elif child_type == "String":
             html.append(generate_string(child_name))
         elif child_type == "[String]":
-            imports.add("import ListInput from 'src/components/ListInput.vue';")
-            components.add("ListInput")
-            html.append(generate_list(child_name))
+            imports.add("import StringListInput from 'src/components/StringListInput.vue';")
+            html.append(generate_component(child_name))
         elif child_type == "KV":
             imports.add("import HeadersInput from 'src/components/Traefik/HeadersInput.vue';")
             components.add("HeadersInput")
@@ -133,7 +128,7 @@ def generate_vue_form_for_type(name, definition, depth=0):
         LABEL=uncamel(name),
         HTML=full_html,
         FORM_DEF=form_def,
-        IMPORTS=textwrap.indent("\n".join(imports), " "),
+        IMPORTS="\n".join(imports),
         COMPONENTS=textwrap.indent(", ".join(components), " "),
     )
     with open(f"{path}/{name}.vue", "w") as f:
@@ -141,7 +136,7 @@ def generate_vue_form_for_type(name, definition, depth=0):
 
 
 
-path = "/home/bitk/ywh/git/pwnmachinev2/dockers/manager/front/src/components/Traefik/Middleware/Forms"
+path = "/home/bitk/ywh/git/pwn-machine/dockers/manager/front/src/components/Traefik/Middleware/Forms"
 
 
 def generate_vue_from_types(types):

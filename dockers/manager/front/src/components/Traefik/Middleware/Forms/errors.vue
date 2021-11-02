@@ -4,15 +4,14 @@
   <div v-if="!hideTitle" class="text-h6">Errors</div>
       <q-input v-model="form.query" label="Query" />
       <q-input v-model="form.service" label="Service" />
-      <list-input v-model="form.status" label="Status" />
+      <component :is="formChildren.status" v-model="form.status" label="Status" />
   </div>
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import ListInput from 'src/components/ListInput.vue';
-
+import StringListInput from 'src/components/StringListInput.vue';
 export default {
-    components: {  ListInput },
+    components: {  },
     mixins: [DeepForm],
     props: {
         hideTitle: {type: Boolean, default: false}
@@ -20,7 +19,7 @@ export default {
     formDefinition: {
   query: null,
   service: null,
-  status: [],
+  status: StringListInput,
 },
 }
 </script>

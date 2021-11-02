@@ -20,11 +20,10 @@
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import subject from './subject.vue';
- import issuer from './issuer.vue';
-
+import issuer from './issuer.vue';
+import subject from './subject.vue';
 export default {
-    components: {  subject, issuer },
+    components: {  issuer, subject },
     mixins: [DeepForm],
     formDefinition: {
   issuer: issuer,

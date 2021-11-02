@@ -17,8 +17,7 @@
 </template>
 <script>
 import DeepForm from "src/mixins/DeepForm";
- import ipStrategy from './ipStrategy.vue';
-
+import ipStrategy from './ipStrategy.vue';
 export default {
     components: {  ipStrategy },
     mixins: [DeepForm],
