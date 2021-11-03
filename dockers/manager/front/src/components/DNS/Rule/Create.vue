@@ -41,7 +41,7 @@
           label="TTL"
         />
       </div>
-      <lua-editor v-if="isLua" v-model="form.records[0].content" />
+      <lua-editor v-if="isLua" ref="records" v-model="form.records[0].content" />
       <component
         :is="formChildren.records"
         v-else
@@ -159,6 +159,7 @@ export default {
       return validators.every(x => x);
     },
     submit(done) {
+      console.log(this.form)
       const input = {
         ...this.form,
         records: this.form.records.map(r => ({ content: r.content }))

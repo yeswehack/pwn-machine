@@ -18,6 +18,10 @@
       {{ value }}
       <q-badge v-if="row.isLua" rounded label="LUA" class="q-ml-sm" />
     </template>
+    <template #body-cell-records="{row, value}">
+      <pre v-if="row.isLua">{{ value }}</pre>
+      <span v-else>{{ value }}</span>
+    </template>
     <template #body-cell-enabled="{row, value}">
       <q-toggle
         :value="value"
