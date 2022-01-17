@@ -86,6 +86,11 @@ export default {
   },
   methods: {
     connectNetwork() {
+      if (!this.model.network) {
+        const message =
+          "Please select which network to connect the container to";
+        return this.$q.notify({ message, type: "negative" });
+      }
       const networkId = this.model.network.value.id;
       const aliases = this.model.aliases;
       const input = { containerId: this.container.id, networkId, aliases };
