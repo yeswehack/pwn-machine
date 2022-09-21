@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 ARG API_KEY
 # Setup powerdns repositories
 RUN apt-get update && apt-get install curl gnupg dnsutils rsyslog -y
