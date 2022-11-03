@@ -12,7 +12,7 @@ services:
   ##
   powerdns-db:
     container_name: pm_powerdns-db
-    image: mariadb
+    image: mariadb@sha256:0c3c560359a6da112134a52122aa9b78fec5f9dd292a01ee7954de450f25f0c1
     environment:
       MYSQL_ROOT_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD
       MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
@@ -63,7 +63,6 @@ services:
       context: ./dockers/traefik
       args:
         LETS_ENCRYPT_EMAIL: *LETS_ENCRYPT_EMAIL
-
     ports:
       - "80:80"
       - "443:443"
