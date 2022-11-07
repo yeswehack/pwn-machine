@@ -1,0 +1,91 @@
+enum DnsRuleType {
+  A
+  AAAA
+  AFSDB
+  ALIAS
+  APL
+  ANY
+  CAA
+  CERT
+  CDNSKEY
+  CDS
+  CNAME
+  DNSKEY
+  DS
+  KEY
+  LOC
+  MX
+  NAPTR
+  NS
+  NSEC
+  NSEC3
+  NSEC3PARAM
+  OPENPGPKEY
+  PTR
+  RP
+  RRSIG
+  SOA
+  SPF
+  SSHFP
+  SRV
+  TKEY
+  TSIG
+  TLSA
+  SMIMEA
+  TXT
+  URI
+}
+
+type DnsRecord {
+  content: String
+  enabled: Boolean
+}
+
+input DnsRecordInput {
+  content: String!
+  enabled: Boolean! = true
+}
+
+type DnsRule {
+  nodeId: ID!
+  zone: String!
+  name: String!
+  type: DnsRuleType!
+  ttl: Int!
+  isLua: Boolean!
+  records: [DnsRecord!]
+}
+
+input CreateDnsRuleInput {
+  zone: String!
+  name: String!
+  type: DnsRuleType!
+  ttl: Int!
+  isLua: Boolean!
+  records: [DnsRecordInput!]
+}
+
+input UpdateDnsRuleInput {
+  ttl: Int!
+  records: [DnsRecordInput!]!
+}
+
+
+type DnsRulePropagationResult {
+  name: String!
+  records: [String!]!
+}
+
+
+
+extend type Query {
+  dnsRules: [DnsRule!]!
+  dnsRuleCheckPropagation(nodeId: ID!) : [DnsRulePropagationResult!]!
+}
+
+extend type Mutation {
+  createDnsRule(input: CreateDnsRuleInput!): BasicMutationResponse!
+  enableDnsRule(nodeId: ID!, enabled: Boolean!): BasicMutationResponse!
+  updateDnsRule(nodeId: ID!, patch: UpdateDnsRuleInput!): BasicMutationResponse!
+  deleteDnsRule(nodeId: ID!): BasicMutationResponse!
+}

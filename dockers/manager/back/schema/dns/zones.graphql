@@ -1,0 +1,50 @@
+type DnsStartOfAuthority {
+  nameserver: String
+  postmaster: String
+  refresh: Int
+  retry: Int
+  expire: Int
+  ttl: Int
+}
+
+
+input DnsStartOfAuthorityInput {
+  nameserver: String
+  postmaster: String
+  refresh: Int
+  retry: Int
+  expire: Int
+  ttl: Int
+}
+
+
+
+type DnsZone {
+  nodeId: ID!
+  name: String!
+  serial: String!
+  soa: DnsStartOfAuthority
+  rules: [DnsRule!]
+}
+
+
+input CreateDnsZoneInput {
+  name: String!
+  soa: DnsStartOfAuthorityInput!
+}
+
+input UpdateDnsZoneInput {
+  soa: DnsStartOfAuthorityInput!
+}
+
+extend type Query {
+  dnsZones: [DnsZone!]!
+}
+
+
+
+extend type Mutation {
+  createDnsZone(input: CreateDnsZoneInput!): BasicMutationResponse!
+  updateDnsZone(nodeId: ID!, patch: UpdateDnsZoneInput!): BasicMutationResponse!
+  deleteDnsZone(nodeId: ID!): BasicMutationResponse!
+}

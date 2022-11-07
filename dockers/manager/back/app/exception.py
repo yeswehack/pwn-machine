@@ -1,0 +1,2 @@
+class PMException(Exception):
+    pass

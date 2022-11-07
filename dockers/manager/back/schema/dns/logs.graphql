@@ -1,0 +1,22 @@
+
+type DnsLog implements Node {
+
+    nodeId: ID!
+    origin: String!
+    date: DateTime!
+    query: String!
+    type: DnsRuleType!
+}
+input DnsLogFilter {
+    query: String
+    type: String
+}
+
+type DnsLogResult implements Paginated {
+    total: Int!
+    result: [DnsLog!]
+}
+
+extend type Query{
+    dnsLogs(filter: DnsLogFilter, cursor: CursorInput): DnsLogResult!
+}

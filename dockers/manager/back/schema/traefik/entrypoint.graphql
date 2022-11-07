@@ -1,0 +1,14 @@
+type TraefikEntrypoint {
+  nodeId: ID!
+  ip: String
+  port: Int
+  protocol: TraefikProtocol
+  name: String!
+  address: String!
+  usedBy: [TraefikRouter!]!
+}
+
+
+extend type Query{
+  traefikEntrypoints: [TraefikEntrypoint!]!
+}

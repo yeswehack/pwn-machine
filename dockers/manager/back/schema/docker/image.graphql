@@ -1,0 +1,110 @@
+extend type Query {
+  dockerImages(onlyFinal: Boolean! = true): [DockerImage!]!
+}
+
+extend type Mutation {
+  pullDockerImage(name: String!): DockerImagePullResponse!
+  deleteDockerImage(
+    id: ID!
+    force: Boolean! = false
+    pruneParents: Boolean! = true
+  ): BasicMutationResponse!
+  tagDockerImage(
+    id: ID!
+    repository: String!
+    tag: String
+  ): BasicMutationResponse!
+  pruneDockerImages(onlyDangling: Boolean! = true): PruneResponse!
+  buildDockerImage(input: BuildDockerImageInput): DockerImageBuildResponse!
+}
+
+type DockerImageHistoryEntry {
+  operation: String!
+  argument: String!
+  comment: String!
+  tags: [String!]!
+  date: DateTime
+  size: Int!
+}
+
+type DockerImage {
+  id: ID!
+  shortId: String!
+  name: String!
+  tags: [String!]!
+  labels: [KeyValue!]!
+  parent: ID!
+  created: DateTime!
+  size: Float!
+  entrypoint: [String!]
+  command: [String!]
+  environment: [KeyValue!]!
+  history: [DockerImageHistoryEntry!]!
+  usedBy(onlyRunning: Boolean! = true): [DockerContainer!]!
+}
+
+extend type Mutation {
+  dockerTagImage(
+    id: ID!
+    tag: DockerImageTagInput!
+    force: Boolean! = false
+  ): BasicMutationResponse!
+}
+
+input DockerImageTagInput {
+  repository: String!
+  tag: String! = "latest"
+}
+
+extend type Query {
+  dockerSearchImage(search: String!): [DockerSearchImageResult!]!
+}
+
+type DockerSearchImageResult {
+  name: String!
+  isOfficial: Boolean!
+  isAutomated: Boolean!
+  description: String!
+  starCount: Int!
+}
+
+extend type Query {
+  dockerSearchImageTag(
+    repoName: String!
+    imageName: String!
+  ): [DockerSearchImageTagResult!]!
+}
+
+type DockerSearchImageTagResult {
+  name: String!
+  size: Float!
+  lastUpdated: DateTime!
+}
+
+
+input BuildDockerImageInput {
+  url: String!
+  tag: String!
+}
+
+type DockerImagePull {
+  id: ID!
+  name: String!
+}
+
+type DockerImageBuild {
+  id: ID!
+  name: String!
+}
+
+type DockerImagePullResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerImagePull
+}
+
+type DockerImageBuildResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerImageBuild
+}

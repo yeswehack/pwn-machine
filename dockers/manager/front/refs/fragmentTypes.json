@@ -1,0 +1,66 @@
+{
+  "__schema": {
+    "types": [
+      {
+        "kind": "INTERFACE",
+        "name": "TraefikMiddleware",
+        "possibleTypes": [
+          { "name": "TraefikMiddlewareAddPrefix" },
+          { "name": "TraefikMiddlewareBasicAuth" },
+          { "name": "TraefikMiddlewareBuffering" },
+          { "name": "TraefikMiddlewareChain" },
+          { "name": "TraefikMiddlewareCircuitBreaker" },
+          { "name": "TraefikMiddlewareCompress" },
+          { "name": "TraefikMiddlewareContentType" },
+          { "name": "TraefikMiddlewareDigestAuth" },
+          { "name": "TraefikMiddlewareErrors" },
+          { "name": "TraefikMiddlewareForwardAuth" },
+          { "name": "TraefikMiddlewareHeaders" },
+          { "name": "TraefikMiddlewareIpWhiteList" },
+          { "name": "TraefikMiddlewareInFlightReq" },
+          { "name": "TraefikMiddlewarePassTLSClientCert" },
+          { "name": "TraefikMiddlewareRateLimit" },
+          { "name": "TraefikMiddlewareRedirectRegex" },
+          { "name": "TraefikMiddlewareRedirectScheme" },
+          { "name": "TraefikMiddlewareReplacePath" },
+          { "name": "TraefikMiddlewareReplacePathRegex" },
+          { "name": "TraefikMiddlewareRetry" },
+          { "name": "TraefikMiddlewareStripPrefix" },
+          { "name": "TraefikMiddlewareStripPrefixRegex" }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "TraefikService",
+        "possibleTypes": [
+          { "name": "TraefikHTTPServiceInternal" },
+          { "name": "TraefikHTTPServiceLoadBalancer" },
+          { "name": "TraefikHTTPServiceMirroring" },
+          { "name": "TraefikHTTPServiceWeighted" },
+          { "name": "TraefikTCPServiceLoadBalancer" },
+          { "name": "TraefikUDPServiceLoadBalancer" },
+          { "name": "TraefikServiceWeighted" }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "TraefikRouter",
+        "possibleTypes": [
+          { "name": "TraefikHTTPRouter" },
+          { "name": "TraefikTCPRouter" },
+          { "name": "TraefikUDPRouter" }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "DockerVolumeExploreEntry",
+        "possibleTypes": [
+          { "name": "DockerVolumeUnkownFile" },
+          { "name": "DockerVolumeFile" },
+          { "name": "DockerVolumeFolder" },
+          { "name": "DockerVolumeLink" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = false
+
+[entryPoints]
+  [entryPoints.http]
+    address=":80"
+  [entryPoints.https]
+    address=":443"
+
+[providers.redis]
+  endpoints = "redis:6379"
+  rootkey = "traefik"
+[log]
+  level = "WARN"
+[accessLog]
+  filePath = "/logs/traefik/traefik.json"
+  format = "json"
+
+[api]
+  insecure = true
+  dashboard = false
+
+
+[certificatesResolvers]
+  [certificatesResolvers.letsencrypt-staging-http]
+    [certificatesResolvers.letsencrypt-staging-http.acme]
+      email = "__EMAIL__"
+      storage = "/tmp/acme-staging-http.json"
+      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  
+      [certificatesResolvers.letsencrypt-staging-http.acme.httpChallenge]
+        entryPoint = "http"
+
+  [certificatesResolvers.letsencrypt-staging-dns]
+    [certificatesResolvers.letsencrypt-staging-dns.acme]
+      email = "__EMAIL__"
+      storage = "/tmp/acme-staging-dns.json"
+      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      
+      [certificatesResolvers.letsencrypt-staging-dns.acme.dnsChallenge]
+        provider = "pdns"
+        delayBeforeCheck = 5
+
+  [certificatesResolvers.letsencrypt-http]
+    [certificatesResolvers.letsencrypt-http.acme]
+      email = "__EMAIL__"
+      storage = "/data/acme-http.json"
+      caServer = "https://acme-v02.api.letsencrypt.org/directory"
+  
+      [certificatesResolvers.letsencrypt-http.acme.httpChallenge]
+        entryPoint = "http"
+
+  [certificatesResolvers.letsencrypt-dns]
+    [certificatesResolvers.letsencrypt-dns.acme]
+      email = "__EMAIL__"
+      storage = "/data/acme-dns.json"
+      caServer = "https://acme-v02.api.letsencrypt.org/directory"
+      
+      [certificatesResolvers.letsencrypt-dns.acme.dnsChallenge]
+        provider = "pdns"
+        delayBeforeCheck = 5

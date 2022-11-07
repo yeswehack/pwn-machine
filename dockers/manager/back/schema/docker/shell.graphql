@@ -1,0 +1,29 @@
+type DockerContainerShell {
+  nodeId: ID!
+  containerName: String!
+  running: Boolean!
+}
+type DockerContainerShellResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: DockerContainerShell
+}
+
+extend type Query {
+  dockerContainerShells: [DockerContainerShell!]!
+  dockerContainerShellById(id: ID): DockerContainerShell
+}
+
+input SpawnContainerShellInput {
+    containerName: String!
+    cmd: String!
+    privileged: Boolean
+    environment: [KeyValueInput!]
+    workdir: String
+    user: String
+}
+
+extend type Mutation {
+  spawnDockerContainerShell(input: SpawnContainerShellInput!): DockerContainerShellResponse!
+  deleteDockerContainerShell(id: ID!): BasicMutationResponse!
+}

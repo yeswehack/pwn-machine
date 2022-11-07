@@ -1,5 +1,0 @@
-graft pwnmachine/skel
-graft pwnmachine/cli
-include pwnmachine/version.txt
-global-exclude *.pyc
-include README.md

@@ -1,0 +1,157 @@
+version: "3.8"
+
+x-pm-settings:
+  - &LETS_ENCRYPT_EMAIL "${LETS_ENCRYPT_EMAIL?Please provide an email for let's encrypt}" # Replace with your email address or create a .env file
+  - &PDNS_MYSQL_ROOT_PASSWORD "pdns"
+  - &PDNS_MYSQL_DATABASE "pdns"
+  - &PDNS_API_KEY "test"
+
+services:
+  ##
+  # DNS
+  ##
+  powerdns-db:
+    container_name: pm_powerdns-db
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
+    networks:
+      - dns-net
+    volumes:
+      - powerdns-data:/var/lib/mysql
+
+  powerdns:
+    container_name: pm_powerdns
+    build:
+      context: ./dockers/powerdns
+      args:
+        API_KEY: *PDNS_API_KEY
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "8081:8081"
+    environment:
+      MYSQL_HOST: powerdns-db
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: *PDNS_MYSQL_DATABASE
+    depends_on:
+      - powerdns-db
+    networks:
+      - dns-net
+    volumes:
+      - powerdns-logs:/logs/pdns
+
+  ##
+  # TRAEFIK
+  ##
+  redis:
+    container_name: pm_redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-net
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  traefik:
+    container_name: pm_traefik
+    build:
+      context: ./dockers/traefik
+      args:
+        LETS_ENCRYPT_EMAIL: *LETS_ENCRYPT_EMAIL
+
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - traefik-data:/data:rw
+      - traefik-logs:/logs/traefik
+    environment:
+      TRAEFIK_PROVIDERS_REDIS_ENDPOINTS: "redis:6379"
+      TRAEFIK_PROVIDERS_REDIS_ROOTKEY: "traefik"
+      PDNS_API_KEY: *PDNS_API_KEY
+      PDNS_API_URL: "http://powerdns:8081/"
+
+    depends_on:
+      - redis
+      - powerdns
+
+    networks:
+      - traefik-net
+      - dns-net
+      - redis-net
+
+
+  ##
+  # LOGBEAT
+  ##
+  logbeat:
+    container_name: pm_logbeat
+    build:
+      context: ./dockers/logbeat
+    user: root
+    network_mode: none
+    volumes:
+        - /var/lib/docker:/var/lib/docker:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - powerdns-logs:/logs/pdns
+        - traefik-logs:/logs/traefik
+        - all-logs:/logs/all
+    restart: unless-stopped
+##
+# Manager
+##
+# manager:
+#   image: "manager"
+#   build:
+#     context: ./dockers/manager
+#   depends_on:
+#     - powerdns
+#     - redis
+#     - traefik
+#   volumes:
+#     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+#   environment:
+#     PM_REDIS_HOST: "redis://redis"
+#     PM_TRAEFIK_HTTP_API: "http://traefik:8080/api"
+#     PM_TRAEFIK_REDIS_ROOT: "traefik"
+#     PM_POWERDNS_HTTP_API: "http://powerdns:8081"
+#     PM_POWERDNS_HTTP_API_KEY: "test"
+#     PM_ELASTIC_SEARCH_HTTP_API: "127.0.0.1:9200"
+#   ports:
+#     - 5000:5000
+#   networks:
+#     - redis-net
+#     - dns-net
+#     - elasticsearch-net
+#     - traefik
+# ###
+
+
+volumes:
+  powerdns-logs:
+    name: powerdns-logs
+  powerdns-data:
+    name: powerdns-data
+  redis-data:
+    name: redis-data
+  traefik-data:
+    name: traefik-data
+  traefik-logs:
+    name: traefik-logs
+  all-logs:
+    name: all-logs
+
+networks:
+  redis-net:
+    name: pm_redis-net
+  dns-net:
+    name: pm_dns-net
+  traefik-net:
+    name: pm_traefik-net
+

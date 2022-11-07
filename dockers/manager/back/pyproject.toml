@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "pwnm-back"
+version = "0.1.0"
+description = "PwnMachine backend"
+authors = ["BitK <bitk@yeswehack.com>", "Maëlys Bras de fer <m.brasdefer@yeswehack.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ariadne = "^0.13"
+argon2-cffi = "^20.1"
+pyotp = "^2.6"
+PyJWT = "^2.1"
+aiofiles = "^0.6"
+aiohttp = "^3.7.4"
+websockets = "^9"
+aioredis = "^2a"
+docker = "^5"
+starlette-context = "^0.3.2"
+psutil = "^5.8.0"
+python-magic = "^0.4.24"
+python-multipart = "^0.0.5"
+dnspython = "^2.1.0"
+
+[tool.poetry.dev-dependencies]
+uvicorn = "^0.13.4"
+black = "^21.4b"
+requests = "^2.25.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

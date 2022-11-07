@@ -1,84 +1,61 @@
-# PwnMachine
+# PwnMachine (v2)
 
-PwnMachine is a self hosting solution based on docker aiming to provide an easy to use pwning station for bughunters.
+PwnMachine is a self hosting solution based on docker aiming to provide an easy to use pwning station for bug hunters.
 
-The basic install include a DNS server, a reverse proxy and a webserver.
+The basic install include a web interface, a DNS server and a reverse proxy.
 
+![image](https://user-images.githubusercontent.com/16657045/121333905-80f77b00-c919-11eb-81e1-ae7be5241b4c.png)
 
 ## Requirements
-
-#### On your home computer
-
-* docker-machine
-* sshfs (optional)
-* python3
-* docker-compose
-
-You need to create a docker-machine for your server.
- 
-```shell
-docker-machine create \ 
- --driver generic \
- --generic-ip-address=0.0.0.0 \
- --generic-ssh-user=root \
- --generic-ssh-key=/home/user/.ssh/id_rsa \
- your_machine_name
-```
-
-For more information: https://docs.docker.com/machine/drivers/generic/
-
-
-#### On your server
-
-required available port:
-* tcp: `80` `443` `53`
-* udp: `53`
-
-On a fresh Ubuntu server installation systemd listen on port 53 you will need to shut the service down and change your dns.
-
-```bash
-systemctl disable --now systemd-resolved.service
-echo "nameserver 208.67.222.222" > /etc/resolv.conf #opendns servers
-```
-
-#### DNS
-
-You must set your host as your authoritative nameserver.
-You must wait for the DNS propagation or the domain verification by let's encrypt will fail.
-
+To use the PwnMachine, you don't need many prerequisites. You just need to have docker on your machine. We do not provide a tutorial for installing Docker, you can find all the useful information here: [https://docs.docker.com/get-started/](https://docs.docker.com/get-started/).
 
 ## Installation
 
-First install the pm client.
-```shell
-pip install pwn-machine
+### Using Docker
+
+1. Clone the repository locally on your machine
+
+```bash
+git clone https://github.com/yeswehack/pwn-machine.git
 ```
 
-or for a cutting edge build:
-```shell
-git clone https://github.com/yeswehack/pwn-machine/
-cd pwn-machine
-pip install .
+2. Enter in the repository previously cloned
+
+```
+cd pwn-machine/
 ```
 
+#### Configure the .env
 
-On your first run you need to setup PwnMachine with
+If you start to build direclty the project, you will be faced with an error:
 
-```shell
-pm setup
+```bash
+${LETS_ENCRYPT_EMAIL?Please provide an email for let's encrypt}" # Replace with your email address or create a .env file
 ```
 
-This will start an interactive installer. The installer will create the configuration directory and add the required environment variable and autocompletion to your shell init file.
+We highly recommend to create a `.env` file in the PwnMachine directory and to configure an email. It's used for let's encrypt to have a SSL certificate.
 
-Then you can build and start all your services.
-```shell
-pm service build
-pm service start
+```bash
+LETS_ENCRYPT_EMAIL="your_email@domain.com"
 ```
-You can check that everything is running with
 
-```shell
-pm ps
+#### Building
+
+1. Build the project (using option `-d` will start the project in background, it's optional). Building can take several minutes (depending on your computer and network connection).
+
+```bash
+docker-compose up --build -d
+```
+
+2. Once everything is done on docker side, you should be able to access on the PwnMachine at `http://your_address_ip` 
+
+```
+Starting pm_powerdns-db_1   ... done
+Starting pm_redis_1         ... done
+Starting pm_powerdns_1      ... done
+Starting pm_filebeat_1      ... done
+Recreating traefik          ... done
+Recreating pm_manager_1     ... done
 ```
 
 Check the [wiki](https://github.com/yeswehack/pwn-machine/wiki) for more informations.

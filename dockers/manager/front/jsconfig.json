@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2019",
+    "paths": {
+      "src/*": ["src/*"],
+      "app/*": ["*"],
+      "components/*": ["src/components/*"],
+      "layouts/*": ["src/layouts/*"],
+      "pages/*": ["src/pages/*"],
+      "boot/*": ["src/boot/*"],
+      "vue$": ["node_modules/vue/dist/vue.esm.js"]
+    }
+  },
+  "exclude": ["dist", ".quasar", "node_modules"]
+}

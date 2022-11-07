@@ -1,0 +1,34 @@
+extend type Query {
+  otpSecret: String!
+}
+
+type LoginResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: String
+}
+
+input LoginInput {
+  password: String!
+  otp: String!
+  durationDays: Int
+}
+
+extend type Mutation {
+  initializeAuth(password: String!, otp: String!): LoginResponse!
+  login(input: LoginInput!): LoginResponse!
+  refreshToken(token: String!): RefreshTokenResponse!
+  updatePassword(old: String!, new: String!): BasicMutationResponse!
+  resetJWTSecret: BasicMutationResponse!
+}
+
+type RefreshTokenPayload {
+  token: String
+  isFirstRun: Boolean!
+}
+
+type RefreshTokenResponse implements IMutationResponse {
+  success: Boolean!
+  error: String
+  result: RefreshTokenPayload
+}
