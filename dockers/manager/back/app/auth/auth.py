@@ -1,10 +1,9 @@
-import os
 import asyncio
 
 import jwt
-import pyotp
 from app.utils import registerMutation
 from app.exception import PMException
+from app.config import PM_AUTHORIZATION_HEADER
 
 from . import AUTH_DISABLED, auth_mutation, auth_operations, auth_query, db
 
@@ -48,10 +47,12 @@ async def resolve_update_password(*_, old, new):
 
     await db.save_password(new)
 
+
 @registerMutation("resetJWTSecret")
 async def resolve_reset_jwt_secret(*_):
     await db.reset_jwt_secret()
     return True
+
 
 @auth_mutation("initializeAuth")
 async def resolve_initialize_auth(*_, password, otp):
@@ -66,7 +67,7 @@ async def resolve_initialize_auth(*_, password, otp):
 
 def verify_jwt(request):
     try:
-        token = request.headers["Authorization"].split()[-1]
+        token = request.headers[PM_AUTHORIZATION_HEADER].split()[-1]
         claim = jwt.decode(token, db.jwt_secret, ["HS256"])
         return claim
     except Exception:

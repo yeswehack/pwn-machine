@@ -18,14 +18,15 @@
 </template>
 
 <script>
-import { GlobalBus } from "src/eventBus.js";
+import { UploaderBus, GlobalBus } from "src/eventBus.js";
+import Config from 'src/config';
 
 export default {
   data: () => ({ isOpen: false, url: null, title: "Upload" }),
   computed: {
     headers: () => [
       {
-        name: "Authorization",
+        name: Config.AuthenticationHeader,
         value: `Bearer ${localStorage.getItem("token")}`
       }
     ]

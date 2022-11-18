@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { GlobalBus } from "src/eventBus.js";
+import { DownloaderBus, GlobalBus } from "src/eventBus.js";
+import Config from 'src/config';
 
 export default {
   data: () => ({ value: 0, downloading: [] }),
@@ -72,7 +73,7 @@ export default {
       const token = localStorage.getItem("token");
       const response = await fetch(`/file/download?${params}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          [Config.AuthenticationHeader]: `Bearer ${token}`
         }
       });
       const downloadInfo = {
