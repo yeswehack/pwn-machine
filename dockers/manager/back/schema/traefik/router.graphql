@@ -25,7 +25,6 @@ input TraefikTLSDomainInput {
     sans: [String!]
 }
 
-
 input TraefikTLSInput {
     certResolver: String
     domains: [TraefikTLSDomainInput!]
@@ -43,7 +42,7 @@ type TraefikHTTPRouter implements TraefikRouter {
   error: [String!]
 
   middlewares: [TraefikMiddleware!]!
-  priority: Int!
+  priority: Float!
   rule: String!
   tls: TraefikTLS
 }
@@ -80,7 +79,7 @@ input TraefikHTTPRouterInput {
 
   entryPoints: [String!]! = []
   middlewares: [String!]! = []
-  priority: Int
+  priority: Float
   rule: String!
   service: String
   tls: TraefikTLSInput
@@ -89,7 +88,7 @@ input TraefikHTTPRouterInput {
 input TraefikHTTPRouterPatch {
   entryPoints: [String!]
   middlewares: [String!]
-  priority: Int
+  priority: Float
   rule: String
   service: String
   tls: TraefikTLSInput
@@ -103,6 +102,7 @@ input TraefikTCPRouterInput {
   service: String
   tls: TraefikTLSInput
 }
+
 input TraefikTCPRouterPatch {
   entryPoints: [String!]!
   rule: String!
