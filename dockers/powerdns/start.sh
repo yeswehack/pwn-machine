@@ -11,5 +11,10 @@ echo 'SELECT 1 FROM domains;' | mysql -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -
 chown -R syslog /logs/pdns
 rsyslogd
 # start server
+if [ -z "$PDNS_API_KEY" ]; then
+    echo "error: \$PDNS_API_KEY missing from environment" >&2
+    exit 1
+fi
+echo "api-key=$PDNS_API_KEY" >> /etc/powerdns/pdns.conf
 echo "Starting pdns_server"
 /usr/sbin/pdns_server

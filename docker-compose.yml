@@ -26,12 +26,11 @@ services:
     container_name: pm_powerdns
     build:
       context: ./dockers/powerdns
-      args:
-        API_KEY: *PDNS_API_KEY
     ports:
       - "53:53"
       - "53:53/udp"
     environment:
+      PDNS_API_KEY: *PDNS_API_KEY
       MYSQL_HOST: powerdns-db
       MYSQL_USER: "root"
       MYSQL_PASSWORD: *PDNS_MYSQL_ROOT_PASSWORD

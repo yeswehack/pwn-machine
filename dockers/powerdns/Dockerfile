@@ -1,5 +1,4 @@
 FROM ubuntu@sha256:adf73ca014822ad8237623d388cedf4d5346aa72c270c5acc01431cc93e18e2d
-ARG API_KEY
 # Setup powerdns repositories
 RUN apt-get update && apt-get install curl gnupg dnsutils rsyslog -y
 COPY pdns.list /etc/apt/sources.list.d/pdns.list
@@ -15,7 +14,6 @@ RUN apt-get install pdns-server pdns-backend-mysql mariadb-client  -y
 # Copy files
 COPY pdns.conf /etc/powerdns/pdns.conf
 COPY 00-pdns.conf /etc/rsyslog.d/00-pdns.conf
-RUN echo "\napi-key=$API_KEY" >> /etc/powerdns/pdns.conf
 COPY start.sh ./
 EXPOSE 53/udp 53/tcp 8081/tcp
 
